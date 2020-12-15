@@ -3,26 +3,38 @@ package com.zerody.user.pojo;
 import java.util.Date;
 
 public class AppletsLoginInfo {
+
+    //主键id
     private String id;
 
+    //用户名
     private String loginUserName;
 
+    //密码
     private String userPwd;
 
+    //手机号
     private String phoneNumber;
 
+    //小程序用户id
     private String userId;
 
+    //状态: 1.正常、0.删除
     private Byte status;
 
+    //创建人id
     private String createId;
 
+    //创建时间
     private Date createTime;
 
+    //修改人id
     private String updateId;
 
+    //修改时间
     private Date updateTime;
 
+    //备注
     private String remark;
 
     public String getId() {

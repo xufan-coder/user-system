@@ -1,44 +1,64 @@
 package com.zerody.user.pojo;
 
+import com.zerody.user.pojo.base.BaseModel;
+
 import java.util.Date;
 
-public class SysCompanyInfo {
-    private String id;
+public class SysCompanyInfo extends BaseModel {
 
+
+    //所属集团企业
     private String blocId;
 
+    //企业名称
     private String companyName;
 
+    //企业编号，系统定义一套规则 自动生成
     private String companyCode;
 
+    //企业简称
     private String companyShortName;
 
+    //注册资本
     private String registeredCapital;
 
+    //企业性质：1.国有企业、2.集体企业、3.私人企业、4.外资企业、5.人体企业
     private String enterpriseNature;
 
+    //是否一般纳税人
     private Byte isTaxPayer;
 
+    //公司地址省编码
     private String companyAddrProvinceCode;
 
+    //公司地址市编码
     private String companyAddressCityCode;
 
+    //公司地址区编码
     private String companyAddressAreaCode;
 
+    //公司地址
     private String companyAddress;
 
+    //企业邮箱
     private String enterpriseEmail;
 
+    //企业座机号码
     private String businessLandlineNumber;
 
+    //联系人姓名
     private String contactName;
 
+    //联系人手机
     private String contactPhone;
 
+    //联系人邮箱
     private String contactMail;
 
+    //纳税人识别号
     private String taxpayerIdentificationNumber;
 
+    //
     private String businessLicenseAddress;
 
     private String businessLicenseCode;
@@ -57,31 +77,8 @@ public class SysCompanyInfo {
 
     private String adminAccount;
 
-    private String createId;
-
-    private String createUser;
-
-    private Date createTime;
-
-    private String updateId;
-
-    private String updateUser;
-
-    private Date updateTime;
-
-    private Byte status;
-
-    private String remark;
 
     private String companyIntroduction;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
 
     public String getBlocId() {
         return blocId;
@@ -289,70 +286,6 @@ public class SysCompanyInfo {
 
     public void setAdminAccount(String adminAccount) {
         this.adminAccount = adminAccount == null ? null : adminAccount.trim();
-    }
-
-    public String getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(String createId) {
-        this.createId = createId == null ? null : createId.trim();
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser == null ? null : createUser.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(String updateId) {
-        this.updateId = updateId == null ? null : updateId.trim();
-    }
-
-    public String getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser == null ? null : updateUser.trim();
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark == null ? null : remark.trim();
     }
 
     public String getCompanyIntroduction() {

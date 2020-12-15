@@ -5,34 +5,49 @@ import java.util.Date;
 public class SysStaffInfo {
     private String id;
 
+    //企业id
     private String compId;
 
+    //用户id
     private String userId;
 
+    //用户姓名
     private String userName;
 
+    //工作地点
     private String workPlace;
 
+    //工号
     private String jobNumber;
 
+    //转正时间
     private Date dateJoin;
 
+    //入职时间
     private Date conversionDate;
 
+    //离职时间
     private Date dateLeft;
 
+    //创建人id
     private String createId;
 
+    //创建人
     private String createUser;
 
+    //创建时间
     private Date createTime;
 
+    //修改人id
     private String updateId;
 
+    //修改人
     private String updateUser;
 
+    //修改日期
     private Date updateTime;
 
+    //状态：0.生效、1.离职、2.删除
     private Byte status;
 
     public String getId() {

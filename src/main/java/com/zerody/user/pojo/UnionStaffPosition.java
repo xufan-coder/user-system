@@ -3,8 +3,10 @@ package com.zerody.user.pojo;
 public class UnionStaffPosition {
     private String id;
 
+    //员工id
     private String staffId;
 
+    //岗位id
     private String positionId;
 
     public String getId() {

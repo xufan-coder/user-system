@@ -3,8 +3,10 @@ package com.zerody.user.pojo;
 public class UnionMenuRole {
     private String id;
 
+    //菜单id
     private String menuId;
 
+    //角色id
     private String roleId;
 
     public String getId() {

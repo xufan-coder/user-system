@@ -3,8 +3,10 @@ package com.zerody.user.pojo;
 public class UnionRoleStaff {
     private String id;
 
+    //员工id
     private String staffId;
 
+    //角色id
     private String roleId;
 
     public String getId() {

@@ -1,49 +1,39 @@
 package com.zerody.user.pojo;
 
+import com.zerody.user.pojo.base.BaseModel;
+
 import java.util.Date;
 
-public class SysAuthRoleInfo {
-    private String id;
+public class SysAuthRoleInfo extends BaseModel {
 
+
+    //企业id
     private String compId;
 
+    //角色名称
     private String roleName;
 
+    //角色编码
     private String roleCode;
 
+    //角色类型: 0.超级管理员、1.运营商、2.企业管理员、3.普通员工
     private String roleType;
 
+    //角色标签
     private String roleTag;
 
-    private Byte status;
-
-    private String createId;
-
-    private String createUser;
-
-    private Date createTime;
-
-    private String updateId;
-
-    private String updateUser;
-
-    private Date updateTime;
-
+    //角色有效期
     private Date roleValidityPeriod;
 
+    //父级角色id
     private String parentId;
 
+    //角色有效期起
     private Date roleValidityStart;
 
+    //角色描述
     private String roleDesc;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
 
     public String getCompId() {
         return compId;
@@ -83,62 +73,6 @@ public class SysAuthRoleInfo {
 
     public void setRoleTag(String roleTag) {
         this.roleTag = roleTag == null ? null : roleTag.trim();
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public String getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(String createId) {
-        this.createId = createId == null ? null : createId.trim();
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser == null ? null : createUser.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(String updateId) {
-        this.updateId = updateId == null ? null : updateId.trim();
-    }
-
-    public String getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser == null ? null : updateUser.trim();
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
     }
 
     public Date getRoleValidityPeriod() {

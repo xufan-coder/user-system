@@ -1,45 +1,32 @@
 package com.zerody.user.pojo;
 
+import com.zerody.user.pojo.base.BaseModel;
+
 import java.util.Date;
 
-public class AppletsUserInfo {
-    private String id;
+public class AppletsUserInfo extends BaseModel {
 
+
+
+    //用户姓名
     private String userName;
 
+    //手机号
     private String phoneNumber;
 
+    //头像(相对路径)
     private String avatar;
 
+    //出生日期
     private Date birthday;
 
+    //身份证件号码
     private String certificateCard;
 
+    //openId
     private String openId;
 
-    private String createId;
 
-    private String createUser;
-
-    private Date createTime;
-
-    private String updateId;
-
-    private String updateUser;
-
-    private Date updateTime;
-
-    private Byte status;
-
-    private String remark;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
 
     public String getUserName() {
         return userName;
@@ -89,67 +76,4 @@ public class AppletsUserInfo {
         this.openId = openId == null ? null : openId.trim();
     }
 
-    public String getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(String createId) {
-        this.createId = createId == null ? null : createId.trim();
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser == null ? null : createUser.trim();
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(String updateId) {
-        this.updateId = updateId == null ? null : updateId.trim();
-    }
-
-    public String getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser == null ? null : updateUser.trim();
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark == null ? null : remark.trim();
-    }
 }
