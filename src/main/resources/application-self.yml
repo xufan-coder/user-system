@@ -4,8 +4,6 @@ spring:
       discovery:
         server-addr: 192.168.100.192:8848
         namespace: DEV
-      config:
-        server-addr: 192.168.100.192:8848
 
  
   
