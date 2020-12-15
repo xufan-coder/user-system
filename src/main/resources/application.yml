@@ -1,0 +1,7 @@
+server:
+  port: '@project.port@'
+spring:
+  application:
+     name: nacos-smaple
+  profiles:
+     active: '@project.active@'
