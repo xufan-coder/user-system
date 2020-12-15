@@ -2,6 +2,6 @@ server:
   port: '@project.port@'
 spring:
   application:
-     name: nacos-smaple
+     name: user-system
   profiles:
      active: '@project.active@'
