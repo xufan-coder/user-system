@@ -284,4 +284,31 @@
       status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectCodeAdmin" resultType="String">
+    select
+    menu_code
+    from
+    sys_auth_menu
+    <where>
+      status = 1
+    </where>
+  </select>
+
+  <select id="selectCodeByRoleId" resultType="String">
+    SELECT
+        menu_code
+    FROM
+        sys_auth_menu m
+    JOIN union_menu_role rm ON rm.menu_id = m.id
+    <where>
+       m.status = 1
+       <if test="roles != null">
+        AND  rm.role_id
+         <foreach collection="roles" item="role" separator="," open="in (" close=")">
+            #{role.id}
+         </foreach>
+       </if>
+    </where>
+  </select>
 </mapper>

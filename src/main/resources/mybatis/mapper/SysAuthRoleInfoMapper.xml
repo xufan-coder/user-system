@@ -258,4 +258,24 @@
       role_validity_start = #{roleValidityStart,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  <select id="selectRolesByStaffId" resultType="com.zerody.user.vo.SysAuthRoleInfoVo">
+    SELECT
+        role.id,
+        role.comp_id,
+        role.role_name,
+        role.role_code,
+        role.role_type,
+        role.role_tag,
+        role.role_validity_period,
+        role.parent_id,
+        role.role_validity_start
+    from sys_auth_role_info role
+    JOIN union_role_staff rs on rs.role_id = role.id
+    <where>
+        role.status = 1
+    </where>
+    <if test="staff != null and staff !=''">
+      and rs.staff_id = #{staffId}
+    </if>
+  </select>
 </mapper>

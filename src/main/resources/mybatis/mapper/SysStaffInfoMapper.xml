@@ -221,4 +221,24 @@
       status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  <select id="selectByUserIdAndCompId" resultMap="com.zerody.user.vo.SysStaffInfoVo" >
+      SELECT
+          id,
+          comp_id,
+          user_id,
+          user_name,
+          work_place,
+          job_number,
+          date_join,
+          conversion_date,
+          date_left
+      FROM
+          sys_staff_info
+      WHERE
+          STATUS != 2
+      AND user_id = #{userId}
+      AND comp_id = #{compId}
+  </select>
+
+
 </mapper>

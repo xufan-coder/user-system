@@ -1,12 +1,19 @@
-package com.zerody.user.pojo;
+package com.zerody.user.vo;
 
-import com.zerody.user.pojo.base.BaseModel;
 import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author PengQiang
+ * @ClassName SysAuthMenuVo
+ * @DateTime 2020/12/16_13:37
+ * @Deacription TODO
+ */
 @Data
-public class SysStaffInfo extends BaseModel {
+public class SysStaffInfoVo {
+
+    private String id;
 
     //企业id
     private String compId;
@@ -32,5 +39,6 @@ public class SysStaffInfo extends BaseModel {
     //离职时间
     private Date dateLeft;
 
-
+    //状态：0.生效、1.离职、2.删除
+    private Integer status;
 }

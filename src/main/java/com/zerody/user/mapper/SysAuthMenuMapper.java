@@ -1,8 +1,13 @@
 package com.zerody.user.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zerody.user.pojo.SysAuthMenu;
+import com.zerody.user.vo.SysAuthRoleInfoVo;
+import org.apache.ibatis.annotations.Param;
 
-public interface SysAuthMenuMapper {
+import java.util.List;
+
+public interface SysAuthMenuMapper extends BaseMapper<SysAuthMenu> {
     int deleteByPrimaryKey(String id);
 
     int insert(SysAuthMenu record);
@@ -16,4 +21,8 @@ public interface SysAuthMenuMapper {
     int updateByPrimaryKeyWithBLOBs(SysAuthMenu record);
 
     int updateByPrimaryKey(SysAuthMenu record);
+
+    List<String> selectCodeAdmin();
+
+    List<String> selectCodeByRoleId(@Param("roles") List<SysAuthRoleInfoVo> roles);
 }

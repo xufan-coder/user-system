@@ -1,8 +1,15 @@
 package com.zerody.user.mapper;
 
 import com.zerody.user.pojo.SysAuthRoleInfo;
+import com.zerody.user.vo.SysAuthRoleInfoVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SysAuthRoleInfoMapper {
+
+    List<SysAuthRoleInfoVo> selectRolesByStaffId(@Param("staffId") String staffId);
+
     int deleteByPrimaryKey(String id);
 
     int insert(SysAuthRoleInfo record);
