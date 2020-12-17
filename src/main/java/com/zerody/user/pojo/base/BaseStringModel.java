@@ -28,9 +28,6 @@ public class BaseStringModel {
     @TableField("status")
     private Integer status;
 
-    //备注
-    @TableField("remark")
-    private String remark;
 
     //创建人id
     @TableField("create_id")

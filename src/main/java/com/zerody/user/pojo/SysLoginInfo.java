@@ -1,14 +1,13 @@
 package com.zerody.user.pojo;
 
+import com.zerody.user.pojo.base.BaseStringModel;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class SysLoginInfo  {
+public class SysLoginInfo extends BaseStringModel {
 
-    //主键id
-    private String id;
 
     //用户名
     private String loginName;
@@ -32,7 +31,7 @@ public class SysLoginInfo  {
     private String avatar;
 
     //状态：1:enable, 0:disable, -1:deleted
-    private Byte status;
+    private Integer status;
 
     //创建人id
     private String createId;

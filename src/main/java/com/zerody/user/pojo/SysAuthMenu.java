@@ -1,9 +1,11 @@
 package com.zerody.user.pojo;
 
 import com.zerody.user.pojo.base.BaseModel;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
 public class SysAuthMenu extends BaseModel {
 
 
@@ -41,91 +43,4 @@ public class SysAuthMenu extends BaseModel {
     private String menuDesc;
 
 
-    public String getSysId() {
-        return sysId;
-    }
-
-    public void setSysId(String sysId) {
-        this.sysId = sysId == null ? null : sysId.trim();
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId == null ? null : parentId.trim();
-    }
-
-    public String getMenuName() {
-        return menuName;
-    }
-
-    public void setMenuName(String menuName) {
-        this.menuName = menuName == null ? null : menuName.trim();
-    }
-
-    public String getMenuCode() {
-        return menuCode;
-    }
-
-    public void setMenuCode(String menuCode) {
-        this.menuCode = menuCode == null ? null : menuCode.trim();
-    }
-
-    public Byte getMenuLayer() {
-        return menuLayer;
-    }
-
-    public void setMenuLayer(Byte menuLayer) {
-        this.menuLayer = menuLayer;
-    }
-
-    public Byte getMenuSort() {
-        return menuSort;
-    }
-
-    public void setMenuSort(Byte menuSort) {
-        this.menuSort = menuSort;
-    }
-
-    public Byte getMenuType() {
-        return menuType;
-    }
-
-    public void setMenuType(Byte menuType) {
-        this.menuType = menuType;
-    }
-
-    public String getMenuIcon() {
-        return menuIcon;
-    }
-
-    public void setMenuIcon(String menuIcon) {
-        this.menuIcon = menuIcon == null ? null : menuIcon.trim();
-    }
-
-    public String getMenuUri() {
-        return menuUri;
-    }
-
-    public void setMenuUri(String menuUri) {
-        this.menuUri = menuUri == null ? null : menuUri.trim();
-    }
-
-    public Boolean getIsShow() {
-        return isShow;
-    }
-
-    public void setIsShow(Boolean isShow) {
-        this.isShow = isShow;
-    }
-
-    public String getMenuDesc() {
-        return menuDesc;
-    }
-
-    public void setMenuDesc(String menuDesc) {
-        this.menuDesc = menuDesc == null ? null : menuDesc.trim();
-    }
 }

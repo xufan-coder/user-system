@@ -1,5 +1,6 @@
 package com.zerody.user.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.pojo.base.BaseStringModel;
 import lombok.Data;
 
@@ -19,5 +20,8 @@ public class AppletsLoginInfo extends BaseStringModel {
 
     //小程序用户id
     private String userId;
+
+    //备注
+    private String remark;
 
 }

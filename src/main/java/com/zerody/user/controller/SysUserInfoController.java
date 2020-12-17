@@ -2,11 +2,13 @@ package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,8 @@ public class SysUserInfoController {
 
     @Autowired
     private SysUserInfoService sysUserInfoService;
+
+
 
     //添加用户
     @PostMapping("/addUser")
@@ -52,10 +56,18 @@ public class SysUserInfoController {
         return sysUserInfoService.deleteUserBatchByIds(ids);
     }
 
+    //分页查询用户
     @RequestMapping("/selectUserPage")
     public DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto){
 
         return sysUserInfoService.selectUserPage(sysUserInfoPageDto);
+    }
+
+    //批量导入用户excel
+    @RequestMapping("batchImportUser")
+    public DataResult batchImportUser(MultipartFile file){
+
+        return sysUserInfoService.batchImportUser(file);
     }
 
 }

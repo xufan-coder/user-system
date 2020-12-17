@@ -1,26 +1,17 @@
 package com.zerody.user.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.pojo.SysAuthRoleInfo;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
+import com.zerody.user.dto.SysAuthRolePageDto;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface SysAuthRoleInfoMapper {
+@Mapper
+public interface SysAuthRoleInfoMapper extends BaseMapper<SysAuthRoleInfo> {
 
     List<SysAuthRoleInfoVo> selectRolesByStaffId(@Param("staffId") String staffId);
-
-    int deleteByPrimaryKey(String id);
-
-    int insert(SysAuthRoleInfo record);
-
-    int insertSelective(SysAuthRoleInfo record);
-
-    SysAuthRoleInfo selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(SysAuthRoleInfo record);
-
-    int updateByPrimaryKeyWithBLOBs(SysAuthRoleInfo record);
-
-    int updateByPrimaryKey(SysAuthRoleInfo record);
 }

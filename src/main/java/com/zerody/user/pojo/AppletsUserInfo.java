@@ -1,9 +1,12 @@
 package com.zerody.user.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.pojo.base.BaseModel;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
 public class AppletsUserInfo extends BaseModel {
 
 
@@ -26,54 +29,7 @@ public class AppletsUserInfo extends BaseModel {
     //openId
     private String openId;
 
-
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName == null ? null : userName.trim();
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber == null ? null : phoneNumber.trim();
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar == null ? null : avatar.trim();
-    }
-
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getCertificateCard() {
-        return certificateCard;
-    }
-
-    public void setCertificateCard(String certificateCard) {
-        this.certificateCard = certificateCard == null ? null : certificateCard.trim();
-    }
-
-    public String getOpenId() {
-        return openId;
-    }
-
-    public void setOpenId(String openId) {
-        this.openId = openId == null ? null : openId.trim();
-    }
+    //备注
+    private String remark;
 
 }

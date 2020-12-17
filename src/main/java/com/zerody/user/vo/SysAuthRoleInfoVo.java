@@ -13,6 +13,8 @@ import java.util.Date;
 @Data
 public class SysAuthRoleInfoVo {
 
+    private String id;
+
     //企业id
     private String compId;
 

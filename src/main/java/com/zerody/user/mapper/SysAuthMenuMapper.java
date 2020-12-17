@@ -8,19 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface SysAuthMenuMapper extends BaseMapper<SysAuthMenu> {
-    int deleteByPrimaryKey(String id);
-
-    int insert(SysAuthMenu record);
-
-    int insertSelective(SysAuthMenu record);
-
-    SysAuthMenu selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(SysAuthMenu record);
-
-    int updateByPrimaryKeyWithBLOBs(SysAuthMenu record);
-
-    int updateByPrimaryKey(SysAuthMenu record);
 
     List<String> selectCodeAdmin();
 

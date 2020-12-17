@@ -1,9 +1,13 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.util.ResultEnum;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.dto.SysAuthMenuPageDto;
 import com.zerody.user.mapper.SysAuthMenuMapper;
 import com.zerody.user.mapper.SysAuthRoleInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
@@ -60,5 +64,23 @@ public class SysAuthMenuServiceImpl implements SysAuthMenuService  {
             return new DataResult(sysAuthMenuMapper.selectCodeAdmin());
         }
         return new DataResult(sysAuthMenuMapper.selectCodeByRoleId(roles));
+    }
+
+    /**
+    * @Author               PengQiang
+    * @Description //TODO    分页查询所有菜单信息
+    * @Date                 2020/12/17 9:29
+    * @Param                [sysAuthMenuPageDto] 查询条件与 当前页与当前页显示条数
+    * @return               com.zerody.common.bean.DataResult
+    */
+    @Override
+    public DataResult getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto) {
+        //设置给定当前页与当前页显示数据条数
+        IPage<SysAuthMenu> iPage = new Page<>(sysAuthMenuPageDto.getPageNum(),sysAuthMenuPageDto.getPageSize());
+        //使用条件构造器设置查询条件
+        QueryWrapper<SysAuthMenu> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.lambda().eq();
+
+        return null;
     }
 }

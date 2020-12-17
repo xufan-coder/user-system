@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SysAuthMenuPageDto;
 
 /**
  * @author PengQiang
@@ -11,4 +12,6 @@ import com.zerody.common.bean.DataResult;
 public interface SysAuthMenuService {
 
     DataResult getMenuCodeList(String compId);
+
+    DataResult getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto);
 }
