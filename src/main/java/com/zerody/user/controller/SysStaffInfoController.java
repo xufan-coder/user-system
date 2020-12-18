@@ -1,6 +1,7 @@
 package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.service.SysStaffInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +26,25 @@ public class SysStaffInfoController {
         return  sysStaffInfoService.deleteStaffRole(staffId, roleId);
     }
 
+    //给员工添加角色
     @PostMapping("/staffAddRole")
     public DataResult staffAddRole(String staffId, String roleId){
 
         return sysStaffInfoService.staffAddRole(staffId,roleId);
     }
 
-    @GetMapping("/selectStaffByRoleId")
-    public DataResult selectStaffByRoleId(String roleId){
+    //分页查当前角色下员工
+    @GetMapping("/getPageStaffByRoleId")
+    public DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto){
 
-        return sysStaffInfoService.selectStaffByRoleId(roleId);
+        return sysStaffInfoService.selectPageStaffByRoleId(sysStaffInfoPageDto);
     }
+
+    //分页查询所有员工信息
+    @GetMapping("/getPageAllStaff")
+    public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+
+        return sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto);
+    }
+
 }

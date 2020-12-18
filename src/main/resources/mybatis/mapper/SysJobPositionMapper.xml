@@ -21,5 +21,17 @@
     id, comp_id, position_name, job_scope, create_id, create_user, create_time, update_id, 
     update_user, update_time, status, parent_id, level, depart_id
   </sql>
-
+  <select id="getPageJob" resultType="com.zerody.user.vo.SysJobPositionVo">
+    SELECT
+        `id`,
+        `comp_id`,
+        `position_name`,
+        `job_scope`,
+        `position_desc`,
+        `parent_id`,
+        `LEVEL`,
+        `STATUS`
+    FROM
+        sys_job_position
+  </select>
 </mapper>

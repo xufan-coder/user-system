@@ -48,7 +48,7 @@ public abstract class BaseService<M extends BaseMapper<T>, T extends BaseModel> 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public boolean saveOrUpdate(T entity) {
-
+		//此处少了企业条件
 		if(!Objects.isNull(entity.getId())){
 			entity.setUpdateTime(new Date());
 			//判断当前登录员工不为空

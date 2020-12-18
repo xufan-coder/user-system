@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.pojo.base.BaseModel;
 import lombok.Data;
+import lombok.Value;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data
-public class SysUserInfo extends BaseModel {
+public class  SysUserInfo extends BaseModel {
 
     //用户姓名
     private String userName;
@@ -18,7 +20,8 @@ public class SysUserInfo extends BaseModel {
     private Integer gender;
 
     //手机号
-    @NotEmpty
+    @NotEmpty(message = "手机号不能为空")
+    @Size(max = 11, min = 11, message = "手机号必须为11位")
     private String phoneNumber;
 
     //邮箱

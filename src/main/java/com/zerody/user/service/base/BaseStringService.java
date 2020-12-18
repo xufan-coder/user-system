@@ -44,6 +44,7 @@ public abstract class BaseStringService<M extends BaseMapper<T>, T extends BaseS
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public boolean saveOrUpdate(T entity) {
+		//此处少了企业条件
 		if(entity.getId() != null && entity.getId().length()>0){
 			entity.setUpdateTime(new Date());
 			entity.setCreateId(UserUtils.getUserId());

@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.pojo.SysStaffInfo;
 
 /**
@@ -16,5 +17,7 @@ public interface SysStaffInfoService {
 
     DataResult staffAddRole(String staffId, String roleId);
 
-    DataResult selectStaffByRoleId(String roleId);
+    DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto);
+
+    DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 }

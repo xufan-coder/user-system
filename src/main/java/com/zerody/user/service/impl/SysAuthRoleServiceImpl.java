@@ -71,11 +71,19 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
 
     @Override
     public DataResult deleteRoleById(String roleId) {
+        //判断角色id是否为空
         if(StringUtils.isEmpty(roleId)){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false , "id不能为空", null);
         }
+        //查看当前角色下有没有人
+        QueryWrapper<UnionRoleStaff> rsQW = new QueryWrapper<>();
+        rsQW.lambda().eq(UnionRoleStaff::getRoleId, roleId);
+        Integer count = unionRoleStaffMapper.selectCount(rsQW);
+        if(count > 0){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色下有用户不能删除", null);
+        }
         this.removeById(roleId);
-        return new DataResult();
+        return new DataResult("删除成功",null);
     }
 
     @Override
@@ -101,6 +109,6 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
     public DataResult selectRoleByStaffId(String staffId) {
 
         List<SysAuthRoleInfoVo> roles = sysAuthRoleInfoMapper.selectRolesByStaffId(staffId);
-        return null;
+        return new DataResult(roles);
     }
 }

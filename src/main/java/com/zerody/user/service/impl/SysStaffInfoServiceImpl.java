@@ -1,8 +1,11 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.pojo.SysStaffInfo;
@@ -10,6 +13,7 @@ import com.zerody.user.pojo.UnionRoleStaff;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.BaseStringService;
+import com.zerody.user.vo.SysStaffInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +61,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DataResult selectStaffByRoleId(String roleId) {
-//       List<> sysStaffInfoMapper
+    public DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        //设置当前页与当前页所显示条数
+        Integer pageNum = sysStaffInfoPageDto.getPageNum() == 0 ? 1 : sysStaffInfoPageDto.getPageNum();
+        Integer pageSize = sysStaffInfoPageDto.getPageSize() == 0 ? 1 : sysStaffInfoPageDto.getPageSize();
+        IPage<SysStaffInfoVo> infoVoIPage = new Page<>(pageNum,pageSize);
+        infoVoIPage = sysStaffInfoMapper.selectPageStaffByRoleId(sysStaffInfoPageDto,infoVoIPage);
+        return new DataResult(infoVoIPage);
+    }
+
+    @Override
+    public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        //设置当前页与当前页所显示条数
+        Integer pageNum = sysStaffInfoPageDto.getPageNum() == 0 ? 1 : sysStaffInfoPageDto.getPageNum();
+        Integer pageSize = sysStaffInfoPageDto.getPageSize() == 0 ? 1 : sysStaffInfoPageDto.getPageSize();
+        IPage<SysStaffInfoVo> infoVoIPage = new Page<>(pageNum,pageSize);
+        infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
         return null;
     }
 }

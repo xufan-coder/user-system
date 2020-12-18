@@ -14,7 +14,7 @@ public class SysAuthRoleInfo extends BaseModel {
     private String compId;
 
     //角色名称
-    @NotEmpty
+    @NotEmpty(message = "角色名不能为空")
     private String roleName;
 
     //角色编码

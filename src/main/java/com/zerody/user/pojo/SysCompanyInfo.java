@@ -93,4 +93,7 @@ public class SysCompanyInfo extends BaseModel {
     //备注
     private String remark;
 
+    //登录状态
+    private Integer loginStatus;
+
 }
