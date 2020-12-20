@@ -66,7 +66,7 @@
   <select id="getPageAllStaff" resultType="com.zerody.user.vo.SysStaffInfoVo">
 
   </select>
-    <select id="selectUserByCompanyId" resultType="java.lang.Integer">
+    <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
 			id
 		FROM

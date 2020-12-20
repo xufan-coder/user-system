@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,6 +17,7 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
 import com.zerody.user.dto.SysAuthRolePageDto;
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,7 @@ import java.util.List;
  * @Deacription TODO
  */
 @Service
+@Slf4j
 public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, SysAuthRoleInfo> implements SysAuthRoleInfoService {
 
 
@@ -55,6 +58,14 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
 
     @Override
     public DataResult addRole(SysAuthRoleInfo sysAuthRoleInfo) {
+        QueryWrapper<SysAuthRoleInfo> roleQW = new QueryWrapper<>();
+//        roleQW.lambda().eq(SysAuthRoleInfo::getCompId,)
+        roleQW.lambda().eq(SysAuthRoleInfo::getRoleName, sysAuthRoleInfo.getRoleName());
+        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, DataRecordStatusEnum.DELETED);
+        Integer count = sysAuthRoleInfoMapper.selectCount(roleQW);
+        if (count > 0){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色名称已存在", null);
+        }
 //        sysAuthRoleInfo.setCompId(); //企业id
         this.saveOrUpdate(sysAuthRoleInfo);
         return new DataResult();
@@ -62,9 +73,19 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
 
     @Override
     public DataResult updateRole(SysAuthRoleInfo sysAuthRoleInfo) {
+        log.info("B端修改角色入参-{}", JSON.toJSONString(sysAuthRoleInfo));
         if(StringUtils.isEmpty(sysAuthRoleInfo.getId())){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "id不能为空", null);
         }
+        QueryWrapper<SysAuthRoleInfo> roleQW = new QueryWrapper<>();
+//        roleQW.lambda().eq(SysAuthRoleInfo::getCompId,)
+        roleQW.lambda().eq(SysAuthRoleInfo::getRoleName, sysAuthRoleInfo.getRoleName());
+        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, DataRecordStatusEnum.DELETED);
+        Integer count = sysAuthRoleInfoMapper.selectCount(roleQW);
+        if (count > 0){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色名称已存在", null);
+        }
+        log.info("B端修改角色入库参数-{}", JSON.toJSONString(sysAuthRoleInfo));
         this.saveOrUpdate(sysAuthRoleInfo);
         return new DataResult();
     }

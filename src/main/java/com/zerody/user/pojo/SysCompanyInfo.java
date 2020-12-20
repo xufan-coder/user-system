@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.pojo.base.BaseModel;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Data
@@ -14,6 +15,7 @@ public class SysCompanyInfo extends BaseModel {
     private String blocId;
 
     //企业名称
+    @NotEmpty(message = "企业名称不能为空")
     private String companyName;
 
     //企业编号，系统定义一套规则 自动生成

@@ -6,6 +6,7 @@ import com.zerody.user.pojo.SysLoginInfo;
 import com.zerody.user.pojo.base.BaseStringModel;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.base.BaseStringService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @Deacription TODO
  */
 @Service
+@Slf4j
 public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMapper, SysLoginInfo> implements SysLoginInfoService {
 
 

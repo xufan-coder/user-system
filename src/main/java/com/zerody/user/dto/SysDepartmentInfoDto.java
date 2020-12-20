@@ -5,13 +5,13 @@ import lombok.Data;
 
 /**
  * @author PengQiang
- * @ClassName SysAuthMenuPageDto
- * @DateTime 2020/12/17_9:25
+ * @ClassName SysDepartmentInfoDto
+ * @DateTime 2020/12/19_13:26
  * @Deacription TODO
  */
 @Data
-public class SysAuthMenuPageDto extends PageInfo {
+public class SysDepartmentInfoDto extends PageInfo {
 
-    private String sysId;
+    private String companyId;
 
 }

@@ -13,6 +13,10 @@ public class SysComapnyInfoVo {
 
     private String companyName;
 
-//    private String
+    private String adminAccount;
+
+    private Integer loginStatus;
+
+    private String remark;
 
 }

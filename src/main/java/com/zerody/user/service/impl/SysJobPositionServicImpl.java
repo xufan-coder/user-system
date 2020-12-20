@@ -13,6 +13,7 @@ import com.zerody.user.pojo.SysJobPosition;
 import com.zerody.user.service.SysJobPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysJobPositionVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
  * @Deacription TODO
  */
 @Service
+@Slf4j
 public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, SysJobPosition> implements SysJobPositionService {
 
     @Autowired

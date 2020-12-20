@@ -15,6 +15,7 @@ import com.zerody.user.pojo.SysAuthMenu;
 import com.zerody.user.service.SysAuthMenuService;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
 import com.zerody.user.vo.SysStaffInfoVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import java.util.Objects;
  * @Deacription TODO
  */
 @Service
+@Slf4j
 public class SysAuthMenuServiceImpl implements SysAuthMenuService  {
 
     @Autowired
@@ -75,12 +77,13 @@ public class SysAuthMenuServiceImpl implements SysAuthMenuService  {
     */
     @Override
     public DataResult getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto) {
+        Integer pageNum = sysAuthMenuPageDto.getPageNum() == 0 ? 1 : sysAuthMenuPageDto.getPageNum();
+        Integer pageSize = sysAuthMenuPageDto.getPageSize() == 0 ? 1 : sysAuthMenuPageDto.getPageSize();
         //设置给定当前页与当前页显示数据条数
-        IPage<SysAuthMenu> iPage = new Page<>(sysAuthMenuPageDto.getPageNum(),sysAuthMenuPageDto.getPageSize());
-        //使用条件构造器设置查询条件
-        QueryWrapper<SysAuthMenu> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.lambda().eq();
+        IPage<SysAuthMenu> iPage = new Page<>(pageNum, pageSize);
 
-        return null;
+        //使用条件构造器设置查询条件
+        iPage = sysAuthMenuMapper.getMenuPage(sysAuthMenuPageDto,iPage);
+        return new DataResult(iPage);
     }
 }

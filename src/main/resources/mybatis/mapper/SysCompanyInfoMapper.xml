@@ -53,4 +53,7 @@
   <sql id="Blob_Column_List" >
     company_introduction
   </sql>
+  <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+    company_name, admin_account, `login_status`, remark_
+  </select>
 </mapper>

@@ -19,6 +19,7 @@ import com.zerody.user.pojo.SysStaffInfo;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,16 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
 
+    @Autowired
+    private SysCompanyInfoMapper sysCompanyInfoMapper;
+
+    /**
+    * @Author               PengQiang
+    * @Description //TODO   添加企业
+    * @Date                 2020/12/19 13:06
+    * @Param                [sysCompanyInfo]
+    * @return               com.zerody.common.bean.DataResult
+    */
     @Override
     public DataResult addCompany(SysCompanyInfo sysCompanyInfo) {
         this.saveOrUpdate(sysCompanyInfo);
@@ -73,18 +84,18 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //保存状态
         this.saveOrUpdate(sysCompanyInfo);
         //查询得到该企业下所有的用户id
-        List<Integer> userIds = sysStaffInfoMapper.selectUserByCompanyId(companyId);
-        //当企业状态修改为禁用的时候 登录用户也改为禁用
-        loginStatus = CompanyLoginStatusEnum.BLOCK_UP.getCode() == loginStatus ?
-                UserLoginStatusEnum.COMPANY_DEPARTMENT_BLOCK_UP.getCode() :
-                UserLoginStatusEnum.ENABLE.getCode();
+        List<String> userIds = sysStaffInfoMapper.selectUserByCompanyId(companyId);
+//        //当企业状态修改为禁用的时候 登录用户也改为禁用
+//        loginStatus = CompanyLoginStatusEnum.BLOCK_UP.getCode() == loginStatus ?
+//                UserLoginStatusEnum.COMPANY_DEPARTMENT_BLOCK_UP.getCode() :
+//                UserLoginStatusEnum.ENABLE.getCode();
         //设置修改参数
         SysLoginInfo sysLoginInfo = new SysLoginInfo();
         sysLoginInfo.setActiveFlag(loginStatus );
         //修改状态
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().ne(SysLoginInfo::getActiveFlag, loginStatus);
-        loginQW.lambda().in(SysLoginInfo::getUserId,userIds);
+        loginQW.lambda().in(SysLoginInfo::getUserId, userIds);
         sysLoginInfoMapper.update(sysLoginInfo, loginQW);
         return new DataResult("操作成功", null);
     }
@@ -94,9 +105,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //设置分页参数
         Integer pageNum = companyInfoDto.getPageNum() == 0 ? 1 : companyInfoDto.getPageNum();
         Integer pageSize =  companyInfoDto.getPageSize() == 0 ? 10 : companyInfoDto.getPageSize();
-        IPage<SysCompanyInfo> iPage = new Page<>(pageNum,pageSize);
-        QueryWrapper<SysCompanyInfo> companyQW = new QueryWrapper<>();
-        iPage = this.page(iPage,companyQW);
+        IPage<SysComapnyInfoVo> iPage = new Page<>(pageNum,pageSize);
+        iPage = sysCompanyInfoMapper.getPageCompany(companyInfoDto,iPage);
         return new DataResult();
     }
 

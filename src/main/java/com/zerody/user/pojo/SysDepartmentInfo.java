@@ -1,9 +1,12 @@
 package com.zerody.user.pojo;
 
 import com.zerody.user.pojo.base.BaseModel;
+import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
+@Data
 public class SysDepartmentInfo extends BaseModel {
 
 
@@ -11,72 +14,26 @@ public class SysDepartmentInfo extends BaseModel {
     private String compId;
 
     //部门名称
+    @NotEmpty(message = "部门名称不能为空")
     private String departName;
 
     //父级部门id
     private String parentId;
 
-    private String telephone;
-
+    //成立时间
     private Date creatTime;
 
+    //联系电话
+    private String telephone;
+
+    //部门编码 vc
     private String departCode;
 
+    //部门描述
     private String departDesc;
 
-    public String getCompId() {
-        return compId;
-    }
+    //部门登录状态
+    private Integer loginStatus;
 
-    public void setCompId(String compId) {
-        this.compId = compId == null ? null : compId.trim();
-    }
 
-    public String getDepartName() {
-        return departName;
-    }
-
-    public void setDepartName(String departName) {
-        this.departName = departName == null ? null : departName.trim();
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId == null ? null : parentId.trim();
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone == null ? null : telephone.trim();
-    }
-
-    public Date getCreatTime() {
-        return creatTime;
-    }
-
-    public void setCreatTime(Date creatTime) {
-        this.creatTime = creatTime;
-    }
-
-    public String getDepartCode() {
-        return departCode;
-    }
-
-    public void setDepartCode(String departCode) {
-        this.departCode = departCode == null ? null : departCode.trim();
-    }
-
-    public String getDepartDesc() {
-        return departDesc;
-    }
-
-    public void setDepartDesc(String departDesc) {
-        this.departDesc = departDesc == null ? null : departDesc.trim();
-    }
 }
