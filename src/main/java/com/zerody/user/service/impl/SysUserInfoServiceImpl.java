@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.FileUtil;
@@ -52,6 +53,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     private UnionRoleStaffMapper unionRoleStaffMapper;
 
 
+    /**
+    * @Author               PengQiang
+    * @Description //TODO   手机合法查看
+    * @Date                 2020/12/20 21:27
+    * @Param                [phone]
+    * @return               boolean
+    */
     private boolean checkPhone(String phone){
         if(StringUtils.isBlank(phone)){
             return false;
@@ -73,6 +81,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DataResult addUser(SysUserInfo userInfo) {
+        log.info("B端添加用户入参---{}", JSON.toJSONString(userInfo));
         DataResult  dataResult = CheckUser.checkParam(userInfo);
         //如果校验不通过提示前端
         if(!dataResult.isIsSuccess()){
@@ -88,9 +97,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             dataResult.setIsSuccess(!dataResult.isIsSuccess());
             return dataResult;
         }
-
         //效验通过保存用户信息
         userInfo.setRegisterTime(new Date());
+        log.info("B端添加用户入库参数--{}",JSON.toJSONString(userInfo));
         this.saveOrUpdate(userInfo);
         //用户信息保存添加登录信息
         SysLoginInfo logInfo = new SysLoginInfo();
@@ -99,6 +108,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         logInfo.setNickname(userInfo.getNickname());
         logInfo.setAvatar(userInfo.getAvatar());
         logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addLogin(logInfo);
         return dataResult;
     }

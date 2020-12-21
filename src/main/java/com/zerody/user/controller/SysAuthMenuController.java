@@ -39,6 +39,4 @@ public class SysAuthMenuController {
         return sysAuthMenuService.getMenuPage(sysAuthMenuPageDto);
     }
 
-
-    //分页查询该角色下的菜单
 }

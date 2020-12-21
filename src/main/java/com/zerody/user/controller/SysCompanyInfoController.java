@@ -5,10 +5,8 @@ import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.pojo.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author PengQiang
@@ -25,7 +23,7 @@ public class SysCompanyInfoController {
 
     //添加企业
     @PostMapping("/addCompany")
-    public DataResult addCompany(SysCompanyInfo sysCompanyInfo){
+    public DataResult addCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
 
         return sysCompanyInfoService.addCompany(sysCompanyInfo);
     }
