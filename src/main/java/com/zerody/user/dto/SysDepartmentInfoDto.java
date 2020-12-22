@@ -12,6 +12,6 @@ import lombok.Data;
 @Data
 public class SysDepartmentInfoDto extends PageInfo {
 
-    private String companyId;
+    private String compId;
 
 }

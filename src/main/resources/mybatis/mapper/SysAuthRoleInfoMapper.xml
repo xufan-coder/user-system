@@ -38,10 +38,7 @@
         role.role_name,
         role.role_code,
         role.role_type,
-        role.role_tag,
-        role.role_validity_period,
-        role.parent_id,
-        role.role_validity_start
+        role.role_tag
     from sys_auth_role_info role
     JOIN union_role_staff rs on rs.role_id = role.id
     <where>
@@ -52,7 +49,7 @@
     </if>
   </select>
 
-    <select id="selectRoleByStaffId" resultType="com.zerody.user.dto.SysAuthRolePageDto">
+    <select id="selectRolePage" resultType="com.zerody.user.vo.SysAuthRoleInfoVo">
         SELECT
             id,
             comp_id,
@@ -60,18 +57,11 @@
             role_code,
             role_type,
             role_tag,
-            STATUS,
-            role_validity_period,
-            parent_id,
-            role_validity_start
+            STATUS
         from
-            sys_auth_role_info sari
-        join union_role_staff urs on urs.role_id = sari.staff_id
+            sys_auth_role_info
         <where>
             status = 1
-            <if test="staffId != null and staffId != ''">
-                and urs.staff_id = #{staffId}
-            </if>
         </where>
     </select>
 </mapper>

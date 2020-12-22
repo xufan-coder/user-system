@@ -30,17 +30,30 @@
 
   <select id="getPageDepartment" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
     SELECT
-        id,
-        depart_name,
-        parent_id,
-        telephone,
-        depart_code,
-        login_status,
-        depart_desc
+        sdi.id,
+        sdi.depart_name,
+        psdi.depart_name parentDep,
+        sdi.telephone,
+        sdi.depart_code,
+        sdi.login_status,
+        sdi.depart_desc,
+          (
+          SELECT
+          count(id)
+          FROM
+          union_staff_depart usd
+          WHERE
+          sdi.id = usd.department_id
+          ) staffCount
     FROM
-        sys_department_info
+        sys_department_info sdi
+    left join sys_department_info psdi on psdi.parent_id = sdi.id
     <where>
-      status != -1 and comp_id = #{companyId}
+      sdi.status != -1
+      <if test="dep.compId != null and dep.compId != ''">
+          and comp_id = #{dep.compId}
+      </if>
+
     </where>
   </select>
 
@@ -49,8 +62,8 @@
           sli.id
       FROM
           sys_login_info sli
-      JOIN sys_user_info sui ON usi.id = sli.user_id
-      JOIN sys_staff_info ssi ON ssi.user_id = usi.id
+      JOIN sys_user_info sui ON sui.id = sli.user_id
+      JOIN sys_staff_info ssi ON ssi.user_id = sui.id
       JOIN union_staff_depart usd ON usd.staff_id = ssi.id
       <where>
         usd.department_id = #{depId} and sli.`active_flag` = 1

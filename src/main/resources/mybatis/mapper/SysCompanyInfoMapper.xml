@@ -54,6 +54,15 @@
     company_introduction
   </sql>
   <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
-    company_name, admin_account, `login_status`, remark_
+      SELECT
+      company_name,
+      admin_account,
+      `login_status`,
+      remark_
+      FROM
+      sys_company_info
+     <where>
+       status != -1
+     </where>
   </select>
 </mapper>

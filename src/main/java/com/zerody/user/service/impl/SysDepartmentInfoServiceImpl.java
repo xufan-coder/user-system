@@ -71,6 +71,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         this.saveOrUpdate(sysDepartmentInfo);
         //查询得到该部门下所有的用户登录id
         List<String> ids = sysDepartmentInfoMapper.selectUserLoginIdByDepId(depId);
+        //当部门下没有人就不执行以下操作
+        if(ids.size() == 0){
+            return new DataResult(true, "操作成功!",null);
+        }
         SysLoginInfo login = new SysLoginInfo();
         login.setActiveFlag(loginStauts);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
@@ -78,7 +82,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         loginQW.lambda().in(SysLoginInfo::getUserId, ids);
         log.info("B端修改部门下用户登录状态数据库入参--{}",sysDepartmentInfo);
         sysLoginInfoMapper.update(login,loginQW);
-        return new DataResult("操作成功!",null);
+        return new DataResult(true, "操作成功!",null);
     }
 
     @Override
@@ -92,6 +96,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if(count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该部门名称已存在", null);
         }
+        sysDepartmentInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
         //名称不存在 保存添加
         this.saveOrUpdate(sysDepartmentInfo);
@@ -117,14 +122,18 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     @Override
-    public DataResult sysDepartmentInfoService(String depId) {
+    public DataResult deleteDepartmentById(String depId) {
         QueryWrapper<UnionStaffDepart> unQw = new QueryWrapper<>();
         unQw.lambda().eq(UnionStaffDepart::getDepartmentId, depId);
         Integer count = unionStaffDepartMapper.selectCount(unQw);
         if (count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false,  "该部门下用员工不能删除", null);
         }
-        unionStaffDepartMapper.deleteById(depId);
-        return new DataResult("删除成功");
+        //逻辑删除部门
+        SysDepartmentInfo dep = new SysDepartmentInfo();
+        dep.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        dep.setId(depId);
+        this.saveOrUpdate(dep);
+        return new DataResult(true, "删除成功", null);
     }
 }

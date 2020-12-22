@@ -46,13 +46,9 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         //pageNum 设置当前页当 当前页码为0时(int类型默认值为0) 当前页码为1,pageSize设置当前页数据显示条数
         Integer pageNum = sysAuthRolePageDto.getPageNum() == 0 ? 1 :sysAuthRolePageDto.getPageNum();
         Integer pageSize = sysAuthRolePageDto.getPageSize()  == 0 ? 10 :sysAuthRolePageDto.getPageSize();
-        IPage<SysAuthRoleInfo> iPage = new Page<>(pageNum, pageSize);
+        IPage<SysAuthRoleInfoVo> iPage = new Page<>(pageNum, pageSize);
 
-        //查询条件设置
-        QueryWrapper<SysAuthRoleInfo> roleQW = new QueryWrapper<>();
-        roleQW.lambda().eq(SysAuthRoleInfo::getStatus, DataRecordStatusEnum.VALID.getCode());
-
-        iPage = this.page(iPage,roleQW);
+        iPage = sysAuthRoleInfoMapper.selectRolePage(sysAuthRolePageDto,iPage);
         return new DataResult(iPage);
     }
 
@@ -66,6 +62,7 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         if (count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色名称已存在", null);
         }
+        sysAuthRoleInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
 //        sysAuthRoleInfo.setCompId(); //企业id
         this.saveOrUpdate(sysAuthRoleInfo);
         return new DataResult();
@@ -103,13 +100,22 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         if(count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色下有用户不能删除", null);
         }
-        this.removeById(roleId);
+        SysAuthRoleInfo role = new SysAuthRoleInfo();
+        role.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        role.setId(roleId);
+        this.saveOrUpdate(role);
         return new DataResult("删除成功",null);
     }
 
     @Override
     public DataResult deleteBatchByIdds(List<String> roleIds) {
-        this.removeByIds(roleIds);
+        SysAuthRoleInfo role = new SysAuthRoleInfo();
+        for (String id : roleIds){
+            role.setId(id);
+            role.setStatus(DataRecordStatusEnum.DELETED.getCode());
+            this.saveOrUpdate(role);
+            role = new SysAuthRoleInfo();
+        }
         return new DataResult();
     }
 

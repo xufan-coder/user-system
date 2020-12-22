@@ -31,19 +31,18 @@ public class SysJobPositionController {
     @PostMapping("/addJob")
     public DataResult addJob(@RequestBody @Validated SysJobPosition sysJobPosition){
 
-        return sysJobPositionService.addOrUpdateJob(sysJobPosition);
+        return sysJobPositionService.addJob(sysJobPosition);
     }
 
     //修改岗位
     @PostMapping("/updateJob")
     public DataResult updateJob(@RequestBody @Validated SysJobPosition sysJobPosition){
-        return sysJobPositionService.addOrUpdateJob(sysJobPosition);
+        return sysJobPositionService.updateJob(sysJobPosition);
     }
 
     //根据岗位id删除岗位
     @DeleteMapping("/deleteJobById")
     public DataResult deleteJobById(String jobId){
-
         return sysJobPositionService.deleteJobById(jobId);
     }
 }

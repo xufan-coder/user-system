@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.pojo.base.BaseModel;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -96,6 +98,7 @@ public class SysCompanyInfo extends BaseModel {
     private String remark;
 
     //登录状态
+    @NotNull(message = "登录状态不能为空")
     private Integer loginStatus;
 
 }

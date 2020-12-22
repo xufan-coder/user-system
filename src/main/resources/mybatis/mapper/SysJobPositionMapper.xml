@@ -15,7 +15,7 @@
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
     <result column="level" property="level" jdbcType="TINYINT" />
-    <result column="depart_id" property="departId" jdbcType="VARCHAR" />
+<!--    <result column="depart_id" property="departId" jdbcType="VARCHAR" />-->
   </resultMap>
   <sql id="Base_Column_List" >
     id, comp_id, position_name, job_scope, create_id, create_user, create_time, update_id, 
@@ -24,7 +24,6 @@
   <select id="getPageJob" resultType="com.zerody.user.vo.SysJobPositionVo">
     SELECT
         `id`,
-        `comp_id`,
         `position_name`,
         `job_scope`,
         `position_desc`,
@@ -33,5 +32,11 @@
         `STATUS`
     FROM
         sys_job_position
+    <where>
+        status != -1
+        <if test="job.compId != null and job.compId != ''">
+            comp_id = #{job.compId}
+        </if>
+    </where>
   </select>
 </mapper>

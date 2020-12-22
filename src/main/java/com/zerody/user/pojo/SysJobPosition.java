@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -22,12 +23,12 @@ public class SysJobPosition  extends BaseModel {
     private String jobScope;
 
     //父级岗位id
+    @NotNull(message = "父级id不能为null")
     private String parentId;
 
     //岗位级别
     private Integer level;
 
-    //部门id
-    private String departId;
-
+    //备注/描述
+    private String positionDesc;
 }

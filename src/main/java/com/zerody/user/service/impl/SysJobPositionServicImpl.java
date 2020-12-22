@@ -40,7 +40,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     }
 
     @Override
-    public DataResult addOrUpdateJob(SysJobPosition sysJobPosition) {
+    public DataResult addJob(SysJobPosition sysJobPosition) {
 
         //除了被删除的企业的岗位用名称查看数据库有没有这个名称
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
@@ -49,16 +49,38 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         //此处少了企业条件
         Integer jobNameCount = this.count(jobQW);
         if(jobNameCount > 0 ){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该角色名称已被占用",null);
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
+        sysJobPosition.setStatus(DataRecordStatusEnum.VALID.getCode());
         this.saveOrUpdate(sysJobPosition);
         return new DataResult();
     }
 
     @Override
     public DataResult deleteJobById(String jobId) {
-        this.removeById(jobId);
+        SysJobPosition job = new SysJobPosition();
+        job.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        job.setId(jobId);
+        this.updateJob(job);
         return new DataResult();
     }
+
+    @Override
+    public DataResult updateJob(SysJobPosition sysJobPosition) {
+
+        //除了被删除的企业的岗位用名称查看数据库有没有这个名称
+        QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
+        jobQW.lambda().eq(SysJobPosition::getPositionName, sysJobPosition.getPositionName());
+        jobQW.lambda().ne(SysJobPosition::getStatus, DataRecordStatusEnum.DELETED.getCode());
+        jobQW.lambda().ne(SysJobPosition::getId, sysJobPosition.getId());
+        //此处少了企业条件
+        Integer jobNameCount = this.count(jobQW);
+        if(jobNameCount > 0 ){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
+        }
+        this.saveOrUpdate(sysJobPosition);
+        return new DataResult();
+    }
+
 
 }

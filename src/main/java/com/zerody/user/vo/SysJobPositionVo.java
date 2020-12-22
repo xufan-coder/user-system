@@ -41,4 +41,7 @@ public class SysJobPositionVo {
     //部门id
     @TableField("depart_id")
     private String departId;
+
+    //部门状态
+    private Integer status;
 }

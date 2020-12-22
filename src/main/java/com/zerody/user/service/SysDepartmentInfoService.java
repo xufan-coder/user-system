@@ -20,5 +20,5 @@ public interface SysDepartmentInfoService {
 
     DataResult updateDepartment(SysDepartmentInfo sysDepartmentInfo);
 
-    DataResult sysDepartmentInfoService(String depId);
+    DataResult deleteDepartmentById(String depId);
 }

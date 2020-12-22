@@ -13,7 +13,9 @@ import com.zerody.user.pojo.SysJobPosition;
 public interface SysJobPositionService {
     DataResult getPageJob(SysJobPositionDto sysJobPositionDto);
 
-    DataResult addOrUpdateJob(SysJobPosition sysJobPosition);
+    DataResult addJob(SysJobPosition sysJobPosition);
+
+    DataResult updateJob(SysJobPosition sysJobPosition);
 
     DataResult deleteJobById(String jobId);
 }

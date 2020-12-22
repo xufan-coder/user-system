@@ -29,11 +29,15 @@ public class SysCompanyInfoController {
     }
 
     //修改企业状态的同时修改该企业下的用户的登录状态
-    @PostMapping("/updateComanyStatus")
-    public DataResult updateComanyStatus(String companyId, Integer loginStatus){
-        return sysCompanyInfoService.updateComanyStatus(companyId, loginStatus);
+    @PostMapping("/updateCompanyStatus")
+    public DataResult updateCompanyStatus(String companyId, Integer loginStatus){
+        return sysCompanyInfoService.updateCompanyStatus(companyId, loginStatus);
     }
 
+    @PostMapping("/updateCompany")
+    public DataResult updataCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
+        return sysCompanyInfoService.updataCompany(sysCompanyInfo);
+    }
     //分页查询企业
     @GetMapping("/getPageCompany")
     public DataResult getPageCompany(SysCompanyInfoDto companyInfoDto){

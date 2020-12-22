@@ -30,15 +30,9 @@ public class SysAuthRoleInfoVo {
     //角色标签
     private String roleTag;
 
-    //角色有效期
-    private Date roleValidityPeriod;
-
-    //父级角色id
-    private String parentId;
-
-    //角色有效期起
-    private Date roleValidityStart;
-
     //角色描述
     private String roleDesc;
+
+    //角色状态
+    private Integer status;
 }

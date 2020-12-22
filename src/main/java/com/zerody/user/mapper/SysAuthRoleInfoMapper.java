@@ -14,4 +14,6 @@ import java.util.List;
 public interface SysAuthRoleInfoMapper extends BaseMapper<SysAuthRoleInfo> {
 
     List<SysAuthRoleInfoVo> selectRolesByStaffId(@Param("staffId") String staffId);
+
+    IPage<SysAuthRoleInfoVo> selectRolePage(SysAuthRolePageDto sysAuthRolePageDto, IPage<SysAuthRoleInfoVo> iPage);
 }

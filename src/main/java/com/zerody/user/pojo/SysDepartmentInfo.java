@@ -4,6 +4,7 @@ import com.zerody.user.pojo.base.BaseModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -18,6 +19,7 @@ public class SysDepartmentInfo extends BaseModel {
     private String departName;
 
     //父级部门id
+    @NotNull
     private String parentId;
 
     //成立时间
@@ -26,13 +28,14 @@ public class SysDepartmentInfo extends BaseModel {
     //联系电话
     private String telephone;
 
-    //部门编码 vc
+    //部门编码
     private String departCode;
 
     //部门描述
     private String departDesc;
 
     //部门登录状态
+    @NotNull(message = "部门登录状态不能为空")
     private Integer loginStatus;
 
 

@@ -13,7 +13,9 @@ import com.zerody.user.pojo.SysCompanyInfo;
 public interface SysCompanyInfoService {
     DataResult addCompany(SysCompanyInfo sysCompanyInfo);
 
-    DataResult updateComanyStatus(String companyId, Integer loginStatus);
+    DataResult updateCompanyStatus(String companyId, Integer loginStatus);
 
     DataResult getPageCompany(SysCompanyInfoDto companyInfoDto);
+
+    DataResult updataCompany(SysCompanyInfo sysCompanyInfo);
 }

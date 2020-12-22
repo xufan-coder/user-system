@@ -68,7 +68,7 @@
   </select>
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
-			id
+			sui.id
 		FROM
 			sys_user_info sui
 		JOIN sys_staff_info ssi ON ssi.user_id = sui.id

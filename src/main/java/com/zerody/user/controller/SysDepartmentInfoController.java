@@ -47,8 +47,8 @@ public class SysDepartmentInfoController {
     }
 
     //删除部门
-    @DeleteMapping("/deleteDepartment")
-    public DataResult deleteDepartment(String depId){
-        return sysDepartmentInfoService.sysDepartmentInfoService(depId);
+    @DeleteMapping("/deleteDepartmentById")
+    public DataResult deleteDepartmentById(String depId){
+        return sysDepartmentInfoService.deleteDepartmentById(depId);
     }
 }

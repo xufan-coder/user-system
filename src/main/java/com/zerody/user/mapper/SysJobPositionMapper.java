@@ -5,10 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.SysJobPositionDto;
 import com.zerody.user.pojo.SysJobPosition;
 import com.zerody.user.vo.SysJobPositionVo;
+import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
 @Mapper
 public interface SysJobPositionMapper extends BaseMapper<SysJobPosition> {
 
-    IPage<SysJobPositionVo> getPageJob(SysJobPositionDto sysJobPositionDto,IPage iPage);
+    IPage<SysJobPositionVo> getPageJob(@Param("job") SysJobPositionDto sysJobPositionDto, IPage iPage);
 }
