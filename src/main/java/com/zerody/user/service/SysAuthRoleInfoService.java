@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SysAuthRoleDto;
 import com.zerody.user.pojo.SysAuthRoleInfo;
 import com.zerody.user.dto.SysAuthRolePageDto;
 
@@ -23,7 +24,9 @@ public interface SysAuthRoleInfoService {
 
     DataResult deleteBatchByIdds(List<String> roleIds);
 
-    DataResult deleteRoleDownStaff(String roleId, List<String> staffIds);
+    DataResult deleteRoleDownStaff(SysAuthRoleDto sysAuthRoleDto);
 
     DataResult selectRoleByStaffId(String staffId );
+
+    DataResult operationRoleDownMenu(SysAuthRoleDto sysAuthRoleDto);
 }

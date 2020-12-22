@@ -1,8 +1,10 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.pojo.SysStaffInfo;
+import com.zerody.user.pojo.SysUserInfo;
 
 /**
  * @author PengQiang
@@ -12,6 +14,8 @@ import com.zerody.user.pojo.SysStaffInfo;
  */
 public interface SysStaffInfoService {
     DataResult addStaff(SysStaffInfo staff);
+
+    DataResult addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     DataResult deleteStaffRole(String staffId, String roleId);
 

@@ -42,29 +42,86 @@
       AND user_id = #{userId}
       AND comp_id = #{compId}
   </select>
-  <select id="selectPageStaffByRoleId"  resultType="com.zerody.user.vo.SysStaffInfoVo">
+  <select id="selectPageStaffByRoleId"  resultType="com.zerody.user.vo.SysUserInfoVo">
        SELECT
-            ssi.id,
-            ssi.comp_id,
-            ssi.user_id,
-            ssi.user_name,
-            ssi.work_place,
-            ssi.job_number,
-            ssi.date_join,
-            ssi.conversion_date,
-            ssi.date_left
+          ssi.id staffId,
+          sui.user_name,
+          sui.gender,
+          sui.phone_number,
+          sui.email,
+          sui.nickname,
+          sui.avatar,
+          sui.birthday,
+          sui.certificate_card,
+          sui.certificate_card_address,
+          sui.prov_city_district,
+          sui.contact_address,
+          sui.register_time,
+          ssi. STATUS,
+          sui.nation,
+          sui.ancestral
        FROM
-          sys_staff_info ssi
+          sys_user_info sui
+        join sys_staff_info ssi on sui.id = ssi.user_id
        join  union_role_staff urs on urs.staff_id = ssi.id
        <where>
-          status = 1
-          <if test="staffiId != null and staffId != ''">
-             and urs.staff_id = #{staffId}
+          ssi.status != -1
+          <if test="staff.roleId != null and staff.roleId != ''">
+              and urs.role_id = #{staff.roleId}
           </if>
        </where>
   </select>
-  <select id="getPageAllStaff" resultType="com.zerody.user.vo.SysStaffInfoVo">
-
+  <select id="getPageAllStaff" resultType="com.zerody.user.vo.SysUserInfoVo">
+      SELECT
+      ssi.id staffId,
+      sui.user_name,
+      sui.gender,
+      sui.phone_number,
+      sui.email,
+      sui.nickname,
+      sui.avatar,
+      sui.birthday,
+      sui.certificate_card,
+      sui.certificate_card_address,
+      sui.prov_city_district,
+      sui.contact_address,
+      sui.register_time,
+      ssi. STATUS,
+      sui.nation,
+      sui.ancestral,
+      sari.role_name,
+      sdi.depart_name,
+      sjp.position_name
+      FROM
+      sys_user_info sui
+      JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+      LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+      LEFT JOIN sys_auth_role_info sari ON sari.id = urs.role_id
+      LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+      LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+      LEFT JOIN union_staff_position usp ON usd.staff_id = ssi.id
+      LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+      <where>
+          ssi.status != -1
+          <if test="staff.staffName != null and staff.staffName != ''">
+              and ssi.staff_name = #{staff.staffName}
+          </if>
+          <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
+              and sui.phone_nember = #{staff.phoneNumber}
+          </if>
+          <if test="staff.status != null and staff.status != -1">
+              and ssi.status = #{staff.status}
+          </if>
+          <if test="staff.roleKey != null and staff.roleKey != ''">
+              and sari.role_name like concat('%',#{staff.roleKey},'%')
+          </if>
+          <if test="staff.departmentKey != null and staff.departmentKey != ''">
+              and sdi.depart_name like concat('%',#{staff.departmentKey},'%')
+          </if>
+          <if test="staff.jobKey != null and staff.jobKey != ''">
+              and jsp.position_name like concat('%',#{staff.jobKey},'%')
+          </if>
+      </where>
   </select>
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT

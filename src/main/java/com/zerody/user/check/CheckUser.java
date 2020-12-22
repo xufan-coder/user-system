@@ -53,7 +53,7 @@ public class CheckUser {
         }
         if (StringUtils.isNotEmpty(SysUserInfo.getCertificateCard())) {
             if (!IdCardUtil.validate18Idcard(SysUserInfo.getCertificateCard())) {
-                return new DataResult(ResultCodeEnum.RESULT_PARAMETER_ERROR, false,"手机号码长度不正确",null);
+                return new DataResult(ResultCodeEnum.RESULT_PARAMETER_ERROR, false,"身份证不合法",null);
             }
         }
         return new DataResult();

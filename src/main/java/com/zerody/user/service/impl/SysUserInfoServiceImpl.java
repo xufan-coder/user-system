@@ -7,6 +7,7 @@ import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
+import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.pojo.SysLoginInfo;
@@ -195,12 +196,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
                     errorData = new String[errorData.length];
                     continue;
                 }
+                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
                 this.saveOrUpdate(userInfo); //因为员工表跟登录表都要用到用户所有先保存用户
                 SysStaffInfo staff = new SysStaffInfo();
 //                staff.setCompId(UserUtils.get); //获取当前登录用户的当前公司id
                 staff.setUserName(userInfo.getUserName());
                 staff.setUserId(userInfo.getId());
-                staff.setStatus(DataRecordStatusEnum.VALID.getCode());
+//                staff.setStatus(StaffStatusEnum.getCodeByDesc());
                 sysStaffInfoService.addStaff(staff); //保存到员工表
 
                 SysLoginInfo loginInfo = new SysLoginInfo();

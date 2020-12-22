@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.dto.SysAuthRoleDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysAuthRoleInfoMapper;
+import com.zerody.user.mapper.UnionMenuRoleMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.pojo.SysAuthRoleInfo;
+import com.zerody.user.pojo.UnionMenuRole;
 import com.zerody.user.pojo.UnionRoleStaff;
 import com.zerody.user.service.SysAuthRoleInfoService;
 import com.zerody.user.service.base.BaseService;
@@ -39,6 +42,9 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
 
     @Autowired
     private SysAuthRoleInfoMapper sysAuthRoleInfoMapper;
+
+    @Autowired
+    private UnionMenuRoleMapper unionMenuRoleMapper;
 
     @Override
     public DataResult selectRolePage(SysAuthRolePageDto sysAuthRolePageDto) {
@@ -120,15 +126,15 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
     }
 
     @Override
-    public DataResult deleteRoleDownStaff(String roleId, List<String> staffIds) {
-        UnionRoleStaff unionRoleStaff;
-        for (String staffid : staffIds){
-            unionRoleStaff  = new UnionRoleStaff();
-            unionRoleStaff.setId(UUIDutils.getUUID32());
-            unionRoleStaff.setRoleId(roleId);
-            unionRoleStaff.setStaffId(staffid);
-            unionRoleStaffMapper.insert(unionRoleStaff);
+    public DataResult deleteRoleDownStaff(SysAuthRoleDto sysAuthRoleDto) {
+        //员工id为空 就不进行后面的操作
+        if(sysAuthRoleDto.getStaffIds() == null || sysAuthRoleDto.getStaffIds().size() == 0){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id为空", null);
         }
+        QueryWrapper<UnionRoleStaff> rsQW = new QueryWrapper<>();
+        rsQW.lambda().eq(UnionRoleStaff::getRoleId, sysAuthRoleDto.getRoleId());
+        rsQW.lambda().in(UnionRoleStaff::getStaffId, sysAuthRoleDto.getStaffIds());
+        unionRoleStaffMapper.delete(rsQW);
         return new DataResult();
     }
 
@@ -137,5 +143,27 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
 
         List<SysAuthRoleInfoVo> roles = sysAuthRoleInfoMapper.selectRolesByStaffId(staffId);
         return new DataResult(roles);
+    }
+
+    @Override
+    public DataResult operationRoleDownMenu(SysAuthRoleDto sysAuthRoleDto) {
+        //构造删除该角色下所有的菜单的条件
+        QueryWrapper<UnionMenuRole> mrQW = new QueryWrapper<>();
+        mrQW.lambda().eq(UnionMenuRole::getRoleId, sysAuthRoleDto.getRoleId());
+        //如果菜单id为空 那么删除该角色的所有菜单后 直接退出 不进行后面的操作
+        if(sysAuthRoleDto.getMenuIds() == null || sysAuthRoleDto.getMenuIds().size() == 0){
+            return new DataResult();
+        }
+        //删除该角色所有的菜单
+        unionMenuRoleMapper.delete(mrQW);
+        //删除该角色所有的菜单后 menuIds 就是该角色拥有菜单的id
+        UnionMenuRole mr = new UnionMenuRole();
+        for (String menuId : sysAuthRoleDto.getMenuIds()){
+            mr.setMenuId(menuId);
+            mr.setRoleId(sysAuthRoleDto.getRoleId());
+            unionMenuRoleMapper.insert(mr);
+            mr = new UnionMenuRole();
+        }
+        return new DataResult();
     }
 }

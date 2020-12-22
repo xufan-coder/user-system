@@ -39,6 +39,6 @@ public class SysStaffInfoVo {
     //离职时间
     private Date dateLeft;
 
-    //状态：0.生效、1.离职、2.删除
+    //状态：0.生效、1.离职、2.删除、3.合作
     private Integer status;
 }

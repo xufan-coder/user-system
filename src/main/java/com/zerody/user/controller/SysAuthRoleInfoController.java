@@ -1,6 +1,7 @@
 package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SysAuthRoleDto;
 import com.zerody.user.pojo.SysAuthRoleInfo;
 import com.zerody.user.service.SysAuthRoleInfoService;
 import com.zerody.user.dto.SysAuthRolePageDto;
@@ -60,9 +61,9 @@ public class SysAuthRoleInfoController {
 
     //删除角色下的一些用户
     @DeleteMapping("/deleteRoleDownStaff")
-    public DataResult deleteRoleDownStaff(String roleId,List<String> staffIds){
+    public DataResult deleteRoleDownStaff(@RequestBody SysAuthRoleDto sysAuthRoleDto){
 
-        return sysAuthRoleInfoService.deleteRoleDownStaff(roleId,staffIds);
+        return sysAuthRoleInfoService.deleteRoleDownStaff(sysAuthRoleDto);
     }
 
     //根据角色查用户
@@ -72,5 +73,11 @@ public class SysAuthRoleInfoController {
         return sysAuthRoleInfoService.selectRoleByStaffId(staffId);
     }
 
+
+    //操作角色拥有菜单
+    @PostMapping("/operationRoleDownMenu")
+    public DataResult operationRoleDownMenu(@RequestBody SysAuthRoleDto sysAuthRoleDto){
+        return  sysAuthRoleInfoService.operationRoleDownMenu(sysAuthRoleDto);
+    }
 
 }

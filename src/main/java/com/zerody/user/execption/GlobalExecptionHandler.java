@@ -35,6 +35,6 @@ public class GlobalExecptionHandler {
         }
 
 //        log.error("{}",,JSON.toJSONString(e.getBindingResult().getPropertyEditorRegistry()));
-        return new DataResult(ResultCodeEnum.RESULT_ERROR, false, errorStr.substring(0,errorStr.length()), null);
+        return new DataResult(ResultCodeEnum.RESULT_ERROR, false, errorStr.substring(0,errorStr.length()-1), null);
     }
 }

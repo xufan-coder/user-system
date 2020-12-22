@@ -1,9 +1,12 @@
 package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -45,6 +48,13 @@ public class SysStaffInfoController {
     public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
 
         return sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto);
+    }
+
+    //添加员工
+    @PostMapping("/addStaff")
+    public DataResult addStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+
+        return sysStaffInfoService.addStaff(setSysUserInfoDto);
     }
 
 }
