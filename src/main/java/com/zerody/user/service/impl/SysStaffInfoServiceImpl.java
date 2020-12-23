@@ -172,4 +172,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
         return new DataResult(infoVoIPage);
     }
+
+    @Override
+    public DataResult updateStaffStatus(String staffId, Integer status) {
+        if(StringUtils.isEmpty(staffId)){
+            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id不能为空", null);
+        }
+        if (status == null){
+            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态不能为空", null);
+        }
+        SysStaffInfo staff = new SysStaffInfo();
+        staff.setId(staffId);
+        staff.setStatus(status);
+        this.saveOrUpdate(staff);
+        return new DataResult();
+    }
 }

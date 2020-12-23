@@ -57,4 +57,11 @@ public class SysStaffInfoController {
         return sysStaffInfoService.addStaff(setSysUserInfoDto);
     }
 
+    //添加员工
+    @PostMapping("/updateStaffStatus")
+    public DataResult updateStaffStatus(String staffId, Integer status){
+
+        return sysStaffInfoService.updateStaffStatus(staffId, status);
+    }
+
 }
