@@ -30,19 +30,7 @@ public class SysLoginInfo extends BaseStringModel {
     //头像
     private String avatar;
 
-    //状态：1:enable, 0:disable, -1:deleted
-    private Integer status;
-
-    //创建人id
-    private String createId;
-
-    //创建时间
-    private Date createTime;
-
-    //修改人id
-    private String updateId;
-
-    //修改时间
-    private Date updateTime;
+    //最后一次登录校验短信验证码时间
+    private Date lastChecKSms;
 
 }

@@ -56,13 +56,20 @@
   <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
       company_name,
-      admin_account,
-      `login_status`,
-      remark_
+      company_code,
+      contact_name,
+      contact_phone,
+      `login_status`
       FROM
       sys_company_info
      <where>
-       status != -1
+       status != -1 
+       <if test="company.companyName != null and company.companyName != ''">
+         and company_name like  concat('%',#{company.companyName},'%')
+       </if>
+       <if test="company.loginStatus != null">
+         loginStatus = #{company.loginStatus}
+       </if>
      </where>
   </select>
 </mapper>

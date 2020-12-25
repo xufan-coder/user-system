@@ -49,9 +49,17 @@
     from sys_user_info
     <where>
       status != -1
-      <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
-       and phone_number = #{userInfo.phoneNumber}
+      <if test="userInfo.id != null and userInfo.id != ''">
+        and id != #{userInfo.id}
       </if>
+      or ( 1 = 2
+      <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
+        or phone_number = #{userInfo.phoneNumber}
+      </if>
+      <if test="userInfo.loginName != null and userInfo.loginName != ''">
+        or login_name = #{userInfo.loginName}
+      </if>
+      )
     </where>
 
   </select>

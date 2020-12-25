@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
+import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
 import com.zerody.user.pojo.SysDepartmentInfo;
@@ -17,12 +19,15 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.SysJobPositionVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -37,6 +42,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
+
+    @Autowired
+    private SysJobPositionMapper sysJobPositionMapper;
 
     @Autowired
     private SysLoginInfoMapper sysLoginInfoMapper;
@@ -135,5 +143,37 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         dep.setId(depId);
         this.saveOrUpdate(dep);
         return new DataResult(true, "删除成功", null);
+    }
+
+    @Override
+    public DataResult getAllDepartment() {
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDep();
+        List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJob();
+        deps = getDepChildrens("", deps, jobs);
+        return new DataResult(deps);
+    }
+
+    private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(childs)){
+            return new ArrayList<>();
+        }
+        for (SysDepartmentInfoVo dep : childs){
+            List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> dep.getId().equals(j.getDepartId())).collect(Collectors.toList());
+            dep.setJobChildrens(jobChilds);
+            dep.setDepartChildrens(getDepChildrens(dep.getId(), deps, jobs));
+        }
+        return childs;
+    }
+
+    private List<SysJobPositionVo> getJobChildrens(String parentId, List<SysJobPositionVo> jobs){
+        List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> parentId.equals(j.getParentId())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(jobChilds)){
+            return new ArrayList<>();
+        }
+        for (SysJobPositionVo job : jobChilds){
+            job.setJobChildrens(getJobChildrens(job.getId(), jobs));
+        }
+        return jobChilds;
     }
 }

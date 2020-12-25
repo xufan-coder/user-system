@@ -8,8 +8,12 @@ import com.zerody.user.vo.SysJobPositionVo;
 import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface SysJobPositionMapper extends BaseMapper<SysJobPosition> {
 
     IPage<SysJobPositionVo> getPageJob(@Param("job") SysJobPositionDto sysJobPositionDto, IPage iPage);
+
+    List<SysJobPositionVo> getAllJob();
 }

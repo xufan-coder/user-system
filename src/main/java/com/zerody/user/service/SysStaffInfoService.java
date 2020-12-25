@@ -26,4 +26,10 @@ public interface SysStaffInfoService {
     DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
     DataResult updateStaffStatus(String staffId, Integer status);
+
+    DataResult getStaffInfoByOpenId(String openId);
+
+    DataResult updateStaff(SetSysUserInfoDto setSysUserInfoDto);
+
+    DataResult selectStaffById(String id);
 }

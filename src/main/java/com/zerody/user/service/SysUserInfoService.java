@@ -20,7 +20,7 @@ public interface SysUserInfoService {
 
     DataResult deleteUserById(String userId);
 
-    DataResult deleteUserBatchByIds(List<Integer> ids);
+    DataResult deleteUserBatchByIds(List<String> ids);
 
     DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto);
 

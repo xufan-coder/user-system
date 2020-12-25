@@ -15,4 +15,6 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     IPage<SysDepartmentInfoVo> getPageDepartment(@Param("dep") SysDepartmentInfoDto sysDepartmentInfoDto, IPage<SysDepartmentInfoVo> iPage);
 
     List<String> selectUserLoginIdByDepId(String depId);
+
+    List<SysDepartmentInfoVo> getAllDep();
 }

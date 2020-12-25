@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
@@ -22,6 +23,8 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,6 +56,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
 
+    private static final String  INIT_PWD = "123456";//初始化密码
 
     /**
     * @Author               PengQiang
@@ -65,10 +69,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(StringUtils.isBlank(phone)){
             return false;
         }
-        String regex = "^(1[3-9]\\d{9}$)";
         if (phone.trim().length() == 11) {
             return false;
         }
+
+        String regex = "^(1[3-9]\\d{9}$)";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(phone);
         if (!m.matches()) {
@@ -102,33 +107,49 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         userInfo.setRegisterTime(new Date());
         log.info("B端添加用户入库参数--{}",JSON.toJSONString(userInfo));
         this.saveOrUpdate(userInfo);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         //用户信息保存添加登录信息
         SysLoginInfo logInfo = new SysLoginInfo();
         logInfo.setUserId(userInfo.getId());
         logInfo.setMobileNumber(userInfo.getPhoneNumber());
+        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));//初始化密码登录并加密
         logInfo.setNickname(userInfo.getNickname());
         logInfo.setAvatar(userInfo.getAvatar());
         logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
-        sysLoginInfoService.addLogin(logInfo);
+        sysLoginInfoService.addOrUpdateLogin(logInfo);
         return dataResult;
     }
 
     @Override
     public DataResult updateUser(SysUserInfo userInfo) {
+        if(StringUtils.isEmpty(userInfo.getId())){
+           return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
+        }
         this.saveOrUpdate(userInfo);
         return new DataResult();
     }
 
     @Override
     public DataResult deleteUserById(String userId) {
-        this.removeById(userId);
+        if(StringUtils.isEmpty(userId)){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
+        }
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        userInfo.setId(userId);
+        this.saveOrUpdate(userInfo);
         return new DataResult();
     }
 
     @Override
-    public DataResult deleteUserBatchByIds(List<Integer> ids) {
-        this.removeByIds(ids);
+    public DataResult deleteUserBatchByIds(List<String> ids) {
+        for (String id : ids){
+            SysUserInfo userInfo = new SysUserInfo();
+            userInfo.setStatus(DataRecordStatusEnum.DELETED.getCode());
+            userInfo.setId(id);
+            this.saveOrUpdate(userInfo);
+        }
         return new DataResult();
     }
 
@@ -152,6 +173,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         Integer headSize = 1; //从第几行开始读取数据
         Integer successCount = 0; //成功数量
         Integer total = 0; //数据总数
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         try {
             List<String[]> dataList = FileUtil.fileImport(file);
             //判断当前导入excel是否有数据
@@ -207,8 +229,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
                 SysLoginInfo loginInfo = new SysLoginInfo();
                 loginInfo.setMobileNumber(userInfo.getPhoneNumber());
+                loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
                 loginInfo.setUserId(userInfo.getId());
-                sysLoginInfoService.addLogin(loginInfo);
+                sysLoginInfoService.addOrUpdateLogin(loginInfo);
             }
 
             if(errors.size()>0){

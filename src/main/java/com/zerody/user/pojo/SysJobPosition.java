@@ -29,6 +29,8 @@ public class SysJobPosition  extends BaseModel {
     //岗位级别
     private Integer level;
 
+    private String departId;
+
     //备注/描述
     private String positionDesc;
 }

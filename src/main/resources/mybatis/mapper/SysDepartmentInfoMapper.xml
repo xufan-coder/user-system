@@ -69,4 +69,18 @@
         usd.department_id = #{depId} and sli.`active_flag` = 1
       </where>
   </select>
+    <select id="getAllDep" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+    SELECT
+        id,
+        comp_id,
+        depart_name,
+        parent_id,
+        telephone,
+        depart_code
+    FROM
+        sys_department_info
+    <where>
+        status = 1
+    </where>
+    </select>
 </mapper>

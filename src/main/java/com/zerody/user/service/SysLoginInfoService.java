@@ -10,5 +10,5 @@ import com.zerody.user.pojo.SysLoginInfo;
  * @Deacription TODO
  */
 public interface SysLoginInfoService {
-    DataResult addLogin(SysLoginInfo logInfo);
+    DataResult addOrUpdateLogin(SysLoginInfo logInfo);
 }

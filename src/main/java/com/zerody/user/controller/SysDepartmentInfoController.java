@@ -51,4 +51,10 @@ public class SysDepartmentInfoController {
     public DataResult deleteDepartmentById(String depId){
         return sysDepartmentInfoService.deleteDepartmentById(depId);
     }
+
+    @GetMapping("/getAllDepartment")
+    public DataResult getAllDepartment(){
+
+        return sysDepartmentInfoService.getAllDepartment();
+    }
 }

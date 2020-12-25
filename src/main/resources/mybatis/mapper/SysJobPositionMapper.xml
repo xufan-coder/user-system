@@ -39,4 +39,20 @@
         </if>
     </where>
   </select>
+    <select id="getAllJob" resultType="com.zerody.user.vo.SysJobPositionVo">
+        SELECT
+            id,
+            comp_id,
+            position_name,
+            job_scope,
+            STATUS,
+            parent_id,
+            LEVEL,
+            depart_id
+        FROM
+            sys_job_position
+        <where>
+            status = 1
+        </where>
+    </select>
 </mapper>

@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -21,7 +22,7 @@ public class SysDepartmentInfoVo {
     private String departName;
 
     //父级部门id
-    private String parentDep;
+    private String parentId;
 
     //成立时间
     private Date creatTime;
@@ -37,6 +38,10 @@ public class SysDepartmentInfoVo {
 
     //部门登录状态
     private Integer loginStatus;
+
+    private List<SysDepartmentInfoVo> departChildrens;
+
+    private List<SysJobPositionVo> jobChildrens;
 
     private Integer staffCount;
 }

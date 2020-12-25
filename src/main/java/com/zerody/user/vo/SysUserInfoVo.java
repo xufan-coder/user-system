@@ -15,8 +15,9 @@ import java.util.Date;
 @Data
 public class SysUserInfoVo {
 
+    private String companyName;
 
-
+    //员工id
     private String staffId;
 
     //用户姓名
@@ -87,7 +88,7 @@ public class SysUserInfoVo {
     private String maritalStatus;
 
     //微信openId
-    private String openId;
+//    private String openId;
 
 
     //角色名

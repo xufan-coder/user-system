@@ -21,7 +21,7 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
 
 
     @Override
-    public DataResult addLogin(SysLoginInfo logInfo) {
+    public DataResult addOrUpdateLogin(SysLoginInfo logInfo) {
         this.saveOrUpdate(logInfo);
         return new DataResult();
     }

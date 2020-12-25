@@ -51,7 +51,7 @@ public class SysUserInfoController {
 
     //根据用户id批量删除用户
     @DeleteMapping("/deleteUserBatchByIds")
-    public DataResult deleteUserBatchByIds(List<Integer> ids){
+    public DataResult deleteUserBatchByIds(List<String> ids){
 
         return sysUserInfoService.deleteUserBatchByIds(ids);
     }

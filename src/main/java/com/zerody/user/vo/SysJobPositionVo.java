@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysJobPositionVo
@@ -44,4 +46,6 @@ public class SysJobPositionVo {
 
     //部门状态
     private Integer status;
+
+    private List<SysJobPositionVo> jobChildrens;
 }

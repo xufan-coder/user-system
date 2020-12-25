@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -31,8 +32,9 @@ public class SysStaffInfoController {
 
     //给员工添加角色
     @PostMapping("/staffAddRole")
-    public DataResult staffAddRole(String staffId, String roleId){
-
+    public DataResult staffAddRole(@RequestBody JSONObject param){
+        String staffId = param.getString("staffId");
+        String roleId = param.getString("roleId");
         return sysStaffInfoService.staffAddRole(staffId,roleId);
     }
 
@@ -57,11 +59,17 @@ public class SysStaffInfoController {
         return sysStaffInfoService.addStaff(setSysUserInfoDto);
     }
 
-    //添加员工
+    //修改员工状态
     @PostMapping("/updateStaffStatus")
     public DataResult updateStaffStatus(String staffId, Integer status){
 
         return sysStaffInfoService.updateStaffStatus(staffId, status);
+    }
+    //修改员工
+    @PostMapping("/updateStaff")
+    public DataResult updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+
+        return sysStaffInfoService.updateStaff(setSysUserInfoDto);
     }
 
 }
