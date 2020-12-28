@@ -16,7 +16,6 @@
 		<dependency>
 			<groupId>com.zerody.common</groupId>
 			<artifactId>zerody-common</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
