@@ -34,6 +34,7 @@ public class SysCompanyInfoController {
         return sysCompanyInfoService.updateCompanyStatus(companyId, loginStatus);
     }
 
+    //修改企业
     @PostMapping("/updateCompany")
     public DataResult updataCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
         return sysCompanyInfoService.updataCompany(sysCompanyInfo);
@@ -42,5 +43,17 @@ public class SysCompanyInfoController {
     @GetMapping("/getPageCompany")
     public DataResult getPageCompany(SysCompanyInfoDto companyInfoDto){
         return sysCompanyInfoService.getPageCompany(companyInfoDto);
+    }
+
+    //删除企业
+    @DeleteMapping("/deleteCompanyById")
+    public DataResult deleteCompanyById(String companyId){
+        return sysCompanyInfoService.deleteCompanyById(companyId);
+    }
+
+    //查询所有企业
+    @GetMapping("/getAllCompany")
+    public DataResult getAllCompany(){
+        return sysCompanyInfoService.getAllCompany();
     }
 }

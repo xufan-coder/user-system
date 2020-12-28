@@ -7,7 +7,6 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.dto.SysJobPositionDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
-import com.zerody.user.enums.DataStatusEnum;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.pojo.SysJobPosition;
 import com.zerody.user.service.SysJobPositionService;

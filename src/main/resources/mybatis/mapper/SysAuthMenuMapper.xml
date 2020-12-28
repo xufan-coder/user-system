@@ -77,8 +77,27 @@
       <where>
         STATUS != - 1
         <if test="sysId != null">
-          sys_id = #{sysId}
+          and sys_id = #{sysId}
         </if>
       </where>
   </select>
+    <select id="getMenuBySysId" resultType="com.zerody.user.vo.SysAuthMenuVo">
+        SELECT
+        sam.id,
+        sam.sys_id,
+        sam.parent_id,
+        sam.menu_name,
+        sam.menu_code,
+        sam.menu_sort,
+        sam.menu_type,
+        sam.menu_icon,
+        IF(umr.id is null, 'false', 'true') checked,
+        sam.menu_uri
+        FROM
+        sys_auth_menu sam
+        LEFT JOIN union_menu_role umr on umr.menu_id = sam.id and umr.role_id = #{roleId}
+        <where>
+            sam.STATUS != - 1 and sys_id = #{sysId}
+        </where>
+    </select>
 </mapper>

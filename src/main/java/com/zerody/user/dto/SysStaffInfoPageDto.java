@@ -12,8 +12,16 @@ import lombok.Data;
 @Data
 public class SysStaffInfoPageDto extends PageInfo {
 
+    private String companyId;
+
     //角色id用于查询角色下的工
     private String roleId;
+
+    //部门id
+    private String departId;
+
+    //岗位id
+    private String jobId;
 
     //员工姓名
     private String staffName;

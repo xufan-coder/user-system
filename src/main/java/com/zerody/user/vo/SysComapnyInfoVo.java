@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class SysComapnyInfoVo {
 
+    private String id;
+
     private String companyName;
 
     private String adminAccount;

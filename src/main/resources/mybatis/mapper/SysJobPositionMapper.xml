@@ -39,7 +39,7 @@
         </if>
     </where>
   </select>
-    <select id="getAllJob" resultType="com.zerody.user.vo.SysJobPositionVo">
+    <select id="getAllJobByCompanyId" resultType="com.zerody.user.vo.SysJobPositionVo">
         SELECT
             id,
             comp_id,
@@ -52,7 +52,7 @@
         FROM
             sys_job_position
         <where>
-            status = 1
+            status = 1 and comp_id = #{companyId}
         </where>
     </select>
 </mapper>

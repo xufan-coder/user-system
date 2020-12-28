@@ -22,13 +22,13 @@ public class SysAuthMenu extends BaseModel {
     private String menuCode;
 
     //菜单层级(同级菜单归类)
-    private Byte menuLayer;
+    private Integer menuLayer;
 
     //菜单排序
-    private Byte menuSort;
+    private Integer menuSort;
 
     //菜单类型(菜单/按钮)
-    private Byte menuType;
+    private Integer menuType;
 
     //菜单图标
     private String menuIcon;

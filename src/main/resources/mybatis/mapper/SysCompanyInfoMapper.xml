@@ -72,4 +72,14 @@
        </if>
      </where>
   </select>
+  <select id="getAllCompnay"  resultType="com.zerody.user.vo.SysComapnyInfoVo">
+    SELECT
+        id,
+        company_name
+    FROM
+    sys_company_info
+    <where>
+        status != -1
+    </where>
+  </select>
 </mapper>

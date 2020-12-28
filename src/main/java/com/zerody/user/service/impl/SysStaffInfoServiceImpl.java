@@ -19,8 +19,6 @@ import com.zerody.user.pojo.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.service.base.BaseStringService;
-import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -179,6 +177,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer pageNum = sysStaffInfoPageDto.getPageNum() == 0 ? 1 : sysStaffInfoPageDto.getPageNum();
         Integer pageSize = sysStaffInfoPageDto.getPageSize() == 0 ? 1 : sysStaffInfoPageDto.getPageSize();
         IPage<SysUserInfoVo> infoVoIPage = new Page<>(pageNum,pageSize);
+//        //当没有传企业id过来的时候就默认查用户当前登录企业的员工
+//        if(StringUtils.isEmpty(sysStaffInfoPageDto.getCompanyId())){
+//            sysStaffInfoPageDto.setCompanyId();
+//        }
         infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
         return new DataResult(infoVoIPage);
     }
@@ -293,8 +295,37 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public DataResult selectStaffById(String id) {
+        if(StringUtils.isEmpty(id)){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "id不能为空", null);
+        }
+        SysUserInfoVo staff = sysStaffInfoMapper.selectStaffById(id);
+        return new DataResult(staff);
+    }
 
-//        QueryWrapper<>
-        return null;
+    @Override
+    public DataResult batchDeleteStaff(List<String> staffIds) {
+        SysStaffInfo staff = new SysStaffInfo();
+        for (String id : staffIds){
+            if(StringUtils.isEmpty(id)){
+                continue;
+            }
+            staff.setStatus(DataRecordStatusEnum.DELETED.getCode());
+            staff.setId(id);
+            //逻辑删除员工
+            this.saveOrUpdate(staff);
+        }
+        return new DataResult();
+    }
+
+    @Override
+    public DataResult deleteStaffById(String staffId) {
+        if(StringUtils.isEmpty(staffId)){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id为空", null);
+        }
+        SysStaffInfo staff = new SysStaffInfo();
+        staff.setId(staffId);
+        staff.setStatus(StaffStatusEnum.DELETE.getCode());
+        this.saveOrUpdate(staff);
+        return new DataResult();
     }
 }

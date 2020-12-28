@@ -16,5 +16,5 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
 
     List<String> selectUserLoginIdByDepId(String depId);
 
-    List<SysDepartmentInfoVo> getAllDep();
+    List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
 }

@@ -69,7 +69,7 @@
         usd.department_id = #{depId} and sli.`active_flag` = 1
       </where>
   </select>
-    <select id="getAllDep" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+    <select id="getAllDepByCompanyId" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
     SELECT
         id,
         comp_id,
@@ -80,7 +80,7 @@
     FROM
         sys_department_info
     <where>
-        status = 1
+        status = 1 and comp_id = #{companyId}
     </where>
     </select>
 </mapper>

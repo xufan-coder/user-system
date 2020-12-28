@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.SysAuthMenuPageDto;
 import com.zerody.user.pojo.SysAuthMenu;
+import com.zerody.user.vo.SysAuthMenuVo;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,5 +16,7 @@ public interface SysAuthMenuMapper extends BaseMapper<SysAuthMenu> {
 
     List<String> selectCodeByRoleId(@Param("roles") List<SysAuthRoleInfoVo> roles);
 
-    IPage<SysAuthMenu> getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto, IPage<SysAuthMenu> iPage);
+    IPage<SysAuthMenuVo> getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto, IPage<SysAuthMenuVo> iPage);
+
+    List<SysAuthMenuVo> getMenuBySysId(@Param("sysId") String sysId, @Param("roleId") String roleId);
 }

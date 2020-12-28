@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysStaffInfoController
@@ -72,4 +74,27 @@ public class SysStaffInfoController {
         return sysStaffInfoService.updateStaff(setSysUserInfoDto);
     }
 
+    //根据员工id查询员工信息
+    @GetMapping("/selectStaffById")
+    public DataResult selectStaffById(String staffId){
+
+        return sysStaffInfoService.selectStaffById(staffId);
+    }
+
+
+    //批量删除员工
+    @DeleteMapping("/batchDeleteStaff")
+    public DataResult batchDeleteStaff(@RequestBody  List<String> staffIds){
+        return sysStaffInfoService.batchDeleteStaff(staffIds);
+    }
+
+    //根据员工id单独删除员工
+    @DeleteMapping("deleteStaffById")
+    public DataResult deleteStaffById(String staffId){
+        return sysStaffInfoService.deleteStaffById(staffId);
+    }
+
+
+//    //查询系统管理员
+//    @GetMapping("/getSys")
 }

@@ -18,4 +18,8 @@ public interface SysCompanyInfoService {
     DataResult getPageCompany(SysCompanyInfoDto companyInfoDto);
 
     DataResult updataCompany(SysCompanyInfo sysCompanyInfo);
+
+    DataResult deleteCompanyById(String companyId);
+
+    DataResult getAllCompany();
 }

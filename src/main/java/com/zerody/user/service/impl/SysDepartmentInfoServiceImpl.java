@@ -146,9 +146,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     @Override
-    public DataResult getAllDepartment() {
-        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDep();
-        List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJob();
+    public DataResult getAllDepByCompanyId(String companyId) {
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(companyId);
+        List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
         deps = getDepChildrens("", deps, jobs);
         return new DataResult(deps);
     }

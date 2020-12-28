@@ -14,4 +14,6 @@ public interface SysAuthMenuService {
     DataResult getMenuCodeList(String compId);
 
     DataResult getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto);
+
+    DataResult getMenuBySysId(String sysId, String roleId);
 }

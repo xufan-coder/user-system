@@ -52,9 +52,9 @@ public class SysDepartmentInfoController {
         return sysDepartmentInfoService.deleteDepartmentById(depId);
     }
 
-    @GetMapping("/getAllDepartment")
-    public DataResult getAllDepartment(){
+    @GetMapping("/getAllDepByCompanyId")
+    public DataResult getAllDepByCompanyId(String companyId){
 
-        return sysDepartmentInfoService.getAllDepartment();
+        return sysDepartmentInfoService.getAllDepByCompanyId(companyId);
     }
 }

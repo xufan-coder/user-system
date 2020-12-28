@@ -135,5 +135,30 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         return new DataResult();
     }
 
+    /**
+    * @Author               PengQiang
+    * @Description //TODO   逻辑删除企业
+    * @Date                 2020/12/28 9:45
+    * @Param                [companyId]
+    * @return               com.zerody.common.bean.DataResult
+    */
+    @Override
+    public DataResult deleteCompanyById(String companyId) {
+        if (StringUtils.isEmpty(companyId)){
+            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "企业id为空", null);
+        }
+        SysCompanyInfo company = new SysCompanyInfo();
+        company.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        company.setId(companyId);
+        this.saveOrUpdate(company);
+        return new DataResult();
+    }
+
+    @Override
+    public DataResult getAllCompany() {
+        List<SysComapnyInfoVo> list = sysCompanyInfoMapper.getAllCompnay();
+        return new DataResult(list);
+    }
+
 
 }

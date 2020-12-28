@@ -39,4 +39,9 @@ public class SysAuthMenuController {
         return sysAuthMenuService.getMenuPage(sysAuthMenuPageDto);
     }
 
+    //根据系统id查询菜单
+    @GetMapping("/getMenuBySysId")
+    public DataResult getMenuBySysId(String sysId, String roleId){
+        return sysAuthMenuService.getMenuBySysId(sysId, roleId);
+    }
 }

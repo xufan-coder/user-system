@@ -15,5 +15,5 @@ public interface SysJobPositionMapper extends BaseMapper<SysJobPosition> {
 
     IPage<SysJobPositionVo> getPageJob(@Param("job") SysJobPositionDto sysJobPositionDto, IPage iPage);
 
-    List<SysJobPositionVo> getAllJob();
+    List<SysJobPositionVo> getAllJobByCompanyId(String companuId);
 }

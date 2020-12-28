@@ -6,6 +6,8 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.pojo.SysStaffInfo;
 import com.zerody.user.pojo.SysUserInfo;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysStaffInfoService
@@ -32,4 +34,8 @@ public interface SysStaffInfoService {
     DataResult updateStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     DataResult selectStaffById(String id);
+
+    DataResult batchDeleteStaff(List<String> staffIds);
+
+    DataResult deleteStaffById(String staffId);
 }
