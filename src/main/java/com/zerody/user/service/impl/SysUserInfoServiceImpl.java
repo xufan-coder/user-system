@@ -2,10 +2,12 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.bean.R;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.dto.LoginCheckParamDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffStatusEnum;
@@ -19,6 +21,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
+import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -249,5 +252,19 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return null;
     }
 
+    @Override
+    public SysLoginUserInfoVo getUserInfo(String userName) {
+        return sysUserInfoMapper.selectUserInfo(userName);
+    }
+
+    @Override
+    public SysUserInfo getUserById(String id) {
+        return sysUserInfoMapper.selectById(id);
+    }
+
+    @Override
+    public boolean checkPassword(String userPwd, String paramPwd) {
+        return new BCryptPasswordEncoder().matches(paramPwd, userPwd) ? true : false;
+    }
 
 }

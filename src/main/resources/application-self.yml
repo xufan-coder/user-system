@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: zerody!@#456
-    url: jdbc:mysql://192.168.100.201:3306/zero_umps?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://192.168.100.201:3306/zero_user?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     maxActive: 20
     initialSize: 1
     maxWait: 60000
@@ -27,9 +27,9 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     maxOpenPreparedStatements: 20
 mybatis-plus:
-  mapper-locations: classpath:/mybatis/zt/*Mapper.xml
-  typeAliasesPackage: com.zerody.oauth2.pojo
-  typeHandlersPackage: com.zerody.oauth2.enums.typeHandler
+  mapper-locations: classpath:/mybatis/mapper/*Mapper.xml
+  typeAliasesPackage: com.zerody.user.pojo
+  typeHandlersPackage: com.zerody.user.enums.typeHandler
   global-config:
     #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
     id-type: 1

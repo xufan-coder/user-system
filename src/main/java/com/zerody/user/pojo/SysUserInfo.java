@@ -56,9 +56,6 @@ public class  SysUserInfo extends BaseModel {
     //联系地址
     private String contactAddress;
 
-    //邮政编码
-    private String postalCode;
-
     //注册时间
     private Date registerTime;
 
