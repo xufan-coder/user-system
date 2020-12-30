@@ -5,7 +5,7 @@ spring:
         server-addr: 192.168.100.192:8848
         namespace: DEV
   application:
-    name: user-system
+    name: zerody-user-system
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
