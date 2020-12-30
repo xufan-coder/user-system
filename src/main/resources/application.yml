@@ -2,6 +2,6 @@ server:
   port: '@project.port@'
 spring:
   application:
-     name: user-system
+     name: zerody-user-system
   profiles:
      active: '@project.active@'
