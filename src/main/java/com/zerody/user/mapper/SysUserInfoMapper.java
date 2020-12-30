@@ -22,4 +22,11 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * * @return {@link SysLoginUserInfoVo }
      */
     SysLoginUserInfoVo selectUserInfo(@Param("userName")String userName);
+
+    /**
+     * description
+     * * @param userName
+     * * @return {@link String }
+     */
+    String selectByUserNameOrPhone(@Param("userName")String userName);
 }

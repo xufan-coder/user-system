@@ -63,4 +63,15 @@ public interface SysUserInfoService {
      * @date 2020/12/29  18:09
      */
     boolean checkPassword(String userPwd, String paramPwd);
+
+    /**************************************************************************************************
+     **
+     *  检查用户是否存在
+     *
+     * @param userName 账户名和号码
+     * @return {@link String }
+     * @author DaBai
+     * @date 2020/12/30  9:57
+     */
+    String checkLoginUser(String userName);
 }

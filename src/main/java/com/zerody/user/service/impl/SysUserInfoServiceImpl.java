@@ -2,15 +2,12 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zerody.common.bean.DataResult;
-import com.zerody.common.bean.R;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
-import com.zerody.user.dto.LoginCheckParamDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
-import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.pojo.SysLoginInfo;
@@ -24,7 +21,6 @@ import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -265,6 +261,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public boolean checkPassword(String userPwd, String paramPwd) {
         return new BCryptPasswordEncoder().matches(paramPwd, userPwd) ? true : false;
+    }
+
+    @Override
+    public String checkLoginUser(String userName) {
+        return sysUserInfoMapper.selectByUserNameOrPhone(userName);
     }
 
 }

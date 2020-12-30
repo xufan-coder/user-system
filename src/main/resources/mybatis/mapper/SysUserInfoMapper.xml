@@ -75,7 +75,6 @@ SELECT
 	ui.nickname,
 	ui.open_id,
 	li.last_check_sms lastCheckSms,
-	li.user_pwd userPwd,
 	ssi.comp_id companyId
 FROM
 	sys_user_info ui
@@ -103,6 +102,33 @@ JOIN (
 			and status=0
 ) li ON ui.id = li.user_id
 LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status`=0 and is_main_company=1
+WHERE
+	ui. STATUS = 0
+	limit 1
+  </select>
+
+    <select id="selectByUserNameOrPhone" resultType="String">
+SELECT
+    li.user_pwd userPwd,
+FROM
+	sys_user_info ui
+JOIN (
+	SELECT
+		user_pwd,
+	FROM
+		sys_login_info
+	WHERE
+		login_name = #{userName}
+		and status=0
+	UNION
+		SELECT
+			user_pwd,
+		FROM
+			sys_login_info
+		WHERE
+			mobile_number = #{userName}
+			and status=0
+) li ON ui.id = li.user_id
 WHERE
 	ui. STATUS = 0
 	limit 1

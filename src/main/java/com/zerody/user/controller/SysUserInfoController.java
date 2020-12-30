@@ -1,14 +1,14 @@
 package com.zerody.user.controller;
 
-import com.zerody.common.bean.DataResult;
-import com.zerody.common.bean.R;
-import com.zerody.common.util.MD5Utils;
+import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.R;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.LoginCheckParamDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.SysLoginUserInfoVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,42 +36,42 @@ public class SysUserInfoController {
 
     //添加用户
     @PostMapping("/addUser")
-    public DataResult addUser(@Validated @RequestBody SysUserInfo userInfo){
+    public com.zerody.common.bean.DataResult addUser(@Validated @RequestBody SysUserInfo userInfo){
 
         return sysUserInfoService.addUser(userInfo);
     }
 
     //修改用户
     @PostMapping("/updateUser")
-    public DataResult updateUser(@Validated @RequestBody SysUserInfo userInfo){
+    public com.zerody.common.bean.DataResult updateUser(@Validated @RequestBody SysUserInfo userInfo){
 
         return  sysUserInfoService.updateUser(userInfo);
     }
 
     //根据id删除用户
     @DeleteMapping("/deleteUserById")
-    public DataResult deleteUserById(String userId){
+    public com.zerody.common.bean.DataResult deleteUserById(String userId){
 
         return sysUserInfoService.deleteUserById(userId);
     }
 
     //根据用户id批量删除用户
     @DeleteMapping("/deleteUserBatchByIds")
-    public DataResult deleteUserBatchByIds(List<String> ids){
+    public com.zerody.common.bean.DataResult deleteUserBatchByIds(List<String> ids){
 
         return sysUserInfoService.deleteUserBatchByIds(ids);
     }
 
     //分页查询用户
     @RequestMapping("/selectUserPage")
-    public DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto){
+    public com.zerody.common.bean.DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto){
 
         return sysUserInfoService.selectUserPage(sysUserInfoPageDto);
     }
 
     //批量导入用户excel
     @RequestMapping("batchImportUser")
-    public DataResult batchImportUser(MultipartFile file){
+    public com.zerody.common.bean.DataResult batchImportUser(MultipartFile file){
 
         return sysUserInfoService.batchImportUser(file);
     }
@@ -82,13 +82,13 @@ public class SysUserInfoController {
     */
     @RequestMapping(value = "/check-user/inner",method = POST, produces = "application/json")
     public DataResult checkLoginUser(@RequestBody LoginCheckParamDto params){
-        //查询账户信息
-        SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(params.getUserName());
-        if(DataUtil.isEmpty(sysLoginUserInfoVo)){
+        //查询账户信息,返回个密码来校验密码
+        String pwd=sysUserInfoService.checkLoginUser(params.getUserName());
+        if(StringUtils.isEmpty(pwd)){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
         //校验密码
-        boolean success = sysUserInfoService.checkPassword(sysLoginUserInfoVo.getUserPwd(), params.getPwd());
+        boolean success = sysUserInfoService.checkPassword(pwd, params.getPwd());
         if(success){
             return R.success("密码正确！");
         }else {
@@ -97,7 +97,7 @@ public class SysUserInfoController {
     }
 
     /**
-    *   获取用户信息；登录获取信息使用;
+    *   获取用户信息；构建token基础信息
     */
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
     public DataResult getUserInfo(@RequestParam("userName") String userName){
