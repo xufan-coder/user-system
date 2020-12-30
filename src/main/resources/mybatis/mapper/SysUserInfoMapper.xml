@@ -63,4 +63,48 @@
     </where>
 
   </select>
+
+  <select id="selectUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
+SELECT
+	ui.id,
+	ui.user_name userName,
+	ui.gender,
+	li.mobile_number phoneNumber,
+	ui.email,
+	ui.avatar,
+	ui.nickname,
+	ui.open_id,
+	li.last_check_sms lastCheckSms,
+	li.user_pwd userPwd,
+	ssi.comp_id companyId
+FROM
+	sys_user_info ui
+JOIN (
+	SELECT
+		user_id,
+		user_pwd,
+		last_check_sms,
+		mobile_number
+	FROM
+		sys_login_info
+	WHERE
+		login_name = #{userName}
+		and status=0
+	UNION
+		SELECT
+			user_id,
+			user_pwd,
+			last_check_sms,
+			mobile_number
+		FROM
+			sys_login_info
+		WHERE
+			mobile_number = #{userName}
+			and status=0
+) li ON ui.id = li.user_id
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status`=0 and is_main_company=1
+WHERE
+	ui. STATUS = 0
+	limit 1
+  </select>
 </mapper>
