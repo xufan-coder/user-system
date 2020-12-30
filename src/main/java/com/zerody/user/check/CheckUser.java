@@ -1,10 +1,5 @@
 package com.zerody.user.check;
 
-//import com.bonade.common.util.ResultCodeEnum;
-//import com.bonade.user.exception.BizException;
-//import com.bonade.user.pojo.ZtSysUserInfo;
-//import com.bonade.user.pojo.vo.PlatformUserInfoVo;
-//import com.bonade.user.utils.IdCardUtil;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.pojo.SysUserInfo;
