@@ -14,6 +14,11 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>com.zerody.user</groupId>
+			<artifactId>zerody-user-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.zerody.common</groupId>
 			<artifactId>zerody-common</artifactId>
 		</dependency>

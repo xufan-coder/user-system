@@ -3,7 +3,8 @@ package com.zerody.user.controller;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.user.dto.LoginCheckParamDto;
+import com.zerody.user.api.dto.LoginCheckParamDto;
+import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysUserInfoService;
@@ -27,7 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @RequestMapping("/sysUserInfo")
 @RestController
-public class SysUserInfoController {
+public class SysUserInfoController implements UserRemoteService {
 
     @Autowired
     private SysUserInfoService sysUserInfoService;
@@ -80,6 +81,7 @@ public class SysUserInfoController {
     /**
     *   登录校验账户和密码
     */
+    @Override
     @RequestMapping(value = "/check-user/inner",method = POST, produces = "application/json")
     public DataResult checkLoginUser(@RequestBody LoginCheckParamDto params){
         //查询账户信息,返回个密码来校验密码
@@ -99,6 +101,7 @@ public class SysUserInfoController {
     /**
     *   获取用户信息；构建token基础信息
     */
+    @Override
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
     public DataResult getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
@@ -108,6 +111,7 @@ public class SysUserInfoController {
     /**
      *   根据用户id获取用户信息；
      */
+    @Override
     @RequestMapping(value = "/get/inner/{id}",method = GET, produces = "application/json")
     public DataResult getUserById(@PathVariable String id){
         SysUserInfo sysUserInfo=sysUserInfoService.getUserById(id);

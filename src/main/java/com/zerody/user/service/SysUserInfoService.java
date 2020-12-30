@@ -1,7 +1,6 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
-import com.zerody.user.dto.LoginCheckParamDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
