@@ -11,4 +11,15 @@ import com.zerody.user.pojo.SysLoginInfo;
  */
 public interface SysLoginInfoService {
     DataResult addOrUpdateLogin(SysLoginInfo logInfo);
+
+    /**************************************************************************************************
+     **
+     *  修改login登录信息表
+     *
+     * @param logInfo
+     * @return {@link null }
+     * @author DaBai
+     * @date 2020/12/31  15:06
+     */
+    void updateLoginInfoByUserId(com.zerody.user.api.vo.SysLoginInfo logInfo);
 }

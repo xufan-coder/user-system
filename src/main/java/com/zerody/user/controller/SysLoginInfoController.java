@@ -28,12 +28,7 @@ public class SysLoginInfoController implements UserLoginInfoRemoteService {
     */
     @Override
     public DataResult updateById(com.zerody.user.api.vo.SysLoginInfo sysLoginInfo) {
-        SysLoginInfo newInfo=new SysLoginInfo();
-        DataUtil.getKeyAndValue(newInfo,sysLoginInfo);
-        com.zerody.common.bean.DataResult dataResult = sysLoginInfoService.addOrUpdateLogin(newInfo);
-        if(!dataResult.isIsSuccess()){
-            return R.error(dataResult.getMessage());
-        }
+        sysLoginInfoService.updateLoginInfoByUserId(sysLoginInfo);
         return R.success();
     }
 }
