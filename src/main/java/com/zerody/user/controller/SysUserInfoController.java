@@ -109,6 +109,20 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
     /**
+    *   修改用户表
+    */
+    @Override
+    public DataResult updateById(com.zerody.user.api.vo.SysUserInfo sysUserInfo) {
+        SysUserInfo newInfo=new SysUserInfo();
+        DataUtil.getKeyAndValue(newInfo,sysUserInfo);
+        com.zerody.common.bean.DataResult dataResult = sysUserInfoService.updateUser(newInfo);
+        if(!dataResult.isIsSuccess()){
+            return R.error(dataResult.getMessage());
+        }
+        return R.success();
+    }
+
+    /**
      *   根据用户id获取用户信息；
      */
     @Override

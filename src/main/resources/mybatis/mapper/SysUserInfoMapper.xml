@@ -109,12 +109,13 @@ WHERE
 
     <select id="selectByUserNameOrPhone" resultType="String">
 SELECT
-    li.user_pwd userPwd,
+    li.user_pwd userPwd
 FROM
 	sys_user_info ui
 JOIN (
 	SELECT
 		user_pwd,
+		user_id
 	FROM
 		sys_login_info
 	WHERE
@@ -123,6 +124,7 @@ JOIN (
 	UNION
 		SELECT
 			user_pwd,
+			user_id
 		FROM
 			sys_login_info
 		WHERE
