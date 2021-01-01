@@ -3,7 +3,6 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -53,24 +52,23 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     private UnionStaffDepartMapper unionStaffDepartMapper;
 
     @Override
-    public DataResult getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto) {
+    public IPage<SysDepartmentInfoVo> getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto) {
         //设置分页参数
         Integer pageNum = sysDepartmentInfoDto.getPageNum() == 0 ? 1 : sysDepartmentInfoDto.getPageNum();
         Integer pageSize =  sysDepartmentInfoDto.getPageSize() == 0 ? 10 : sysDepartmentInfoDto.getPageSize();
         IPage<SysDepartmentInfoVo> iPage = new Page<>(pageNum,pageSize);
 //        sysDepartmentInfoDto.setCompanyId();
-        iPage = sysDepartmentInfoMapper.getPageDepartment(sysDepartmentInfoDto,iPage);
-        return new DataResult(iPage);
+        return  sysDepartmentInfoMapper.getPageDepartment(sysDepartmentInfoDto,iPage);
     }
 
     @Override
-    public DataResult updateDepartmentStatus(String depId, Integer loginStauts) {
+    public void updateDepartmentStatus(String depId, Integer loginStauts) {
         log.info("修改部门登录状态 B端入参-depId:{} 、 loginStats:{}",depId,loginStauts);
         if(StringUtils.isEmpty(depId)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "部门id为空", null);
+//            return new void(ResultCodeEnum.RESULT_ERROR, false, "部门id为空", null);
         }
         if(loginStauts == null){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态为空", null);
+//            return new void(ResultCodeEnum.RESULT_ERROR, false, "状态为空", null);
         }
         SysDepartmentInfo sysDepartmentInfo = new SysDepartmentInfo();
         sysDepartmentInfo.setLoginStatus(loginStauts);
@@ -81,7 +79,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         List<String> ids = sysDepartmentInfoMapper.selectUserLoginIdByDepId(depId);
         //当部门下没有人就不执行以下操作
         if(ids.size() == 0){
-            return new DataResult(true, "操作成功!",null);
+//            return new void(true, "操作成功!",null);
         }
         SysLoginInfo login = new SysLoginInfo();
         login.setActiveFlag(loginStauts);
@@ -90,11 +88,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         loginQW.lambda().in(SysLoginInfo::getUserId, ids);
         log.info("B端修改部门下用户登录状态数据库入参--{}",sysDepartmentInfo);
         sysLoginInfoMapper.update(login,loginQW);
-        return new DataResult(true, "操作成功!",null);
     }
 
     @Override
-    public DataResult addDepartment(SysDepartmentInfo sysDepartmentInfo) {
+    public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
@@ -102,17 +99,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该部门名称已存在", null);
+//            return new void(ResultCodeEnum.RESULT_ERROR, false, "该部门名称已存在", null);
         }
         sysDepartmentInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
         //名称不存在 保存添加
         this.saveOrUpdate(sysDepartmentInfo);
-        return new DataResult("添加成功", null);
     }
 
     @Override
-    public DataResult updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
+    public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
@@ -121,36 +117,34 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         depQW.lambda().ne(SysDepartmentInfo::getId, sysDepartmentInfo.getId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该部门名称已存在", null);
+//            return new void(ResultCodeEnum.RESULT_ERROR, false, "该部门名称已存在", null);
         }
         log.info("B端修改部门入库-{}",sysDepartmentInfo);
         //名称不存在 保存添加
         this.saveOrUpdate(sysDepartmentInfo);
-        return new DataResult("修改成功",null);
+//        return new void("修改成功",null);
     }
 
     @Override
-    public DataResult deleteDepartmentById(String depId) {
+    public void deleteDepartmentById(String depId) {
         QueryWrapper<UnionStaffDepart> unQw = new QueryWrapper<>();
         unQw.lambda().eq(UnionStaffDepart::getDepartmentId, depId);
         Integer count = unionStaffDepartMapper.selectCount(unQw);
         if (count > 0){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false,  "该部门下用员工不能删除", null);
+//            return new void(ResultCodeEnum.RESULT_ERROR, false,  "该部门下用员工不能删除", null);
         }
         //逻辑删除部门
         SysDepartmentInfo dep = new SysDepartmentInfo();
         dep.setStatus(DataRecordStatusEnum.DELETED.getCode());
         dep.setId(depId);
         this.saveOrUpdate(dep);
-        return new DataResult(true, "删除成功", null);
     }
 
     @Override
-    public DataResult getAllDepByCompanyId(String companyId) {
+    public List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId) {
         List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(companyId);
         List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
-        deps = getDepChildrens("", deps, jobs);
-        return new DataResult(deps);
+        return getDepChildrens("", deps, jobs);
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){

@@ -2,6 +2,9 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysComapnyInfoVo
@@ -11,14 +14,46 @@ import lombok.Data;
 @Data
 public class SysComapnyInfoVo {
 
+    /**
+     *
+     *企业id
+     */
     private String id;
 
+    /**
+     *
+     *企业名称
+     */
     private String companyName;
 
-    private String adminAccount;
+    /**
+     *
+     *企业联系人(管理员)
+     */
+    private String contactName;
 
+    /**
+     *
+     *联系人手机
+     */
+    private String contactPhone;
+
+    /**
+     *
+     *登录状态
+     */
     private Integer loginStatus;
 
+    /**
+     *
+     *备注
+     */
     private String remark;
+
+    /**
+     *
+     *部门集合(树形结构)
+     */
+    private List<SysDepartmentInfoVo> departs;
 
 }

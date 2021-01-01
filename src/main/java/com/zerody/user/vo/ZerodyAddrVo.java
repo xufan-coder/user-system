@@ -15,22 +15,41 @@ import java.util.List;
 @Data
 public class ZerodyAddrVo {
 
-    //地址id
+    /**
+     *
+     *地址id
+     */
     private String id;
 
-    //地址编码
+    /**
+     *
+     *地址编码
+     */
     private Integer code;
 
-    //地址名称
+    /**
+     *
+     *地址名称
+     *
+     */
     private String address;
 
-    //父级地址编码
+    /**
+     *
+     *父级地址编码
+     */
     private Integer pAddrCode;
 
-    //行政等级（省市区分别是123级）
+    /**
+     *
+     *行政等级（省市区分别是123级）
+     */
     private Byte addrLevel;
 
-    //子级地区
+    /**
+     *
+     *子级地区
+     */
     @TableField(exist = false)
     private List<ZerodyAddrVo> childrens;
 

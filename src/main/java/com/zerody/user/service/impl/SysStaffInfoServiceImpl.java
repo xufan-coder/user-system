@@ -173,14 +173,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
-        //设置当前页与当前页所显示条数
-        Integer pageNum = sysStaffInfoPageDto.getPageNum() == 0 ? 1 : sysStaffInfoPageDto.getPageNum();
-        Integer pageSize = sysStaffInfoPageDto.getPageSize() == 0 ? 1 : sysStaffInfoPageDto.getPageSize();
-        IPage<SysUserInfoVo> infoVoIPage = new Page<>(pageNum,pageSize);
-//        //当没有传企业id过来的时候就默认查用户当前登录企业的员工
-//        if(StringUtils.isEmpty(sysStaffInfoPageDto.getCompanyId())){
-//            sysStaffInfoPageDto.setCompanyId();
-//        }
+        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getPageNum(),sysStaffInfoPageDto.getPageSize());
         infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
         return new DataResult(infoVoIPage);
     }
