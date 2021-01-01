@@ -2,7 +2,6 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
-import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.pojo.SysLoginInfo;
 import com.zerody.user.pojo.base.BaseStringModel;
@@ -36,7 +35,7 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
     @Override
     public void updateLoginInfoByUserId(com.zerody.user.api.vo.SysLoginInfo logInfo) {
         UpdateWrapper<SysLoginInfo> uw=new UpdateWrapper<>();
-        uw.lambda().set(SysLoginInfo::getLastChecKSms,logInfo.getLastChecKSms())
+        uw.lambda().set(SysLoginInfo::getLastCheckSms,logInfo.getLastChecKSms())
                 .set(BaseStringModel::getUpdateTime,new Date())
                 .set(SysLoginInfo::getMobileNumber,logInfo.getMobileNumber())
                 .set(SysLoginInfo::getLoginName,logInfo.getLoginName())
