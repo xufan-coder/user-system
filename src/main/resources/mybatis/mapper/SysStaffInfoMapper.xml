@@ -199,4 +199,17 @@
             ssi.status != -1 and ssi.id = #{id}
         </where>
     </select>
+
+    <select id="selectStaffRoles" resultType="String">
+        SELECT
+        urs.role_id
+        FROM
+        sys_staff_info ssi
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        <where>
+            ssi.status != -1
+            and ssi.comp_id = #{companyId}
+            and ssi.user_id = #{userId}
+        </where>
+    </select>
 </mapper>
