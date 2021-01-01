@@ -12,8 +12,26 @@ import lombok.Data;
 @Data
 public class SysCompanyInfoDto extends PageInfo {
 
-    private String companyName; //企业名称
+    /**
+     *
+     * 企业名称
+     * @author               PengQiang
+     * @description //TODO   DELL
+     * @date                 2020/12/30 20:11
+     * @param
+     * @return
+     */
+    private String companyName;
 
-    private Integer loginStatus; //企业登录状态
+    /**
+     *  企业登录状态(1.启动、2.停用)
+     *
+     * @author               PengQiang
+     * @description //TODO   DELL
+     * @date                 2020/12/30 20:11
+     * @param
+     * @return
+     */
+    private Integer loginStatus;
 
 }

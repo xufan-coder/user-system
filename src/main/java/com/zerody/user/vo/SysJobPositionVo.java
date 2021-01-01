@@ -16,36 +16,64 @@ import java.util.List;
 @TableName("sys_job_position")
 public class SysJobPositionVo {
 
-    //主键id
+    /**
+     *
+     *岗位id
+     */
     @TableField("id")
     private String id;
 
-    //企业id
+    /**
+     *
+     *企业id
+     */
     @TableField("comp_id")
     private String compId;
 
-    //岗位名称
+    /**
+     *
+     *岗位名称
+     */
     @TableField("position_name")
     private String positionName;
 
-    //职责范围
+    /**
+     *
+     *职责范围
+     */
     @TableField("job_scope")
     private String jobScope;
 
-    //父级岗位id
+    /**
+     *
+     *父级岗位id
+     */
     @TableField("parent_id")
     private String parentId;
 
-    //岗位级别
+    /**
+     *
+     *岗位级别
+     */
     @TableField("level")
     private Integer level;
 
-    //部门id
+    /**
+     *
+     *部门id
+     */
     @TableField("depart_id")
     private String departId;
 
-    //部门状态
+    /**
+     *
+     *岗位状态 1.启用、2.停用
+     */
     private Integer status;
 
+    /**
+     *
+     *子级岗位
+     */
     private List<SysJobPositionVo> jobChildrens;
 }

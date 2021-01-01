@@ -1,8 +1,12 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.pojo.SysCompanyInfo;
+import com.zerody.user.vo.SysComapnyInfoVo;
+
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -11,15 +15,15 @@ import com.zerody.user.pojo.SysCompanyInfo;
  * @Deacription TODO
  */
 public interface SysCompanyInfoService {
-    DataResult addCompany(SysCompanyInfo sysCompanyInfo);
+    void addCompany(SysCompanyInfo sysCompanyInfo);
 
-    DataResult updateCompanyStatus(String companyId, Integer loginStatus);
+    void updateCompanyStatus(String companyId, Integer loginStatus);
 
-    DataResult getPageCompany(SysCompanyInfoDto companyInfoDto);
+    IPage<SysComapnyInfoVo> getPageCompany(SysCompanyInfoDto companyInfoDto);
 
-    DataResult updataCompany(SysCompanyInfo sysCompanyInfo);
+    void updataCompany(SysCompanyInfo sysCompanyInfo);
 
-    DataResult deleteCompanyById(String companyId);
+    void deleteCompanyById(String companyId);
 
-    DataResult getAllCompany();
+    List<SysComapnyInfoVo> getAllCompany();
 }

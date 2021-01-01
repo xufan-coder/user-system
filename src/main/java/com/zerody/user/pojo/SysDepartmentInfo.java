@@ -11,30 +11,53 @@ import java.util.Date;
 public class SysDepartmentInfo extends BaseModel {
 
 
-    //企业id
+    /**
+     *
+     *企业id
+     */
     private String compId;
 
-    //部门名称
+    /**
+     *
+     *部门名称
+     */
     @NotEmpty(message = "部门名称不能为空")
     private String departName;
 
-    //父级部门id
-    @NotNull
+    /**
+     *
+     *父级部门id
+     */
     private String parentId;
 
-    //成立时间
+    /**
+     *
+     *成立时间
+     */
     private Date creatTime;
 
-    //联系电话
+    /**
+     *
+     *联系电话
+     */
     private String telephone;
 
-    //部门编码
+    /**
+     *
+     *部门编码
+     */
     private String departCode;
 
-    //部门描述
+    /**
+     *
+     *部门描述
+     */
     private String departDesc;
 
-    //部门登录状态
+    /**
+     *
+     *部门登录状态
+     */
     @NotNull(message = "部门登录状态不能为空")
     private Integer loginStatus;
 

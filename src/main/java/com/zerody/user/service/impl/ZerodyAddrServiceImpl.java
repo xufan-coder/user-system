@@ -27,18 +27,35 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
     private ZerodyAddrMapper zerodyAddrMapper;
 
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取树形地址
+     * @date                 2020/12/31 11:59
+     * @param                []
+     * @return               java.util.List<com.zerody.user.vo.ZerodyAddrVo>
+     */
     @Override
-    public DataResult getAddr() {
+    public List<ZerodyAddrVo> getAddr() {
         //查询得到所有地址
         List<ZerodyAddrVo> addrs = zerodyAddrMapper.selectAllAddr();
         if(addrs.size() == 0){
-            return new DataResult(addrs);
+            return new ArrayList<>();
         }
         //返回树形结构地址
-        List<ZerodyAddrVo> treeAddrs = getChild(0,addrs);
-        return new DataResult(treeAddrs);
+        return getChild(0,addrs);
     }
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          设置地址 层级关系
+     * @date                 2020/12/31 13:48
+     * @param                [parentCode, allAddrs]
+     * @return               java.util.List<com.zerody.user.vo.ZerodyAddrVo>
+     */
     private List<ZerodyAddrVo> getChild(Integer parentCode, List<ZerodyAddrVo> allAddrs){
         //获取到父级节点code值为parentCode的所有地址
         List<ZerodyAddrVo> childs = allAddrs.stream().filter(a -> parentCode.equals(a.getPAddrCode())  ).collect(Collectors.toList());

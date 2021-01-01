@@ -55,6 +55,7 @@
   </sql>
   <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
+      id,
       company_name,
       company_code,
       contact_name,
@@ -68,7 +69,7 @@
          and company_name like  concat('%',#{company.companyName},'%')
        </if>
        <if test="company.loginStatus != null">
-         loginStatus = #{company.loginStatus}
+        and  login_status = #{company.loginStatus}
        </if>
      </where>
   </select>

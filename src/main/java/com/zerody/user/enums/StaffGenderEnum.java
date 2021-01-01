@@ -7,8 +7,11 @@ package com.zerody.user.enums;
  * @Deacription TODO
  */
 public enum StaffGenderEnum {
+    //男
     MALE(0,"男"),
+    //女
     FEMALE(1,"女"),
+    //未知
     UNKNOW(2,"未知");
 
     private Integer value;

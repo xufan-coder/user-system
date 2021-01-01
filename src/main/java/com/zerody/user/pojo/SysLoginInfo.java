@@ -31,6 +31,6 @@ public class SysLoginInfo extends BaseStringModel {
     private String avatar;
 
     //最后一次登录校验短信验证码时间
-    private Date lastChecKSms;
+    private Date lastCheckSms;
 
 }

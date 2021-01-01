@@ -1,8 +1,12 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.pojo.SysDepartmentInfo;
+import com.zerody.user.vo.SysDepartmentInfoVo;
+
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -12,15 +16,15 @@ import com.zerody.user.pojo.SysDepartmentInfo;
  */
 public interface SysDepartmentInfoService {
 
-    DataResult getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto);
+    IPage<SysDepartmentInfoVo> getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto);
 
-    DataResult updateDepartmentStatus(String depId, Integer loginStauts);
+    void updateDepartmentStatus(String depId, Integer loginStauts);
 
-    DataResult addDepartment(SysDepartmentInfo sysDepartmentInfo);
+    void addDepartment(SysDepartmentInfo sysDepartmentInfo);
 
-    DataResult updateDepartment(SysDepartmentInfo sysDepartmentInfo);
+    void updateDepartment(SysDepartmentInfo sysDepartmentInfo);
 
-    DataResult deleteDepartmentById(String depId);
+    void deleteDepartmentById(String depId);
 
-    DataResult getAllDepByCompanyId(String companyId);
+    List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
 }

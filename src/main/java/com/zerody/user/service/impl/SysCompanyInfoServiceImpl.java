@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.CompanyLoginStatusEnum;
@@ -19,6 +21,7 @@ import com.zerody.user.pojo.SysLoginInfo;
 import com.zerody.user.pojo.SysStaffInfo;
 import com.zerody.user.pojo.SysUserInfo;
 import com.zerody.user.service.SysCompanyInfoService;
+import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -51,6 +54,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private SysCompanyInfoMapper sysCompanyInfoMapper;
 
+    @Autowired
+    private SysDepartmentInfoService departmentInfoService;
+
     /**
     * @Author               PengQiang
     * @Description //TODO   添加企业
@@ -59,22 +65,24 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     * @return               com.zerody.common.bean.DataResult
     */
     @Override
-    public DataResult addCompany(SysCompanyInfo sysCompanyInfo) {
+    public void addCompany(SysCompanyInfo sysCompanyInfo) {
         log.info("B端添加企业入参--{}",sysCompanyInfo);
         //构造查询条件
+        if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
+            throw new DefaultException("企业联系人号码格式错误");
+        }
         QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
         comQW.lambda().ne(SysCompanyInfo::getStatus, DataRecordStatusEnum.DELETED);
         comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
         //查询该企业是否存在
         Integer count = sysCompanyInfoMapper.selectCount(comQW);
         if(count > 0 ){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "企业名称已被占用", null);
+            throw new DefaultException("企业名称已被占用");
         }
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
-        return new DataResult(true,"添加成功",null);
     }
 
     /**
@@ -85,18 +93,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     * @return               com.zerody.common.bean.DataResult
     */
     @Override
-    public DataResult updateCompanyStatus(String companyId, Integer loginStatus) {
+    public void updateCompanyStatus(String companyId, Integer loginStatus) {
         log.info("B端修改企业登录状态入参--companyId = {},loginStatus = {}",companyId,loginStatus);
         //判断企业id 与修改的状态 是否为空
         if(StringUtils.isBlank(companyId)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "企业id不能为空", null);
+            throw new DefaultException("企业id不能为空");
         }
         if(loginStatus == null){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态不能为空", null);
+            throw new DefaultException("状态不能为空");
         }
+
         //修改企业的状态
         SysCompanyInfo sysCompanyInfo = new SysCompanyInfo();
-        sysCompanyInfo.setStatus(loginStatus);
+        sysCompanyInfo.setLoginStatus(loginStatus);
         sysCompanyInfo.setId(companyId);
         //保存状态
         log.info("B端修改企业登录参数入库参数--{}",JSON.toJSONString(sysCompanyInfo));
@@ -105,7 +114,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         List<String> userIds = sysStaffInfoMapper.selectUserByCompanyId(companyId);
         //如果这个企业下没有员工那么久不用进行后面的操作直接返回成功
         if(userIds.size() == 0 ){
-            return new DataResult(true, "操作成功", null);
+            return;
         }
         //设置修改参数
         SysLoginInfo sysLoginInfo = new SysLoginInfo();
@@ -116,48 +125,57 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         loginQW.lambda().in(SysLoginInfo::getUserId, userIds);
         log.info("B端修改修改企业登录状态后修改用户登录状态入库参数--{}",JSON.toJSONString(sysLoginInfo));
         sysLoginInfoMapper.update(sysLoginInfo, loginQW);
-        return new DataResult(true, "操作成功", null);
     }
 
     @Override
-    public DataResult getPageCompany(SysCompanyInfoDto companyInfoDto) {
+    public IPage<SysComapnyInfoVo> getPageCompany(SysCompanyInfoDto companyInfoDto) {
         //设置分页参数
-        Integer pageNum = companyInfoDto.getPageNum() == 0 ? 1 : companyInfoDto.getPageNum();
-        Integer pageSize =  companyInfoDto.getPageSize() == 0 ? 10 : companyInfoDto.getPageSize();
-        IPage<SysComapnyInfoVo> iPage = new Page<>(pageNum,pageSize);
-        iPage = sysCompanyInfoMapper.getPageCompany(companyInfoDto,iPage);
-        return new DataResult(iPage);
+        IPage<SysComapnyInfoVo> iPage = new Page<>(companyInfoDto.getPageNum(),companyInfoDto.getPageSize());
+        return sysCompanyInfoMapper.getPageCompany(companyInfoDto,iPage);
     }
 
     @Override
-    public DataResult updataCompany(SysCompanyInfo sysCompanyInfo) {
+    public void updataCompany(SysCompanyInfo sysCompanyInfo) {
+        if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
+            throw new DefaultException("企业联系人号码格式错误");
+        }
+        QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
+        comQW.lambda().ne(SysCompanyInfo::getStatus, DataRecordStatusEnum.DELETED);
+        comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
+        comQW.lambda().ne(SysCompanyInfo::getId, sysCompanyInfo.getId());
+        //查询该企业是否存在
+        Integer count = sysCompanyInfoMapper.selectCount(comQW);
+        if(count > 0 ){
+            throw new DefaultException("企业名称已被占用");
+        }
         this.saveOrUpdate(sysCompanyInfo);
-        return new DataResult();
     }
 
     /**
     * @Author               PengQiang
     * @Description //TODO   逻辑删除企业
     * @Date                 2020/12/28 9:45
-    * @Param                [companyId]
+    * @Param                companyId
     * @return               com.zerody.common.bean.DataResult
     */
     @Override
-    public DataResult deleteCompanyById(String companyId) {
+    public void deleteCompanyById(String companyId) {
         if (StringUtils.isEmpty(companyId)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "企业id为空", null);
+            throw new DefaultException("企业id为空");
         }
         SysCompanyInfo company = new SysCompanyInfo();
         company.setStatus(DataRecordStatusEnum.DELETED.getCode());
         company.setId(companyId);
         this.saveOrUpdate(company);
-        return new DataResult();
     }
 
     @Override
-    public DataResult getAllCompany() {
-        List<SysComapnyInfoVo> list = sysCompanyInfoMapper.getAllCompnay();
-        return new DataResult(list);
+    public List<SysComapnyInfoVo> getAllCompany() {
+        List<SysComapnyInfoVo> companys = sysCompanyInfoMapper.getAllCompnay();
+        for (SysComapnyInfoVo company : companys){
+            company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
+        }
+       return companys;
     }
 
 
