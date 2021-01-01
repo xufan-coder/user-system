@@ -129,8 +129,8 @@ public class SysUserInfoController implements UserRemoteService {
     *   查询当前用户在这个企业员工关联的角色 
     */
     @Override
-    @RequestMapping(value = "/sysUserInfo/role/get/inner",method = GET, produces = "application/json")
-    public DataResult<List<String>> getRoles(String userId, String companyId) {
+    @RequestMapping(value = "/role/get/inner",method = GET, produces = "application/json")
+    public DataResult<List<String>> getRoles(@RequestParam("userId")String userId, @RequestParam("companyId")String companyId) {
         List<String> roles=sysStaffInfoService.getStaffRoles(userId,companyId);
         return R.success(roles);
     }
