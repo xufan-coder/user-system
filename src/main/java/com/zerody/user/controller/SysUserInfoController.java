@@ -7,6 +7,7 @@ import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -33,6 +34,8 @@ public class SysUserInfoController implements UserRemoteService {
     @Autowired
     private SysUserInfoService sysUserInfoService;
 
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
 
 
     //添加用户
@@ -106,6 +109,30 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
         return R.success(sysLoginUserInfoVo);
+    }
+
+    /**
+    *   修改用户表
+    */
+    @Override
+    public DataResult updateById(com.zerody.user.api.vo.SysUserInfo sysUserInfo) {
+        SysUserInfo newInfo=new SysUserInfo();
+        DataUtil.getKeyAndValue(newInfo,sysUserInfo);
+        com.zerody.common.bean.DataResult dataResult = sysUserInfoService.updateUser(newInfo);
+        if(!dataResult.isIsSuccess()){
+            return R.error(dataResult.getMessage());
+        }
+        return R.success();
+    }
+
+    /**
+    *   查询当前用户在这个企业员工关联的角色 
+    */
+    @Override
+    @RequestMapping(value = "/sysUserInfo/role/get/inner",method = GET, produces = "application/json")
+    public DataResult<List<String>> getRoles(String userId, String companyId) {
+        List<String> roles=sysStaffInfoService.getStaffRoles(userId,companyId);
+        return R.success(roles);
     }
 
     /**

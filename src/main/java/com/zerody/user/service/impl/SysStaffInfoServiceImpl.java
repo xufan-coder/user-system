@@ -321,4 +321,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.saveOrUpdate(staff);
         return new DataResult();
     }
+
+    @Override
+    public List<String> getStaffRoles(String userId, String companyId) {
+        List<String> roleIds=sysStaffInfoMapper.selectStaffRoles(userId,companyId);
+        return roleIds;
+    }
 }

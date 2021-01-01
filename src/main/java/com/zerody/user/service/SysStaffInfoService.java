@@ -38,4 +38,6 @@ public interface SysStaffInfoService {
     DataResult batchDeleteStaff(List<String> staffIds);
 
     DataResult deleteStaffById(String staffId);
+
+    List<String> getStaffRoles(String userId, String companyId);
 }
