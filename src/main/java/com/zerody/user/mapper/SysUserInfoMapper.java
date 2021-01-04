@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,11 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * * @return {@link String }
      */
     String selectByUserNameOrPhone(@Param("userName")String userName);
+
+    /**
+     * description
+     * * @param id
+     * * @return {@link LoginUserInfoVo }
+     */
+    LoginUserInfoVo selectLoginUserInfo(@Param("id")String id);
 }
