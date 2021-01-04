@@ -84,4 +84,15 @@ public interface SysUserInfoService {
      * @date 2021/1/4  10:13
      */
     LoginUserInfoVo getUserInfoById(String id);
+
+    /**************************************************************************************************
+     **
+     * 查询角色是否绑定员工
+     *
+     * @param roleId
+     * @return {@link Boolean }
+     * @author DaBai
+     * @date 2021/1/4  16:43 
+     */
+    Boolean checkRoleBind(String roleId);
 }

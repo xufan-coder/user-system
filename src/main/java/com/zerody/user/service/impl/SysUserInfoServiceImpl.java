@@ -1,21 +1,21 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
-import com.zerody.user.domain.SysLoginInfo;
-import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysLoginInfoService;
-import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -26,7 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,16 +42,13 @@ import java.util.regex.Pattern;
 public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUserInfo> implements SysUserInfoService {
 
     @Autowired
+    private UnionRoleStaffMapper unionRoleStaffMapper;
+
+    @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
 
     @Autowired
     private SysLoginInfoService sysLoginInfoService;
-
-    @Autowired
-    private SysStaffInfoService sysStaffInfoService;
-
-    @Autowired
-    private UnionRoleStaffMapper unionRoleStaffMapper;
 
     private static final String  INIT_PWD = "123456";//初始化密码
 
@@ -184,6 +182,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public LoginUserInfoVo getUserInfoById(String id) {
         return sysUserInfoMapper.selectLoginUserInfo(id);
+    }
+
+    @Override
+    public Boolean checkRoleBind(String roleId) {
+        QueryWrapper<UnionRoleStaff> qw=new QueryWrapper<>();
+        qw.lambda().eq(UnionRoleStaff::getRoleId,roleId);
+       return unionRoleStaffMapper.selectCount(qw)>0;
     }
 
 }
