@@ -37,6 +37,14 @@ public class SysUserInfoController implements UserRemoteService {
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
 
+    /**
+    *    根据用户ID查询单个用户
+    */
+    @GetMapping("/get/{id}")
+    public DataResult getUserInfoById(@PathVariable String id){
+        return R.success(sysUserInfoService.getUserInfoById(id));
+    }
+
 
     //添加用户
     @PostMapping("/addUser")

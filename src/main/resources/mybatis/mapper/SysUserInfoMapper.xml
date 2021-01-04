@@ -67,15 +67,15 @@
   <select id="selectUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
 SELECT
 	ui.id,
-	ui.user_name userName,
+	ui.user_name AS userName,
 	ui.gender,
-	li.mobile_number phoneNumber,
+	li.mobile_number AS phoneNumber,
 	ui.email,
 	ui.avatar,
 	ui.nickname,
 	ui.open_id,
-	li.last_check_sms lastCheckSms,
-	ssi.comp_id companyId
+	li.last_check_sms AS lastCheckSms,
+	ssi.comp_id AS companyId
 FROM
 	sys_user_info ui
 JOIN (
@@ -134,5 +134,20 @@ JOIN (
 WHERE
 	ui. STATUS = 0
 	limit 1
+  </select>
+    <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
+    SELECT
+    sci.company_name AS companyName,
+    ssi.id AS staffId,
+    sui.user_name AS userName,
+    sui.phone_number AS phoneNumber,
+    sui.email AS email,
+    sui.avatar AS avatar
+    FROM sys_user_info sui
+    LEFT JOIN sys_staff_info ssi ON sui.id=ssi.user_id
+    LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
+    WHERE
+	sui.`status` = 0
+	AND sui.id=#{id}
   </select>
 </mapper>

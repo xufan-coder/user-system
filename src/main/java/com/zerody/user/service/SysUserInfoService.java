@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,4 +74,15 @@ public interface SysUserInfoService {
      * @date 2020/12/30  9:57
      */
     String checkLoginUser(String userName);
+
+    /**************************************************************************************************
+     **
+     * 登陆成功后获取用户信息
+     *
+     * @param id
+     * @return {@link LoginUserInfoVo }
+     * @author DaBai
+     * @date 2021/1/4  10:13
+     */
+    LoginUserInfoVo getUserInfoById(String id);
 }

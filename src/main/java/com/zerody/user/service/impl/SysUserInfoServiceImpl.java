@@ -18,6 +18,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
+import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -266,6 +267,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public String checkLoginUser(String userName) {
         return sysUserInfoMapper.selectByUserNameOrPhone(userName);
+    }
+
+    @Override
+    public LoginUserInfoVo getUserInfoById(String id) {
+        return sysUserInfoMapper.selectLoginUserInfo(id);
     }
 
 }
