@@ -157,4 +157,13 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<Boolean> checkRoleBind(@RequestParam("roleId")String roleId){
        return R.success(sysUserInfoService.checkRoleBind(roleId));
     }
+
+    /**
+     *   根据平台角色id查询是否绑定了管理员
+     */
+    @Override
+    @RequestMapping(value = "/platform-role/check-bind/inner",method = GET, produces = "application/json")
+    public DataResult<Boolean> checkPlatformRoleBind(@RequestParam("roleId")String roleId){
+        return R.success(sysUserInfoService.checkPlatformRoleBind(roleId));
+    }
 }

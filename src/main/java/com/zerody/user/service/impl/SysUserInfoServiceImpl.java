@@ -8,10 +8,12 @@ import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.SysLoginInfo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionPlatformRoleStaff;
 import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysUserInfoMapper;
+import com.zerody.user.mapper.UnionPlatformRoleStaffMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysUserInfoService;
@@ -43,6 +45,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
+    @Autowired
+    private UnionPlatformRoleStaffMapper unionPlatformRoleStaffMapper;
 
     @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
@@ -189,6 +193,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<UnionRoleStaff> qw=new QueryWrapper<>();
         qw.lambda().eq(UnionRoleStaff::getRoleId,roleId);
        return unionRoleStaffMapper.selectCount(qw)>0;
+    }
+
+    @Override
+    public Boolean checkPlatformRoleBind(String roleId) {
+        QueryWrapper<UnionPlatformRoleStaff> qw=new QueryWrapper<>();
+        qw.lambda().eq(UnionPlatformRoleStaff::getPlatformRoleId,roleId);
+        return unionPlatformRoleStaffMapper.selectCount(qw)>0;
     }
 
 }
