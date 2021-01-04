@@ -1,5 +1,6 @@
 package com.zerody.user.dto;
 
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.PageInfo;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import lombok.Data;
  * @Deacription TODO
  */
 @Data
-public class SysAuthRolePageDto extends PageInfo {
+public class SysAuthRolePageDto extends PageQueryDto {
 
     private String staffId;
 }

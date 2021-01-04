@@ -1,11 +1,7 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zerody.user.pojo.base.BaseModel;
+import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
-import lombok.Value;
-import org.mapstruct.Mapper;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;

@@ -21,5 +21,5 @@ public interface ZerodyAddrService {
      * @param                []
      * @return               java.util.List<com.zerody.user.vo.ZerodyAddrVo>
      */
-    List<ZerodyAddrVo> getAddr();
+    List<ZerodyAddrVo> getAddr(Integer parentCode);
 }

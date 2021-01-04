@@ -1,11 +1,10 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-import com.zerody.user.pojo.base.BaseModel;
+import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @Data
 public class SysAuthRoleInfo extends BaseModel {

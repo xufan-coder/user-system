@@ -1,5 +1,6 @@
 package com.zerody.user.dto;
 
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.PageInfo;
 import lombok.Data;
 
@@ -10,6 +11,6 @@ import lombok.Data;
  * @Deacription TODO
  */
 @Data
-public class SysJobPositionDto extends PageInfo {
+public class SysJobPositionDto extends PageQueryDto {
     private String compId;
 }

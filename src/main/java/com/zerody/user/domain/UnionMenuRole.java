@@ -1,4 +1,4 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
 public class UnionMenuRole {
     private String id;

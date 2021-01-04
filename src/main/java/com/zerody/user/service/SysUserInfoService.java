@@ -2,9 +2,8 @@ package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public interface SysUserInfoService {
 
     DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto);
 
-    DataResult batchImportUser(MultipartFile file);
+
 
     DataResult deleteUserRole(String staffId, String roleId);
 

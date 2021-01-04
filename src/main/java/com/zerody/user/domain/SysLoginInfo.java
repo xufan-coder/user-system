@@ -1,6 +1,6 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-import com.zerody.user.pojo.base.BaseStringModel;
+import com.zerody.user.domain.base.BaseStringModel;
 import lombok.Data;
 
 import java.util.Date;

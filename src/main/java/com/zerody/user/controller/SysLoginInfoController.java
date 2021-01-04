@@ -2,9 +2,7 @@ package com.zerody.user.controller;
 
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
-import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.service.UserLoginInfoRemoteService;
-import com.zerody.user.pojo.SysLoginInfo;
 import com.zerody.user.service.SysLoginInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zerody.user.mapper.SysCompanyInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.pojo.SysCompanyInfo" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysCompanyInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="bloc_id" property="blocId" jdbcType="VARCHAR" />
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
@@ -38,7 +38,7 @@
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="remark_" property="remark" jdbcType="VARCHAR" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.pojo.SysCompanyInfo" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysCompanyInfo" extends="BaseResultMap" >
     <result column="company_introduction" property="companyIntroduction" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -83,4 +83,23 @@
         status != -1
     </where>
   </select>
+    <select id="selectCompanyInfoById" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+      SELECT
+            id,
+            company_name,
+            company_code,
+            company_addr_province_code,
+            company_address_city_code,
+            company_address_area_code,
+            company_address,
+            contact_name,
+            contact_phone,
+            status
+      FROM
+            sys_company_info
+      <where>
+            id = #{ids}
+      </where>
+
+    </select>
 </mapper>

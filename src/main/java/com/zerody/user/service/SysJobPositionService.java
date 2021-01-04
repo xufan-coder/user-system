@@ -2,7 +2,7 @@ package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysJobPositionDto;
-import com.zerody.user.pojo.SysJobPosition;
+import com.zerody.user.domain.SysJobPosition;
 
 /**
  * @author PengQiang

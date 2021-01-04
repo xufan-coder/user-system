@@ -5,10 +5,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,8 +30,8 @@ public class ZerodyAddrController {
      * @param
      * @return               com.zerody.common.bean.DataResult
      */
-    @RequestMapping(value = "/zerody_addr", method = RequestMethod.GET)
-    public DataResult<List<ZerodyAddrVo>> getAddr(){
-        return R.success(zerodyAddrService.getAddr());
+    @RequestMapping(value = "/user/zerody_addr/{parentCode}", method = RequestMethod.GET)
+    public DataResult<List<ZerodyAddrVo>> getAddr(@PathVariable(name = "parentCode") Integer parentId){
+        return R.success(zerodyAddrService.getAddr(parentId));
     }
 }

@@ -6,7 +6,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.user.dto.SysDepartmentInfoDto;
-import com.zerody.user.pojo.SysDepartmentInfo;
+import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import lombok.extern.slf4j.Slf4j;

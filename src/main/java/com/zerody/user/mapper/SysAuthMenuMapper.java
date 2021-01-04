@@ -3,7 +3,7 @@ package com.zerody.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.SysAuthMenuPageDto;
-import com.zerody.user.pojo.SysAuthMenu;
+import com.zerody.user.domain.SysAuthMenu;
 import com.zerody.user.vo.SysAuthMenuVo;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
 import org.apache.ibatis.annotations.Param;

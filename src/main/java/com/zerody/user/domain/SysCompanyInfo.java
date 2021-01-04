@@ -1,12 +1,10 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.zerody.user.pojo.base.BaseModel;
+import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
-import java.util.Date;
 
 @Data
 public class SysCompanyInfo extends BaseModel {

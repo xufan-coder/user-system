@@ -2,7 +2,7 @@ package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysJobPositionDto;
-import com.zerody.user.pojo.SysJobPosition;
+import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.service.SysJobPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

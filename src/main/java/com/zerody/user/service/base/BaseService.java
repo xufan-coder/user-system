@@ -3,12 +3,11 @@ package com.zerody.user.service.base;
 
 import com.alibaba.nacos.common.utils.Objects;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.pojo.base.BaseModel;
+import com.zerody.user.domain.base.BaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

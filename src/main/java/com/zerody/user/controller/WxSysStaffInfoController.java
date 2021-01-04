@@ -1,7 +1,6 @@
 package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
-import com.zerody.user.pojo.SysStaffInfo;
 import com.zerody.user.service.SysStaffInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

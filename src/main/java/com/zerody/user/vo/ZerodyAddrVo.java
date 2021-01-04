@@ -1,10 +1,6 @@
 package com.zerody.user.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.zerody.user.pojo.ZerodyAddr;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author PengQiang
@@ -46,11 +42,5 @@ public class ZerodyAddrVo {
      */
     private Byte addrLevel;
 
-    /**
-     *
-     *子级地区
-     */
-    @TableField(exist = false)
-    private List<ZerodyAddrVo> childrens;
 
 }

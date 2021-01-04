@@ -1,18 +1,15 @@
 package com.zerody.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.common.util.ResultEnum;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.dto.SysAuthMenuPageDto;
 import com.zerody.user.mapper.SysAuthMenuMapper;
 import com.zerody.user.mapper.SysAuthRoleInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
-import com.zerody.user.pojo.SysAuthMenu;
 import com.zerody.user.service.SysAuthMenuService;
 import com.zerody.user.vo.SysAuthMenuVo;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
@@ -82,10 +79,8 @@ public class SysAuthMenuServiceImpl implements SysAuthMenuService  {
     */
     @Override
     public DataResult getMenuPage(SysAuthMenuPageDto sysAuthMenuPageDto) {
-        Integer pageNum = sysAuthMenuPageDto.getPageNum() == 0 ? 1 : sysAuthMenuPageDto.getPageNum();
-        Integer pageSize = sysAuthMenuPageDto.getPageSize() == 0 ? 1 : sysAuthMenuPageDto.getPageSize();
         //设置给定当前页与当前页显示数据条数
-        IPage<SysAuthMenuVo> iPage = new Page<>(pageNum, pageSize);
+        IPage<SysAuthMenuVo> iPage = new Page<>(sysAuthMenuPageDto.getCurrent(), sysAuthMenuPageDto.getPageSize());
 
         //使用条件构造器设置查询条件
         iPage = sysAuthMenuMapper.getMenuPage(sysAuthMenuPageDto,iPage);

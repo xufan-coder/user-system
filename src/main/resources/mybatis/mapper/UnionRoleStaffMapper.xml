@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zerody.user.mapper.UnionRoleStaffMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.pojo.UnionRoleStaff" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.UnionRoleStaff" >
     <id column="Id" property="id" jdbcType="VARCHAR" />
     <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
     <result column="role_id" property="roleId" jdbcType="VARCHAR" />

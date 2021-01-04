@@ -1,6 +1,6 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-import com.zerody.user.pojo.base.BaseModel;
+import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
 import java.util.Date;
@@ -32,5 +32,10 @@ public class SysStaffInfo extends BaseModel {
     //离职时间
     private Date dateLeft;
 
+    /**
+     *
+     *角色名称
+     */
+    private String roleName;
 
 }

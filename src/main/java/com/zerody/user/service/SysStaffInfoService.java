@@ -3,10 +3,11 @@ package com.zerody.user.service;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.pojo.SysStaffInfo;
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysStaffInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -15,29 +16,31 @@ import java.util.List;
  * @Deacription TODO
  */
 public interface SysStaffInfoService {
-    DataResult addStaff(SysStaffInfo staff);
+    void addStaff(SysStaffInfo staff);
 
-    DataResult addStaff(SetSysUserInfoDto setSysUserInfoDto);
+    void addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
-    DataResult deleteStaffRole(String staffId, String roleId);
+    void deleteStaffRole(String staffId, String roleId);
 
-    DataResult staffAddRole(String staffId, String roleId);
+    void staffAddRole(String staffId, String roleId);
 
     DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto);
 
     DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    DataResult updateStaffStatus(String staffId, Integer status);
+    void updateStaffStatus(String staffId, Integer status);
 
     DataResult getStaffInfoByOpenId(String openId);
 
-    DataResult updateStaff(SetSysUserInfoDto setSysUserInfoDto);
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     DataResult selectStaffById(String id);
 
-    DataResult batchDeleteStaff(List<String> staffIds);
+    void batchDeleteStaff(List<String> staffIds);
 
-    DataResult deleteStaffById(String staffId);
+    void deleteStaffById(String staffId);
 
     List<String> getStaffRoles(String userId, String companyId);
+
+    Map<String, Object> batchImportStaff(MultipartFile file);
 }

@@ -6,7 +6,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.SysLoginUserInfoVo;
@@ -14,7 +14,6 @@ import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -73,12 +72,6 @@ public class SysUserInfoController implements UserRemoteService {
         return sysUserInfoService.selectUserPage(sysUserInfoPageDto);
     }
 
-    //批量导入用户excel
-    @RequestMapping("batchImportUser")
-    public com.zerody.common.bean.DataResult batchImportUser(MultipartFile file){
-
-        return sysUserInfoService.batchImportUser(file);
-    }
 
 
     /**

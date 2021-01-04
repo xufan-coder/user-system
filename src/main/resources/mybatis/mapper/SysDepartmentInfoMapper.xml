@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zerody.user.mapper.SysDepartmentInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.pojo.SysDepartmentInfo" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysDepartmentInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="comp_id" property="compId" jdbcType="VARCHAR" />
     <result column="depart_name" property="departName" jdbcType="VARCHAR" />
@@ -17,7 +17,7 @@
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="depart_code" property="departCode" jdbcType="VARCHAR" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.pojo.SysDepartmentInfo" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysDepartmentInfo" extends="BaseResultMap" >
     <result column="depart_desc" property="departDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >

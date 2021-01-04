@@ -5,20 +5,23 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.mapper.*;
-import com.zerody.user.pojo.*;
+import com.zerody.user.domain.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +30,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author PengQiang
@@ -64,23 +70,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UnionStaffPositionMapper unionStaffPositionMapper;
 
+
     private static final String INIT_PWD = "123456";
 
     @Override
-    public DataResult addStaff(SysStaffInfo staff) {
+    public void addStaff(SysStaffInfo staff) {
         this.saveOrUpdate(staff);
-        return new DataResult();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public DataResult addStaff(SetSysUserInfoDto setSysUserInfoDto) {
+    public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         DataResult  dataResult = CheckUser.checkParam(sysUserInfo);
         //如果校验不通过提示前端
         if(!dataResult.isIsSuccess()){
-            return dataResult;
+//            return dataResult;
         };
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
@@ -88,7 +94,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(users != null && users.size() > 0){
             dataResult.setMessage("该手机号或用户名称被占用");
             dataResult.setIsSuccess(!dataResult.isIsSuccess());
-            return dataResult;
+//            return dataResult;
         }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
@@ -137,60 +143,53 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
         }
-        return new DataResult();
     }
 
 
 
     @Override
-    public DataResult deleteStaffRole(String  staffId, String roleId) {
+    public void deleteStaffRole(String  staffId, String roleId) {
         QueryWrapper<UnionRoleStaff> rsQW = new QueryWrapper<>();
         rsQW.lambda().eq(UnionRoleStaff::getRoleId,roleId);
         rsQW.lambda().eq(UnionRoleStaff::getStaffId,staffId);
         unionRoleStaffMapper.delete(rsQW);
-        return new DataResult();
     }
 
     @Override
-    public DataResult staffAddRole(String staffId, String roleId) {
+    public void staffAddRole(String staffId, String roleId) {
         UnionRoleStaff roleStaff = new UnionRoleStaff();
         roleStaff.setId(UUIDutils.getUUID32());
         roleStaff.setStaffId(staffId);
         roleStaff.setRoleId(roleId);
         unionRoleStaffMapper.insert(roleStaff);
-        return new DataResult();
     }
 
     @Override
     public DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto) {
-        //设置当前页与当前页所显示条数
-        Integer pageNum = sysStaffInfoPageDto.getPageNum() == 0 ? 1 : sysStaffInfoPageDto.getPageNum();
-        Integer pageSize = sysStaffInfoPageDto.getPageSize() == 0 ? 1 : sysStaffInfoPageDto.getPageSize();
-        IPage<SysUserInfoVo> infoVoIPage = new Page<>(pageNum,pageSize);
+        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
         infoVoIPage = sysStaffInfoMapper.selectPageStaffByRoleId(sysStaffInfoPageDto,infoVoIPage);
         return new DataResult(infoVoIPage);
     }
 
     @Override
     public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
-        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getPageNum(),sysStaffInfoPageDto.getPageSize());
+        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
         infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
         return new DataResult(infoVoIPage);
     }
 
     @Override
-    public DataResult updateStaffStatus(String staffId, Integer status) {
+    public void updateStaffStatus(String staffId, Integer status) {
         if(StringUtils.isEmpty(staffId)){
-            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id不能为空", null);
+//            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id不能为空", null);
         }
         if (status == null){
-            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态不能为空", null);
+//            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态不能为空", null);
         }
         SysStaffInfo staff = new SysStaffInfo();
         staff.setId(staffId);
         staff.setStatus(status);
         this.saveOrUpdate(staff);
-        return new DataResult();
     }
 
     @Override
@@ -204,13 +203,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DataResult updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         DataResult  dataResult = CheckUser.checkParam(sysUserInfo);
         //如果校验不通过提示前端
         if(!dataResult.isIsSuccess()){
-            return dataResult;
+//            return dataResult;
         }
 
         //查看手机号或登录名是否被占用
@@ -219,7 +218,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(users != null && users.size() > 0){
             dataResult.setMessage("该手机号或用户名称被占用");
             dataResult.setIsSuccess(!dataResult.isIsSuccess());
-            return dataResult;
+//            return dataResult;
         }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
@@ -283,7 +282,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
         }
-        return new DataResult();
     }
 
     @Override
@@ -296,7 +294,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DataResult batchDeleteStaff(List<String> staffIds) {
+    public void batchDeleteStaff(List<String> staffIds) {
         SysStaffInfo staff = new SysStaffInfo();
         for (String id : staffIds){
             if(StringUtils.isEmpty(id)){
@@ -307,24 +305,135 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //逻辑删除员工
             this.saveOrUpdate(staff);
         }
-        return new DataResult();
     }
 
     @Override
-    public DataResult deleteStaffById(String staffId) {
+    public void deleteStaffById(String staffId) {
         if(StringUtils.isEmpty(staffId)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id为空", null);
+//            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id为空", null);
         }
         SysStaffInfo staff = new SysStaffInfo();
         staff.setId(staffId);
         staff.setStatus(StaffStatusEnum.DELETE.getCode());
         this.saveOrUpdate(staff);
-        return new DataResult();
     }
 
     @Override
     public List<String> getStaffRoles(String userId, String companyId) {
         List<String> roleIds=sysStaffInfoMapper.selectStaffRoles(userId,companyId);
         return roleIds;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> batchImportStaff(MultipartFile file) {
+        //excel标题 用于导入失败提醒生成新的excel
+        String[] titles = {"姓名","手机号","身份证号","入职日期（格式：yyyy-MM-dd）"};
+        //必填项
+        Integer[] indexs = {0,1,2,3};
+        List<String[]> errors = new ArrayList<>();
+        //结果返回
+        Map<String, Object> result = new HashMap<>();
+        String[] errorData = new String[titles.length];
+        Integer headSize = 1; //从第几行开始读取数据
+        Integer successCount = 0; //成功数量
+        Integer total = 0; //数据总数
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        try {
+            List<String[]> dataList = FileUtil.fileImport(file);
+            //判断当前导入excel是否有数据
+            if(dataList.size()<=headSize){
+                  throw new DefaultException("文件没有数据");
+            }
+            total = dataList.size() - headSize; //获得用户数
+            result.put("total",total);
+            String[] row = null;
+            SysUserInfo userInfo ; //保存用户所用实体
+            StringBuilder errorInfo = new StringBuilder("");
+            //循环行
+            for (int rowIndex = headSize,rowlength = dataList.size() ; rowIndex < rowlength; rowIndex++) {
+                //这一行的数据
+                row = dataList.get(rowIndex);
+                userInfo = new SysUserInfo();
+                for (int lineIndex = 0,lineLength = row.length; lineIndex<lineLength; lineIndex++){
+                    if(row[lineIndex] == null || "".equals(row[lineIndex])){
+                        continue;
+                    }
+                    row[lineIndex] = row[lineIndex].trim();//去掉空格
+                }
+                userInfo.setUserName(row[0]);
+                userInfo.setPhoneNumber(row[1]);
+                userInfo.setCertificateCard(row[2]);
+                userInfo.setRegisterTime(new Date(row[3]));
+                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                //验证手机
+                if(checkPhone(userInfo.getPhoneNumber())){
+                    errorInfo.append("手机号码错误,");
+                }
+                //验证身份证
+                if(!IdCardUtil.isValidatedAllIdcard(userInfo.getCertificateCard())){
+                    errorInfo.append("身份证错误,");
+                }
+                sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
+                if(errorInfo.length() > 0){ //如果有错误信息就下一次循环 不保存  并记录错误信息
+                    System.arraycopy(row,0,errorData,0,row.length);
+                    errorData[errorData.length - 1] = errorInfo.toString();
+                    errors.add(errorData);
+                    errorInfo = new StringBuilder("");//循环最后清空错误信息以方便记录下一次循环的错误信息
+                    errorData = new String[errorData.length];
+                    continue;
+                }
+                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                userInfo.setCreateId(UserUtils.getUserId());
+                userInfo.setCreateUser(UserUtils.getUserName());
+                userInfo.setCreateTime(new Date());
+                sysUserInfoMapper.insert(userInfo); //因为员工表跟登录表都要用到用户所有先保存用户
+                SysStaffInfo staff = new SysStaffInfo();
+//                staff.setCompId(UserUtils.get); //获取当前登录用户的当前公司id
+                staff.setUserName(userInfo.getUserName());
+                staff.setUserId(userInfo.getId());
+//                staff.setStatus(StaffStatusEnum.getCodeByDesc());
+                this.saveOrUpdate(staff); //保存到员工表
+
+                SysLoginInfo loginInfo = new SysLoginInfo();
+                loginInfo.setMobileNumber(userInfo.getPhoneNumber());
+                loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
+                loginInfo.setUserId(userInfo.getId());
+                sysLoginInfoService.addOrUpdateLogin(loginInfo);
+            }
+
+            if(errors.size()>0){
+
+            }
+        } catch (IOException e) {
+            log.error("导入失败---:{}",e);
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * @Author               PengQiang
+     * @Description //TODO   手机合法查看
+     * @Date                 2020/12/20 21:27
+     * @Param                [phone]
+     * @return               boolean
+     */
+    private boolean checkPhone(String phone){
+        if(StringUtils.isBlank(phone)){
+            return false;
+        }
+        if (phone.trim().length() == 11) {
+            return false;
+        }
+
+        String regex = "^(1[3-9]\\d{9}$)";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(phone);
+        if (!m.matches()) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -4,22 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.CheckParamUtils;
-import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.dto.SysCompanyInfoDto;
-import com.zerody.user.enums.CompanyLoginStatusEnum;
 import com.zerody.user.enums.DataRecordStatusEnum;
-import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.SysCompanyInfoMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
-import com.zerody.user.pojo.SysCompanyInfo;
-import com.zerody.user.pojo.SysLoginInfo;
-import com.zerody.user.pojo.SysStaffInfo;
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.domain.SysLoginInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
@@ -29,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -130,7 +125,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public IPage<SysComapnyInfoVo> getPageCompany(SysCompanyInfoDto companyInfoDto) {
         //设置分页参数
-        IPage<SysComapnyInfoVo> iPage = new Page<>(companyInfoDto.getPageNum(),companyInfoDto.getPageSize());
+        IPage<SysComapnyInfoVo> iPage = new Page<>(companyInfoDto.getCurrent(),companyInfoDto.getPageSize());
         return sysCompanyInfoMapper.getPageCompany(companyInfoDto,iPage);
     }
 
@@ -170,12 +165,26 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<SysComapnyInfoVo> getAllCompany() {
-        List<SysComapnyInfoVo> companys = sysCompanyInfoMapper.getAllCompnay();
+    public List<SysComapnyInfoVo> getAllCompany(String sysId) {
+
+        List<SysComapnyInfoVo> companys = new ArrayList<>();
+        if("aaa".equals(sysId)){
+            SysComapnyInfoVo companyVo = new SysComapnyInfoVo();
+//            companyVo.setCompanyName(UserUtils.get);
+            return  companys;
+        }
+
+        companys = sysCompanyInfoMapper.getAllCompnay();
         for (SysComapnyInfoVo company : companys){
             company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
         }
        return companys;
+    }
+
+    @Override
+    public SysComapnyInfoVo getCompanyInfoById(String id) {
+        SysComapnyInfoVo companyInfo = sysCompanyInfoMapper.selectCompanyInfoById(id);
+        return companyInfo;
     }
 
 

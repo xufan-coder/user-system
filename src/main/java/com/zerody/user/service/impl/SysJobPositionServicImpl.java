@@ -8,7 +8,7 @@ import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.dto.SysJobPositionDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysJobPositionMapper;
-import com.zerody.user.pojo.SysJobPosition;
+import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.service.SysJobPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysJobPositionVo;
@@ -31,9 +31,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
 
     @Override
     public DataResult getPageJob(SysJobPositionDto sysJobPositionDto) {
-        Integer pageNum = sysJobPositionDto.getPageNum() == 0 ? 1 : sysJobPositionDto.getPageNum();
-        Integer pageSize = sysJobPositionDto.getPageSize() == 0 ? 10 : sysJobPositionDto.getPageSize();
-        IPage<SysJobPositionVo> iPage = new Page<>(pageNum,pageSize);
+        IPage<SysJobPositionVo> iPage = new Page<>(sysJobPositionDto.getCurrent(),sysJobPositionDto.getPageSize());
         iPage = sysJobPositionMapper.getPageJob(sysJobPositionDto,iPage);
         return new DataResult(iPage);
     }

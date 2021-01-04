@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.pojo.base.BaseStringModel;
+import com.zerody.user.domain.base.BaseStringModel;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;

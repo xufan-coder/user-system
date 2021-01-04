@@ -2,7 +2,7 @@ package com.zerody.user.controller;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysAuthRoleDto;
-import com.zerody.user.pojo.SysAuthRoleInfo;
+import com.zerody.user.domain.SysAuthRoleInfo;
 import com.zerody.user.service.SysAuthRoleInfoService;
 import com.zerody.user.dto.SysAuthRolePageDto;
 import org.springframework.beans.factory.annotation.Autowired;

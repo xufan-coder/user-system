@@ -6,15 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.common.util.UUIDutils;
 import com.zerody.user.dto.SysAuthRoleDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysAuthRoleInfoMapper;
 import com.zerody.user.mapper.UnionMenuRoleMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
-import com.zerody.user.pojo.SysAuthRoleInfo;
-import com.zerody.user.pojo.UnionMenuRole;
-import com.zerody.user.pojo.UnionRoleStaff;
+import com.zerody.user.domain.SysAuthRoleInfo;
+import com.zerody.user.domain.UnionMenuRole;
+import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.service.SysAuthRoleInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysAuthRoleInfoVo;
@@ -49,10 +48,7 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
     @Override
     public DataResult selectRolePage(SysAuthRolePageDto sysAuthRolePageDto) {
 
-        //pageNum 设置当前页当 当前页码为0时(int类型默认值为0) 当前页码为1,pageSize设置当前页数据显示条数
-        Integer pageNum = sysAuthRolePageDto.getPageNum() == 0 ? 1 :sysAuthRolePageDto.getPageNum();
-        Integer pageSize = sysAuthRolePageDto.getPageSize()  == 0 ? 10 :sysAuthRolePageDto.getPageSize();
-        IPage<SysAuthRoleInfoVo> iPage = new Page<>(pageNum, pageSize);
+        IPage<SysAuthRoleInfoVo> iPage = new Page<>(sysAuthRolePageDto.getCurrent(), sysAuthRolePageDto.getPageSize());
 
         iPage = sysAuthRoleInfoMapper.selectRolePage(sysAuthRolePageDto,iPage);
         return new DataResult(iPage);

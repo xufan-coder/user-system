@@ -1,13 +1,13 @@
-package com.zerody.user.pojo;
+package com.zerody.user.domain;
 
-public class UnionStaffPosition {
+public class UnionStaffDepart {
     private String id;
 
     //员工id
     private String staffId;
 
-    //岗位id
-    private String positionId;
+    //部门id
+    private String departmentId;
 
     public String getId() {
         return id;
@@ -25,11 +25,11 @@ public class UnionStaffPosition {
         this.staffId = staffId == null ? null : staffId.trim();
     }
 
-    public String getPositionId() {
-        return positionId;
+    public String getDepartmentId() {
+        return departmentId;
     }
 
-    public void setPositionId(String positionId) {
-        this.positionId = positionId == null ? null : positionId.trim();
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId == null ? null : departmentId.trim();
     }
 }

@@ -3,7 +3,6 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
@@ -11,12 +10,11 @@ import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
-import com.zerody.user.pojo.SysDepartmentInfo;
-import com.zerody.user.pojo.SysLoginInfo;
-import com.zerody.user.pojo.UnionStaffDepart;
+import com.zerody.user.domain.SysDepartmentInfo;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.UnionStaffDepart;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -53,10 +51,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public IPage<SysDepartmentInfoVo> getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto) {
-        //设置分页参数
-        Integer pageNum = sysDepartmentInfoDto.getPageNum() == 0 ? 1 : sysDepartmentInfoDto.getPageNum();
-        Integer pageSize =  sysDepartmentInfoDto.getPageSize() == 0 ? 10 : sysDepartmentInfoDto.getPageSize();
-        IPage<SysDepartmentInfoVo> iPage = new Page<>(pageNum,pageSize);
+        IPage<SysDepartmentInfoVo> iPage = new Page<>(sysDepartmentInfoDto.getCurrent(), sysDepartmentInfoDto.getPageSize());
 //        sysDepartmentInfoDto.setCompanyId();
         return  sysDepartmentInfoMapper.getPageDepartment(sysDepartmentInfoDto,iPage);
     }

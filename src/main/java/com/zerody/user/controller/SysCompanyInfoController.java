@@ -5,7 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.user.dto.SysCompanyInfoDto;
-import com.zerody.user.pojo.SysCompanyInfo;
+import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import lombok.extern.slf4j.Slf4j;
@@ -138,13 +138,19 @@ public class SysCompanyInfoController {
      *
      *
      * @author               PengQiang
-     * @description          获取组织树形结构
+     * @description          获取组织树形结构 根据系统id
      * @date                 2020/12/31 9:57
      * @param
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
-    @RequestMapping(value = "/companyInfo", method = RequestMethod.GET)
-    public DataResult<List<SysComapnyInfoVo>> getAllCompany(){
-        return R.success(sysCompanyInfoService.getAllCompany());
+    @RequestMapping(value = "/companyInfo/all/{sysId}", method = RequestMethod.GET)
+    public DataResult<List<SysComapnyInfoVo>> getAllCompany(@PathVariable(name = "sysId") String sysId){
+        return R.success(sysCompanyInfoService.getAllCompany(sysId));
+    }
+
+    @RequestMapping(value = "/companyInfo/{id}", method = RequestMethod.GET)
+    public DataResult<SysComapnyInfoVo> getCompanyInfoById(@PathVariable(name = "id") String id){
+
+        return R.success(sysCompanyInfoService.getCompanyInfoById(id));
     }
 }

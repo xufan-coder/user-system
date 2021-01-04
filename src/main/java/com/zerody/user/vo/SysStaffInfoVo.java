@@ -30,6 +30,11 @@ public class SysStaffInfoVo {
     //工号
     private String jobNumber;
 
+    /**
+     *
+     *角色名称
+     */
+    private String roleName;
     //转正时间
     private Date dateJoin;
 

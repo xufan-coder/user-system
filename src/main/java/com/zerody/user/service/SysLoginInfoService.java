@@ -1,7 +1,7 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
-import com.zerody.user.pojo.SysLoginInfo;
+import com.zerody.user.domain.SysLoginInfo;
 
 /**
  * @author PengQiang

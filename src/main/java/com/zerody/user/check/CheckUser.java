@@ -2,7 +2,7 @@ package com.zerody.user.check;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.util.IdCardUtil;
 import org.apache.commons.lang.StringUtils;
 

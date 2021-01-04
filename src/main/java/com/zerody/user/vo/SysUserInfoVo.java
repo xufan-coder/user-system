@@ -90,7 +90,6 @@ public class SysUserInfoVo {
     //微信openId
 //    private String openId;
 
-
     //角色名
     private String roleName;
 

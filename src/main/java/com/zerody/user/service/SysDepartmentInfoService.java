@@ -1,9 +1,8 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysDepartmentInfoDto;
-import com.zerody.user.pojo.SysDepartmentInfo;
+import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 
 import java.util.List;

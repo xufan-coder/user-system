@@ -1,8 +1,7 @@
 package com.zerody.user.dto;
 
-import com.zerody.user.pojo.SysUserInfo;
+import com.zerody.user.domain.SysUserInfo;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import java.util.List;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zerody.user.mapper.SysAuthRoleInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.pojo.SysAuthRoleInfo" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysAuthRoleInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="comp_id" property="compId" jdbcType="VARCHAR" />
     <result column="role_name" property="roleName" jdbcType="VARCHAR" />
@@ -19,7 +19,7 @@
     <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
     <result column="role_validity_start" property="roleValidityStart" jdbcType="TIMESTAMP" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.pojo.SysAuthRoleInfo" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysAuthRoleInfo" extends="BaseResultMap" >
     <result column="role_desc" property="roleDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
