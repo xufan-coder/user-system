@@ -59,17 +59,13 @@
       company_name,
       company_code,
       contact_name,
-      contact_phone,
-      `login_status`
+      contact_phone
       FROM
       sys_company_info
      <where>
        status != -1 
        <if test="company.companyName != null and company.companyName != ''">
          and company_name like  concat('%',#{company.companyName},'%')
-       </if>
-       <if test="company.loginStatus != null">
-        and  login_status = #{company.loginStatus}
        </if>
      </where>
   </select>

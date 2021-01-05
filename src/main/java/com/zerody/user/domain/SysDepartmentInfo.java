@@ -54,12 +54,5 @@ public class SysDepartmentInfo extends BaseModel {
      */
     private String departDesc;
 
-    /**
-     *
-     *部门登录状态
-     */
-    @NotNull(message = "部门登录状态不能为空")
-    private Integer loginStatus;
-
 
 }

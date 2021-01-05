@@ -20,17 +20,10 @@ import java.util.Map;
  * @Deacription TODO
  */
 public interface SysStaffInfoService {
-    void addStaff(SysStaffInfo staff);
 
     void addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
-    void deleteStaffRole(String staffId, String roleId);
-
-    void staffAddRole(String staffId, String roleId);
-
-    IPage<SysUserInfoVo> selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto);
-
-    IPage<SysUserInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
+    IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
     void updateStaffStatus(String staffId, Integer status);
 

@@ -22,6 +22,11 @@ public class SysDepartmentInfoVo {
     private String id;
 
     /**
+     *企业iD
+     */
+    private String compId;
+
+    /**
      *
      *部门名称
      */
@@ -56,11 +61,6 @@ public class SysDepartmentInfoVo {
      *部门描述
      */
     private String departDesc;
-
-    /**
-     *部门登录状态
-     */
-    private Integer loginStatus;
 
     /**
      *

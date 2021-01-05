@@ -42,57 +42,17 @@
       AND user_id = #{userId}
       AND comp_id = #{compId}
   </select>
-  <select id="selectPageStaffByRoleId"  resultType="com.zerody.user.vo.SysUserInfoVo">
-       SELECT
-          ssi.id staffId,
-          sui.user_name,
-          sui.gender,
-          sui.phone_number,
-          sui.email,
-          sui.nickname,
-          sui.avatar,
-          sui.birthday,
-          sui.certificate_card,
-          sui.certificate_card_address,
-          sui.prov_city_district,
-          sui.contact_address,
-          sui.register_time,
-          ssi. STATUS,
-          sui.nation,
-          sui.ancestral
-       FROM
-          sys_user_info sui
-        join sys_staff_info ssi on sui.id = ssi.user_id
-       join  union_role_staff urs on urs.staff_id = ssi.id
-       <where>
-          ssi.status != -1
-          <if test="staff.roleId != null and staff.roleId != ''">
-              and urs.role_id = #{staff.roleId}
-          </if>
-       </where>
-  </select>
-  <select id="getPageAllStaff" resultType="com.zerody.user.vo.SysUserInfoVo">
+
+  <select id="getPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
       SELECT
-          sci.company_name,
-          ssi.id staffId,
-          sui.user_name,
-          sui.gender,
-          sui.phone_number,
-          sui.email,
-          sui.nickname,
-          sui.avatar,
-          sui.birthday,
-          sui.certificate_card,
-          sui.certificate_card_address,
-          sui.prov_city_district,
-          sui.contact_address,
-          sui.register_time,
-          ssi. STATUS,
-          sui.nation,
-          sui.ancestral,
-          sdi.depart_name,
-          sjp.position_name,
-          ssi.role_name
+      ssi.comp_id AS compId,
+      ssi.user_name AS userName,
+      sci.company_name AS companyName,
+      sui.phone_number AS phone,
+      sjp.position_name AS positionName,
+      sdi.depart_name AS departName,
+      ssi.id AS staffId,
+      urs.role_name AS roleName
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -105,31 +65,22 @@
       <where>
           ssi.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
-              sci.id = #{companyId}
+              and sci.id = #{staff.companyId}
           </if>
-          <if test="staff.departId != null and staff.departId = ''">
+          <if test="staff.departId != null and staff.departId != ''">
               and sdi.id = #{staff.departId}
           </if>
-          <if test="staff.jobId != null and staff.jobId = ''">
-              and sjb.id = #{staff.jobId}
+          <if test="staff.jobId != null and staff.jobId != ''">
+              and sjp.id = #{staff.jobId}
+          </if>
+          <if test="staff.roleId != null and staff.roleId != ''">
+              and urs.role_id = #{staff.roleId}
           </if>
           <if test="staff.staffName != null and staff.staffName != ''">
-              and ssi.staff_name like concat('%', #{staff.staffName}, '%')
+              and ssi.user_name like concat('%', #{staff.staffName}, '%')
           </if>
           <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
-              and sui.phone_nember like concat('%', #{staff.phoneNumber}, '%')
-          </if>
-          <if test="staff.status != null and staff.status != -1">
-              and ssi.status = #{staff.status}
-          </if>
-          <if test="staff.roleKey != null and staff.roleKey != ''">
-              and sari.role_name like concat('%',#{staff.roleKey},'%')
-          </if>
-          <if test="staff.departmentKey != null and staff.departmentKey != ''">
-              and sdi.depart_name like concat('%',#{staff.departmentKey},'%')
-          </if>
-          <if test="staff.jobKey != null and staff.jobKey != ''">
-              and jsp.position_name like concat('%',#{staff.jobKey},'%')
+              and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
           </if>
       </where>
   </select>
@@ -220,7 +171,7 @@
         ssi.user_name AS userName,
         sui.phone_number AS phone,
         sjp.position_name AS positionName,
-        sdi.depart_name AS deartName,
+        sdi.depart_name AS departName,
         ssi.id AS staffId
         FROM
         sys_staff_info ssi
@@ -251,7 +202,7 @@
         ssi.user_name AS userName,
         sui.phone_number AS phone,
         sjp.position_name AS positionName,
-        sdi.depart_name AS deartName,
+        sdi.depart_name AS departName,
         ssi.id AS staffId
         FROM
         company_admin ca

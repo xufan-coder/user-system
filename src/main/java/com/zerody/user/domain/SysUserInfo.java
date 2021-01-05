@@ -37,16 +37,13 @@ public class  SysUserInfo extends BaseModel {
 
 
     //证件号码
-    @NotEmpty(message = "证件号码不能为空")
     private String certificateCard;
 
 
     //身份证地址
-    @NotEmpty(message = "身份证地址不能为空")
     private String certificateCardAddress;
 
     //省市区
-    @NotEmpty(message = "省市区不能为空")
     private String provCityDistrict;
 
     //联系地址
@@ -56,11 +53,9 @@ public class  SysUserInfo extends BaseModel {
     private Date registerTime;
 
     //民族
-    @NotEmpty(message = "民族不能为空")
     private String nation;
 
     //籍贯
-    @NotEmpty(message = "籍贯不能为空")
     private String ancestral;
 
     //备注
@@ -83,4 +78,45 @@ public class  SysUserInfo extends BaseModel {
 
     //微信openId
     private String openId;
+
+    /**
+    *   紧急联系人姓名
+    */
+    private String urgentName;
+
+    /**
+    *   '紧急联系人关系'
+    */
+    private String urgentRelation;
+
+    /**
+    *   '紧急联系人电话'
+    */
+    private String urgentPhone;
+
+    /**
+    *   '家庭成员姓名'
+    */
+    private String familyName;
+
+    /**
+    *   '家庭成员关系'
+    */
+    private String familyRelation;
+
+    /**
+    *   '家庭成员电话'
+    */
+    private String familyPhone;
+
+    /**
+    *   '家庭成员职业'
+    */
+    private String familyJob;
+
+    /**
+    *   '家庭成员地址'
+    */
+    private String familyAddr;
+
 }

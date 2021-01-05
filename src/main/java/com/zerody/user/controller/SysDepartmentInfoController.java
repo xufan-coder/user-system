@@ -24,58 +24,24 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@RequestMapping("/depart")
 public class SysDepartmentInfoController {
 
     @Autowired
     private SysDepartmentInfoService sysDepartmentInfoService;
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          分页查询部门
-     * @date                 2020/12/31 17:32
-     * @param                [sysDepartmentInfoDto]
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "/departmentInfo", method = RequestMethod.GET)
-    public DataResult<IPage<SysDepartmentInfoVo>> getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto){
-        return R.success(sysDepartmentInfoService.getPageDepartment(sysDepartmentInfoDto));
+    *    根据企业获取部门
+    */
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public DataResult<List<SysDepartmentInfo>> getDepartmentByComp(@RequestParam(value = "compId") String compId){
+        return R.success(sysDepartmentInfoService.getDepartmentByComp(compId));
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          修改部门登录状态
-     * @date                 2020/12/31 17:32
-     * @param                [depId, loginStauts]
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "/departmentInfo/loginStatus/{id}/{status}", method = RequestMethod.PUT)
-    public DataResult<Object> updateDepartmentStatus(@PathVariable(name = "id") String depId,@PathVariable(name = "status") Integer loginStauts){
-        try {
-            sysDepartmentInfoService.updateDepartmentStatus(depId, loginStauts);
-            return R.success();
-        } catch (DefaultException e) {
-            log.error("修改部门登录状态错误:{}", e.getMessage());
-            return R.error(e.getMessage());
-        } catch (Exception e){
-            log.error("修改部门登录状态错误:{}", e.getMessage());
-            return R.error("修改失败,请求异常");
-        }
-    }
-
-    /**
-     *
-     *
-     * @author               PengQiang
-     * @description          添加部门
-     * @date                 2020/12/31 17:33
-     * @param                [sysDepartmentInfo]
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "/departmentInfo", method = RequestMethod.POST)
+    *    添加部门
+    */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public DataResult<Object> addDepartment(@Validated @RequestBody SysDepartmentInfo sysDepartmentInfo){
         try {
             sysDepartmentInfoService.addDepartment(sysDepartmentInfo);
@@ -90,15 +56,9 @@ public class SysDepartmentInfoController {
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          修改部门
-     * @date                 2020/12/31 17:35
-     * @param                [sysDepartmentInfo]
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "/departmentInfo", method = RequestMethod.PUT)
+    *    修改部门
+    */
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public DataResult<Object> updateDepartment(@Validated @RequestBody SysDepartmentInfo sysDepartmentInfo){
 
         try {
@@ -113,16 +73,11 @@ public class SysDepartmentInfoController {
         }
     }
 
+
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          删除部门
-     * @date                 2020/12/31 17:35
-     * @param                [depId]
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "/departmentInfo/{id}", method = RequestMethod.DELETE)
+    *    删除部门
+    */
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public DataResult<Object> deleteDepartmentById(@PathVariable(name = "id") String depId){
 
         try {
@@ -144,7 +99,7 @@ public class SysDepartmentInfoController {
      * @author               PengQiang
      * @description          查询部门信息(树形返回)
      * @date                 2020/12/31 17:36
-     * @param                [companyId]
+     * @param                companyId
      * @return               com.zerody.common.bean.DataResult
      */
     @RequestMapping(value = "/user/departmentInfo/{id}", method = RequestMethod.GET)
