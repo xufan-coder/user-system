@@ -63,8 +63,10 @@ public class CompanyAdminController {
 		}
 	}
 	
-	@ApiOperation(value = "新增企业管理员")
-	@PostMapping
+	/**
+	*	添加管理员
+	*/
+	@PostMapping("/add")
 	public DataResult<CompanyAdmin> save(@RequestBody CompanyAdmin data) {
 		try {
 			String userId = UserUtils.getUserId();

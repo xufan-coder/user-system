@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     SysUserInfoVo selectStaffById(String id);
 
     List<String> selectStaffRoles(@Param("userId")String userId, @Param("companyId")String companyId);
+
+    List<BosStaffInfoVo> getStaff(@Param("companyId")String companyId, @Param("departId")String departId, @Param("positionId")String positionId, @Param("userName")String userName);
 }

@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,6 +184,20 @@ public class SysStaffInfoController {
             log.error("批量导入员工错误:{}",e.getMessage());
             return R.error("批量导入员工失败,请求异常");
         }
+    }
+
+
+   /**
+   *   按企业获取员工
+    *   按部门获取员工
+    *   按岗位企业员工
+   */
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public DataResult<List<BosStaffInfoVo>> getStaff(@RequestParam(value = "companyId",required = false) String companyId,
+                                                     @RequestParam(value = "departId",required = false) String departId,
+                                                     @RequestParam(value = "positionId",required = false) String positionId,
+                                                     @RequestParam(value = "userName",required = false) String userName){
+        return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId,userName));
     }
 
 
