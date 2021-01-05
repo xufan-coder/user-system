@@ -144,8 +144,8 @@ public class SysCompanyInfoController {
      * @param
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
-    @RequestMapping(value = "/structure/{companyId}", method = RequestMethod.GET)
-    public DataResult<List<SysComapnyInfoVo>> getAllCompany(@PathVariable(name = "companyId") String companyId){
+    @RequestMapping(value = "/structure", method = RequestMethod.GET)
+    public DataResult<List<SysComapnyInfoVo>> getAllCompany(String companyId){
         return R.success(sysCompanyInfoService.getAllCompany(companyId));
     }
 
