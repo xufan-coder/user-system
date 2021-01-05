@@ -15,10 +15,6 @@ import java.util.List;
  */
 public interface SysDepartmentInfoService {
 
-    IPage<SysDepartmentInfoVo> getPageDepartment(SysDepartmentInfoDto sysDepartmentInfoDto);
-
-    void updateDepartmentStatus(String depId, Integer loginStauts);
-
     void addDepartment(SysDepartmentInfo sysDepartmentInfo);
 
     void updateDepartment(SysDepartmentInfo sysDepartmentInfo);
@@ -26,4 +22,6 @@ public interface SysDepartmentInfoService {
     void deleteDepartmentById(String depId);
 
     List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
+
+    List<SysDepartmentInfo> getDepartmentByComp(String compId);
 }

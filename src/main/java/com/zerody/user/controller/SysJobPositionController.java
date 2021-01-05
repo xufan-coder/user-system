@@ -50,7 +50,7 @@ public class SysJobPositionController {
     *    根据岗位id删除岗位
     */
     @DeleteMapping("/delete/{id}")
-    public DataResult deleteJobById(@PathVariable String id){
+    public DataResult deleteJobById(@PathVariable(value = "id") String id){
         return sysJobPositionService.deleteJobById(id);
     }
 }

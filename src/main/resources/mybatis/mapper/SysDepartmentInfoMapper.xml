@@ -35,7 +35,6 @@
         psdi.depart_name parentDep,
         sdi.telephone,
         sdi.depart_code,
-        sdi.login_status,
         sdi.depart_desc,
           (
           SELECT
