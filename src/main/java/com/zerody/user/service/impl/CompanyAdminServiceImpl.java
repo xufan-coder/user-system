@@ -16,10 +16,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.user.mapper.*;
 import com.zerody.user.domain.CompanyAdmin;
 import com.zerody.user.dto.CompanyAdminPageDto;
+import com.zerody.user.mapper.CompanyAdminMapper;
 import com.zerody.user.service.CompanyAdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 /**
  * 
  * 企业管理员业务实现类
