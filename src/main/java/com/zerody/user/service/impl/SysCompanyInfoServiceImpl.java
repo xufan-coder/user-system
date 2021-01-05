@@ -199,15 +199,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<SysComapnyInfoVo> getAllCompany(String sysId) {
+    public List<SysComapnyInfoVo> getAllCompany(String companyId) {
 
         List<SysComapnyInfoVo> companys = new ArrayList<>();
-        if("aaa".equals(sysId)){
-            SysComapnyInfoVo companyVo = new SysComapnyInfoVo();
-//            companyVo.setCompanyName(UserUtils.get);
+        //如果是crm系统就只查当前登录企业
+        if(StringUtils.isEmpty(companyId)){
+            SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(companyId);
+            //获取当前企业下的部门、岗位
+            company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
+            companys.add(company);
             return  companys;
         }
 
+        //如果不是crm系统就查全部企业
         companys = sysCompanyInfoMapper.getAllCompnay();
         for (SysComapnyInfoVo company : companys){
             company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));

@@ -102,4 +102,16 @@
       </where>
 
     </select>
+    <select id="getCompanyByUserId" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+        sci.id,
+        sci.company_name
+        FROM
+        sys_company_info sci
+        JOIN sys_staff_info ssi ON sci.id = comp_id
+        <where>
+            ssi.user_id = #{userId}
+        </where>
+
+    </select>
 </mapper>

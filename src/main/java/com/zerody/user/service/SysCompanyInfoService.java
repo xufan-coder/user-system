@@ -24,7 +24,7 @@ public interface SysCompanyInfoService {
 
     void deleteCompanyById(String companyId);
 
-    List<SysComapnyInfoVo> getAllCompany(String sysId);
+    List<SysComapnyInfoVo> getAllCompany(String companyId);
 
     SysComapnyInfoVo getCompanyInfoById(String id);
 }

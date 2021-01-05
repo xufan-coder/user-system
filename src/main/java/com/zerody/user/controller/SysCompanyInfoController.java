@@ -23,6 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@RequestMapping("/companyInfo")
 public class SysCompanyInfoController {
 
     @Autowired
@@ -37,7 +38,7 @@ public class SysCompanyInfoController {
      * @param                sysCompanyInfo
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @RequestMapping(value = "/companyInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public DataResult<Object> addCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
         try {
             sysCompanyInfoService.addCompany(sysCompanyInfo);
@@ -60,7 +61,7 @@ public class SysCompanyInfoController {
      * @param                [companyId, loginStatus]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @RequestMapping(value = "/companyInfo/{id}/{status}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}/{status}", method = RequestMethod.PUT)
     public DataResult<Object> updateCompanyStatus(@PathVariable("id")String companyId,@PathVariable("status") Integer loginStatus){
         try {
             sysCompanyInfoService.updateCompanyStatus(companyId, loginStatus);
@@ -83,7 +84,7 @@ public class SysCompanyInfoController {
      * @param                [sysCompanyInfo]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @RequestMapping(value = "/companyInfo", method = RequestMethod.PUT)
+    @RequestMapping(value = "", method = RequestMethod.PUT)
     public DataResult<Object> updataCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
         try {
             sysCompanyInfoService.updataCompany(sysCompanyInfo);
@@ -106,7 +107,7 @@ public class SysCompanyInfoController {
      * @param                companyInfoDto
      * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysComapnyInfoVo>>
      */
-    @RequestMapping(value = "/companyInfo/page", method = RequestMethod.GET)
+    @RequestMapping(value = "/page", method = RequestMethod.GET)
     public DataResult<IPage<SysComapnyInfoVo>> getPageCompany(SysCompanyInfoDto companyInfoDto){
         return R.success(sysCompanyInfoService.getPageCompany(companyInfoDto));
     }
@@ -120,7 +121,7 @@ public class SysCompanyInfoController {
      * @param                [companyId]
      * @return               com.zerody.common.api.bean.DataResult
      */
-    @RequestMapping(value = "/companyInfo/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public DataResult<Object> deleteCompanyById(@PathVariable(name = "id") String companyId){
         try {
             sysCompanyInfoService.deleteCompanyById(companyId);
@@ -138,17 +139,26 @@ public class SysCompanyInfoController {
      *
      *
      * @author               PengQiang
-     * @description          获取组织树形结构 根据系统id
+     * @description          获取组织树形结构
      * @date                 2020/12/31 9:57
      * @param
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
-    @RequestMapping(value = "/companyInfo/all/{sysId}", method = RequestMethod.GET)
-    public DataResult<List<SysComapnyInfoVo>> getAllCompany(@PathVariable(name = "sysId") String sysId){
-        return R.success(sysCompanyInfoService.getAllCompany(sysId));
+    @RequestMapping(value = "/structure/{companyId}", method = RequestMethod.GET)
+    public DataResult<List<SysComapnyInfoVo>> getAllCompany(@PathVariable(name = "companyId") String companyId){
+        return R.success(sysCompanyInfoService.getAllCompany(companyId));
     }
 
-    @RequestMapping(value = "/companyInfo/{id}", method = RequestMethod.GET)
+    /**
+     *
+     *  获取企业详情
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/5 11:02
+     * @param                [id]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public DataResult<SysComapnyInfoVo> getCompanyInfoById(@PathVariable(name = "id") String id){
 
         return R.success(sysCompanyInfoService.getCompanyInfoById(id));
