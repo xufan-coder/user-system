@@ -4,6 +4,8 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysJobPositionDto;
 import com.zerody.user.domain.SysJobPosition;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysJobPositionService
@@ -11,11 +13,12 @@ import com.zerody.user.domain.SysJobPosition;
  * @Deacription TODO
  */
 public interface SysJobPositionService {
-    DataResult getPageJob(SysJobPositionDto sysJobPositionDto);
 
     DataResult addJob(SysJobPosition sysJobPosition);
 
     DataResult updateJob(SysJobPosition sysJobPosition);
 
     DataResult deleteJobById(String jobId);
+
+    List<SysJobPosition> getJob(String departId);
 }
