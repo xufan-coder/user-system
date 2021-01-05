@@ -23,7 +23,8 @@ import java.util.List;
  * @Deacription TODO
  */
 @Slf4j
-@RestController("/depart")
+@RestController
+@RequestMapping("/depart")
 public class SysDepartmentInfoController {
 
     @Autowired
