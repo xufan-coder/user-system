@@ -13,7 +13,12 @@ import java.util.Date;
 public class BosStaffInfoVo {
 
     /**
-    *   员工ID  
+    *   ID
+    */
+    private String id;
+
+    /**
+    *   员工ID
     */
     private String staffId;
 

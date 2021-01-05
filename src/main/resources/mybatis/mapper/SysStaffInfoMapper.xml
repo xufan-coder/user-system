@@ -245,6 +245,7 @@
 
     <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
+        ca.id AS id,
         ca.company_id AS compId,
         sci.company_name AS compcompanyName,
         ssi.user_name AS userName,
