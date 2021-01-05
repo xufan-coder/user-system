@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/staffInfo")
+@RequestMapping("/staff-info")
 public class SysStaffInfoController {
 
     @Autowired
@@ -184,5 +187,26 @@ public class SysStaffInfoController {
         }
     }
 
+
+   /**
+   *   按企业获取员工
+    *   按部门获取员工
+    *   按岗位企业员工
+   */
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public DataResult<List<BosStaffInfoVo>> getStaff(@RequestParam(value = "companyId",required = false) String companyId,
+                                                     @RequestParam(value = "departId",required = false) String departId,
+                                                     @RequestParam(value = "positionId",required = false) String positionId){
+        return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId));
+    }
+
+
+    /**
+    *   分页获取管理员列表
+    */
+    @RequestMapping(value = "/get-admins", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getAdmins(AdminsPageDto dto){
+        return R.success(sysStaffInfoService.getAdmins(dto));
+    }
 
 }

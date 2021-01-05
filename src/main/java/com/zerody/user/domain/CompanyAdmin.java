@@ -18,8 +18,8 @@ public class CompanyAdmin implements java.io.Serializable {
   		/**id**/
 		@TableId(type = IdType.UUID)
 		private String id;
-  		/**user_id**/
-		private String userId;
+  		/**员工ID**/
+		private String staffId;
   		/**状态:1在职、2离职、3合作**/
 		private Integer state;
   		/**角色**/
@@ -48,7 +48,7 @@ public class CompanyAdmin implements java.io.Serializable {
 				String createUsername,String createBy,Date createTime,
 				Integer deleted,String companyId){		
 				this.id=id;
-				this.userId=userId;
+				this.staffId=userId;
 				this.state=state;
 				this.roleId=roleId;
 				this.updateBy=updateBy;
@@ -67,16 +67,16 @@ public class CompanyAdmin implements java.io.Serializable {
 		public void setId(String id) {
 			this.id = id;
 		}
-	
-		public String getUserId() {
-			return this.userId;
-		}
-	
-		public void setUserId(String userId) {
-			this.userId = userId;
-		}
-	
-		public Integer getState() {
+
+	public String getStaffId() {
+		return staffId;
+	}
+
+	public void setStaffId(String staffId) {
+		this.staffId = staffId;
+	}
+
+	public Integer getState() {
 			return this.state;
 		}
 	
@@ -185,37 +185,6 @@ public class CompanyAdmin implements java.io.Serializable {
 				return false;
 			return true;
 		}
-			@Override
-			public String toString() {
 
-				StringBuffer sb=new StringBuffer();
-				sb.append("CompanyAdmin").append(' ').append('[');
-		  				sb.append("id=").append(id);
-		  				sb.append(',');
-		  				sb.append("userId=").append(userId);
-		  				sb.append(',');
-		  				sb.append("state=").append(state);
-		  				sb.append(',');
-		  				sb.append("roleId=").append(roleId);
-		  				sb.append(',');
-		  				sb.append("updateBy=").append(updateBy);
-		  				sb.append(',');
-		  				sb.append("updateUsername=").append(updateUsername);
-		  				sb.append(',');
-		  				sb.append("updateTime=").append(updateTime);
-		  				sb.append(',');
-		  				sb.append("createUsername=").append(createUsername);
-		  				sb.append(',');
-		  				sb.append("createBy=").append(createBy);
-		  				sb.append(',');
-		  				sb.append("createTime=").append(createTime);
-		  				sb.append(',');
-		  				sb.append("deleted=").append(deleted);
-		  				sb.append(',');
-		  				sb.append("companyId=").append(companyId);
-		  				sb.append(',');
-					sb.append(']');
-					return sb.toString();
-			}
 	
 }

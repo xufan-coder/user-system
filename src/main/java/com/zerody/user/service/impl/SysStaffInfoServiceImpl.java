@@ -12,6 +12,8 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
@@ -22,6 +24,7 @@ import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
+import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -385,6 +388,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId) {
+        return sysStaffInfoMapper.getStaff(companyId,departId,positionId);
+    }
+
+    @Override
+    public IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto) {
+        IPage<SysUserInfoVo> voIPage = new Page<>(dto.getCurrent(),dto.getPageSize());
+        return sysStaffInfoMapper.selectAdmins(dto,voIPage);
     }
 
     /**

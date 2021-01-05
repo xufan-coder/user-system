@@ -20,7 +20,6 @@ public class SysJobPosition  extends BaseModel {
     private String jobScope;
 
     //父级岗位id
-    @NotNull(message = "父级id不能为null")
     private String parentId;
 
     //岗位级别

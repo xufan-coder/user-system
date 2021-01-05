@@ -142,6 +142,7 @@
 		WHERE
 			ssi.comp_id = #{companyId} and ssi.status != 2 and sui.status != -1
     </select>
+
     <select id="getStaffInfoByOpenId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
             sui.user_name,
@@ -162,6 +163,7 @@
             ssi.status != -1 and open_id = #{openId}
         </where>
     </select>
+
     <select id="selectStaffById" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
@@ -209,6 +211,62 @@
             ssi.status != -1
             and ssi.comp_id = #{companyId}
             and ssi.user_id = #{userId}
+        </where>
+    </select>
+
+    <select id="getStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
+         SELECT
+        ssi.comp_id AS compId,
+        ssi.user_name AS userName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        sdi.depart_name AS deartName,
+        ssi.id AS staffId
+        FROM
+        sys_staff_info ssi
+        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.status != -1
+        <if test="positionId != null and positionId != ''">
+            and usp.position_id = #{positionId}
+        </if>
+        <if test="departId != null and departId != ''">
+            and usd.department_id = #{departId}
+        </if>
+        <if test="companyId != null and companyId != ''">
+            and ssi.comp_id = #{companyId}
+        </if>
+        </where>
+    </select>
+
+    <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT
+        ca.id AS id,
+        ca.company_id AS compId,
+        sci.company_name AS compcompanyName,
+        ssi.user_name AS userName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        sdi.depart_name AS deartName,
+        ssi.id AS staffId
+        FROM
+        company_admin ca
+        JOIN sys_staff_info ssi ON ssi.id=ca.staff_id
+        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id=ca.company_id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ca.staff_id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ca.staff_id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.status != -1
+        <if test="dto.userName != null and dto.userName != ''">
+            and ssi.user_name like CONCAT('%',#{dto.userName},'%')
+        </if>
         </where>
     </select>
 </mapper>

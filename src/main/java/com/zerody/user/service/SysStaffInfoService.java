@@ -2,9 +2,11 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,4 +46,8 @@ public interface SysStaffInfoService {
     List<String> getStaffRoles(String userId, String companyId);
 
     Map<String, Object> batchImportStaff(MultipartFile file);
+
+    List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
+
+    IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
 }

@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.zerody.common.api.bean.R;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysJobPositionDto;
 import com.zerody.user.domain.SysJobPosition;
@@ -15,34 +16,41 @@ import org.springframework.web.bind.annotation.*;
  * @Deacription TODO
  */
 @RestController
-@RequestMapping("/jobPosition")
+@RequestMapping("/position")
 public class SysJobPositionController {
 
     @Autowired
     private SysJobPositionService sysJobPositionService;
 
-    //分页查询岗位
-    @GetMapping("/getPageJob")
-    public DataResult getPageJob(SysJobPositionDto sysJobPositionDto){
-        return  sysJobPositionService.getPageJob(sysJobPositionDto);
+    /**
+    *    按部门查询岗位
+    */
+    @GetMapping("/get")
+    public DataResult getJob(@RequestParam(value = "departId") String departId){
+        return  new DataResult(sysJobPositionService.getJob(departId));
     }
 
-    //添加岗位
-    @PostMapping("/addJob")
+    /**
+    *    添加岗位
+    */
+    @PostMapping("/add")
     public DataResult addJob(@RequestBody @Validated SysJobPosition sysJobPosition){
-
-        return sysJobPositionService.addJob(sysJobPosition);
+         return  sysJobPositionService.addJob(sysJobPosition);
     }
 
-    //修改岗位
-    @PostMapping("/updateJob")
+    /**
+    *    修改岗位
+    */
+    @PutMapping("/update")
     public DataResult updateJob(@RequestBody @Validated SysJobPosition sysJobPosition){
         return sysJobPositionService.updateJob(sysJobPosition);
     }
 
-    //根据岗位id删除岗位
-    @DeleteMapping("/deleteJobById")
-    public DataResult deleteJobById(String jobId){
-        return sysJobPositionService.deleteJobById(jobId);
+    /**
+    *    根据岗位id删除岗位
+    */
+    @DeleteMapping("/delete/{id}")
+    public DataResult deleteJobById(@PathVariable String id){
+        return sysJobPositionService.deleteJobById(id);
     }
 }
