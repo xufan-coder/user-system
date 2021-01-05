@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.service.SysStaffInfoService;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/staffInfo")
+@RequestMapping("/staff-info")
 public class SysStaffInfoController {
 
     @Autowired
@@ -195,10 +196,17 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public DataResult<List<BosStaffInfoVo>> getStaff(@RequestParam(value = "companyId",required = false) String companyId,
                                                      @RequestParam(value = "departId",required = false) String departId,
-                                                     @RequestParam(value = "positionId",required = false) String positionId,
-                                                     @RequestParam(value = "userName",required = false) String userName){
-        return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId,userName));
+                                                     @RequestParam(value = "positionId",required = false) String positionId){
+        return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId));
     }
 
+
+    /**
+    *   分页获取管理员列表
+    */
+    @RequestMapping(value = "/get-admins", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getAdmins(AdminsPageDto dto){
+        return R.success(sysStaffInfoService.getAdmins(dto));
+    }
 
 }

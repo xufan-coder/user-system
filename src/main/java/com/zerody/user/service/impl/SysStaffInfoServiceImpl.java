@@ -13,6 +13,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
@@ -390,8 +391,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId, String userName) {
-        return sysStaffInfoMapper.getStaff(companyId,departId,positionId,userName);
+    public List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId) {
+        return sysStaffInfoMapper.getStaff(companyId,departId,positionId);
+    }
+
+    @Override
+    public IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto) {
+        IPage<SysUserInfoVo> voIPage = new Page<>(dto.getCurrent(),dto.getPageSize());
+        return sysStaffInfoMapper.selectAdmins(dto,voIPage);
     }
 
     /**

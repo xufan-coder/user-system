@@ -81,7 +81,9 @@ public class CompanyAdminController {
 			return R.error("新增企业管理员出错:"+e.getMessage());
 		}
 	}
-	@ApiOperation(value = "修改企业管理员")
+	/**
+	*   编辑权限 
+	*/
 	@PutMapping
 	public DataResult<CompanyAdmin> update(@RequestBody CompanyAdmin data) {
 		try {

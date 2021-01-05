@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.domain.SysStaffInfo;
@@ -46,5 +47,7 @@ public interface SysStaffInfoService {
 
     Map<String, Object> batchImportStaff(MultipartFile file);
 
-    List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId,String userName);
+    List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
+
+    IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
 }

@@ -21,6 +21,11 @@ public class BosStaffInfoVo {
     *   企业ID 
     */
     private String compId;
+
+    /**
+    *   企业名称
+    */
+    private String companyName;
     
     /**
     *   员工姓名 
