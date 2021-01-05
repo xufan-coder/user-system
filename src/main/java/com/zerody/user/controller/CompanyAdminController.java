@@ -42,27 +42,7 @@ public class CompanyAdminController {
 	@Autowired
 	private CompanyAdminService service;
 	private static final int MODULE_CODE=1001;
-	
-	/**
-	 *  企业管理员分页查询 
-	 * @param grid
-	 * @param session
-	 * @return
-	 * @author 黄华盛
-	 * @date 2021-01-04
-	 */
-	@ApiOperation(value = "分页查询")
-	@GetMapping("/page")
-	public DataResult<?> page(CompanyAdminPageDto pageDto) {
-		try {
-			Object data = this.service.pageData(pageDto);
-			return R.success(data);
-		} catch (Exception e) {
-			log.error("分页查询企业管理员出错:{}", e, e);
-			return R.error("分页查询企业管理员出错:"+e.getMessage());
-		}
-	}
-	
+
 	/**
 	*	添加管理员
 	*/
@@ -95,8 +75,10 @@ public class CompanyAdminController {
 			return R.error("修改企业管理员出错:"+e.getMessage());
 		}
 	}
-	@ApiOperation(value = "删除企业管理员")
-	@DeleteMapping("/{id}")
+	/**
+	*    移除企业管理员
+	*/
+	@DeleteMapping("/del/{id}")
 	public DataResult<?> del(@PathVariable String id) {
 		try {
 			this.service.removeById(id);
@@ -104,33 +86,6 @@ public class CompanyAdminController {
 		} catch (Exception e) {
 			log.error("删除企业管理员出错:{}", e, e);
 			return R.error("删除企业管理员出错:"+e.getMessage());
-		}
-	}
-	@ApiOperation(value = "获取企业管理员")
-	@GetMapping("/{id}")
-	public DataResult<CompanyAdmin> get(@PathVariable String id) {
-		try {
-			CompanyAdmin obj = this.service.getById(id);
-			if (obj == null) {
-				return R.error("找不到企业管理员");
-			}
-			return R.success(obj);
-		} catch (Exception e) {
-			log.error("获取企业管理员出错:{}", e, e);
-			return R.error("获取企业管理员出错:"+e.getMessage());
-		}
-	}
-	
-	@ApiOperation(value = "查询企业管理员")
-	@GetMapping("/items")
-	public DataResult<?> getItems() {
-		try {
-		
-			Object obj = this.service.findData();
-			return R.success(obj);
-		} catch (Exception e) {
-			log.error("查询企业管理员出错:{}", e, e);
-			return R.error("查询企业管理员出错:"+e.getMessage());
 		}
 	}
 }

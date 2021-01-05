@@ -35,18 +35,4 @@ public interface CompanyAdminService extends IService<CompanyAdmin>{
 	 * @date 2021-01-04
 	 */
 	public void updateCompanyAdmin(CompanyAdmin data) throws Exception;
-   	 /**
-	 * 分页查询
-	 * 
-	 * @param pageDto
-	 * @return
-	 */
-	IPage<CompanyAdmin> pageData(CompanyAdminPageDto pageDto);
-	
-	/**
-	 * 查询全部数据
-	 * 
-	 * @return
-	 */
-	public List<CompanyAdmin> findData();
 }
