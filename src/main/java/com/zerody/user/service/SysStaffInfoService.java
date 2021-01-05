@@ -1,9 +1,11 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,17 +26,16 @@ public interface SysStaffInfoService {
 
     void staffAddRole(String staffId, String roleId);
 
-    DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto);
+    IPage<SysUserInfoVo> selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
+    IPage<SysUserInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
     void updateStaffStatus(String staffId, Integer status);
 
-    DataResult getStaffInfoByOpenId(String openId);
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto);
 
-    DataResult selectStaffById(String id);
+    SysUserInfoVo selectStaffById(String id);
 
     void batchDeleteStaff(List<String> staffIds);
 

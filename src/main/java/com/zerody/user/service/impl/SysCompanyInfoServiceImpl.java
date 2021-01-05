@@ -6,8 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.CheckParamUtils;
+import com.zerody.common.util.MD5Utils;
+import com.zerody.common.util.UUIDutils;
+import com.zerody.common.util.UserUtils;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
+import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.SysCompanyInfoMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
@@ -21,9 +26,13 @@ import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +61,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private SysDepartmentInfoService departmentInfoService;
 
+
+    private static final String INIT_PWD = "123456"; //初始密码
+
     /**
     * @Author               PengQiang
     * @Description //TODO   添加企业
@@ -60,6 +72,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     * @return               com.zerody.common.bean.DataResult
     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addCompany(SysCompanyInfo sysCompanyInfo) {
         log.info("B端添加企业入参--{}",sysCompanyInfo);
         //构造查询条件
@@ -78,6 +91,27 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysCompanyInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
+        //生成用户
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setPhoneNumber(sysCompanyInfo.getContactPhone());
+        userInfo.setUserName(sysCompanyInfo.getContactName());
+        userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        userInfo.setCreateId(UserUtils.getUserId());
+        userInfo.setCreateTime(new Date());
+        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setId(UUIDutils.getUUID32());
+        sysUserInfoMapper.insert(userInfo);
+        //企业生成成功生成企业管理员登录账号
+        SysLoginInfo sysLoginInfo = new SysLoginInfo();
+        sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
+        sysLoginInfo.setActiveFlag(UserLoginStatusEnum.ENABLE.getCode());
+        sysLoginInfo.setUserId(userInfo.getId());
+        sysLoginInfo.setCreateTime(new Date());
+        sysLoginInfo.setCreateId(UserUtils.getUserId());
+        sysLoginInfoMapper.insert(sysLoginInfo);
+
     }
 
     /**

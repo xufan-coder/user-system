@@ -83,18 +83,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
-        DataResult  dataResult = CheckUser.checkParam(sysUserInfo);
-        //如果校验不通过提示前端
-        if(!dataResult.isIsSuccess()){
-//            return dataResult;
-        };
+        //参数校验
+         CheckUser.checkParam(sysUserInfo);
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
-        dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
         if(users != null && users.size() > 0){
-            dataResult.setMessage("该手机号或用户名称被占用");
-            dataResult.setIsSuccess(!dataResult.isIsSuccess());
-//            return dataResult;
+            throw new DefaultException("该手机号或用户名称被占用");
         }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
@@ -165,26 +159,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DataResult selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto) {
+    public IPage<SysUserInfoVo> selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto) {
         IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
-        infoVoIPage = sysStaffInfoMapper.selectPageStaffByRoleId(sysStaffInfoPageDto,infoVoIPage);
-        return new DataResult(infoVoIPage);
+        return sysStaffInfoMapper.selectPageStaffByRoleId(sysStaffInfoPageDto,infoVoIPage);
     }
 
     @Override
-    public DataResult getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+    public IPage<SysUserInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
         IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
-        infoVoIPage = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
-        return new DataResult(infoVoIPage);
+        return sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
     }
 
     @Override
     public void updateStaffStatus(String staffId, Integer status) {
         if(StringUtils.isEmpty(staffId)){
-//            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id不能为空", null);
+            throw new DefaultException( "员工id不能为空");
         }
         if (status == null){
-//            return  new DataResult(ResultCodeEnum.RESULT_ERROR, false, "状态不能为空", null);
+            throw new DefaultException( "状态不能为空");
         }
         SysStaffInfo staff = new SysStaffInfo();
         staff.setId(staffId);
@@ -192,33 +184,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.saveOrUpdate(staff);
     }
 
-    @Override
-    public DataResult getStaffInfoByOpenId(String openId) {
-        if(StringUtils.isEmpty(openId)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "openId不能为空", null);
-        }
-        SysUserInfoVo userInfo = sysStaffInfoMapper.getStaffInfoByOpenId(openId);
-        userInfo.setPhoneNumber(userInfo.getPhoneNumber().replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2"));
-        return new DataResult(userInfo);
-    }
 
     @Override
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
-        DataResult  dataResult = CheckUser.checkParam(sysUserInfo);
-        //如果校验不通过提示前端
-        if(!dataResult.isIsSuccess()){
-//            return dataResult;
-        }
-
+        //参数校验
+        CheckUser.checkParam(sysUserInfo);
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
-        dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
         if(users != null && users.size() > 0){
-            dataResult.setMessage("该手机号或用户名称被占用");
-            dataResult.setIsSuccess(!dataResult.isIsSuccess());
-//            return dataResult;
+            throw new DefaultException("手机号或用户名被占用");
         }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
@@ -285,12 +261,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DataResult selectStaffById(String id) {
+    public SysUserInfoVo selectStaffById(String id) {
         if(StringUtils.isEmpty(id)){
-            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "id不能为空", null);
+            throw new DefaultException("id不能为空");
         }
-        SysUserInfoVo staff = sysStaffInfoMapper.selectStaffById(id);
-        return new DataResult(staff);
+        return sysStaffInfoMapper.selectStaffById(id);
     }
 
     @Override
@@ -310,7 +285,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public void deleteStaffById(String staffId) {
         if(StringUtils.isEmpty(staffId)){
-//            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "员工id为空", null);
+            throw new DefaultException( "员工id为空");
         }
         SysStaffInfo staff = new SysStaffInfo();
         staff.setId(staffId);

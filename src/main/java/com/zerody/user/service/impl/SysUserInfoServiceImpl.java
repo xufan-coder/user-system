@@ -84,16 +84,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Transactional(rollbackFor = Exception.class)
     public DataResult addUser(SysUserInfo userInfo) {
         log.info("B端添加用户入参---{}", JSON.toJSONString(userInfo));
-        DataResult  dataResult = CheckUser.checkParam(userInfo);
         //如果校验不通过提示前端
-        if(!dataResult.isIsSuccess()){
-            return dataResult;
-        }
+        CheckUser.checkParam(userInfo);
         //通过校验 把状态设为正常使用状态
         userInfo.setStatus(DataRecordStatusEnum.INVALID.getCode());
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
-        dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
+        DataResult dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
         if(users != null && users.size() > 0){
             dataResult.setMessage("该手机号或用户名称被占用");
             dataResult.setIsSuccess(!dataResult.isIsSuccess());
