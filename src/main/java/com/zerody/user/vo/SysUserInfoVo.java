@@ -2,8 +2,6 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -27,8 +25,6 @@ public class SysUserInfoVo {
     private Integer gender;
 
     //手机号
-    @NotEmpty(message = "手机号不能为空")
-    @Size(max = 11, min = 11, message = "手机号必须为11位")
     private String phoneNumber;
 
     //邮箱

@@ -56,9 +56,6 @@
       <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
         or phone_number = #{userInfo.phoneNumber}
       </if>
-      <if test="userInfo.loginName != null and userInfo.loginName != ''">
-        or login_name = #{userInfo.loginName}
-      </if>
       )
     </where>
 
@@ -135,6 +132,16 @@ WHERE
 	ui. STATUS = 0
 	limit 1
   </select>
+
+    <select id="selectUserByPhone" resultType="Boolean">
+    SELECT
+        count(1)>0
+    FROM
+        sys_user_info
+        WHERE
+			phone_number = #{phoneNumber}
+  </select>
+
     <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
     SELECT
     sci.company_name AS companyName,

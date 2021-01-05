@@ -4,6 +4,7 @@ import com.zerody.user.domain.SysUserInfo;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -13,21 +14,33 @@ import java.util.List;
  * @Deacription TODO
  */
 @Data
-public class SetSysUserInfoDto {
+public class SetSysUserInfoDto extends SysUserInfo{
 
-   //用户对象 添加员工先添加一个用户
-    @Valid
-    private SysUserInfo sysUserInfo;
+    /**
+    *    企业ID
+    */
+    @NotEmpty(message = "请选择企业！")
+    private String companyId;
 
-    //角色id集合
-    private List<String> roleIds;
+    /**
+    *    角色id
+    */
+    private String roleId;
 
-    //岗位id
+    /**
+    *    岗位id
+    */
     private String positionId;
 
-    //部门id
+    /**
+    *    部门id
+    */
     private String departId;
 
-    //员工状态
+    /**
+    *    员工状态
+    */
     private Integer status;
+
+
 }

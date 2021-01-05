@@ -50,6 +50,11 @@ public class BosStaffInfoVo {
     /**
     *    部门名称
     */
-    private String deartName;
+    private String departName;
+
+    /**
+    *    角色
+    */
+    private String roleName;
 
 }

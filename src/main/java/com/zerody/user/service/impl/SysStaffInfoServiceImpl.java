@@ -10,6 +10,7 @@ import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.base.BaseModel;
@@ -77,21 +78,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private static final String INIT_PWD = "123456";
 
     @Override
-    public void addStaff(SysStaffInfo staff) {
-        this.saveOrUpdate(staff);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
-        SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
+        SysUserInfo sysUserInfo=new SysUserInfo();
+        DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
          CheckUser.checkParam(sysUserInfo);
         //查看手机号或登录名是否被占用
-        List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
-        if(users != null && users.size() > 0){
-            throw new DefaultException("该手机号或用户名称被占用");
+        Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
+        if(flag){
+            throw new DefaultException("该手机号已存在！");
         }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
@@ -108,32 +105,32 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setMobileNumber(sysUserInfo.getPhoneNumber());
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
-        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));//初始化密码登录并加密
+        //初始化密码加密
+        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
         logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
+        staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
-        staff.setUserId(setSysUserInfoDto.getSysUserInfo().getId());
+        staff.setUserId(sysUserInfo.getId());
         log.info("B端添加员工入库参数--{}",JSON.toJSONString(staff));
         this.saveOrUpdate(staff);
-        if(setSysUserInfoDto.getRoleIds() != null && setSysUserInfoDto.getRoleIds().size() != 0 ){
-            UnionRoleStaff rs = new UnionRoleStaff();
-            for (String id : setSysUserInfoDto.getRoleIds()){
-                rs.setStaffId(staff.getId());
-                rs.setRoleId(id);
-                unionRoleStaffMapper.insert(rs);
-                rs = new UnionRoleStaff();
-            }
-        }
+        //角色
+        UnionRoleStaff rs = new UnionRoleStaff();
+        rs.setStaffId(staff.getId());
+        rs.setRoleId(setSysUserInfoDto.getRoleId());
+        unionRoleStaffMapper.insert(rs);
+        rs = new UnionRoleStaff();
+        //岗位
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())){
             UnionStaffPosition sp = new UnionStaffPosition();
             sp.setPositionId(setSysUserInfoDto.getPositionId());
             sp.setStaffId(staff.getId());
             unionStaffPositionMapper.insert(sp);
         }
-
+        //部门
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())){
             UnionStaffDepart sd = new UnionStaffDepart();
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
@@ -143,33 +140,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
 
-
     @Override
-    public void deleteStaffRole(String  staffId, String roleId) {
-        QueryWrapper<UnionRoleStaff> rsQW = new QueryWrapper<>();
-        rsQW.lambda().eq(UnionRoleStaff::getRoleId,roleId);
-        rsQW.lambda().eq(UnionRoleStaff::getStaffId,staffId);
-        unionRoleStaffMapper.delete(rsQW);
-    }
-
-    @Override
-    public void staffAddRole(String staffId, String roleId) {
-        UnionRoleStaff roleStaff = new UnionRoleStaff();
-        roleStaff.setId(UUIDutils.getUUID32());
-        roleStaff.setStaffId(staffId);
-        roleStaff.setRoleId(roleId);
-        unionRoleStaffMapper.insert(roleStaff);
-    }
-
-    @Override
-    public IPage<SysUserInfoVo> selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto) {
-        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
-        return sysStaffInfoMapper.selectPageStaffByRoleId(sysStaffInfoPageDto,infoVoIPage);
-    }
-
-    @Override
-    public IPage<SysUserInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
-        IPage<SysUserInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
+    public IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
         return sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
     }
 
@@ -190,7 +163,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
-        SysUserInfo sysUserInfo = setSysUserInfoDto.getSysUserInfo();
+        SysUserInfo sysUserInfo=new SysUserInfo();
+        DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
         log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo);
@@ -231,16 +205,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
         unionRoleStaffMapper.delete(ursQW);
-        if(setSysUserInfoDto.getRoleIds() != null && setSysUserInfoDto.getRoleIds().size() != 0 ){
-            UnionRoleStaff rs = new UnionRoleStaff();
-            //给员工赋予角色
-            for (String id : setSysUserInfoDto.getRoleIds()){
-                rs.setStaffId(staff.getId());
-                rs.setRoleId(id);
-                unionRoleStaffMapper.insert(rs);
-                rs = new UnionRoleStaff();
-            }
-        }
+        UnionRoleStaff rs = new UnionRoleStaff();
+        //给员工赋予角色
+        rs.setStaffId(staff.getId());
+        rs.setRoleId(setSysUserInfoDto.getRoleId());
+        unionRoleStaffMapper.insert(rs);
+        rs = new UnionRoleStaff();
         //删除该员工的部门
         QueryWrapper<UnionStaffPosition> uspQW = new QueryWrapper<>();
         uspQW.lambda().eq(UnionStaffPosition::getStaffId, staff.getId());

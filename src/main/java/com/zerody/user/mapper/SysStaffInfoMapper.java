@@ -17,9 +17,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     SysStaffInfoVo selectByUserIdAndCompId(@Param("userId") String userId, @Param("compId")String compId);
 
-    IPage<SysUserInfoVo> selectPageStaffByRoleId(@Param("staff") SysStaffInfoPageDto sysStaffInfoPageDto,IPage iPage);
-
-    IPage<SysUserInfoVo> getPageAllStaff(@Param("staff") SysStaffInfoPageDto sysStaffInfoPageDto,IPage iPage);
+    IPage<BosStaffInfoVo> getPageAllStaff(@Param("staff")SysStaffInfoPageDto sysStaffInfoPageDto,IPage iPage);
 
     List<String> selectUserByCompanyId(String companyId);
 

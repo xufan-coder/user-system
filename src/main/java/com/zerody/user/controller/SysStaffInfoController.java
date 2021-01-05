@@ -34,62 +34,18 @@ public class SysStaffInfoController {
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
 
-    //删除员工下的角色
-    @RequestMapping(value = "/role", method = RequestMethod.DELETE)
-    public DataResult<Object> deleteStaffRole(String staffId, String roleId){
-        try {
-            sysStaffInfoService.deleteStaffRole(staffId, roleId);
-            return R.success();
-        } catch (DefaultException e){
-            log.error("删除员工角色错误:{}",e.getMessage());
-            return R.error(e.getMessage());
-        }  catch (Exception e) {
-            log.error("删除员工角色错误:{}",e.getMessage());
-            return R.error("删除员工角色失败,请求异常");
-        }
-    }
-
-    //给员工添加角色
-    @RequestMapping(value = "/role", method = RequestMethod.POST)
-    public DataResult<Object> staffAddRole(@RequestBody JSONObject param){
-        try {
-            String staffId = param.getString("staffId");
-            String roleId = param.getString("roleId");
-            sysStaffInfoService.staffAddRole(staffId,roleId);
-            return R.success();
-        } catch (DefaultException e){
-            log.error("员工添加角色错误:{}",e.getMessage());
-            return R.error(e.getMessage());
-        }  catch (Exception e) {
-            log.error("员工添加角色错误:{}",e.getMessage());
-            return R.error("员工添加角色失败,请求异常");
-        }
-
-    }
-
-    //分页查当前角色下员工
-    @RequestMapping(value = "/role", method = RequestMethod.GET)
-    public DataResult<IPage<SysUserInfoVo>> selectPageStaffByRoleId(SysStaffInfoPageDto sysStaffInfoPageDto){
-        return R.success(sysStaffInfoService.selectPageStaffByRoleId(sysStaffInfoPageDto));
-    }
-
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          分页查询所有员工信息
-     * @date                 2021/1/1 12:38
-     * @param                sysStaffInfoPageDto
-     * @return               com.zerody.common.bean.DataResult
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public DataResult<IPage<SysUserInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
-
+    *   分页查询所有员工信息
+    */
+    @RequestMapping(value = "/page/get", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
 
-    //添加员工
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    /**
+    *   添加员工 
+    */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public DataResult<Object> addStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
@@ -118,8 +74,10 @@ public class SysStaffInfoController {
         }
     }
 
-    //修改员工
-    @RequestMapping(value = "", method = RequestMethod.PUT)
+    /**
+    *    编辑员工
+    */
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
             sysStaffInfoService.updateStaff(setSysUserInfoDto);
@@ -141,7 +99,7 @@ public class SysStaffInfoController {
 
 
     //批量删除员工
-    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public DataResult<Object> batchDeleteStaff(@RequestBody  List<String> staffIds){
 
         try {

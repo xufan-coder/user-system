@@ -36,4 +36,11 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * * @return {@link LoginUserInfoVo }
      */
     LoginUserInfoVo selectLoginUserInfo(@Param("id")String id);
+
+    /**
+     * description
+     * * @param phoneNumber
+     * * @return {@link Boolean }
+     */
+    Boolean selectUserByPhone(@Param("phoneNumber")String phoneNumber);
 }
