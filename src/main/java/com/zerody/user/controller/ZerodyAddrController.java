@@ -30,7 +30,7 @@ public class ZerodyAddrController {
      * @param
      * @return               com.zerody.common.bean.DataResult
      */
-    @RequestMapping(value = "/user/zerody_addr/{parentCode}", method = RequestMethod.GET)
+    @RequestMapping(value = "/zerody_addr/{parentCode}", method = RequestMethod.GET)
     public DataResult<List<ZerodyAddrVo>> getAddr(@PathVariable(name = "parentCode") Integer parentId){
         return R.success(zerodyAddrService.getAddr(parentId));
     }
