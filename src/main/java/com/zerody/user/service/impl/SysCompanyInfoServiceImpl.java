@@ -203,7 +203,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         //如果是crm系统就只查当前登录企业
-        if(StringUtils.isEmpty(companyId)){
+        if(!StringUtils.isEmpty(companyId)){
             SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(companyId);
             //获取当前企业下的部门、岗位
             company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
