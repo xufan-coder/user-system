@@ -157,7 +157,7 @@ WHERE
 	sui.`status` = 0
 	AND sui.id=#{id}
   </select>
-    <select id="getUserSubordinates" resultType="com.zerody.user.vo.SysUserSubordinateVo">
+    <select id="getUserSubordinates" resultType="com.zerody.user.api.vo.SysUserSubordinateVo">
         SELECT
             sui.id,
             sui.user_name,
