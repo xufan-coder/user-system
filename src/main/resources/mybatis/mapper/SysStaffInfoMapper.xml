@@ -134,7 +134,7 @@
         ssi. STATUS,
         sui.nation,
         sui.ancestral,
-        sari.role_name,
+        urs.role_name,
         sdi.depart_name,
         sjp.position_name
         FROM
@@ -142,7 +142,6 @@
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
         LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
-        LEFT JOIN sys_auth_role_info sari ON sari.id = urs.role_id and sari.status = 1
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 1
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
