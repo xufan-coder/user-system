@@ -32,13 +32,11 @@ public interface SysStaffInfoService {
 
     SysUserInfoVo selectStaffById(String id);
 
-    void batchDeleteStaff(List<String> staffIds);
-
     void deleteStaffById(String staffId);
 
     List<String> getStaffRoles(String userId, String companyId);
 
-    Map<String, Object> batchImportStaff(MultipartFile file);
+    Map<String, Object> batchImportStaff(MultipartFile file) throws Exception;
 
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
