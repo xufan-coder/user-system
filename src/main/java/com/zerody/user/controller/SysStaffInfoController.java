@@ -1,23 +1,31 @@
 package com.zerody.user.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -31,11 +39,15 @@ import java.util.List;
 @RequestMapping("/staff-info")
 public class SysStaffInfoController {
 
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
 
     /**
-    *   分页查询所有员工信息
+    *   分页查询员工信息
     */
     @RequestMapping(value = "/page/get", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
@@ -91,27 +103,12 @@ public class SysStaffInfoController {
         }
     }
 
-    //根据员工id查询员工信息
+    /**
+    *    根据员工id查询员工信息
+    */
     @GetMapping("/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         return R.success(sysStaffInfoService.selectStaffById(staffId));
-    }
-
-
-    //批量删除员工
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public DataResult<Object> batchDeleteStaff(@RequestBody  List<String> staffIds){
-
-        try {
-            sysStaffInfoService.batchDeleteStaff(staffIds);
-            return R.success();
-        } catch (DefaultException e){
-            log.error("批量删除员工错误:{}",e.getMessage());
-            return R.error(e.getMessage());
-        }  catch (Exception e) {
-            log.error("批量删除员工错误:{}",e.getMessage());
-            return R.error("批量删除员工失败,请求异常");
-        }
     }
 
 
@@ -133,8 +130,62 @@ public class SysStaffInfoController {
 
     }
 
-    //批量导入用户excel
-    @RequestMapping("/batchImportUser")
+    /**
+    *   下载模板 
+    */
+    @GetMapping("/get-template")
+    public void getTemplateUrl(Integer type) throws Exception {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletResponse response = attributes.getResponse();
+
+        InputStream inputStream = null;
+        ServletOutputStream servletOutputStream = null;
+        try {
+            String fileName = TemplateTypeEnum.getByCode(type).getUrl();
+
+            String chinaeseName = TemplateTypeEnum.getByCode(type).getText() + "模板.xlsx";
+
+            String path = "static/template" + "/" + fileName;
+
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:" + path);
+
+            response.setContentType("application/vnd.ms-excel");
+            response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.addHeader("charset", "utf-8");
+            response.addHeader("Pragma", "no-cache");
+            String encodeName = URLEncoder.encode(chinaeseName, StandardCharsets.UTF_8.toString());
+            response.addHeader("content-disposition", encodeName);
+
+            inputStream = resource.getInputStream();
+            servletOutputStream = response.getOutputStream();
+            IOUtils.copy(inputStream, servletOutputStream);
+            response.flushBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (servletOutputStream != null) {
+                    servletOutputStream.close();
+                    servletOutputStream = null;
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                    inputStream = null;
+                }
+                // 召唤jvm的垃圾回收器
+                System.gc();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+    /**
+    *    批量导入用户excel
+    */
+    @RequestMapping("/import")
     public DataResult<Object> batchImportUser(MultipartFile file){
         try {
             return R.success(sysStaffInfoService.batchImportStaff(file));

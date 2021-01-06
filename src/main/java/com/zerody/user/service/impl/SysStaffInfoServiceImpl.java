@@ -4,16 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.check.CheckUser;
-import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -50,7 +46,7 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-
+    public static final String[] STAFF_EXCEL_TITTLE = new String[] {"姓名","手机号码","部门","岗位","状态","性别","籍贯","民族","婚姻","出生年月日","身份证号码","户籍地址","居住地址","联系方式","电子邮箱","最高学历","毕业院校","所学专业"};
 
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
@@ -245,20 +241,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void batchDeleteStaff(List<String> staffIds) {
-        SysStaffInfo staff = new SysStaffInfo();
-        for (String id : staffIds){
-            if(StringUtils.isEmpty(id)){
-                continue;
-            }
-            staff.setStatus(DataRecordStatusEnum.DELETED.getCode());
-            staff.setId(id);
-            //逻辑删除员工
-            this.saveOrUpdate(staff);
-        }
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteStaffById(String staffId) {
         if(StringUtils.isEmpty(staffId)){
@@ -294,32 +276,54 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> batchImportStaff(MultipartFile file) {
-        //excel标题 用于导入失败提醒生成新的excel
-        String[] titles = {"姓名","手机号","身份证号","入职日期（格式：yyyy-MM-dd）"};
+    public Map<String, Object> batchImportStaff(MultipartFile file) throws Exception {
+        Map<String, Object> result = new HashMap<String, Object>();
+        List<String[]> dataList = FileUtil.fileImport(file);
+        if(DataUtil.isEmpty(dataList)){
+            throw new DefaultException("请检查上传数据是否正确！");
+        }
+        // 1：表示只有提示和表头，没有数据
+        if (dataList.size() < 2) {
+            throw new DefaultException("导入的模板为空，没有数据！");
+        }
+        //删除第一条表格填写说明数据
+        dataList.remove(0);
+        // 获取表头数组
+        String[] headers = dataList.get(0);
+        //读的起始行
+        int dataIndex = 0;
+        //判断表头字段是否符合要求
+        boolean isLegitimate = false;
+        //表头校验，只判断前一行，如果不正确直接返回
+        for (String[] header : dataList) {
+            if (Arrays.equals(header, STAFF_EXCEL_TITTLE)) {
+                isLegitimate = true;
+            }
+            if (++dataIndex == 1 || isLegitimate) {
+                break;
+            }
+        }
+        if (!isLegitimate) {
+            throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
+        }
         //必填项
-        Integer[] indexs = {0,1,2,3};
+        Integer[] indexs = {0,1,4};
         List<String[]> errors = new ArrayList<>();
         //结果返回
-        Map<String, Object> result = new HashMap<>();
-        String[] errorData = new String[titles.length];
-        Integer headSize = 1; //从第几行开始读取数据
-        Integer successCount = 0; //成功数量
-        Integer total = 0; //数据总数
+        String[] errorData = new String[headers.length];
+        //成功数量
+        Integer successCount = 0;
+        //数据总数
+        Integer total = 0;
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        try {
-            List<String[]> dataList = FileUtil.fileImport(file);
-            //判断当前导入excel是否有数据
-            if(dataList.size()<=headSize){
-                  throw new DefaultException("文件没有数据");
-            }
-            total = dataList.size() - headSize; //获得用户数
-            result.put("total",total);
+            //获得用户数
+            total = dataList.size() - dataIndex;
             String[] row = null;
-            SysUserInfo userInfo ; //保存用户所用实体
+            //保存用户所用实体
+            SysUserInfo userInfo ;
             StringBuilder errorInfo = new StringBuilder("");
             //循环行
-            for (int rowIndex = headSize,rowlength = dataList.size() ; rowIndex < rowlength; rowIndex++) {
+            for (int rowIndex = dataIndex,rowlength = dataList.size() ; rowIndex < rowlength; rowIndex++) {
                 //这一行的数据
                 row = dataList.get(rowIndex);
                 userInfo = new SysUserInfo();
@@ -327,7 +331,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     if(row[lineIndex] == null || "".equals(row[lineIndex])){
                         continue;
                     }
-                    row[lineIndex] = row[lineIndex].trim();//去掉空格
+                    //去掉空格
+                    row[lineIndex] = row[lineIndex].trim();
                 }
                 userInfo.setUserName(row[0]);
                 userInfo.setPhoneNumber(row[1]);
@@ -343,11 +348,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     errorInfo.append("身份证错误,");
                 }
                 sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
-                if(errorInfo.length() > 0){ //如果有错误信息就下一次循环 不保存  并记录错误信息
+                if(errorInfo.length() > 0){
+                    //如果有错误信息就下一次循环 不保存  并记录错误信息
                     System.arraycopy(row,0,errorData,0,row.length);
                     errorData[errorData.length - 1] = errorInfo.toString();
                     errors.add(errorData);
-                    errorInfo = new StringBuilder("");//循环最后清空错误信息以方便记录下一次循环的错误信息
+                    //循环最后清空错误信息以方便记录下一次循环的错误信息
+                    errorInfo = new StringBuilder("");
                     errorData = new String[errorData.length];
                     continue;
                 }
@@ -355,13 +362,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setCreateId(UserUtils.getUserId());
                 userInfo.setCreateUser(UserUtils.getUserName());
                 userInfo.setCreateTime(new Date());
-                sysUserInfoMapper.insert(userInfo); //因为员工表跟登录表都要用到用户所有先保存用户
+                //因为员工表跟登录表都要用到用户所有先保存用户
+                sysUserInfoMapper.insert(userInfo);
                 SysStaffInfo staff = new SysStaffInfo();
-//                staff.setCompId(UserUtils.get); //获取当前登录用户的当前公司id
+                //获取当前登录用户的当前公司id
+                staff.setCompId(UserUtils.getUser().getCompanyId());
                 staff.setUserName(userInfo.getUserName());
                 staff.setUserId(userInfo.getId());
-//                staff.setStatus(StaffStatusEnum.getCodeByDesc());
-                this.saveOrUpdate(staff); //保存到员工表
+                staff.setStatus(StaffStatusEnum.BE_ON_THE_JOB.getCode());
+                //保存到员工表
+                this.saveOrUpdate(staff);
 
                 SysLoginInfo loginInfo = new SysLoginInfo();
                 loginInfo.setMobileNumber(userInfo.getPhoneNumber());
@@ -369,14 +379,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 loginInfo.setUserId(userInfo.getId());
                 sysLoginInfoService.addOrUpdateLogin(loginInfo);
             }
-
+            result.put("total",total);
             if(errors.size()>0){
 
             }
-        } catch (IOException e) {
-            log.error("导入失败---:{}",e);
-            e.printStackTrace();
-        }
         return result;
     }
 
