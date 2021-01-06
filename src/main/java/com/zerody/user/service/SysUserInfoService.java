@@ -1,6 +1,8 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.api.dto.SysUserSubordindatePageDto;
 import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
@@ -114,8 +116,8 @@ public interface SysUserInfoService {
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/6 16:19
-     * @param                id 用户id
+     * @param                dto 用戶分頁
      * @return               java.util.List<com.zerody.user.vo.SysUserSubordinateVo>
      */
-    List<SysUserSubordinateVo> getUserSubordinates(String id);
+    IPage<SysUserSubordinateVo> getUserSubordinates(SysUserSubordindatePageDto dto);
 }

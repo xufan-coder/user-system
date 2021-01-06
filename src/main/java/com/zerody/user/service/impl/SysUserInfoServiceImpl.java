@@ -2,9 +2,12 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.user.api.dto.SysUserSubordindatePageDto;
 import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
@@ -212,16 +215,18 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
      * @return               java.util.List<com.zerody.user.vo.SysUserSubordinateVo>
      */
     @Override
-    public List<SysUserSubordinateVo> getUserSubordinates(String id) {
+    public IPage<SysUserSubordinateVo> getUserSubordinates(SysUserSubordindatePageDto dto) {
         //获取用户部门
-        SysDepartmentInfo dep = sysDepartmentInfoMapper.selectUserDep(id);
+        SysDepartmentInfo dep = sysDepartmentInfoMapper.selectUserDep(dto.getUserId());
         if(dep == null){
             return null;
         }
         List<SysDepartmentInfo> deps = new ArrayList<>();
         deps.add(dep);
         depChilder(deps, dep.getId());
-        return sysUserInfoMapper.getUserSubordinates(deps);
+        IPage<SysUserSubordinateVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
+        sysUserInfoMapper.getUserSubordinates(deps, iPage);
+        return iPage;
     }
 
     private void depChilder(List<SysDepartmentInfo> deps,String parentId ){
