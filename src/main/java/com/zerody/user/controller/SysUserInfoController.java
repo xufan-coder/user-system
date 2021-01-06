@@ -1,10 +1,12 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
+import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
@@ -166,4 +168,17 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<Boolean> checkPlatformRoleBind(@RequestParam("roleId")String roleId){
         return R.success(sysUserInfoService.checkPlatformRoleBind(roleId));
     }
+
+    @Override
+    public DataResult<List<SysUserSubordinateVo>> getUserSubordinates(String s) {
+        return null;
+    }
+
+
+//
+//    @Override
+//    @RequestMapping("/subordinate/page/inner")
+//    public DataResult<IPageList<SysUserSubordinateVo>> getUserSubordinates(@PathVariable(name = "id") String id){
+//        return R.success(sysUserInfoService.getUserSubordinates(id));
+//    }
 }

@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/companyInfo")
+@RequestMapping("/company-info")
 public class SysCompanyInfoController {
 
     @Autowired

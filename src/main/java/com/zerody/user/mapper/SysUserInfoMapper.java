@@ -1,6 +1,7 @@
 package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
@@ -43,4 +44,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * * @return {@link Boolean }
      */
     Boolean selectUserByPhone(@Param("phoneNumber")String phoneNumber);
+
+    List<SysUserSubordinateVo> getUserSubordinates(List<SysDepartmentInfo> deps);
 }

@@ -6,13 +6,11 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.check.CheckUser;
-import com.zerody.user.domain.CompanyAdmin;
-import com.zerody.user.domain.SysLoginInfo;
-import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.CompanyAdminMapper;
+import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.service.SysLoginInfoService;
@@ -28,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -53,6 +52,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private SysLoginInfoService sysLoginInfoService;
+
+    @Autowired
+    private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     private static final String  INIT_PWD = "123456";//初始化密码
 
@@ -197,6 +199,39 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<CompanyAdmin> qw=new QueryWrapper<>();
         qw.lambda().eq(CompanyAdmin::getRoleId,roleId);
         return companyAdminMapper.selectCount(qw)>0;
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/6 16:49
+     * @param                [id]
+     * @return               java.util.List<com.zerody.user.vo.SysUserSubordinateVo>
+     */
+    @Override
+    public List<SysUserSubordinateVo> getUserSubordinates(String id) {
+        //获取用户部门
+        SysDepartmentInfo dep = sysDepartmentInfoMapper.selectUserDep(id);
+        if(dep == null){
+            return null;
+        }
+        List<SysDepartmentInfo> deps = new ArrayList<>();
+        deps.add(dep);
+        depChilder(deps, dep.getId());
+        return sysUserInfoMapper.getUserSubordinates(deps);
+    }
+
+    private void depChilder(List<SysDepartmentInfo> deps,String parentId ){
+        QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+        depQw.lambda().eq(SysDepartmentInfo::getParentId, parentId);
+        depQw.lambda().eq(SysDepartmentInfo::getStatus, DataRecordStatusEnum.VALID.getCode());
+        List<SysDepartmentInfo> depList = sysDepartmentInfoMapper.selectList(depQw);
+        deps.addAll(depList);
+        for (SysDepartmentInfo dep : depList){
+            depChilder(deps, dep.getId());
+        }
     }
 
 }

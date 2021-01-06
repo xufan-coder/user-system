@@ -16,4 +16,15 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<String> selectUserLoginIdByDepId(String depId);
 
     List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          根据用户获取部门
+     * @date                 2021/1/6 16:43
+     * @param                id
+     * @return               com.zerody.user.domain.SysDepartmentInfo
+     */
+    SysDepartmentInfo selectUserDep(String id);
 }

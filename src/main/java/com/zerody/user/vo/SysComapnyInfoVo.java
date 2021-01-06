@@ -40,9 +40,9 @@ public class SysComapnyInfoVo {
 
     /**
      *
-     *登录状态
+     *企业状态状态
      */
-    private Integer loginStatus;
+    private Integer status;
 
     /**
      *

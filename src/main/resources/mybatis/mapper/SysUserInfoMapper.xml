@@ -157,4 +157,24 @@ WHERE
 	sui.`status` = 0
 	AND sui.id=#{id}
   </select>
+    <select id="getUserSubordinates" resultType="com.zerody.user.vo.SysUserSubordinateVo">
+        SELECT
+            sui.id,
+            sui.user_name,
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN union_staff_depart AS usd ON ssi.id = usd.staff_id
+        JOIN union_staff_position AS usp ON ssi.id = usp.staff_id
+        JOIN sys_jop_position AS sjp ON sjp.id = usp.position_id and sjp.status = 1
+        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            <if test="deps != null and deps.size >0 ">
+                sdi.id IN
+                    <foreach collection="deps" item="dep" open="(" separator="," close=")">
+                        #{dep.id}
+                    </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>
