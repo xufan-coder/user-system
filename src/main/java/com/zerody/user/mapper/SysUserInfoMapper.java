@@ -1,6 +1,7 @@
 package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.LoginUserInfoVo;

@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.LoginUserInfoVo;
