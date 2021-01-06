@@ -74,6 +74,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UnionStaffPositionMapper unionStaffPositionMapper;
 
+    @Autowired
+    private UnionLeaderDepartMapper unionLeaderDepartMapper;
+
 
     private static final String INIT_PWD = "123456";
 
@@ -256,6 +259,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteStaffById(String staffId) {
         if(StringUtils.isEmpty(staffId)){
             throw new DefaultException( "员工id为空");
@@ -264,6 +268,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setId(staffId);
         staff.setStatus(StaffStatusEnum.DELETE.getCode());
         this.saveOrUpdate(staff);
+        //删除部门
+        QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
+        qw.lambda().eq(UnionStaffDepart::getStaffId,staffId);
+        unionStaffDepartMapper.delete(qw);
+        //删除角色
+        QueryWrapper<UnionRoleStaff> qw1 = new QueryWrapper<>();
+        qw1.lambda().eq(UnionRoleStaff::getStaffId,staffId);
+        unionRoleStaffMapper.delete(qw1);
+        //删除岗位
+        QueryWrapper<UnionStaffPosition> qw2 = new QueryWrapper<>();
+        qw2.lambda().eq(UnionStaffPosition::getStaffId,staffId);
+        unionStaffPositionMapper.delete(qw2);
+        //删除部门领导
+        QueryWrapper<UnionLeaderDepart> qw3 = new QueryWrapper<>();
+        qw3.lambda().eq(UnionLeaderDepart::getStaffId,staffId);
+        unionLeaderDepartMapper.delete(qw3);
     }
 
     @Override

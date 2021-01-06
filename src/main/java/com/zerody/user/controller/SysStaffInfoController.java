@@ -115,8 +115,10 @@ public class SysStaffInfoController {
     }
 
 
-    //根据员工id单独删除员工
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    /**
+    *  删除员工
+    */
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public DataResult<Object> deleteStaffById(@PathVariable(name = "id") String staffId){
         try {
             sysStaffInfoService.deleteStaffById(staffId);
