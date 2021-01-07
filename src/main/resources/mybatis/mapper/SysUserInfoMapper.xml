@@ -72,7 +72,8 @@ SELECT
 	ui.nickname,
 	ui.open_id,
 	li.last_check_sms AS lastCheckSms,
-	ssi.comp_id AS companyId
+	ssi.comp_id AS companyId,
+	sdi.department_id AS deptId
 FROM
 	sys_user_info ui
 JOIN (
@@ -98,7 +99,8 @@ JOIN (
 			mobile_number = #{userName}
 			and status=0
 ) li ON ui.id = li.user_id
-LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status`=0 and is_main_company=1
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status`=0
+LEFT JOIN sys_department_info sdi ON sdi.staff_id=ssi.id
 WHERE
 	ui. STATUS = 0
 	limit 1

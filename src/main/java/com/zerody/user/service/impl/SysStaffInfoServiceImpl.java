@@ -32,20 +32,31 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffStatusEnum;
+import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
-
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author PengQiang
@@ -472,7 +483,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.getChilden(depIds, deps, thisDep);
 		return depIds;
 	}
-    
+
 	private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
 	}
@@ -499,5 +510,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             getChilden(depIds, deps, dep.getId());
         }
     }
+
 
 }

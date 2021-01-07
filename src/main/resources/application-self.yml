@@ -44,3 +44,8 @@ logging:
   level:
     com:
       zerody: debug
+
+  #文件上传路径
+upload:
+    path: /home/docker/static
+

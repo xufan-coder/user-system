@@ -106,6 +106,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return sysDepartmentInfoMapper.selectList(qw);
     }
 
+    @Override
+    public SysDepartmentInfo getByName(String name,String compId) {
+        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(SysDepartmentInfo::getCompId,compId);
+        qw.lambda().eq(SysDepartmentInfo::getDepartName,name);
+        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED);
+        return sysDepartmentInfoMapper.selectOne(qw);
+    }
+
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
         List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(childs)){

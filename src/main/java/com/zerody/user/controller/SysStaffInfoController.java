@@ -185,7 +185,7 @@ public class SysStaffInfoController {
     /**
     *    批量导入用户excel
     */
-    @RequestMapping("/import")
+    @PostMapping("/import")
     public DataResult<Object> batchImportUser(MultipartFile file){
         try {
             return R.success(sysStaffInfoService.batchImportStaff(file));

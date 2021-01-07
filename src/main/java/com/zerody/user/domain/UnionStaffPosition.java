@@ -9,6 +9,16 @@ public class UnionStaffPosition {
     //岗位id
     private String positionId;
 
+
+    public UnionStaffPosition(){
+        super();
+    }
+    public UnionStaffPosition(String staffId,String positionId){
+        this.positionId=positionId;
+        this.staffId=staffId;
+    }
+
+
     public String getId() {
         return id;
     }

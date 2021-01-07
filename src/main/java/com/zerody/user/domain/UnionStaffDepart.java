@@ -9,6 +9,14 @@ public class UnionStaffDepart {
     //部门id
     private String departmentId;
 
+    public UnionStaffDepart(){
+        super();
+    }
+    public UnionStaffDepart(String staffId,String departmentId){
+        this.departmentId=departmentId;
+        this.staffId=staffId;
+    }
+
     public String getId() {
         return id;
     }
