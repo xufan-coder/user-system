@@ -131,12 +131,16 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        ssi. STATUS,
+        ssi.STATUS,
         sui.nation,
         sui.ancestral,
         urs.role_name,
         sdi.depart_name,
-        sjp.position_name
+        sjp.position_name,
+        urs.role_id,
+        sdi.id AS departId,
+        sjp.id AS positionId,
+        sci.id AS companyId
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
