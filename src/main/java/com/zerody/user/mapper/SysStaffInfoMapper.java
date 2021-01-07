@@ -1,16 +1,19 @@
 package com.zerody.user.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
@@ -30,4 +33,8 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<BosStaffInfoVo> getStaff(@Param("companyId")String companyId, @Param("departId")String departId, @Param("positionId")String positionId);
 
     IPage<BosStaffInfoVo> selectAdmins(@Param("dto")AdminsPageDto dto, IPage voIPage);
+    
+    @Select({ "<script> select id from sys_staff_info where user_id=#{userId} limit 0,1 </script>" })
+	public String getStaffIdByUserId(@Param("userId")String userId);
+    public UserDeptVo selectUserDeptInfoById(@Param("staffId")String staffId);
 }

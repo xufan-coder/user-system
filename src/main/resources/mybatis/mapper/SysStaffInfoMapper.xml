@@ -219,4 +219,19 @@
         </if>
         </where>
     </select>
+    
+     <select id="selectUserDeptInfoById" resultType="com.zerody.user.api.vo.UserDeptVo">
+        SELECT
+        ssi.id as staffId,
+        ssi.user_id as userId,
+        ssi.id com_id as companyId,
+        usd.department_id as deptId,
+        usp.position_id as postId,
+        FROM sys_staff_info ssi 
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        <where>
+            ssi.status != -1 and ssi.id = #{staffId}
+        </where>
+    </select>
 </mapper>

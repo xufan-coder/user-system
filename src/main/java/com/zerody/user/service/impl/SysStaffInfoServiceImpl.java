@@ -9,6 +9,7 @@ import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -421,4 +422,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return true;
     }
+
+
+	@Override
+	public UserDeptVo getUserDeptVo(String userId) {
+		String staffId=this.getStaffIdByUserId(userId);
+		if(StringUtils.isEmpty(staffId))return null;
+		
+		return null;
+	}
+
+
+	@Override
+	public List<String> getUserSubordinates(String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+    
+	private String getStaffIdByUserId(String userId) {
+		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
+	}
+    
 }

@@ -8,6 +8,7 @@ import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.dto.SysUserSubordindatePageDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.SysUserSubordinateVo;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
@@ -185,4 +186,20 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<IPage<SysUserSubordinateVo>> getUserSubordinates(SysUserSubordindatePageDto dto){
         return R.success(sysUserInfoService.getUserSubordinates(dto));
     }
+
+
+	@Override
+	public DataResult<UserDeptVo> getUserDeptVo(String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public DataResult<List<String>> getUserSubordinates(String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+    
+    
 }
