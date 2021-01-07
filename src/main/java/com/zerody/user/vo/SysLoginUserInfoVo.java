@@ -59,4 +59,9 @@ public class SysLoginUserInfoVo {
 	*/
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date lastCheckSms;
+
+	/**
+	 *    部门ID
+	 */
+	private String deptId;
 }
