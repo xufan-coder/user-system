@@ -186,6 +186,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.UserDeptVo>
      */
 	@Override
+	@GetMapping(value = "/user-dept")
 	public DataResult<UserDeptVo> getUserDeptVo(String userId) {
 
         try {
@@ -201,6 +202,7 @@ public class SysUserInfoController implements UserRemoteService {
 
 
 	@Override
+	@GetMapping(value = "/user-subordinates")
 	public DataResult<List<String>> getUserSubordinates(String userId) {
 
         try {
