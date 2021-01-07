@@ -1,5 +1,21 @@
 package com.zerody.user.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,13 +30,30 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionLeaderDepart;
+import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.domain.UnionStaffDepart;
+import com.zerody.user.domain.UnionStaffPosition;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.enums.StaffStatusEnum;
+import com.zerody.user.mapper.SysLoginInfoMapper;
+import com.zerody.user.mapper.SysStaffInfoMapper;
+import com.zerody.user.mapper.SysUserInfoMapper;
+import com.zerody.user.mapper.UnionLeaderDepartMapper;
+import com.zerody.user.mapper.UnionRoleStaffMapper;
+import com.zerody.user.mapper.UnionStaffDepartMapper;
+import com.zerody.user.mapper.UnionStaffPositionMapper;
+import com.zerody.user.service.SysLoginInfoService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.domain.*;
@@ -29,6 +62,7 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
+
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -56,16 +90,10 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-    public static final String[] STAFF_EXCEL_TITTLE = new String[] {"姓名*","手机号码*","部门","岗位","角色*","状态","性别","籍贯","民族","婚姻","出生年月日","身份证号码","户籍地址","居住地址","电子邮箱","学历","毕业院校","所学专业"};
-
-    @Value("${upload.path}")
-    private String uploadPath;
+    public static final String[] STAFF_EXCEL_TITTLE = new String[] {"姓名","手机号码","部门","岗位","状态","性别","籍贯","民族","婚姻","出生年月日","身份证号码","户籍地址","居住地址","联系方式","电子邮箱","最高学历","毕业院校","所学专业"};
 
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
-
-    @Autowired
-    private SmsFeignService smsFeignService;
 
     @Autowired
     private SysStaffInfoMapper sysStaffInfoMapper;
@@ -77,6 +105,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SysLoginInfoService sysLoginInfoService;
 
     @Autowired
+
     private SysLoginInfoMapper sysLoginInfoMapper;
 
     @Autowired
@@ -88,22 +117,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UnionLeaderDepartMapper unionLeaderDepartMapper;
 
-    @Autowired
-    private UnionStaffDeparService unionStaffDeparService;
 
-    @Autowired
-    private UnionStaffPositionService unionStaffPositionService;
-
-    @Autowired
-    private UnionRoleStaffService unionRoleStaffService;
-
-    @Autowired
-    private SysDepartmentInfoService sysDepartmentInfoService;
-    @Autowired
-    private SysJobPositionService sysJobPositionService;
-
-    @Autowired
-    private OauthFeignService oauthFeignService;
+    private static final String INIT_PWD = "123456";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -134,16 +149,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
         //初始化密码加密
-        String initPwd = SysStaffInfoService.getInitPwd();
-//        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5("123456")));
+        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
         logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(sysUserInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-//        smsFeignService.sendSms(dto);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setCompId(setSysUserInfoDto.getCompanyId());
@@ -318,7 +327,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("请检查上传数据是否正确！");
         }
         // 1：表示只有提示和表头，没有数据
-        if (dataList.size() < 3) {
+        if (dataList.size() < 2) {
             throw new DefaultException("导入的模板为空，没有数据！");
         }
         //删除第一条表格填写说明数据
@@ -341,217 +350,84 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (!isLegitimate) {
             throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
         }
-
-        //  部门
-        List<UnionStaffDepart> unionStaffDepartList = new ArrayList<>();
-        //  岗位
-        List<UnionStaffPosition> unionStaffPositionList = new ArrayList<>();
-        //  角色
-        List<UnionRoleStaff> unionRoleStaffList = new ArrayList<>();
-        //需要发送的短信集合
-        List<SmsDto> smsDtos =new ArrayList<>();
-        //错误集合
+        //必填项
+        Integer[] indexs = {0,1,4};
         List<String[]> errors = new ArrayList<>();
-        //错误行
-        String[] errorData = new String[headers.length+1];
-        //错误字符构造
-        StringBuilder errorStr = new StringBuilder("");
-
-        //循环行
-        for (int rowIndex = dataIndex; rowIndex < dataList.size();rowIndex++) {
-            //这一行的数据
-            String[] row = dataList.get(rowIndex);
-            for (int lineIndex = 0,lineLength = row.length; lineIndex<lineLength; lineIndex++){
-                if(row[lineIndex] == null || "".equals(row[lineIndex])){
+        //结果返回
+        String[] errorData = new String[headers.length];
+        //成功数量
+        Integer successCount = 0;
+        //数据总数
+        Integer total = 0;
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            //获得用户数
+            total = dataList.size() - dataIndex;
+            String[] row = null;
+            //保存用户所用实体
+            SysUserInfo userInfo ;
+            StringBuilder errorInfo = new StringBuilder("");
+            //循环行
+            for (int rowIndex = dataIndex,rowlength = dataList.size() ; rowIndex < rowlength; rowIndex++) {
+                //这一行的数据
+                row = dataList.get(rowIndex);
+                userInfo = new SysUserInfo();
+                for (int lineIndex = 0,lineLength = row.length; lineIndex<lineLength; lineIndex++){
+                    if(row[lineIndex] == null || "".equals(row[lineIndex])){
+                        continue;
+                    }
+                    //去掉空格
+                    row[lineIndex] = row[lineIndex].trim();
+                }
+                userInfo.setUserName(row[0]);
+                userInfo.setPhoneNumber(row[1]);
+                userInfo.setCertificateCard(row[2]);
+                userInfo.setRegisterTime(new Date(row[3]));
+                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                //验证手机
+                if(checkPhone(userInfo.getPhoneNumber())){
+                    errorInfo.append("手机号码错误,");
+                }
+                //验证身份证
+                if(!IdCardUtil.isValidatedAllIdcard(userInfo.getCertificateCard())){
+                    errorInfo.append("身份证错误,");
+                }
+                sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
+                if(errorInfo.length() > 0){
+                    //如果有错误信息就下一次循环 不保存  并记录错误信息
+                    System.arraycopy(row,0,errorData,0,row.length);
+                    errorData[errorData.length - 1] = errorInfo.toString();
+                    errors.add(errorData);
+                    //循环最后清空错误信息以方便记录下一次循环的错误信息
+                    errorInfo = new StringBuilder("");
+                    errorData = new String[errorData.length];
                     continue;
                 }
-                //去掉空格
-                row[lineIndex] = row[lineIndex].trim();
-            }
+                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                userInfo.setCreateId(UserUtils.getUserId());
+                userInfo.setCreateUser(UserUtils.getUserName());
+                userInfo.setCreateTime(new Date());
+                //因为员工表跟登录表都要用到用户所有先保存用户
+                sysUserInfoMapper.insert(userInfo);
+                SysStaffInfo staff = new SysStaffInfo();
+                //获取当前登录用户的当前公司id
+                staff.setCompId(UserUtils.getUser().getCompanyId());
+                staff.setUserName(userInfo.getUserName());
+                staff.setUserId(userInfo.getId());
+                staff.setStatus(StaffStatusEnum.BE_ON_THE_JOB.getCode());
+                //保存到员工表
+                this.saveOrUpdate(staff);
 
-            //校验参数；
-            UnionStaffDepart unionStaffDepart=new UnionStaffDepart();
-            UnionStaffPosition unionStaffPosition=new UnionStaffPosition();
-            UnionRoleStaff unionRoleStaff=new UnionRoleStaff();
-            checkParam(row,errorStr,unionStaffDepart,unionStaffPosition,unionRoleStaff);
-            if(errorStr.length() > 0){
-                //如果有错误信息就下一次循环 不保存  并记录错误信息
-                System.arraycopy(row,0,errorData,0,row.length);
-                errorData[errorData.length - 1] = errorStr.toString();
-                errors.add(errorData);
-                //循环最后清空错误信息以方便记录下一次循环的错误信息
-                errorStr = new StringBuilder("");
-                errorData = new String[errorData.length];
-                continue;
+                SysLoginInfo loginInfo = new SysLoginInfo();
+                loginInfo.setMobileNumber(userInfo.getPhoneNumber());
+                loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
+                loginInfo.setUserId(userInfo.getId());
+                sysLoginInfoService.addOrUpdateLogin(loginInfo);
             }
-            //构建用户信息；
-            String staffId = saveUser(row, smsDtos);
-            unionStaffDepart.setStaffId(staffId);
-            unionStaffPosition.setStaffId(staffId);
-            unionRoleStaff.setStaffId(staffId);
-            if(DataUtil.isNotEmpty(unionStaffPosition.getPositionId())){
-                unionStaffPositionList.add(unionStaffPosition);
-            }
-            if(DataUtil.isNotEmpty(unionStaffDepart.getDepartmentId())){
-                unionStaffDepartList.add(unionStaffDepart);
-            }
-            unionRoleStaffList.add(unionRoleStaff);
-        }
-        //保存关联关系
-        if(DataUtil.isNotEmpty(unionStaffDepartList)){
-            unionStaffDeparService.saveBatch(unionStaffDepartList);
-        }
-        if(DataUtil.isNotEmpty(unionStaffPositionList)){
-            unionStaffPositionService.saveBatch(unionStaffPositionList);
-        }
-        unionRoleStaffService.saveBatch(unionRoleStaffList);
+            result.put("total",total);
+            if(errors.size()>0){
 
-        //数据总条数
-        result.put("total", dataList.size()-1);
-        //异常条数
-        result.put("errorCount", errors.size());
-        //成功条数
-        result.put("successCount", dataList.size() - errors.size()-1);
-        //标红必填项
-        Integer[] mustIndex = {0, 1, 4};
-        if(errors.size()>0){
-            String[] heads=Arrays.copyOf(headers,headers.length+1);
-            heads[heads.length-1] = "导入失败原因";
-            HSSFWorkbook hw = ExcelToolUtil.createExcel(heads, errors, mustIndex);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            hw.write(os);
-            InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-            String fileName = FileUtil.upload(inputStream, uploadPath, "xls", uploadPath);
-            result.put("fileUrlName", fileName);
-        }
+            }
         return result;
-    }
-
-    private String saveUser(String[] row,List<SmsDto> smsDtos) {
-        //表头对应下标
-        //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
-        // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
-        SysUserInfo userInfo=new SysUserInfo();
-        userInfo.setUserName(row[0]);
-        userInfo.setPhoneNumber(row[1]);
-        userInfo.setGender(row[6].equals(StaffGenderEnum.MALE.getDesc())?StaffGenderEnum.MALE.getValue():StaffGenderEnum.FEMALE.getValue());
-        userInfo.setAncestral(row[7]);
-        userInfo.setNation(row[8]);
-        userInfo.setMaritalStatus(row[9]);
-        userInfo.setBirthday(new Date(row[10]));
-        userInfo.setCertificateCard(row[11]);
-        userInfo.setCertificateCardAddress(row[12]);
-        userInfo.setContactAddress(row[13]);
-        userInfo.setEmail(row[14]);
-        userInfo.setHighestEducation(row[15]);
-        userInfo.setGraduatedFrom(row[16]);
-        userInfo.setMajor(row[17]);
-        userInfo.setRegisterTime(new Date());
-        userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateUser(UserUtils.getUserName());
-        userInfo.setCreateTime(new Date());
-        //因为员工表跟登录表都要用到用户所有先保存用户
-        sysUserInfoMapper.insert(userInfo);
-
-        SysStaffInfo staff = new SysStaffInfo();
-        //获取当前登录用户的当前公司id
-        staff.setCompId(UserUtils.getUser().getCompanyId());
-        staff.setUserName(userInfo.getUserName());
-        staff.setUserId(userInfo.getId());
-        Integer status =row[5].equals(StaffStatusEnum.BE_ON_THE_JOB.getDesc())?StaffStatusEnum.BE_ON_THE_JOB.getCode():
-                row[5].equals(StaffStatusEnum.DIMISSION.getDesc())?StaffStatusEnum.DIMISSION.getCode():StaffStatusEnum.COLLABORATE.getCode();
-        staff.setStatus(status);
-        //保存到员工表
-        this.saveOrUpdate(staff);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        SysLoginInfo loginInfo = new SysLoginInfo();
-        loginInfo.setMobileNumber(userInfo.getPhoneNumber());
-        String initPwd = SysStaffInfoService.getInitPwd();
-//        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5("123456")));
-        loginInfo.setUserId(userInfo.getId());
-        sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsDtos.add(dto);
-        return staff.getId();
-    }
-
-    private void checkParam(String[] row, StringBuilder errorStr,
-                            UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff) {
-        //当前企业ID
-        String companyId = UserUtils.getUser().getCompanyId();
-        //表头对应下标
-        //{"姓名","手机号码","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
-        // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【17】};
-        //必填项校验
-        if(DataUtil.isEmpty(row[0])||DataUtil.isEmpty(row[1])||DataUtil.isEmpty(row[4])){
-            errorStr.append("请填写红色区域必填项,");
-        }
-        //手机号码校验
-        String phone=row[1];
-        if(DataUtil.isNotEmpty(phone)){
-            //手机号码进行格式校验
-           if(checkPhone(phone)){
-               errorStr.append("手机号码格式不正确,");
-           }else {
-               //手机号码判断是否已注册账户
-               if(sysUserInfoMapper.selectUserByPhone(phone)){
-                   errorStr.append("此手机号码已注册过账户,");
-               }
-           }
-           //身份证号码校验
-            String cardId=row[11];
-            //验证身份证
-            if(DataUtil.isNotEmpty(cardId)) {
-                if (!IdCardUtil.isValidatedAllIdcard(cardId)) {
-                    errorStr.append("身份证错误");
-                }
-            }
-
-            String departName=row[2];
-            String jobName=row[3];
-            String roleName=row[4];
-            //本企业角色是否存在
-            DataResult roleByName = oauthFeignService.getRoleByName(companyId, roleName);
-            if(!roleByName.isSuccess()){
-                throw new DefaultException("服务异常");
-            }else {
-                if(DataUtil.isEmpty(roleByName.getData())){
-                    errorStr.append("角色不存在,");
-                }else {
-                    JSONObject obj=(JSONObject)JSON.toJSON(roleByName.getData());
-                    unionRoleStaff.setRoleId(obj.get("id").toString());
-                }
-            }
-            //本企业部门是否存在
-            SysDepartmentInfo byName=null;
-            if(DataUtil.isNotEmpty(departName)) {
-                byName = sysDepartmentInfoService.getByName(departName, companyId);
-                if (DataUtil.isEmpty(byName)) {
-                    errorStr.append("部门不存在,");
-                } else {
-                    unionStaffDepart.setDepartmentId(byName.getId());
-                }
-            }
-            //本企业岗位是否存在//如果没填部门则直接找岗位
-
-            if(DataUtil.isNotEmpty(jobName)) {
-                SysJobPosition jobByDepart=null;
-                if(DataUtil.isNotEmpty(departName)){
-                    jobByDepart = sysJobPositionService.getJobByDepart(jobName, companyId, byName.getId());
-                }else {
-                    jobByDepart = sysJobPositionService.getJobByComp(jobName, companyId);
-                }
-                if (DataUtil.isEmpty(jobByDepart)) {
-                    errorStr.append("岗位不存在,");
-                } else {
-                    unionStaffPosition.setPositionId(jobByDepart.getId());
-                }
-            }
-        }
     }
 
     @Override
@@ -589,4 +465,28 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return true;
     }
+
+
+	@Override
+	public UserDeptVo getUserDeptVo(String userId) {
+		String staffId=this.getStaffIdByUserId(userId);
+		if(StringUtils.isEmpty(staffId))return null;
+		return this.sysStaffInfoMapper.selectUserDeptInfoById(staffId);
+	}
+
+
+	@Override
+	public List<String> getUserSubordinates(String userId) {
+		String staffId=this.getStaffIdByUserId(userId);
+		if(StringUtils.isEmpty(staffId))return null;
+		QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
+		qw.eq("staff_id", staffId);
+		this.unionStaffDepartMapper.selectOne(qw);
+		return null;
+	}
+
+	private String getStaffIdByUserId(String userId) {
+		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
+	}
+
 }

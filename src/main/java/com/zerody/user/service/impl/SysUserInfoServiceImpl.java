@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.user.api.dto.SysUserSubordindatePageDto;
-import com.zerody.user.api.vo.SysUserSubordinateVo;
+import com.zerody.common.util.UserUtils;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
@@ -205,39 +205,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return companyAdminMapper.selectCount(qw)>0;
     }
 
-    /**
-     *
-     *
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/6 16:49
-     * @param                [id]
-     * @return               java.util.List<com.zerody.user.vo.SysUserSubordinateVo>
-     */
-    @Override
-    public IPage<SysUserSubordinateVo> getUserSubordinates(SysUserSubordindatePageDto dto) {
-        //获取用户部门
-        SysDepartmentInfo dep = sysDepartmentInfoMapper.selectUserDep(dto.getUserId());
-        if(dep == null){
-            return null;
-        }
-        List<SysDepartmentInfo> deps = new ArrayList<>();
-        deps.add(dep);
-        depChilder(deps, dep.getId());
-        IPage<SysUserSubordinateVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
-        sysUserInfoMapper.getUserSubordinates(deps, iPage);
-        return iPage;
-    }
 
-    private void depChilder(List<SysDepartmentInfo> deps,String parentId ){
-        QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
-        depQw.lambda().eq(SysDepartmentInfo::getParentId, parentId);
-        depQw.lambda().eq(SysDepartmentInfo::getStatus, DataRecordStatusEnum.VALID.getCode());
-        List<SysDepartmentInfo> depList = sysDepartmentInfoMapper.selectList(depQw);
-        deps.addAll(depList);
-        for (SysDepartmentInfo dep : depList){
-            depChilder(deps, dep.getId());
-        }
-    }
+
+    
 
 }

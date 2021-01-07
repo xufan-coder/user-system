@@ -5,6 +5,7 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
@@ -52,4 +53,18 @@ public interface SysStaffInfoService {
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
     IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
+    
+    /**
+     * 获取员工数据，包含公司，部门，岗位
+     * @param userId
+     * @return
+     */
+	UserDeptVo getUserDeptVo(String userId);
+	
+	/**
+	 *  获取员工下属部门
+	 * @param userId
+	 * @return
+	 */
+	List<String> getUserSubordinates(String userId);
 }
