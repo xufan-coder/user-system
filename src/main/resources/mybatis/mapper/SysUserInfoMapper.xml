@@ -73,7 +73,7 @@ SELECT
 	ui.open_id,
 	li.last_check_sms AS lastCheckSms,
 	ssi.comp_id AS companyId,
-	sdi.department_id AS deptId
+	sdi.id AS deptId
 FROM
 	sys_user_info ui
 JOIN (
