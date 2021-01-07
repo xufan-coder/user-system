@@ -1,5 +1,26 @@
 package com.zerody.user.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.domain.*;
+import com.zerody.user.mapper.*;
+import com.zerody.user.vo.SysDepartmentInfoVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -73,6 +94,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UnionLeaderDepartMapper unionLeaderDepartMapper;
 
+    @Autowired
+    private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     private static final String INIT_PWD = "123456";
 
@@ -426,23 +449,67 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	@Override
 	public UserDeptVo getUserDeptVo(String userId) {
 		String staffId=this.getStaffIdByUserId(userId);
-		if(StringUtils.isEmpty(staffId))return null;
+		if(StringUtils.isEmpty(staffId)){
+		    throw new DefaultException("没有该员工");
+        }
 		return this.sysStaffInfoMapper.selectUserDeptInfoById(staffId);
 	}
 
 
+	/**
+	 *
+	 *  用户子级部门
+	 * @author               PengQiang
+	 * @description          DELL
+	 * @date                 2021/1/7 17:54
+	 * @param                [userId]
+	 * @return               java.util.List<java.lang.String>
+	 */
 	@Override
 	public List<String> getUserSubordinates(String userId) {
 		String staffId=this.getStaffIdByUserId(userId);
-		if(StringUtils.isEmpty(staffId))return null;
+		if(StringUtils.isEmpty(staffId)){
+            throw new DefaultException("没有该员工");
+        }
 		QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
 		qw.eq("staff_id", staffId);
-		this.unionStaffDepartMapper.selectOne(qw);
-		return null;
+		//获得自己的部门id
+		String thisDep =  this.unionStaffDepartMapper.selectOne(qw).getDepartmentId();
+		//获取全部的部门
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(UserUtils.getUser().getCompanyId());
+        //子级部门id集合
+        List<String> depIds = new ArrayList<>();
+        depIds.add(thisDep);
+        this.getChilden(depIds, deps, thisDep);
+		return depIds;
 	}
 
 	private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
 	}
+
+
+	/**
+	 *
+	 *  递归获得子级部门
+	 * @author               PengQiang
+	 * @description          DELL
+	 * @date                 2021/1/7 17:54
+	 * @param                [depIds, deps, parentId] depIds:子级部门集合，deps:企业全部部门,parentId:部门的上级部门id
+	 * @return               void
+	 */
+	private void getChilden(List<String> depIds, List<SysDepartmentInfoVo> deps, String parentId){
+        //获取子级部门集合
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(childs)){
+            return;
+        }
+        //循环用id再次查找子级部门
+        for (SysDepartmentInfoVo dep : childs){
+            depIds.add(dep.getId());
+            getChilden(depIds, deps, dep.getId());
+        }
+    }
+
 
 }

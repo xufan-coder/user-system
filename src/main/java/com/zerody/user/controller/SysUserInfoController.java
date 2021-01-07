@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
@@ -13,6 +14,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @DateTime 2020/12/16_17:10
  * @Deacription TODO
  */
+@Slf4j
 @RequestMapping("/sysUserInfo")
 @RestController
 public class SysUserInfoController implements UserRemoteService {
@@ -173,18 +176,42 @@ public class SysUserInfoController implements UserRemoteService {
 
 
 
-
+    /**
+     *
+     * 获取员工数据，包含公司，部门，岗位
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/7 17:24
+     * @param                [userId]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.UserDeptVo>
+     */
 	@Override
 	public DataResult<UserDeptVo> getUserDeptVo(String userId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+        try {
+            return R.success(this.sysStaffInfoService.getUserDeptVo(userId));
+        } catch (DefaultException e) {
+            log.error("获取线索汇总出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取线索汇总出错:{}", e, e);
+            return R.error("获取线索汇总出错！请求异常");
+        }
+    }
 
 
 	@Override
 	public DataResult<List<String>> getUserSubordinates(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+
+        try {
+            return R.success(this.sysStaffInfoService.getUserSubordinates(userId));
+        } catch (DefaultException e) {
+            log.error("获取线索汇总出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取线索汇总出错:{}", e, e);
+            return R.error("获取线索汇总出错！请求异常");
+        }
 	}
     
 

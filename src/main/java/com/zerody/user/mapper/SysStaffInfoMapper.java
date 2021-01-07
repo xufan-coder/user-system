@@ -36,5 +36,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     
     @Select({ "<script> select id from sys_staff_info where user_id=#{userId} limit 0,1 </script>" })
 	public String getStaffIdByUserId(@Param("userId")String userId);
+
     public UserDeptVo selectUserDeptInfoById(@Param("staffId")String staffId);
 }
