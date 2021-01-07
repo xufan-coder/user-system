@@ -21,4 +21,29 @@ public interface SysJobPositionService {
     DataResult deleteJobById(String jobId);
 
     List<SysJobPosition> getJob(String departId);
+
+    /**************************************************************************************************
+     **
+     * 按岗位名称查询本企业本部门下是否有该岗位
+     *
+     * @param name
+     * @param compId
+     * @param departId
+     * @return {@link SysJobPosition }
+     * @author DaBai
+     * @date 2021/1/7  9:44 
+     */
+    SysJobPosition getJobByDepart(String name,String compId,String departId);
+
+    /**************************************************************************************************
+     **
+     *  按岗位名称查询本企业下是否有该岗位
+     *
+     * @param jobName
+     * @param companyId
+     * @return {@link SysJobPosition }
+     * @author DaBai
+     * @date 2021/1/7  16:47
+     */
+    SysJobPosition getJobByComp(String jobName, String companyId);
 }

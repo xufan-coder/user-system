@@ -9,6 +9,16 @@ public class UnionRoleStaff {
     //角色id
     private String roleId;
 
+
+    public UnionRoleStaff(){
+        super();
+    }
+    public UnionRoleStaff(String staffId,String roleId){
+        this.roleId=roleId;
+        this.staffId=staffId;
+    }
+
+
     public String getId() {
         return id;
     }

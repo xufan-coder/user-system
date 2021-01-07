@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author PengQiang
@@ -20,6 +21,16 @@ import java.util.Map;
  * @Deacription TODO
  */
 public interface SysStaffInfoService {
+    static String getInitPwd() {
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 8; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
+    }
 
     void addStaff(SetSysUserInfoDto setSysUserInfoDto);
 

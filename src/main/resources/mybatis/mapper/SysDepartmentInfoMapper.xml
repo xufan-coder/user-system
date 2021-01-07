@@ -65,7 +65,7 @@
       JOIN sys_staff_info ssi ON ssi.user_id = sui.id
       JOIN union_staff_depart usd ON usd.staff_id = ssi.id
       <where>
-        usd.department_id = #{depId} and sli.`active_flag` = 1
+        usd.department_id = #{depId}
       </where>
   </select>
     <select id="getAllDepByCompanyId" resultType="com.zerody.user.vo.SysDepartmentInfoVo">

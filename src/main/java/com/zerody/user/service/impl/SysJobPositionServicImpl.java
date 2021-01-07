@@ -80,6 +80,25 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     }
 
     @Override
+    public SysJobPosition getJobByDepart(String name, String compId, String departId) {
+        QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
+        qw.lambda().eq(SysJobPosition::getDepartId,departId);
+        qw.lambda().eq(SysJobPosition::getCompId,compId);
+        qw.lambda().eq(SysJobPosition::getPositionName,name);
+        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED.getCode());
+        return sysJobPositionMapper.selectOne(qw);
+    }
+
+    @Override
+    public SysJobPosition getJobByComp(String name, String compId) {
+        QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
+        qw.lambda().eq(SysJobPosition::getCompId,compId);
+        qw.lambda().eq(SysJobPosition::getPositionName,name);
+        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED.getCode());
+        return sysJobPositionMapper.selectOne(qw);
+    }
+
+    @Override
     public DataResult updateJob(SysJobPosition sysJobPosition) {
 
         //除了被删除的企业的岗位用名称查看数据库有没有这个名称
