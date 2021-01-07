@@ -19,9 +19,9 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
 
     /**
      *
-     *
+     * 根据用户获取部门
      * @author               PengQiang
-     * @description          根据用户获取部门
+     * @description
      * @date                 2021/1/6 16:43
      * @param                id
      * @return               com.zerody.user.domain.SysDepartmentInfo

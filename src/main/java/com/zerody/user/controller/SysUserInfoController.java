@@ -5,9 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
-import com.zerody.user.api.dto.SysUserSubordindatePageDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
@@ -172,20 +170,8 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
 
-    /**
-     *  获取员工下级员工
-     *
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/6 20:07
-     * @param                [dto]
-     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.api.vo.SysUserSubordinateVo>>
-     */
-    @Override
-    @RequestMapping("/subordinate/page/inner")
-    public DataResult<IPage<SysUserSubordinateVo>> getUserSubordinates(SysUserSubordindatePageDto dto){
-        return R.success(sysUserInfoService.getUserSubordinates(dto));
-    }
+
+
 
 
 	@Override
@@ -201,5 +187,5 @@ public class SysUserInfoController implements UserRemoteService {
 		return null;
 	}
     
-    
+
 }

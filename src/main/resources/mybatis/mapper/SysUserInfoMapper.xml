@@ -157,13 +157,11 @@ WHERE
 	sui.`status` = 0
 	AND sui.id=#{id}
   </select>
-    <select id="getUserSubordinates" resultType="com.zerody.user.api.vo.SysUserSubordinateVo">
+    <select id="getUserSubordinates" resultType="java.lang.String">
         SELECT
-            sui.id,
-            sui.user_name,
+            ssi.user_id
         FROM
-            sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+            sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON ssi.id = usd.staff_id
         JOIN union_staff_position AS usp ON ssi.id = usp.staff_id
         JOIN sys_jop_position AS sjp ON sjp.id = usp.position_id and sjp.status = 1

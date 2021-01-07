@@ -2,7 +2,6 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zerody.user.api.vo.SysUserSubordinateVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.LoginUserInfoVo;
@@ -54,8 +53,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @description          DELL
      * @date                 2021/1/6 20:06
      * @param                deps
-     * @param               page
      * @return               java.util.List<com.zerody.user.api.vo.SysUserSubordinateVo>
      */
-    List<SysUserSubordinateVo> getUserSubordinates(List<SysDepartmentInfo> deps, IPage<SysUserSubordinateVo> page);
+    List<String> getUserSubordinates(@Param("deps") List<SysDepartmentInfo> deps);
 }

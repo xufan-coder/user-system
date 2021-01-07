@@ -1,5 +1,21 @@
 package com.zerody.user.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,32 +27,34 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysStaffInfo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionLeaderDepart;
+import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.domain.UnionStaffDepart;
+import com.zerody.user.domain.UnionStaffPosition;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffStatusEnum;
-import com.zerody.user.mapper.*;
-import com.zerody.user.domain.*;
+import com.zerody.user.mapper.SysLoginInfoMapper;
+import com.zerody.user.mapper.SysStaffInfoMapper;
+import com.zerody.user.mapper.SysUserInfoMapper;
+import com.zerody.user.mapper.UnionLeaderDepartMapper;
+import com.zerody.user.mapper.UnionRoleStaffMapper;
+import com.zerody.user.mapper.UnionStaffDepartMapper;
+import com.zerody.user.mapper.UnionStaffPositionMapper;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
+
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author PengQiang
@@ -428,14 +446,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	public UserDeptVo getUserDeptVo(String userId) {
 		String staffId=this.getStaffIdByUserId(userId);
 		if(StringUtils.isEmpty(staffId))return null;
-		
-		return null;
+		return this.sysStaffInfoMapper.selectUserDeptInfoById(staffId);
 	}
 
 
 	@Override
 	public List<String> getUserSubordinates(String userId) {
-		// TODO Auto-generated method stub
+		String staffId=this.getStaffIdByUserId(userId);
+		if(StringUtils.isEmpty(staffId))return null;
+		QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
+		qw.eq("staff_id", staffId);
+		this.unionStaffDepartMapper.selectOne(qw);
 		return null;
 	}
     
