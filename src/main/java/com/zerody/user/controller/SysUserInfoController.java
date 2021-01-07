@@ -186,31 +186,33 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.UserDeptVo>
      */
 	@Override
+    @RequestMapping(value = "/user-dept", method = GET)
 	public DataResult<UserDeptVo> getUserDeptVo(String userId) {
 
         try {
             return R.success(this.sysStaffInfoService.getUserDeptVo(userId));
         } catch (DefaultException e) {
-            log.error("获取线索汇总出错:{}", e, e);
+            log.error("获取员工信息出错:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取线索汇总出错:{}", e, e);
+            log.error("获取员工信息出错:{}", e, e);
             return R.error("获取线索汇总出错！请求异常");
         }
     }
 
 
 	@Override
+    @RequestMapping(value = "/user-subordinates" , method = GET)
 	public DataResult<List<String>> getUserSubordinates(String userId) {
 
         try {
             return R.success(this.sysStaffInfoService.getUserSubordinates(userId));
         } catch (DefaultException e) {
-            log.error("获取线索汇总出错:{}", e, e);
+            log.error("获取员工下级部门信息出错:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取线索汇总出错:{}", e, e);
-            return R.error("获取线索汇总出错！请求异常");
+            log.error("获取员工下级部门信息出错:{}", e, e);
+            return R.error("获取员工下级部门信息出错！请求异常");
         }
 	}
     
