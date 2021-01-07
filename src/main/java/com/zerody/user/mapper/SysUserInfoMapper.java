@@ -54,8 +54,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @description          DELL
      * @date                 2021/1/6 20:06
      * @param                deps
-     * @param               page
      * @return               java.util.List<com.zerody.user.api.vo.SysUserSubordinateVo>
      */
-    List<SysUserSubordinateVo> getUserSubordinates(List<SysDepartmentInfo> deps, IPage<SysUserSubordinateVo> page);
+    List<String> getUserSubordinates(@Param("deps") List<SysDepartmentInfo> deps);
 }

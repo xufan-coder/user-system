@@ -110,14 +110,4 @@ public interface SysUserInfoService {
      */
     Boolean checkPlatformRoleBind(String roleId);
 
-    /**
-     *
-     *  根据id查询用户的下属
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/6 16:19
-     * @param                dto 用戶分頁
-     * @return               java.util.List<com.zerody.user.vo.SysUserSubordinateVo>
-     */
-    IPage<SysUserSubordinateVo> getUserSubordinates(SysUserSubordindatePageDto dto);
 }
