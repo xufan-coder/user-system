@@ -475,6 +475,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 		qw.eq("staff_id", staffId);
 		//获得自己的部门id
 		String thisDep =  this.unionStaffDepartMapper.selectOne(qw).getDepartmentId();
+		if(StringUtils.isEmpty(thisDep)){
+		    throw new DefaultException("该员工没有部门");
+        }
 		//获取全部的部门
         List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(UserUtils.getUser().getCompanyId());
         //子级部门id集合
