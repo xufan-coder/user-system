@@ -13,7 +13,14 @@ import java.util.Date;
 @Data
 public class SysUserInfoVo {
 
+    /**
+    *   企业名称
+    */
     private String companyName;
+    /**
+    *   企业ID
+    */
+    private String companyId;
 
     //员工id
     private String staffId;
@@ -52,7 +59,6 @@ public class SysUserInfoVo {
 
     //联系地址
     private String contactAddress;
-
 
 
     //注册时间
@@ -94,4 +100,19 @@ public class SysUserInfoVo {
 
     //岗位名称
     private String positionName;
+
+    /**
+    *   角色ID
+    */
+    private String roleId;
+
+    /**
+    *   部门ID
+    */
+    private String departId;
+
+    /**
+    *   岗位ID
+    */
+    private String positionId;
 }
