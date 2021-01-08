@@ -177,4 +177,18 @@ WHERE
             </if>
         </where>
     </select>
+
+    <select id="checkUserAdmin" resultType="Boolean">
+        SELECT
+        count(1)>0
+        FROM
+        sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id=sui.id
+        JOIN company_admin AS ca ON ca.staff_id=ssi.id
+        <where>
+            ssi.status=0
+            and sui.status=0
+            and sui.id=#{userId}
+        </where>
+    </select>
 </mapper>

@@ -201,8 +201,10 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return companyAdminMapper.selectCount(qw)>0;
     }
 
+    @Override
+    public Boolean checkUserAdmin(String userId) {
+        return sysUserInfoMapper.checkUserAdmin(userId);
+    }
 
-
-    
 
 }

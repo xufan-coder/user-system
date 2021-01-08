@@ -57,4 +57,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @return               java.util.List<com.zerody.user.api.vo.SysUserSubordinateVo>
      */
     List<String> getUserSubordinates(@Param("deps") List<SysDepartmentInfo> deps);
+
+    Boolean checkUserAdmin(@Param("userId")String userId);
 }

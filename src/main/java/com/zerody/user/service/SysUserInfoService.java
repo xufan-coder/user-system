@@ -109,4 +109,5 @@ public interface SysUserInfoService {
      */
     Boolean checkPlatformRoleBind(String roleId);
 
+    Boolean checkUserAdmin(String userId);
 }
