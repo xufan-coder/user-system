@@ -1,21 +1,17 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.domain.UnionStaffPosition;
 import com.zerody.user.domain.base.BaseModel;
-import com.zerody.user.dto.SysJobPositionDto;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.mapper.UnionStaffPositionMapper;
 import com.zerody.user.service.SysJobPositionService;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.vo.SysJobPositionVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,12 +41,12 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
         jobQW.lambda().eq(SysJobPosition::getPositionName, sysJobPosition.getPositionName());
         jobQW.lambda().eq(SysJobPosition::getCompId, sysJobPosition.getCompId());
-        jobQW.lambda().ne(SysJobPosition::getStatus, DataRecordStatusEnum.DELETED.getCode());
+        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
         Integer jobNameCount = this.count(jobQW);
         if(jobNameCount > 0 ){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
-        sysJobPosition.setStatus(DataRecordStatusEnum.VALID.getCode());
+        sysJobPosition.setStatus(StatusEnum.激活.getValue());
         this.saveOrUpdate(sysJobPosition);
         return new DataResult();
     }
@@ -64,7 +60,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
             throw new DefaultException("该岗位已有员工存在，不可删除！");
         }
         SysJobPosition job = new SysJobPosition();
-        job.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        job.setStatus(StatusEnum.删除.getValue());
         job.setId(jobId);
         this.updateJob(job);
         return new DataResult();
@@ -74,7 +70,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     public  List<SysJobPosition> getJob(String departId) {
         QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
         qw.lambda().eq(SysJobPosition::getDepartId,departId);
-        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED.getCode());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         List<SysJobPosition> sysJobPositions = sysJobPositionMapper.selectList(qw);
         return sysJobPositions;
     }
@@ -85,7 +81,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         qw.lambda().eq(SysJobPosition::getDepartId,departId);
         qw.lambda().eq(SysJobPosition::getCompId,compId);
         qw.lambda().eq(SysJobPosition::getPositionName,name);
-        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED.getCode());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         return sysJobPositionMapper.selectOne(qw);
     }
 
@@ -94,7 +90,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
         qw.lambda().eq(SysJobPosition::getCompId,compId);
         qw.lambda().eq(SysJobPosition::getPositionName,name);
-        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED.getCode());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         return sysJobPositionMapper.selectOne(qw);
     }
 
@@ -105,7 +101,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
         jobQW.lambda().eq(SysJobPosition::getPositionName, sysJobPosition.getPositionName());
         jobQW.lambda().eq(SysJobPosition::getCompId, sysJobPosition.getCompId());
-        jobQW.lambda().ne(SysJobPosition::getStatus, DataRecordStatusEnum.DELETED.getCode());
+        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
         jobQW.lambda().ne(SysJobPosition::getId, sysJobPosition.getId());
         //此处少了企业条件
         Integer jobNameCount = this.count(jobQW);

@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.*;
 import com.zerody.user.mapper.*;
@@ -32,13 +33,10 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
-import com.zerody.user.domain.*;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.StaffStatusEnum;
-import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
@@ -47,16 +45,6 @@ import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author PengQiang
@@ -118,7 +106,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setCreateTime(new Date());
         sysUserInfo.setCreateUser(UserUtils.getUserName());
         sysUserInfo.setCreateId(UserUtils.getUserId());
-        sysUserInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        sysUserInfo.setStatus(StatusEnum.激活.getValue());
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -129,7 +117,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setAvatar(sysUserInfo.getAvatar());
         //初始化密码加密
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
-        logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
@@ -203,7 +191,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         //如果员工状态为离职状态 就把用户状态转换为 禁用状态
         if (StaffStatusEnum.DIMISSION.getCode().equals(setSysUserInfoDto.getStatus())){
-            sysUserInfo.setStatus(DataRecordStatusEnum.INVALID.getCode());
+            sysUserInfo.setStatus(StatusEnum.激活.getValue());
         }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
@@ -212,7 +200,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setMobileNumber(sysUserInfo.getPhoneNumber());
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
-        logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
@@ -361,7 +349,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setPhoneNumber(row[1]);
                 userInfo.setCertificateCard(row[2]);
                 userInfo.setRegisterTime(new Date(row[3]));
-                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                userInfo.setStatus(StatusEnum.激活.getValue());
                 //验证手机
                 if(checkPhone(userInfo.getPhoneNumber())){
                     errorInfo.append("手机号码错误,");
@@ -381,7 +369,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     errorData = new String[errorData.length];
                     continue;
                 }
-                userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+                userInfo.setStatus(StatusEnum.激活.getValue());
                 userInfo.setCreateId(UserUtils.getUserId());
                 userInfo.setCreateUser(UserUtils.getUserName());
                 userInfo.setCreateTime(new Date());

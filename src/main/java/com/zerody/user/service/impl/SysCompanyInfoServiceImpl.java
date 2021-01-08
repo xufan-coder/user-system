@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
@@ -11,7 +12,6 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SysCompanyInfoDto;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.SysCompanyInfoMapper;
 import com.zerody.user.mapper.SysLoginInfoMapper;
@@ -80,7 +80,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业联系人号码格式错误");
         }
         QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
-        comQW.lambda().ne(SysCompanyInfo::getStatus, DataRecordStatusEnum.DELETED);
+        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.删除.getValue());
         comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
         //查询该企业是否存在
         Integer count = sysCompanyInfoMapper.selectCount(comQW);
@@ -88,14 +88,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业名称已被占用");
         }
         //添加企业默认为该企业为有效状态
-        sysCompanyInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        sysCompanyInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
         //生成用户
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setPhoneNumber(sysCompanyInfo.getContactPhone());
         userInfo.setUserName(sysCompanyInfo.getContactName());
-        userInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        userInfo.setStatus(StatusEnum.激活.getValue());
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateTime(new Date());
         userInfo.setCreateUser(UserUtils.getUserName());
@@ -169,7 +169,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业联系人号码格式错误");
         }
         QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
-        comQW.lambda().ne(SysCompanyInfo::getStatus, DataRecordStatusEnum.DELETED);
+        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.删除.getValue());
         comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
         comQW.lambda().ne(SysCompanyInfo::getId, sysCompanyInfo.getId());
         //查询该企业是否存在
@@ -193,7 +193,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业id为空");
         }
         SysCompanyInfo company = new SysCompanyInfo();
-        company.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        company.setStatus(StatusEnum.删除.getValue());
         company.setId(companyId);
         this.saveOrUpdate(company);
     }

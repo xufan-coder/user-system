@@ -2,17 +2,13 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
-import com.zerody.common.util.UserUtils;
-import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.CompanyAdminMapper;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
@@ -30,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -95,7 +90,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         //如果校验不通过提示前端
         CheckUser.checkParam(userInfo);
         //通过校验 把状态设为正常使用状态
-        userInfo.setStatus(DataRecordStatusEnum.INVALID.getCode());
+        userInfo.setStatus(StatusEnum.激活.getValue());
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
         DataResult dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
@@ -116,7 +111,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));//初始化密码登录并加密
         logInfo.setNickname(userInfo.getNickname());
         logInfo.setAvatar(userInfo.getAvatar());
-        logInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         return dataResult;
@@ -137,7 +132,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
         }
         SysUserInfo userInfo = new SysUserInfo();
-        userInfo.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        userInfo.setStatus(StatusEnum.删除.getValue());
         userInfo.setId(userId);
         this.saveOrUpdate(userInfo);
         return new DataResult();
@@ -147,7 +142,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public DataResult deleteUserBatchByIds(List<String> ids) {
         for (String id : ids){
             SysUserInfo userInfo = new SysUserInfo();
-            userInfo.setStatus(DataRecordStatusEnum.DELETED.getCode());
+            userInfo.setStatus(StatusEnum.删除.getValue());
             userInfo.setId(id);
             this.saveOrUpdate(userInfo);
         }

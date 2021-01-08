@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.dto.SysAuthRoleDto;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysAuthRoleInfoMapper;
 import com.zerody.user.mapper.UnionMenuRoleMapper;
 import com.zerody.user.mapper.UnionRoleStaffMapper;
@@ -59,12 +59,12 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         QueryWrapper<SysAuthRoleInfo> roleQW = new QueryWrapper<>();
 //        roleQW.lambda().eq(SysAuthRoleInfo::getCompId,)
         roleQW.lambda().eq(SysAuthRoleInfo::getRoleName, sysAuthRoleInfo.getRoleName());
-        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, DataRecordStatusEnum.DELETED);
+        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, StatusEnum.删除.getValue());
         Integer count = sysAuthRoleInfoMapper.selectCount(roleQW);
         if (count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色名称已存在", null);
         }
-        sysAuthRoleInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        sysAuthRoleInfo.setStatus(StatusEnum.激活.getValue());
 //        sysAuthRoleInfo.setCompId(); //企业id
         this.saveOrUpdate(sysAuthRoleInfo);
         return new DataResult();
@@ -79,7 +79,7 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         QueryWrapper<SysAuthRoleInfo> roleQW = new QueryWrapper<>();
 //        roleQW.lambda().eq(SysAuthRoleInfo::getCompId,)
         roleQW.lambda().eq(SysAuthRoleInfo::getRoleName, sysAuthRoleInfo.getRoleName());
-        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, DataRecordStatusEnum.DELETED);
+        roleQW.lambda().ne(SysAuthRoleInfo::getStatus, StatusEnum.删除.getValue());
         Integer count = sysAuthRoleInfoMapper.selectCount(roleQW);
         if (count > 0){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色名称已存在", null);
@@ -103,7 +103,7 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "角色下有用户不能删除", null);
         }
         SysAuthRoleInfo role = new SysAuthRoleInfo();
-        role.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        role.setStatus(StatusEnum.删除.getValue());
         role.setId(roleId);
         this.saveOrUpdate(role);
         return new DataResult("删除成功",null);
@@ -114,7 +114,7 @@ public class SysAuthRoleServiceImpl extends BaseService<SysAuthRoleInfoMapper, S
         SysAuthRoleInfo role = new SysAuthRoleInfo();
         for (String id : roleIds){
             role.setId(id);
-            role.setStatus(DataRecordStatusEnum.DELETED.getCode());
+            role.setStatus(StatusEnum.删除.getValue());
             this.saveOrUpdate(role);
             role = new SysAuthRoleInfo();
         }

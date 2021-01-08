@@ -1,12 +1,12 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.UnionStaffDepart;
 import com.zerody.user.domain.base.BaseModel;
-import com.zerody.user.enums.DataRecordStatusEnum;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
@@ -47,14 +47,14 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
-        depQW.lambda().ne(SysDepartmentInfo::getStatus, DataRecordStatusEnum.DELETED.getCode());
+        depQW.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().eq(SysDepartmentInfo::getCompId, sysDepartmentInfo.getCompId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
             throw new DefaultException("该部门名称已存在!");
         }
-        sysDepartmentInfo.setStatus(DataRecordStatusEnum.VALID.getCode());
+        sysDepartmentInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
         //名称不存在 保存添加
         this.saveOrUpdate(sysDepartmentInfo);
@@ -65,7 +65,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
-        depQW.lambda().ne(SysDepartmentInfo::getStatus, DataRecordStatusEnum.DELETED.getCode());
+        depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.删除.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().ne(SysDepartmentInfo::getId, sysDepartmentInfo.getId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
@@ -86,7 +86,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         //逻辑删除部门
         SysDepartmentInfo dep = new SysDepartmentInfo();
-        dep.setStatus(DataRecordStatusEnum.DELETED.getCode());
+        dep.setStatus(StatusEnum.删除.getValue());
         dep.setId(depId);
         this.saveOrUpdate(dep);
     }
@@ -102,7 +102,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     public List<SysDepartmentInfo> getDepartmentByComp(String compId) {
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(SysDepartmentInfo::getCompId,compId);
-        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED);
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         return sysDepartmentInfoMapper.selectList(qw);
     }
 
@@ -111,7 +111,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(SysDepartmentInfo::getCompId,compId);
         qw.lambda().eq(SysDepartmentInfo::getDepartName,name);
-        qw.lambda().ne(BaseModel::getStatus,DataRecordStatusEnum.DELETED);
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         return sysDepartmentInfoMapper.selectOne(qw);
     }
 
