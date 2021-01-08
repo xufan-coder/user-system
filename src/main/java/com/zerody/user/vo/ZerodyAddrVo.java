@@ -34,7 +34,7 @@ public class ZerodyAddrVo {
      *
      *父级地址编码
      */
-    private Integer pAddrCode;
+    private String pAddrCode;
 
     /**
      *

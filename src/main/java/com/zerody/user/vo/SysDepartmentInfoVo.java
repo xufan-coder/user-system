@@ -84,4 +84,9 @@ public class SysDepartmentInfoVo {
      * 部门管理员 手机号
      */
     private String adminAccount;
+
+    /**
+     * 部门管理员 手机号
+     */
+    private String adminName;
 }
