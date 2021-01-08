@@ -186,8 +186,11 @@ public class SysUserInfoController implements UserRemoteService {
         return R.success(sysUserInfoService.checkPlatformRoleBind(roleId));
     }
 
-
-
+    @Override
+    @RequestMapping(value = "/check-admin/inner",method = GET, produces = "application/json")
+    public DataResult<Boolean> checkUserAdmin(@RequestParam("userId")String userId) {
+        return R.success(sysUserInfoService.checkUserAdmin(userId));
+    }
 
 
     /**
