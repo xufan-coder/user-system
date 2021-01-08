@@ -85,6 +85,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
+    @Autowired
+    private SysCompanyInfoMapper sysCompanyInfoMapper;
+
     private static final String INIT_PWD = "123456";
 
     @Override
@@ -459,19 +462,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 		if(StringUtils.isEmpty(staffId)){
             throw new DefaultException("没有该员工");
         }
-		QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
-		qw.eq("staff_id", staffId);
-		//获得自己的部门id
-		String thisDep =  this.unionStaffDepartMapper.selectOne(qw).getDepartmentId();
-		if(StringUtils.isEmpty(thisDep)){
-		    throw new DefaultException("该员工没有部门");
-        }
-		SysStaffInfo staff = this.getById(staffId);
-		//获取全部的部门
-        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(staff.getCompId());
+
         //子级部门id集合
         List<String> depIds = new ArrayList<>();
-        depIds.add(thisDep);
+		String thisDep = "";
+		SysStaffInfo staff = this.getById(staffId);
+        SysCompanyInfo com = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+        if(!staff.getId().equals(com.getAdminAccount())){
+            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
+            if(dep == null){
+                return null;
+            }
+        }
+		//获取全部的部门
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(staff.getCompId());
+
         this.getChilden(depIds, deps, thisDep);
 		return depIds;
 	}

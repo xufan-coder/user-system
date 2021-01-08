@@ -32,10 +32,4 @@ public class SysStaffInfo extends BaseModel {
     //离职时间
     private Date dateLeft;
 
-    /**
-     *
-     *角色名称
-     */
-    private String roleName;
-
 }

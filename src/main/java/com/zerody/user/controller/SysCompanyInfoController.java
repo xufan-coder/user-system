@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -163,4 +164,10 @@ public class SysCompanyInfoController {
 
         return R.success(sysCompanyInfoService.getCompanyInfoById(id));
     }
+
+
+//    @RequestMapping(value = "/admin-account", method = RequestMethod.PUT)
+//    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto){
+//
+//    }
 }

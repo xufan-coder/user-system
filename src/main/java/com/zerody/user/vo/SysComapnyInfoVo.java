@@ -40,6 +40,30 @@ public class SysComapnyInfoVo {
 
     /**
      *
+     *公司地址省编码
+     */
+    private String companyAddrProvinceCode;
+
+    /**
+     *
+     *公司地址市编码
+     */
+    private String companyAddressCityCode;
+
+    /**
+     *
+     *公司地址
+     */
+    private String companyAddress;
+
+    /**
+     *
+     *公司地址区编码
+     */
+    private String companyAddressAreaCode;
+
+    /**
+     *
      *企业状态状态
      */
     private Integer status;

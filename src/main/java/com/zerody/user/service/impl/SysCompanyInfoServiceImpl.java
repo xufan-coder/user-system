@@ -10,6 +10,7 @@ import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
@@ -111,7 +112,17 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysLoginInfo.setCreateTime(new Date());
         sysLoginInfo.setCreateId(UserUtils.getUserId());
         sysLoginInfoMapper.insert(sysLoginInfo);
-
+        SysStaffInfo staff = new SysStaffInfo();
+        staff.setId(UUIDutils.getUUID32());
+        staff.setCompId(sysCompanyInfo.getId());
+        staff.setUserId(userInfo.getId());
+        staff.setUserName(userInfo.getUserName());
+        staff.setUserId(userInfo.getId());
+        staff.setCreateTime(new Date());
+        staff.setCreateId(UserUtils.getUserId());
+        this.sysStaffInfoMapper.insert(staff);
+        sysCompanyInfo.setAdminAccount(staff.getId());
+        this.saveOrUpdate(sysCompanyInfo);
     }
 
     /**
@@ -134,7 +145,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
         //修改企业的状态
         SysCompanyInfo sysCompanyInfo = new SysCompanyInfo();
-        sysCompanyInfo.setLoginStatus(loginStatus);
+//        sysCompanyInfo.setLoginStatus(loginStatus);
         sysCompanyInfo.setId(companyId);
         //保存状态
         log.info("B端修改企业登录参数入库参数--{}",JSON.toJSONString(sysCompanyInfo));

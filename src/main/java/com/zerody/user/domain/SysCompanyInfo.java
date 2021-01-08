@@ -1,5 +1,6 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -182,15 +183,7 @@ public class SysCompanyInfo extends BaseModel {
      *
      *备注
      */
+    @TableField("remark_")
     private String remark;
-
-    /**
-     *
-     *登录状态1.启用、2.停用
-     */
-    @NotNull(message = "登录状态不能为空")
-    @Max(value= 2, message = "状态最大值为2")
-    @Min(value= 1, message = "状态最小值为1")
-    private Integer loginStatus;
 
 }

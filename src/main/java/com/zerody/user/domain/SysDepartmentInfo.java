@@ -54,5 +54,8 @@ public class SysDepartmentInfo extends BaseModel {
      */
     private String departDesc;
 
-
+    /**
+     * 部门管理员 手机号
+     */
+    private String adminAccount;
 }
