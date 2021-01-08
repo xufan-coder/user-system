@@ -207,7 +207,8 @@
         sui.phone_number AS phone,
         sjp.position_name AS positionName,
         sdi.depart_name AS departName,
-        ssi.id AS staffId
+        ssi.id AS staffId,
+        ca.role_id AS roleId
         FROM
         company_admin ca
         JOIN sys_staff_info ssi ON ssi.id=ca.staff_id
