@@ -23,6 +23,11 @@ public class SetSysUserInfoDto extends SysUserInfo{
     private String companyId;
 
     /**
+     *    员工id
+     */
+    private String staffId;
+
+    /**
     *    角色id
     */
     private String roleId;

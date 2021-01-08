@@ -37,7 +37,7 @@
     id, user_name, gender, phone_number, email, nickname, avatar, birthday,
      certificate_card,
     certificate_card_address, prov_city_district, contact_address, highest_education, graduated_from, major,
-    marital_status, open_id
+    marital_status, open_id,
     register_time, create_id, create_user, create_time, update_id, update_user, update_time, 
     status, nation, ancestral,description
   </sql>
@@ -52,11 +52,9 @@
       <if test="userInfo.id != null and userInfo.id != ''">
         and id != #{userInfo.id}
       </if>
-      or ( 1 = 2
       <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
-        or phone_number = #{userInfo.phoneNumber}
+          and phone_number = #{userInfo.phoneNumber}
       </if>
-      )
     </where>
 
   </select>

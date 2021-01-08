@@ -23,6 +23,11 @@ public class BosStaffInfoVo {
     private String staffId;
 
     /**
+     *   角色ID
+     */
+    private String roleId;
+
+    /**
     *   企业ID 
     */
     private String compId;
