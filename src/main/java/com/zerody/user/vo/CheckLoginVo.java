@@ -20,7 +20,7 @@ public class CheckLoginVo {
      *
      * 员工ID
      */
-    private Integer staffId;
+    private String staffId;
 
 
 
