@@ -104,9 +104,10 @@ WHERE
 	limit 1
   </select>
 
-    <select id="selectByUserNameOrPhone" resultType="String">
+    <select id="selectByUserNameOrPhone" resultType="com.zerody.user.vo.CheckLoginVo">
 SELECT
-    li.user_pwd userPwd
+    li.user_pwd AS userPwd,
+    ssi.id AS staffId
 FROM
 	sys_user_info ui
 JOIN (
@@ -128,6 +129,7 @@ JOIN (
 			mobile_number = #{userName}
 			and status=0
 ) li ON ui.id = li.user_id
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id
 WHERE
 	ui. STATUS = 0
 	limit 1

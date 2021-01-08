@@ -16,6 +16,7 @@ import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -177,7 +178,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public String checkLoginUser(String userName) {
+    public CheckLoginVo checkLoginUser(String userName) {
         return sysUserInfoMapper.selectByUserNameOrPhone(userName);
     }
 

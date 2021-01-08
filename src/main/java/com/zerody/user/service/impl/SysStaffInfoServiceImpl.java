@@ -80,9 +80,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private UnionStaffPositionMapper unionStaffPositionMapper;
 
     @Autowired
-    private UnionLeaderDepartMapper unionLeaderDepartMapper;
-
-    @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     @Autowired
@@ -273,10 +270,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionStaffPosition> qw2 = new QueryWrapper<>();
         qw2.lambda().eq(UnionStaffPosition::getStaffId,staffId);
         unionStaffPositionMapper.delete(qw2);
-        //删除部门领导
-        QueryWrapper<UnionLeaderDepart> qw3 = new QueryWrapper<>();
-        qw3.lambda().eq(UnionLeaderDepart::getStaffId,staffId);
-        unionLeaderDepartMapper.delete(qw3);
     }
 
     @Override

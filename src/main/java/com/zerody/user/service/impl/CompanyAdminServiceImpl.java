@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
@@ -37,5 +38,13 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 	@Override
 	public void updateCompanyAdmin(CompanyAdmin data) throws Exception {
 		this.updateById(data);
+	}
+
+	@Override
+	public CompanyAdmin getAdminByStaffId(String staffId) {
+		QueryWrapper<CompanyAdmin> qw =new QueryWrapper<>();
+		qw.lambda().eq(CompanyAdmin::getStaffId,staffId);
+		return this.getOne(qw);
+
 	}
 }

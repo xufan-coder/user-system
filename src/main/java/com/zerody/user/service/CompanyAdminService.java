@@ -35,4 +35,15 @@ public interface CompanyAdminService extends IService<CompanyAdmin>{
 	 * @date 2021-01-04
 	 */
 	public void updateCompanyAdmin(CompanyAdmin data) throws Exception;
+
+	/**************************************************************************************************
+	 **
+	 * 根据员工ID查询管理员
+	 *
+	 * @param staffId
+	 * @return {@link CompanyAdmin }
+	 * @author DaBai
+	 * @date 2021/1/8  16:37
+	 */
+	CompanyAdmin getAdminByStaffId(String staffId);
 }
