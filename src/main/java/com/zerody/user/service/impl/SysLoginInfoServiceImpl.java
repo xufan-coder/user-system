@@ -37,6 +37,7 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
         UpdateWrapper<SysLoginInfo> uw=new UpdateWrapper<>();
         uw.lambda().set(SysLoginInfo::getLastCheckSms,logInfo.getLastChecKSms())
                 .set(BaseStringModel::getUpdateTime,new Date())
+                .set(SysLoginInfo::getUserPwd,logInfo.getUserPwd())
                 .set(SysLoginInfo::getMobileNumber,logInfo.getMobileNumber())
                 .set(SysLoginInfo::getLoginName,logInfo.getLoginName())
                 .set(SysLoginInfo::getNickname,logInfo.getNickname())
