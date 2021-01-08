@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 
@@ -73,7 +74,7 @@ public interface SysUserInfoService {
      * @author DaBai
      * @date 2020/12/30  9:57
      */
-    String checkLoginUser(String userName);
+    CheckLoginVo checkLoginUser(String userName);
 
     /**************************************************************************************************
      **
