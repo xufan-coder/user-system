@@ -28,7 +28,7 @@ public class SysComapnyInfoVo {
 
     /**
      *
-     *企业联系人(管理员)
+     *企业联系人
      */
     private String contactName;
 
@@ -74,6 +74,16 @@ public class SysComapnyInfoVo {
      */
     private String remark;
 
+
+    /**
+     * 企业管理员id
+     */
+    private String adminAccount;
+
+    /**
+     * 管理员名称
+     */
+    private String adminName;
     /**
      *
      *部门集合(树形结构)

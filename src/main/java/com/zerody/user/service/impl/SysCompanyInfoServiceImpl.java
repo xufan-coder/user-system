@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author PengQiang
@@ -246,8 +247,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
         }
+        String userId = this.sysStaffInfoMapper.selectById(dto.getStaffId()).getUserId();
+        SysUserInfo user = this.sysUserInfoMapper.selectById(userId);
         UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
-        comUw.lambda().set(SysCompanyInfo::getAdminAccount, dto.getStaffId());
+        comUw.lambda().set(SysCompanyInfo::getAdminAccount, dto.getStaffId())
+                        .set(SysCompanyInfo::getContactName, user.getUserName())
+                        .set(SysCompanyInfo::getContactPhone, user.getPhoneNumber());
         comUw.lambda().eq(SysCompanyInfo::getId, dto.getId());
         this.update(comUw);
     }

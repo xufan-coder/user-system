@@ -21,7 +21,7 @@ public class ZerodyAddr {
     private String address;
 
     //父级地址编码
-    private Integer pAddrCode;
+    private String pAddrCode;
 
     //行政等级（省市区分别是123级）
     private Byte addrLevel;

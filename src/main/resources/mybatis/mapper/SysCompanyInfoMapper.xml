@@ -70,31 +70,42 @@
      </where>
   </select>
   <select id="getAllCompnay"  resultType="com.zerody.user.vo.SysComapnyInfoVo">
-    SELECT
-        id,
-        company_name
-    FROM
-    sys_company_info
-    <where>
-        status != -1
-    </where>
+      SELECT
+        sci.id,
+        sci.company_name,
+        sci.company_code,
+        sci.company_addr_province_code,
+        sci.company_address_city_code,
+        sci.company_address_area_code,
+        sci.company_address,
+        sci.contact_name,
+        sci.contact_phone,
+        sci.admin_account,
+        ssi.user_name AS adminName,
+        sci.status
+      FROM
+            sys_company_info AS sci
+      JOIN sys_staff_info AS ssi ON sci.admin_account = ssi.id and ssi.status = 0
   </select>
     <select id="selectCompanyInfoById" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
-            id,
-            company_name,
-            company_code,
-            company_addr_province_code,
-            company_address_city_code,
-            company_address_area_code,
-            company_address,
-            contact_name,
-            contact_phone,
-            status
+        sci.id,
+        sci.company_name,
+        sci.company_code,
+        sci.company_addr_province_code,
+        sci.company_address_city_code,
+        sci.company_address_area_code,
+        sci.company_address,
+        sci.contact_name,
+        sci.contact_phone,
+        sci.admin_account,
+        ssi.user_name AS adminName,
+        sci.status
       FROM
-            sys_company_info
+            sys_company_info AS sci
+      JOIN sys_staff_info AS ssi ON sci.admin_account = ssi.id and ssi.status = 0
       <where>
-            id = #{ids}
+          sci.id = #{ids}
       </where>
 
     </select>
