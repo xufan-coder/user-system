@@ -18,9 +18,6 @@ public class SysLoginInfo extends BaseStringModel {
     //手机号
     private String mobileNumber;
 
-    //是否启用：类型：1启用，2企业停用 3部门停用
-    private Integer activeFlag;
-
     //用户ID
     private String userId;
 
