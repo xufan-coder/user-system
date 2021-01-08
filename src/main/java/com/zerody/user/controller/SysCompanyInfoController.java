@@ -171,7 +171,7 @@ public class SysCompanyInfoController {
      *
      * @author               PengQiang
      * @description          设置企业管理员
-     * @date                 2021/1/8 16:18
+     * @date                 2021/1/8 16:41
      * @param                [dto]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
