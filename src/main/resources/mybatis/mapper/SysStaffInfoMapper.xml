@@ -140,7 +140,8 @@
         urs.role_id,
         sdi.id AS departId,
         sjp.id AS positionId,
-        sci.id AS companyId
+        sci.id AS companyId,
+        sui.id AS id
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id

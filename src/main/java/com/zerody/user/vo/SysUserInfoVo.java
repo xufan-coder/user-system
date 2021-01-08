@@ -14,6 +14,10 @@ import java.util.Date;
 public class SysUserInfoVo {
 
     /**
+     *   userID
+     */
+    private String id;
+    /**
     *   企业名称
     */
     private String companyName;

@@ -175,7 +175,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
-        log.info("B端添加员工入参---{}", JSON.toJSONString(sysUserInfo));
+        sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
         CheckUser.checkParam(sysUserInfo);
         //查看手机号或登录名是否被占用
@@ -184,8 +184,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("手机号或用户名被占用");
         }
         //效验通过保存用户信息
-        sysUserInfo.setRegisterTime(new Date());
-        log.info("B端添加用户入库参数--{}",JSON.toJSONString(sysUserInfo));
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
         sysUserInfo.setUpdateId(UserUtils.getUserId());
@@ -201,7 +199,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
         logInfo.setStatus(StatusEnum.激活.getValue());
-        log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
 
@@ -209,7 +206,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
-        log.info("B端添加员工入库参数--{}",JSON.toJSONString(staff));
+        staff.setStatus(setSysUserInfoDto.getStatus());
         this.saveOrUpdate(staff);
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
