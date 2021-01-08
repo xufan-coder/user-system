@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.mapper.SysLoginInfoMapper;
 import com.zerody.user.domain.SysLoginInfo;
 import com.zerody.user.domain.base.BaseStringModel;
@@ -35,14 +36,13 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
     @Override
     public void updateLoginInfoByUserId(com.zerody.user.api.vo.SysLoginInfo logInfo) {
         UpdateWrapper<SysLoginInfo> uw=new UpdateWrapper<>();
-        uw.lambda().set(SysLoginInfo::getLastCheckSms,logInfo.getLastChecKSms())
-                .set(BaseStringModel::getUpdateTime,new Date())
-                .set(SysLoginInfo::getUserPwd,logInfo.getUserPwd())
-                .set(SysLoginInfo::getMobileNumber,logInfo.getMobileNumber())
-                .set(SysLoginInfo::getLoginName,logInfo.getLoginName())
-                .set(SysLoginInfo::getNickname,logInfo.getNickname())
-                .set(SysLoginInfo::getAvatar,logInfo.getAvatar())
-                .set(SysLoginInfo::getActiveFlag,logInfo.getActiveFlag())
+        if(DataUtil.isNotEmpty(logInfo.getLastChecKSms())){
+            uw.lambda().set(SysLoginInfo::getLastCheckSms,logInfo.getLastChecKSms());
+        }
+        if(DataUtil.isNotEmpty(logInfo.getUserPwd())){
+            uw.lambda().set(SysLoginInfo::getUserPwd,logInfo.getUserPwd());
+        }
+        uw.lambda().set(BaseStringModel::getUpdateTime,new Date())
                 .eq(SysLoginInfo::getUserId,logInfo.getUserId());
         sysLoginInfoMapper.update(null,uw);
     }
