@@ -1,12 +1,15 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.UnionStaffDepart;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
@@ -14,6 +17,7 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,6 +117,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         qw.lambda().eq(SysDepartmentInfo::getDepartName,name);
         qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
         return sysDepartmentInfoMapper.selectOne(qw);
+    }
+
+    @Override
+    public void updateAdminAccout(SetAdminAccountDto dto) {
+        if(StringUtils.isEmpty(dto.getId())){
+            throw new DefaultException("企业id为空");
+        }
+        if(StringUtils.isEmpty(dto.getStaffId())){
+            throw new DefaultException("员工id为空");
+        }
+        UpdateWrapper<SysDepartmentInfo> comUw = new UpdateWrapper<>();
+        comUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
+        comUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
+        this.update(comUw);
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){

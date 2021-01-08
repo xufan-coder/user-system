@@ -166,8 +166,26 @@ public class SysCompanyInfoController {
     }
 
 
-//    @RequestMapping(value = "/admin-account", method = RequestMethod.PUT)
-//    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto){
-//
-//    }
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          设置企业管理员
+     * @date                 2021/1/8 16:18
+     * @param                [dto]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @RequestMapping(value = "/admin-account", method = RequestMethod.PUT)
+    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto){
+        try {
+            this.sysCompanyInfoService.updateAdminAccout(dto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("设置企业管理员错误:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("设置企业管理员错误:{}",e.getMessage());
+            return R.error("设置企业管理员错误,请求异常");
+        }
+    }
 }

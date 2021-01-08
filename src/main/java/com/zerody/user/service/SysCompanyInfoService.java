@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.SysComapnyInfoVo;
@@ -27,4 +28,6 @@ public interface SysCompanyInfoService {
     List<SysComapnyInfoVo> getAllCompany(String companyId);
 
     SysComapnyInfoVo getCompanyInfoById(String id);
+
+    void updateAdminAccout(SetAdminAccountDto dto);
 }

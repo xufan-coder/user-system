@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.service.SysDepartmentInfoService;
@@ -102,8 +103,31 @@ public class SysDepartmentInfoController {
      * @param                companyId
      * @return               com.zerody.common.bean.DataResult
      */
-    @RequestMapping(value = "/user/departmentInfo/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/departmentInfo/{id}", method = RequestMethod.GET)
     public DataResult<List<SysDepartmentInfoVo>> getAllDepByCompanyId(@PathVariable(name = "id") String companyId){
     return R.success(sysDepartmentInfoService.getAllDepByCompanyId(companyId));
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          设置部门管理员
+     * @date                 2021/1/8 15:52
+     * @param                dto
+     * @return
+     */
+    @RequestMapping(value = "/admin-accout", method = RequestMethod.PUT)
+    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto){
+        try {
+            sysDepartmentInfoService.updateAdminAccout(dto);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("设置部门管理员错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("设置部门管理员错误:{}", e.getMessage());
+            return R.error("设置部门管理员错误,请求异常");
+        }
     }
 }
