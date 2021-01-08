@@ -45,5 +45,5 @@ public interface CompanyAdminService extends IService<CompanyAdmin>{
 	 * @author DaBai
 	 * @date 2021/1/8  16:37
 	 */
-	CompanyAdmin getAdminByStaffId(Integer staffId);
+	CompanyAdmin getAdminByStaffId(String staffId);
 }
