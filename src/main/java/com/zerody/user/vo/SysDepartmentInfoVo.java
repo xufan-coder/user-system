@@ -79,4 +79,9 @@ public class SysDepartmentInfoVo {
      *员工数量
      */
     private Integer staffCount;
+
+    /**
+     * 部门管理员 手机号
+     */
+    private String adminAccount;
 }

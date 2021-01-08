@@ -79,7 +79,7 @@
     FROM
         sys_department_info
     <where>
-        status = 1 and comp_id = #{companyId}
+        status = 0 and comp_id = #{companyId}
     </where>
     </select>
     <select id="selectUserDep" resultType="com.zerody.user.domain.SysDepartmentInfo">
@@ -89,7 +89,7 @@
         JOIN union_staff_depart AS usd  ON sid.id = sdi.department_id
         JOIN sys_staff_info AS ssi ON ssi.id = usd.staff_id
         <where>
-                sdi.status = 1 AND ssi.user_id = #{id}
+                sdi.status = 0 AND ssi.user_id = #{id}
         </where>
     </select>
 </mapper>
