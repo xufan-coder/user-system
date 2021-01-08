@@ -59,9 +59,9 @@
       LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
       LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
       LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-      LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 1
+      LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
       LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
-      LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 1
+      LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
       <where>
           ssi.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
@@ -148,9 +148,9 @@
         LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 1
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
-        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 1
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         <where>
             ssi.status != -1 and ssi.id = #{id}
         </where>
