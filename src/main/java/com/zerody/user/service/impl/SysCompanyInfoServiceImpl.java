@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.enums.StatusEnum;
@@ -12,6 +13,7 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.SysCompanyInfoMapper;
@@ -234,6 +236,20 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     public SysComapnyInfoVo getCompanyInfoById(String id) {
         SysComapnyInfoVo companyInfo = sysCompanyInfoMapper.selectCompanyInfoById(id);
         return companyInfo;
+    }
+
+    @Override
+    public void updateAdminAccout(SetAdminAccountDto dto) {
+        if(StringUtils.isEmpty(dto.getId())){
+            throw new DefaultException("企业id为空");
+        }
+        if(StringUtils.isEmpty(dto.getStaffId())){
+            throw new DefaultException("员工id为空");
+        }
+        UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
+        comUw.lambda().set(SysCompanyInfo::getAdminAccount, dto.getStaffId());
+        comUw.lambda().eq(SysCompanyInfo::getId, dto.getId());
+        this.update(comUw);
     }
 
 

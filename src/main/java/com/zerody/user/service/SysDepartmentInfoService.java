@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
@@ -35,4 +36,15 @@ public interface SysDepartmentInfoService {
      * @date 2021/1/7  9:41
      */
     SysDepartmentInfo getByName(String name,String compId);
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/8 15:55
+     * @param                dto
+     * @return               void
+     */
+    void updateAdminAccout(SetAdminAccountDto dto);
 }
