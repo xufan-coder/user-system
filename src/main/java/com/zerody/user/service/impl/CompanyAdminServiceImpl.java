@@ -41,7 +41,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 	}
 
 	@Override
-	public CompanyAdmin getAdminByStaffId(Integer staffId) {
+	public CompanyAdmin getAdminByStaffId(String staffId) {
 		QueryWrapper<CompanyAdmin> qw =new QueryWrapper<>();
 		qw.lambda().eq(CompanyAdmin::getStaffId,staffId);
 		return this.getOne(qw);
