@@ -110,7 +110,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
-        sysLoginInfo.setActiveFlag(UserLoginStatusEnum.ENABLE.getCode());
         sysLoginInfo.setUserId(userInfo.getId());
         sysLoginInfo.setCreateTime(new Date());
         sysLoginInfo.setCreateId(UserUtils.getUserId());
@@ -161,10 +160,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         //设置修改参数
         SysLoginInfo sysLoginInfo = new SysLoginInfo();
-        sysLoginInfo.setActiveFlag(loginStatus );
         //修改状态
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
-        loginQW.lambda().ne(SysLoginInfo::getActiveFlag, loginStatus);
         loginQW.lambda().in(SysLoginInfo::getUserId, userIds);
         log.info("B端修改修改企业登录状态后修改用户登录状态入库参数--{}",JSON.toJSONString(sysLoginInfo));
         sysLoginInfoMapper.update(sysLoginInfo, loginQW);
