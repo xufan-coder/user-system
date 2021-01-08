@@ -42,7 +42,6 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
                 .set(SysLoginInfo::getLoginName,logInfo.getLoginName())
                 .set(SysLoginInfo::getNickname,logInfo.getNickname())
                 .set(SysLoginInfo::getAvatar,logInfo.getAvatar())
-                .set(SysLoginInfo::getActiveFlag,logInfo.getActiveFlag())
                 .eq(SysLoginInfo::getUserId,logInfo.getUserId());
         sysLoginInfoMapper.update(null,uw);
     }
