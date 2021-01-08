@@ -5,23 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
-import com.zerody.user.mapper.SysCompanyInfoMapper;
-import com.zerody.user.mapper.SysLoginInfoMapper;
-import com.zerody.user.mapper.SysStaffInfoMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
-import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.base.BaseService;
@@ -64,6 +59,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Autowired
     private SysDepartmentInfoService departmentInfoService;
+
+    @Autowired
+    private CompanyAdminMapper companyAdminMapper;
 
 
     private static final String INIT_PWD = "123456"; //初始密码
@@ -126,6 +124,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.sysStaffInfoMapper.insert(staff);
         sysCompanyInfo.setAdminAccount(staff.getId());
         this.saveOrUpdate(sysCompanyInfo);
+        CompanyAdmin admin = new CompanyAdmin();
+        admin.setId(UUIDutils.getUUID32());
+        admin.setCompanyId(sysCompanyInfo.getId());
+        admin.setStaffId(staff.getId());
+        admin.setCreateTime(new Date());
+        admin.setCreateBy(UserUtils.getUserId());
+        admin.setCreateUsername(UserUtils.getUserName());
+        this.companyAdminMapper.insert(admin);
     }
 
     /**
@@ -249,12 +255,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         String userId = this.sysStaffInfoMapper.selectById(dto.getStaffId()).getUserId();
         SysUserInfo user = this.sysUserInfoMapper.selectById(userId);
+
         UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
-        comUw.lambda().set(SysCompanyInfo::getAdminAccount, dto.getStaffId())
-                        .set(SysCompanyInfo::getContactName, user.getUserName())
+        comUw.lambda().set(SysCompanyInfo::getContactName, user.getUserName())
                         .set(SysCompanyInfo::getContactPhone, user.getPhoneNumber());
         comUw.lambda().eq(SysCompanyInfo::getId, dto.getId());
         this.update(comUw);
+        UpdateWrapper<CompanyAdmin> adminUw = new UpdateWrapper<>();
+        adminUw.lambda().set(CompanyAdmin::getStaffId, dto.getStaffId()).
+                        eq(CompanyAdmin::getCompanyId, dto.getId());
     }
 
 
