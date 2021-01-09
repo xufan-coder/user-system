@@ -122,10 +122,7 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
-    @Override
-    public DataResult checkLoginAdmin(LoginCheckParamDto loginCheckParamDto) {
-        return null;
-    }
+
 
     /**
     *   获取用户信息；构建token基础信息
