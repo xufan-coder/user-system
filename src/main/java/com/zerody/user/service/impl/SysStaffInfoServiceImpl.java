@@ -160,6 +160,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setUserId(sysUserInfo.getId());
         log.info("添加员工入库参数--{}",JSON.toJSONString(staff));
+        staff.setStatus(StatusEnum.激活.getValue());
         this.saveOrUpdate(staff);
         //角色
         UnionRoleStaff rs = new UnionRoleStaff();
