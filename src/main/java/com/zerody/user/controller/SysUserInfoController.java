@@ -1,7 +1,5 @@
 package com.zerody.user.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
@@ -9,16 +7,15 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.domain.CompanyAdmin;
+import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.enums.LoginTypeEnum;
+import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.CompanyAdminService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
-import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -48,6 +45,9 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Autowired
     private CompanyAdminService amdinService;
+
+    @Autowired
+    private AdminUserService amdinUserService;
     /**
     *    根据用户ID查询单个用户
     */
@@ -105,17 +105,32 @@ public class SysUserInfoController implements UserRemoteService {
         if(DataUtil.isEmpty(checkLoginVo)){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
-        if(LoginTypeEnum.BACK_PC.getCode().equals(params.getType())){
-            //管理员登录需要去校验管理员表
-            CompanyAdmin admin = amdinService.getAdminByStaffId(checkLoginVo.getStaffId());
-            if(DataUtil.isEmpty(admin)){
-                return R.error("当前账号未开通，请联系管理员开通！");
-            }
-        }
         //校验密码
         boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
         if(success){
             return R.success("密码正确！");
+        }else {
+            return R.error("密码错误！");
+        }
+    }
+
+    /**
+    *    登录平台管理后台校验账户和密码
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/check-admin/inner",method = POST, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.AdminUserInfo> checkLoginAdmin(LoginCheckParamDto params) {
+        //查询账户信息,返回个密码来校验密码
+        com.zerody.user.api.vo.AdminUserInfo userInfo = amdinUserService.checkLoginAdmin(params.getUserName());
+        if(DataUtil.isEmpty(userInfo)){
+            return R.error("当前账号未开通，请联系管理员开通！");
+        }
+        //校验密码
+        boolean success = sysUserInfoService.checkPassword(userInfo.getUserPwd(), params.getPwd());
+        userInfo.setUserPwd(null);
+        if(success){
+            return R.success(userInfo);
         }else {
             return R.error("密码错误！");
         }
@@ -232,6 +247,6 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("获取员工下级部门信息出错！请求异常");
         }
 	}
-    
+
 
 }
