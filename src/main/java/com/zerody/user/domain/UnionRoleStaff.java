@@ -9,6 +9,8 @@ public class UnionRoleStaff {
     //角色id
     private String roleId;
 
+    //角色名
+    private String roleName;
 
     public UnionRoleStaff(){
         super();
@@ -18,6 +20,13 @@ public class UnionRoleStaff {
         this.staffId=staffId;
     }
 
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
     public String getId() {
         return id;
