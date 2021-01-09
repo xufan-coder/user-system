@@ -23,6 +23,7 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -89,6 +90,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if(count > 0 ){
             throw new DefaultException("企业名称已被占用");
         }
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+        userQw.lambda().eq(SysUserInfo::getPhoneNumber, sysCompanyInfo.getCompanyName());
+        //查询该手机号码是否存在
+        SysUserInfo user =  this.sysUserInfoMapper.selectOne(userQw);
+        if(user != null ){
+            throw new DefaultException("该手机号码已存在！");
+        }
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
@@ -130,6 +139,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setCreateTime(new Date());
         admin.setCreateBy(UserUtils.getUserId());
         admin.setCreateUsername(UserUtils.getUserName());
+        admin.setDeleted(YesNo.NO);
         this.companyAdminMapper.insert(admin);
     }
 

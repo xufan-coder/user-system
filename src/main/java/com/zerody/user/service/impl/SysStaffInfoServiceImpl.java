@@ -125,6 +125,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setUserId(sysUserInfo.getId());
+        staff.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加员工入库参数--{}",JSON.toJSONString(staff));
         this.saveOrUpdate(staff);
         //角色
