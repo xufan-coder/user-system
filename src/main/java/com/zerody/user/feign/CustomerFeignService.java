@@ -9,6 +9,6 @@ import org.springframework.cloud.openfeign.FeignClient;
  * @DateTime 2021/1/9_13:49
  * @Deacription TODO
  */
-@FeignClient("zerody-customer.name:zerody-customer")
+@FeignClient(value = "${zerody-customer.name:zerody-customer}", contextId = "zerody-customer-clew")
 public interface CustomerFeignService extends ClewRemoteService {
 }
