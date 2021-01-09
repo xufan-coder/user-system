@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -8,6 +9,7 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,4 +69,17 @@ public interface SysStaffInfoService {
 	 * @return
 	 */
 	List<String> getUserSubordinates(String userId);
+
+
+    /**
+     *
+     *  获取下级员工 线索汇总
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/9 12:52
+     * @param                userId 当前登录用户id
+     * @param                dto 分页参数
+     * @return               java.lang.Object
+     */
+    IPage<SysUserClewCollectVo> getSubordinatesUserClewCollect(PageQueryDto dto, String userId);
 }

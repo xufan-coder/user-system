@@ -1,8 +1,11 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
@@ -16,6 +19,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -136,6 +140,8 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+
+
     /**
     *   获取用户信息；构建token基础信息
     */
@@ -248,5 +254,19 @@ public class SysUserInfoController implements UserRemoteService {
         }
 	}
 
+    @GetMapping(value = "/user-subordinates/clew/collect")
+    public DataResult<IPage<SysUserClewCollectVo>> geSubordinatestUserClewCollect(PageQueryDto dto) {
+
+        try {
+            String userId = UserUtils.getUserId();
+            return R.success(this.sysStaffInfoService.getSubordinatesUserClewCollect(dto, userId));
+        } catch (DefaultException e) {
+            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            return R.error("获取员工下级线索汇总信息出错！请求异常");
+        }
+    }
 
 }
