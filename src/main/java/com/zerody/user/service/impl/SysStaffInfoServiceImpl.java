@@ -15,17 +15,21 @@ import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.user.domain.*;
 import com.zerody.user.enums.StaffGenderEnum;
+import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -111,6 +115,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private OauthFeignService oauthFeignService;
+
+    @Autowired
+    private CustomerFeignService customerFeignService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -654,6 +661,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 		return depIds;
 	}
 
+
+
+    @Override
+    public IPage<SysUserClewCollectVo> getSubordinatesUserClewCollect(PageQueryDto dto, String userId) {
+        //获取子部门集合
+	    List<String> deps = this.getUserSubordinates(userId);
+	    IPage<SysUserClewCollectVo> iPage = new Page<>(dto.getCurrent(), dto.getCurrent());
+        if(CollectionUtils.isEmpty(deps)){
+            SysUserClewCollectVo user = this.sysStaffInfoMapper.selectUserInfo(userId);
+            List<String> userIds = new ArrayList<>();
+            userIds.add(userId);
+            BeanUtils.copyProperties(user, this.customerFeignService.getClews(userIds));
+            List<SysUserClewCollectVo>  clews = new ArrayList<>();
+            clews.add(user);
+            iPage.setRecords(clews);
+            iPage.setTotal(1);
+        }
+        return iPage;
+    }
+
 	private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
 	}
@@ -680,6 +707,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             getChilden(depIds, deps, dep.getId());
         }
     }
+
 
 
 }

@@ -33,6 +33,11 @@
 			<artifactId>zerody-common</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.zerody.customer</groupId>
+			<artifactId>zerody-customer-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 		</dependency>

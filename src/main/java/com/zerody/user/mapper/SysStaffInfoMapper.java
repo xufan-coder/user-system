@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import java.util.List;
 
+import com.zerody.user.vo.SysUserClewCollectVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -38,4 +39,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 	public String getStaffIdByUserId(@Param("userId")String userId);
 
     public UserDeptVo selectUserDeptInfoById(@Param("staffId")String staffId);
+
+    /**
+     *
+     * 获取员工的部门岗位
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/9 13:40
+     * @param                userId
+     * @return               com.zerody.user.vo.SysUserClewCollectVo
+     */
+    SysUserClewCollectVo selectUserInfo(String userId);
 }

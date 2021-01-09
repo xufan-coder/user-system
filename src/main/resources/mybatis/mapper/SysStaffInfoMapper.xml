@@ -240,4 +240,20 @@
             ssi.status != -1 and ssi.id = #{staffId}
         </where>
     </select>
+    <select id="selectUserInfo" resultType="com.zerody.user.vo.SysUserClewCollectVo">
+        SELECT
+            sui.id AS userId,
+            sui.name,
+            sdi.depert_name AS departName,
+            sjp.position_name AS jobName
+        FROM
+            sys_user_info AS sui
+        LEFT JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ca.staff_id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ca.staff_id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        where
+            sui.id = #{userId}
+    </select>
 </mapper>
