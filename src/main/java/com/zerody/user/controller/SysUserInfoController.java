@@ -258,8 +258,8 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<IPage<SysUserClewCollectVo>> geSubordinatestUserClewCollect(PageQueryDto dto) {
 
         try {
-//            String userId = UserUtils.getUserId();
-            return R.success(this.sysStaffInfoService.getSubordinatesUserClewCollect(dto, "92b2ab32cc263c774be192f875851e9e"));
+            String userId = UserUtils.getUserId();
+            return R.success(this.sysStaffInfoService.getSubordinatesUserClewCollect(dto, userId));
         } catch (DefaultException e) {
             log.error("获取员工下级线索汇总信息出错:{}", e, e);
             return R.error(e.getMessage());
