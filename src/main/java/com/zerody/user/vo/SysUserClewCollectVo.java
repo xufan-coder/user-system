@@ -56,7 +56,7 @@ public class SysUserClewCollectVo {
     /**
      * 最后入库时间
      */
-    private String lastStorageTime;
+    private Date lastStorageTime;
 
 
 

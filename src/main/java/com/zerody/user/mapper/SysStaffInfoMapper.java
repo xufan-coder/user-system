@@ -50,4 +50,17 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.zerody.user.vo.SysUserClewCollectVo
      */
     SysUserClewCollectVo selectUserInfo(String userId);
+
+    /**
+     * 查询员工信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/9 14:51
+     * @param                deps
+     * @param               iPage
+     * @param                 isAdmin
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysUserClewCollectVo>
+     */
+    IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage, @Param("isAdmin") boolean isAdmin);
 }
