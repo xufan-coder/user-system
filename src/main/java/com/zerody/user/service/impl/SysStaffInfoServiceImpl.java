@@ -751,8 +751,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //获取全部的部门
             List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(staff.getCompId());
             //用户id集合暂存部门id集合
-            getChilden(userIds, deps, dep.getId() );
             userIds.add(dep.getId());
+            getChilden(userIds, deps, dep.getId() );
             iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage, false);
             userIds.removeAll(userIds);
             userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
