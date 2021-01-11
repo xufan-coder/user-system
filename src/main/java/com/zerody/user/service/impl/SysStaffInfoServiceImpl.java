@@ -23,8 +23,7 @@ import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
-import com.zerody.user.vo.SysDepartmentInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
+import com.zerody.user.vo.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,6 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.util.IdCardUtil;
-import com.zerody.user.vo.BosStaffInfoVo;
-import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import java.util.*;
@@ -587,7 +584,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto) {
-        IPage<SysUserInfoVo> voIPage = new Page<>(dto.getCurrent(),dto.getPageSize());
+        IPage<BosStaffInfoVo> voIPage = new Page<>(dto.getCurrent(),dto.getPageSize());
         return sysStaffInfoMapper.selectAdmins(dto,voIPage);
     }
 
@@ -735,7 +732,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return iPage;
     }
 
-	private String getStaffIdByUserId(String userId) {
+    @Override
+    public CopyStaffInfoVo selectStaffInfo(String staffId) {
+        return sysStaffInfoMapper.selectStaffInfo(staffId);
+    }
+
+    private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
 	}
 

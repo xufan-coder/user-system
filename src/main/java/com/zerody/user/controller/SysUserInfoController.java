@@ -213,6 +213,13 @@ public class SysUserInfoController implements UserRemoteService {
         return R.success(sysUserInfoService.checkUserAdmin(userId));
     }
 
+    @Override
+    @RequestMapping(value = "/check-admin-back/inner",method = GET, produces = "application/json")
+    public DataResult<Boolean> checkBackAdminUser(@RequestParam("userId")String userId) {
+        return R.success(sysUserInfoService.checkBackAdminUser(userId));
+    }
+
+
 
     /**
      *

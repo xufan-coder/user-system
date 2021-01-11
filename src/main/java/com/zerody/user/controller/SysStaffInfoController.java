@@ -213,7 +213,7 @@ public class SysStaffInfoController {
 
 
     /**
-    *   分页获取管理员列表
+    *   分页获取平台管理员列表
     */
     @RequestMapping(value = "/get-admins", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getAdmins(AdminsPageDto dto){

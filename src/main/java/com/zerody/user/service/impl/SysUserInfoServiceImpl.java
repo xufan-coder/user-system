@@ -206,5 +206,10 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return sysUserInfoMapper.checkUserAdmin(userId);
     }
 
+    @Override
+    public Boolean checkBackAdminUser(String userId) {
+        return sysUserInfoMapper.checkBackAdminUser(userId);
+    }
+
 
 }

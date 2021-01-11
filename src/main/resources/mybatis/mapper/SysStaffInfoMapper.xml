@@ -200,24 +200,25 @@
 
     <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
-        ca.id AS id,
-        ca.company_id AS compId,
+        aui.id AS id,
+        sci.id AS compId,
         sci.company_name AS compcompanyName,
-        ssi.user_name AS userName,
-        sui.phone_number AS phone,
+        aui.user_name AS userName,
+        aui.phone_number AS phone,
         sjp.position_name AS positionName,
         sdi.depart_name AS departName,
         ssi.id AS staffId,
-        ca.role_id AS roleId
+        urs.role_id AS roleId
         FROM
-        company_admin ca
-        JOIN sys_staff_info ssi ON ssi.id=ca.staff_id
+        admin_user_info aui
+        LEFT JOIN sys_staff_info ssi ON ssi.id=aui.staff_id
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
-        LEFT JOIN sys_company_info sci ON sci.id=ca.company_id
-        LEFT JOIN union_staff_position usp ON usp.staff_id = ca.staff_id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = aui.staff_id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
-        LEFT JOIN union_staff_depart usd ON usd.staff_id = ca.staff_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = aui.staff_id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = aui.staff_id
         <where>
             ssi.status != -1
         <if test="dto.userName != null and dto.userName != ''">
@@ -278,6 +279,26 @@
                     #{id}
                 </foreach>
             </if>
+        </where>
+    </select>
+
+
+    <select id="selectStaffInfo" resultType="com.zerody.user.vo.CopyStaffInfoVo">
+        SELECT
+        ssi.id AS staffId,
+        sui.user_name,
+        sui.phone_number AS phoneNumber,
+        sui.avatar,
+        sli.user_pwd AS userPwd,
+        urs.role_id
+        FROM
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        JOIN sys_login_info sli ON sli.user_id = sui.id
+        LEFT JOIN union_platform_role_staff urs ON urs.staff_id = ssi.id
+        <where>
+            ssi.status != -1
+            and ssi.id = #{staffId}
         </where>
     </select>
 </mapper>
