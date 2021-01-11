@@ -61,4 +61,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     Boolean checkUserAdmin(@Param("userId")String userId);
 
     Boolean checkBackAdminUser(@Param("userId")String userId);
+
+    List<String> selectAllUserId();
 }
