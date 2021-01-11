@@ -26,6 +26,8 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     SysUserInfoVo selectStaffById(String id);
 
+    SysUserInfoVo selectStaffByUserId(@Param("userId")String userId);
+
     List<String> selectStaffRoles(@Param("userId")String userId, @Param("companyId")String companyId);
 
     List<BosStaffInfoVo> getStaff(@Param("companyId")String companyId, @Param("departId")String departId, @Param("positionId")String positionId);

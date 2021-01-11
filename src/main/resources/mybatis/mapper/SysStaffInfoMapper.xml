@@ -156,6 +156,47 @@
         </where>
     </select>
 
+    <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
+        SELECT
+        sci.company_name,
+        ssi.id staffId,
+        sui.user_name,
+        sui.gender,
+        sui.phone_number,
+        sui.email,
+        sui.nickname,
+        sui.avatar,
+        sui.birthday,
+        sui.certificate_card,
+        sui.certificate_card_address,
+        sui.prov_city_district,
+        sui.contact_address,
+        sui.register_time,
+        ssi.STATUS,
+        sui.nation,
+        sui.ancestral,
+        urs.role_name,
+        sdi.depart_name,
+        sjp.position_name,
+        urs.role_id,
+        sdi.id AS departId,
+        sjp.id AS positionId,
+        sci.id AS companyId,
+        sui.id AS id
+        FROM
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        <where>
+            ssi.status != -1 and sui.id = #{userId}
+        </where>
+    </select>
+
     <select id="selectStaffRoles" resultType="String">
         SELECT
         urs.role_id

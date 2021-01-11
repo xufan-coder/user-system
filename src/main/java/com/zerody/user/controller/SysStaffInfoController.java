@@ -111,6 +111,14 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.selectStaffById(staffId));
     }
 
+    /**
+     *    根据用户id查询员工信息
+     */
+    @GetMapping("/get-by-user")
+    public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
+        return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+    }
+
 
     /**
     *  删除员工

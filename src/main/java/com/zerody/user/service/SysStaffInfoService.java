@@ -86,4 +86,6 @@ public interface SysStaffInfoService {
 
 
     CopyStaffInfoVo selectStaffInfo(String staffId);
+
+    SysUserInfoVo selectStaffByUserId(String userId);
 }

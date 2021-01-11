@@ -10,7 +10,6 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.AdminUserService;
