@@ -130,4 +130,15 @@ public interface SysUserInfoService {
      * @date 2021/1/11  9:59
      */
     Boolean checkBackAdminUser(String userId);
+
+    /**************************************************************************************************
+     **
+     * 获取所有yonghuID
+     *
+     * @param null
+     * @return {@link List<String> }
+     * @author DaBai
+     * @date 2021/1/11  18:42
+     */
+    List<String> selectAllUserId();
 }

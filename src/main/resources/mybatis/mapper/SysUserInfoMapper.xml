@@ -205,4 +205,14 @@ WHERE
             and aui.id=#{userId}
         </where>
     </select>
+
+    <select id="selectAllUserId" resultType="java.lang.String">
+        SELECT
+        sui.id
+        FROM
+        sys_user_info AS sui
+        <where>
+            sui.status=0
+        </where>
+    </select>
 </mapper>
