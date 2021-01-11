@@ -165,6 +165,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //        smsFeignService.sendSms(dto);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
+        staff.setUserName(sysUserInfo.getUserName());
         staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setUserId(sysUserInfo.getId());
