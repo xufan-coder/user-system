@@ -13,4 +13,7 @@ public interface AdminUserService extends IService<AdminUserInfo> {
     void updateAdminUser(AdminUserInfo data);
 
     void removeAdminUser(String id);
+
+
+    void updateRole(String id, String roleId);
 }

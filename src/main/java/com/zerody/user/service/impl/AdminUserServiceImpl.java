@@ -2,12 +2,15 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.oauth.api.vo.PlatformRoleVo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.UnionPlatformRoleStaff;
 import com.zerody.user.dto.AdminUserDto;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.AdminUserMapper;
 import com.zerody.user.mapper.UnionPlatformRoleStaffMapper;
 import com.zerody.user.service.AdminUserService;
@@ -31,6 +34,8 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     private SysStaffInfoService sysStaffInfoService;
     @Autowired
     private UnionPlatformRoleStaffMapper roleStaffMapper;
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     @Override
     public com.zerody.user.api.vo.AdminUserInfo checkLoginAdmin(String phone) {
@@ -60,7 +65,18 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         UnionPlatformRoleStaff roleStaff=new UnionPlatformRoleStaff();
         roleStaff.setAdminUserId(userInfo.getId());
         roleStaff.setRoleId(data.getRoleId());
-        roleStaff.setRoleName(data.getRoleName());
+        if(DataUtil.isEmpty(data.getRoleName())) {
+            DataResult<PlatformRoleVo> platformRole = oauthFeignService.getPlatformRoleById(data.getRoleId());
+            if (!platformRole.isSuccess()) {
+                throw new DefaultException("服务异常！");
+            }
+            if (DataUtil.isEmpty(platformRole.getData())) {
+                throw new DefaultException("角色不存在或已被删除！");
+            }
+            roleStaff.setRoleName(platformRole.getData().getRoleName());
+        }else {
+            roleStaff.setRoleName(data.getRoleName());
+        }
         roleStaff.setStaffId(vo.getStaffId());
         roleStaffMapper.insert(roleStaff);
         return userInfo;
@@ -79,5 +95,23 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         QueryWrapper<UnionPlatformRoleStaff> qw =new QueryWrapper<>();
         qw.lambda().eq(UnionPlatformRoleStaff::getStaffId,byId.getStaffId());
         roleStaffMapper.delete(qw);
+    }
+
+
+    @Override
+    public void updateRole(String id,String roleId) {
+        QueryWrapper<UnionPlatformRoleStaff> qw =new QueryWrapper<>();
+        qw.lambda().eq(UnionPlatformRoleStaff::getAdminUserId,id);
+        UnionPlatformRoleStaff roleStaff = roleStaffMapper.selectOne(qw);
+        DataResult<PlatformRoleVo> platformRole = oauthFeignService.getPlatformRoleById(roleId);
+        if(!platformRole.isSuccess()){
+            throw new DefaultException("服务异常！");
+        }
+        if(DataUtil.isEmpty(platformRole.getData())){
+            throw new DefaultException("角色不存在或已被删除！");
+        }
+        roleStaff.setRoleId(roleId);
+        roleStaff.setRoleName(platformRole.getData().getRoleName());
+        roleStaffMapper.updateById(roleStaff);
     }
 }
