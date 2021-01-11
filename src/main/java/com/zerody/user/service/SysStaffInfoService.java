@@ -53,6 +53,8 @@ public interface SysStaffInfoService {
 
     Map<String, Object> batchImportStaff(MultipartFile file) throws Exception;
 
+    Map<String, Object> batchImportCompanyUser(MultipartFile file) throws Exception;
+
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
     IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
@@ -88,4 +90,5 @@ public interface SysStaffInfoService {
     CopyStaffInfoVo selectStaffInfo(String staffId);
 
     SysUserInfoVo selectStaffByUserId(String userId);
+
 }

@@ -191,6 +191,7 @@ public class SysStaffInfoController {
 
 
     /**
+     * 企业内部导入
     *    批量导入用户excel
     */
     @PostMapping("/import")
@@ -206,6 +207,22 @@ public class SysStaffInfoController {
         }
     }
 
+    /**
+     *  非固定企业导入
+     *    批量导入用户excel
+     */
+    @PostMapping("/company/import")
+    public DataResult<Object> batchImportCompanyUser(MultipartFile file){
+        try {
+            return R.success(sysStaffInfoService.batchImportCompanyUser(file));
+        } catch (DefaultException e){
+            log.error("批量导入员工错误:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("批量导入员工错误:{}",e.getMessage());
+            return R.error("批量导入员工失败,请求异常");
+        }
+    }
 
    /**
    *   按企业获取员工
