@@ -255,7 +255,7 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         where
-            sui.id = #{userId}
+            ssi.id = #{staffId}
     </select>
     <select id="getStaffByDepIds" resultType="com.zerody.user.vo.SysUserClewCollectVo">
         SELECT
@@ -270,9 +270,9 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-        LEFT JOIN sys_department_info sdi ON sdi.admin_account = ssi.id OR  sdi.id = usd.department_id
+        LEFT JOIN sys_department_info sdi ON  sdi.id = usd.department_id
         <where>
-            <if test="!isAdmin and ids != null and ids.size() > 0">
+            <if test="ids != null and ids.size() > 0">
                 sdi.id in
                 <foreach collection="ids" item="id" open="(" separator="," close=")">
                     #{id}

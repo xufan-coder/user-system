@@ -12,6 +12,7 @@ import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -19,6 +20,7 @@ import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -116,6 +118,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         SysLoginInfo sysLoginInfo = new SysLoginInfo();
         sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String initPwd = SysStaffInfoService.getInitPwd();
+//        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( initPwd )));
         sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
         sysLoginInfo.setUserId(userInfo.getId());
         sysLoginInfo.setCreateTime(new Date());
@@ -130,7 +134,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staff.setCreateTime(new Date());
         staff.setCreateId(UserUtils.getUserId());
         this.sysStaffInfoMapper.insert(staff);
-        sysCompanyInfo.setAdminAccount(staff.getId());
         this.saveOrUpdate(sysCompanyInfo);
         CompanyAdmin admin = new CompanyAdmin();
         admin.setId(UUIDutils.getUUID32());
@@ -141,6 +144,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setCreateUsername(UserUtils.getUserName());
         admin.setDeleted(YesNo.NO);
         this.companyAdminMapper.insert(admin);
+        SmsDto dto=new SmsDto();
+        dto.setPhone(userInfo.getPhoneNumber());
+        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
+//        smsFeignService.sendSms(dto);//发送短信
     }
 
     /**
@@ -260,17 +267,37 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
         }
-        String userId = this.sysStaffInfoMapper.selectById(dto.getStaffId()).getUserId();
-        SysUserInfo user = this.sysUserInfoMapper.selectById(userId);
+        SysStaffInfo staff = this.sysStaffInfoMapper.selectById(dto.getStaffId());
+        if(!staff.getCompId().equals(dto.getId())){
+            throw new DefaultException("该员工不是该企业下的");
+        }
+        SysUserInfo user = this.sysUserInfoMapper.selectById(staff.getUserId());
 
         UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
         comUw.lambda().set(SysCompanyInfo::getContactName, user.getUserName())
                         .set(SysCompanyInfo::getContactPhone, user.getPhoneNumber());
         comUw.lambda().eq(SysCompanyInfo::getId, dto.getId());
         this.update(comUw);
-        UpdateWrapper<CompanyAdmin> adminUw = new UpdateWrapper<>();
-        adminUw.lambda().set(CompanyAdmin::getStaffId, dto.getStaffId()).
-                        eq(CompanyAdmin::getCompanyId, dto.getId());
+        QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+        adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
+        adminQw.lambda().eq(CompanyAdmin::getCompanyId, dto.getId());
+        CompanyAdmin admin = this.companyAdminMapper.selectById(dto.getId());
+        if(admin ==  null){
+            admin.setId(UUIDutils.getUUID32());
+            admin.setStaffId(dto.getStaffId());
+            admin.setCompanyId(dto.getId());
+            admin.setCreateUsername(UserUtils.getUserName());
+            admin.setCreateBy(UserUtils.getUserId());
+            admin.setCreateTime(new Date());
+            admin.setDeleted(YesNo.NO);
+            this.companyAdminMapper.insert(admin);
+            return;
+        }
+        admin.setStaffId(dto.getStaffId());
+        admin.setUpdateBy(UserUtils.getUserId());
+        admin.setUpdateTime(new Date());
+        admin.setUpdateUsername(UserUtils.getUserName());
+        this.companyAdminMapper.updateById(admin);
     }
 
 

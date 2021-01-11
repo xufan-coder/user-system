@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.utils.CollectionUtils;
@@ -681,14 +682,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         //获取当前员工企业
         QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+        adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, staff.getCompId());
         CompanyAdmin com = this.companyAdminMapper.selectOne(adminQw);
         //设置分页参数
-        IPage<SysUserClewCollectVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
+        IPage<SysUserClewCollectVo> iPage = new Page<>(dto.getCurrent(), dto.getCurrent() == 1 ? dto.getPageSize() - 1 : dto.getPageSize());
         //用于请求获取用户分页
         List<String> userIds = new ArrayList<>();
         //线索集合
         List<UserClewDto> clews;
+        SysUserClewCollectVo userInfo = this.sysStaffInfoMapper.selectUserInfo(staff.getId());
         //查看当前员工是否是企业管理员
         if(!staff.getId().equals(com.getStaffId())){
             //不是企业管理员 查看是否是部门管理员
@@ -699,14 +702,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
                 iPage = new Page<>(dto.getCurrent(), dto.getCurrent());
-                iPage.getRecords().add(this.sysStaffInfoMapper.selectUserInfo(userId));
+                iPage.setRecords(new ArrayList<>());
+                iPage.getRecords().add(userInfo);
                 iPage.setTotal(0);
                 userIds.add(iPage.getRecords().get(0).getUserId());
                 clews = this.customerFeignService.getClews(userIds).getData();
                 if(CollectionUtils.isEmpty(clews)){
                     return iPage;
                 }
-                BeanUtils.copyProperties(iPage.getRecords().get(0), clews.get(0));
+                BeanUtils.copyProperties(clews.get(0), iPage.getRecords().get(0));
                 return iPage;
             }
             //获取全部的部门
@@ -714,20 +718,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //用户id集合暂存部门id集合
             userIds.add(dep.getId());
             getChilden(userIds, deps, dep.getId() );
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage, false);
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage);
             userIds.removeAll(userIds);
-            userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
-            clews = this.customerFeignService.getClews(userIds).getData();
         } else {
             //企业管理员不需要获取下级部门
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, true);
-            userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
-            clews = this.customerFeignService.getClews(userIds).getData();
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage);
+
+        }
+        iPage.getRecords().add(0, userInfo);
+        userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
+        clews = this.customerFeignService.getClews(userIds).getData();
+        if(iPage.getCurrent() == 1){
+            iPage.setSize(iPage.getSize() + iPage.getCurrent());
+            iPage.setTotal(iPage.getTotal() + iPage.getCurrent());
         }
         if(CollectionUtils.isEmpty(clews)){
             return iPage;
         }
-        Map<String, SysUserClewCollectVo> userClewMap = iPage.getRecords().stream().collect(Collectors.toMap(SysUserClewCollectVo::getUserId, a -> a));
+        Map<String, SysUserClewCollectVo> userClewMap = iPage.getRecords().stream().collect(Collectors.toConcurrentMap(SysUserClewCollectVo::getUserId, a -> a));
         for (UserClewDto clew : clews){
             BeanUtils.copyProperties(clew, userClewMap.get(clew.getUserId()));
         }
