@@ -202,7 +202,7 @@ WHERE
         <where>
             ssi.status=0
             and sui.status=0
-            and sui.id=#{userId}
+            and aui.id=#{userId}
         </where>
     </select>
 </mapper>

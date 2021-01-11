@@ -41,8 +41,12 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     public com.zerody.user.api.vo.AdminUserInfo checkLoginAdmin(String phone) {
         QueryWrapper<AdminUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(AdminUserInfo::getPhoneNumber,phone);
-        com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
-        DataUtil.getKeyAndValue(userInfo,this.getOne(qw));
+        com.zerody.user.api.vo.AdminUserInfo userInfo=null;
+        AdminUserInfo one = this.getOne(qw);
+        if(DataUtil.isNotEmpty(one)){
+            userInfo=new com.zerody.user.api.vo.AdminUserInfo();
+            DataUtil.getKeyAndValue(userInfo,this.getOne(qw));
+        }
         return userInfo;
     }
 
