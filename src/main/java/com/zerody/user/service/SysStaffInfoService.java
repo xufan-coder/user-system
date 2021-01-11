@@ -9,6 +9,7 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.CopyStaffInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,8 @@ public interface SysStaffInfoService {
 
     Map<String, Object> batchImportStaff(MultipartFile file) throws Exception;
 
+    Map<String, Object> batchImportCompanyUser(MultipartFile file) throws Exception;
+
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
     IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
@@ -82,4 +85,10 @@ public interface SysStaffInfoService {
      * @return               java.lang.Object
      */
     IPage<SysUserClewCollectVo> getSubordinatesUserClewCollect(PageQueryDto dto, String userId);
+
+
+    CopyStaffInfoVo selectStaffInfo(String staffId);
+
+    SysUserInfoVo selectStaffByUserId(String userId);
+
 }

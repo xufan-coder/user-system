@@ -109,5 +109,25 @@ public interface SysUserInfoService {
      */
     Boolean checkPlatformRoleBind(String roleId);
 
+    /**************************************************************************************************
+     **
+     *  查询用户是否是企业管理员
+     *
+     * @param userId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2021/1/11  9:58
+     */
     Boolean checkUserAdmin(String userId);
+
+    /**************************************************************************************************
+     **
+     *  查询用户是否是平台管理员
+     *
+     * @param userId
+     * @return {@link Boolean }
+     * @author DaBai
+     * @date 2021/1/11  9:59
+     */
+    Boolean checkBackAdminUser(String userId);
 }

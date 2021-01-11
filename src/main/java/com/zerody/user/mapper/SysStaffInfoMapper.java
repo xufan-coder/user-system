@@ -2,7 +2,7 @@ package com.zerody.user.mapper;
 
 import java.util.List;
 
-import com.zerody.user.vo.SysUserClewCollectVo;
+import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -12,9 +12,6 @@ import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.vo.BosStaffInfoVo;
-import com.zerody.user.vo.SysStaffInfoVo;
-import com.zerody.user.vo.SysUserInfoVo;
 
 public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
@@ -28,6 +25,8 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     SysUserInfoVo getStaffInfoByOpenId(String openId);
 
     SysUserInfoVo selectStaffById(String id);
+
+    SysUserInfoVo selectStaffByUserId(@Param("userId")String userId);
 
     List<String> selectStaffRoles(@Param("userId")String userId, @Param("companyId")String companyId);
 
@@ -61,5 +60,16 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param               iPage
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysUserClewCollectVo>
      */
-    IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage);
+    IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage, @Param("isAdmin") boolean isAdmin);
+
+    /**************************************************************************************************
+     **
+     *  查询员工信息//创建管理员账户使用
+     *
+     * @param staffId
+     * @return {@link CopyStaffInfoVo }
+     * @author DaBai
+     * @date 2021/1/11  10:50
+     */
+    CopyStaffInfoVo selectStaffInfo(@Param("staffId")String staffId);
 }

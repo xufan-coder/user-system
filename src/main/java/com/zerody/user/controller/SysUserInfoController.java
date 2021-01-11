@@ -10,7 +10,6 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.AdminUserService;
@@ -212,6 +211,13 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<Boolean> checkUserAdmin(@RequestParam("userId")String userId) {
         return R.success(sysUserInfoService.checkUserAdmin(userId));
     }
+
+    @Override
+    @RequestMapping(value = "/check-admin-back/inner",method = GET, produces = "application/json")
+    public DataResult<Boolean> checkBackAdminUser(@RequestParam("userId")String userId) {
+        return R.success(sysUserInfoService.checkBackAdminUser(userId));
+    }
+
 
 
     /**

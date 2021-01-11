@@ -59,4 +59,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<String> getUserSubordinates(@Param("deps") List<SysDepartmentInfo> deps);
 
     Boolean checkUserAdmin(@Param("userId")String userId);
+
+    Boolean checkBackAdminUser(@Param("userId")String userId);
 }

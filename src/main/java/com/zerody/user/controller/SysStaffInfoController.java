@@ -111,6 +111,14 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.selectStaffById(staffId));
     }
 
+    /**
+     *    根据用户id查询员工信息
+     */
+    @GetMapping("/get-by-user")
+    public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
+        return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+    }
+
 
     /**
     *  删除员工
@@ -183,6 +191,7 @@ public class SysStaffInfoController {
 
 
     /**
+     * 企业内部导入
     *    批量导入用户excel
     */
     @PostMapping("/import")
@@ -198,6 +207,22 @@ public class SysStaffInfoController {
         }
     }
 
+    /**
+     *  非固定企业导入
+     *    批量导入用户excel
+     */
+    @PostMapping("/company/import")
+    public DataResult<Object> batchImportCompanyUser(MultipartFile file){
+        try {
+            return R.success(sysStaffInfoService.batchImportCompanyUser(file));
+        } catch (DefaultException e){
+            log.error("批量导入员工错误:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("批量导入员工错误:{}",e.getMessage());
+            return R.error("批量导入员工失败,请求异常");
+        }
+    }
 
    /**
    *   按企业获取员工
@@ -213,7 +238,7 @@ public class SysStaffInfoController {
 
 
     /**
-    *   分页获取管理员列表
+    *   分页获取平台管理员列表
     */
     @RequestMapping(value = "/get-admins", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getAdmins(AdminsPageDto dto){

@@ -1,8 +1,16 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.util.Date;
+/**
+ * @author  DaBai
+ * @date  2021/1/11 9:56
+ */
 
 public class AdminUserInfo {
+    @TableId(type = IdType.UUID)
     private String id;
 
     private String userName;
