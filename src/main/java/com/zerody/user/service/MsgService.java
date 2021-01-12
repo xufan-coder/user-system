@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import java.util.List;
 
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.user.dto.MsgPageDto;
 import com.zerody.user.dto.MsgDto;
 import com.zerody.user.domain.Msg;
@@ -62,4 +63,15 @@ public interface MsgService extends IService<Msg>{
 	 * @date 2021/1/12  10:52
 	 */
 	List<Msg> getTipList(String userId);
+
+	/**************************************************************************************************
+	 **
+	 * 分页查询消息列表 
+	 *
+	 * @param null
+	 * @return {@link null }
+	 * @author DaBai
+	 * @date 2021/1/12  14:52
+	 */
+	IPage<Msg> getPageList(PageQueryDto pageDto);
 }

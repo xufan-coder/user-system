@@ -1,35 +1,20 @@
 package com.zerody.user.controller;
 
-import java.util.Date;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.dto.*;
-import com.zerody.user.domain.*;
-import com.zerody.user.service.*;
+import com.zerody.user.domain.Msg;
+import com.zerody.user.dto.MsgPageDto;
+import com.zerody.user.service.MsgService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.validation.annotation.Validated;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 /**
  * 
  * 消息控制类 
@@ -59,6 +44,19 @@ public class MsgController {
 		}
 	}
 
+	/**
+	 *   个人中心消息列表【分页】
+	 */
+	@GetMapping("/page/visit")
+	public DataResult<IPage<Msg>> getPageList(@RequestBody PageQueryDto pageDto) {
+		try {
+			IPage<Msg> data = this.service.getPageList(pageDto);
+			return R.success(data);
+		} catch (Exception e) {
+			log.error("分页查询消息出错:{}", e, e);
+			return R.error("分页查询消息出错:"+e.getMessage());
+		}
+	}
 
 	/**
 	 *  消息分页查询 

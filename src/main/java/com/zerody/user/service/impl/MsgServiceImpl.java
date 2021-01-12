@@ -7,8 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
+import com.zerody.user.vo.BosStaffInfoVo;
 import org.springframework.beans.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,5 +92,13 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 				.between(Msg::getCreateTime,nowDateFormat+" 00:00:00",nowDateFormat+" 23:59:59")
 				.orderByDesc(Msg::getCreateTime);
 		return this.list(qw);
+	}
+
+	@Override
+	public IPage<Msg> getPageList(PageQueryDto pageDto) {
+		IPage<Msg> infoVoIPage = new Page<>(pageDto.getCurrent(),pageDto.getPageSize());
+		QueryWrapper<Msg> qw=new QueryWrapper<>();
+		qw.lambda().orderByDesc(Msg::getCreateTime);
+		return this.page(infoVoIPage,qw);
 	}
 }
