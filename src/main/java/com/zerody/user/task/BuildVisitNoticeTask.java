@@ -1,9 +1,9 @@
 package com.zerody.user.task;
 
+import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.user.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,8 +19,7 @@ public class BuildVisitNoticeTask {
     private TaskService taskService;
 
 
-
-    @Scheduled(cron = "0 0 1 * * ?")
+    @XxlJob("follow_up_message")
     public void buildVisitNoticeInfo() {
         log.info("进入客户跟进消息提醒任务;");
         taskService.buildVisitNoticeInfo();
