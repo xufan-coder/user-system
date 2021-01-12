@@ -33,7 +33,7 @@ public class CardUserInfo {
 
     private Date updateTime;
 
-    private Byte status;
+    private Integer status;
 
     private String remark;
 

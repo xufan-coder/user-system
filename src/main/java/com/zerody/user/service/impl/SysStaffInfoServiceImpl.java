@@ -868,6 +868,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardUserInfo.setUserPwd(loginInfo.getUserPwd());
         cardUserInfo.setCreateBy(UserUtils.getUserId());
         cardUserInfo.setCreateTime(new Date());
+        cardUserInfo.setStatus(StatusEnum.激活.getValue());
         cardUserInfoMapper.insert(cardUserInfo);
         //生成基础名片信息
         UserCardDto cardDto=new UserCardDto();
