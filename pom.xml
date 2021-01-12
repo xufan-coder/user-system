@@ -20,6 +20,10 @@
 			<artifactId>zerody-customer-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.zerody.card</groupId>
+			<artifactId>zerody-card-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.zerody.sms</groupId>
 			<artifactId>zerody-sms-api</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
