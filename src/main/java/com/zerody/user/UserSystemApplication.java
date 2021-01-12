@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.zerody.user.mapper")
 @EnableCaching
 @EnableFeignClients(basePackages= {"com.zerody.**"})
-@EnableScheduling
 public class UserSystemApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(UserSystemApplication.class, args);
