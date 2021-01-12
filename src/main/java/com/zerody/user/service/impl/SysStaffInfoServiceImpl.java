@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
@@ -21,6 +22,7 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.enums.StaffGenderEnum;
+import com.zerody.user.feign.CardFeignService;
 import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
@@ -120,7 +122,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private CompanyAdminMapper companyAdminMapper;
 
     @Autowired
+    private CardUserInfoMapper cardUserInfoMapper;
+
+    @Autowired
     private CustomerFeignService customerFeignService;
+
+    @Autowired
+    private CardFeignService cardFeignService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -199,6 +207,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
         }
+        //添加员工即为内部员工需要生成名片小程序用户账号
+        //生成基础名片信息
+        saveCardUser(sysUserInfo,logInfo);
     }
 
 
@@ -620,6 +631,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         dto.setPhone(userInfo.getPhoneNumber());
         dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
         smsDtos.add(dto);
+
+        //添加员工即为内部员工需要生成名片小程序用户账号
+        //生成基础名片信息
+        saveCardUser(userInfo,loginInfo);
         return staff.getId();
     }
     private String checkCompanyParam(String[] row, StringBuilder errorStr,
@@ -760,6 +775,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         dto.setPhone(userInfo.getPhoneNumber());
         dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
         smsDtos.add(dto);
+
+        //添加员工即为内部员工需要生成名片小程序用户账号
+        //生成基础名片信息
+        saveCardUser(userInfo,loginInfo);
+
         return staff.getId();
     }
     private void checkParam(String[] row, StringBuilder errorStr,
@@ -838,6 +858,35 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
     }
+
+
+    public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo){
+        //添加员工即为内部员工需要生成名片小程序用户账号
+        CardUserInfo cardUserInfo=new CardUserInfo();
+        cardUserInfo.setUserName(userInfo.getUserName());
+        cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
+        cardUserInfo.setUserPwd(loginInfo.getUserPwd());
+        cardUserInfo.setCreateBy(UserUtils.getUserId());
+        cardUserInfo.setCreateTime(new Date());
+        cardUserInfo.setStatus(StatusEnum.激活.getValue());
+        cardUserInfoMapper.insert(cardUserInfo);
+        //生成基础名片信息
+        UserCardDto cardDto=new UserCardDto();
+        cardDto.setMobile(cardUserInfo.getPhoneNumber());
+        cardDto.setUserName(cardUserInfo.getUserName());
+        cardDto.setUserId(cardUserInfo.getId());
+        cardDto.setAvatar(userInfo.getAvatar());
+        cardDto.setEmail(userInfo.getEmail());
+        cardDto.setCreateBy(UserUtils.getUserId());
+        DataResult<String> card = cardFeignService.createCard(cardDto);
+        if(!card.isSuccess()){
+            throw new DefaultException("服务异常！");
+        }
+    }
+
+
+
+
 
     @Override
     public List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId) {
