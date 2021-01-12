@@ -50,4 +50,16 @@ public interface MsgService extends IService<Msg>{
 	 * @return
 	 */
 	public List<Msg> findData();
+
+
+	/**************************************************************************************************
+	 **
+	 *  根据当前用户ID查询最新提示
+	 *
+	 * @param userId
+	 * @return {@link Msg }
+	 * @author DaBai
+	 * @date 2021/1/12  10:52
+	 */
+	List<Msg> getTipList(String userId);
 }

@@ -43,7 +43,23 @@ public class MsgController {
 	@Autowired
 	private MsgService service;
 	private static final int MODULE_CODE=1001;
-	
+
+	/**
+	*   小程序首页轮播消息
+	 *   查询当天的跟进消息
+	*/
+	@GetMapping("/index/tip")
+	public DataResult<List<Msg>> getTipList() {
+		try {
+			List<Msg> data = this.service.getTipList(UserUtils.getUserId());
+			return R.success(data);
+		} catch (Exception e) {
+			log.error("分页查询消息出错:{}", e, e);
+			return R.error("分页查询消息出错:"+e.getMessage());
+		}
+	}
+
+
 	/**
 	 *  消息分页查询 
 	 * @param grid

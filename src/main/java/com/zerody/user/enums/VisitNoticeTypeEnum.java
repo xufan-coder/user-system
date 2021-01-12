@@ -1,4 +1,8 @@
 package com.zerody.user.enums;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author  DaBai
  * @date  2021/1/11 17:59
@@ -39,6 +43,17 @@ public enum VisitNoticeTypeEnum {
             if(desc.equals(status.getDesc())){
                 return status;
             }
+        }
+        return null;
+    }
+
+    public static List<String> getDescList(){
+        List<String> list=new ArrayList<>();
+        for (VisitNoticeTypeEnum desc : VisitNoticeTypeEnum.values()){
+            list.add(desc.getDesc());
+        }
+        if(list.size()>0){
+            return list;
         }
         return null;
     }
