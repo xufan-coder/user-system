@@ -33,6 +33,6 @@ public class SysCompanyInfoDto extends PageQueryDto {
      * @param
      * @return
      */
-    private Integer loginStatus;
+    private Integer status;
 
 }

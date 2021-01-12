@@ -281,8 +281,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
         adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, dto.getId());
-        CompanyAdmin admin = this.companyAdminMapper.selectById(dto.getId());
+        CompanyAdmin admin = this.companyAdminMapper.selectOne(adminQw);
         if(admin ==  null){
+            admin = new CompanyAdmin();
             admin.setId(UUIDutils.getUUID32());
             admin.setStaffId(dto.getStaffId());
             admin.setCompanyId(dto.getId());
