@@ -58,6 +58,9 @@ public class SysUserClewCollectVo {
      */
     private Date lastStorageTime;
 
-
+    /**
+     * 最后登录时间
+     */
+    private Date loginTime;
 
 }
