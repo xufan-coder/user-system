@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -245,4 +246,27 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.getAdmins(dto));
     }
 
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          微信分页获取员工
+     * @date                 2021/1/13 17:16
+     * @param                [dto]
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
+     */
+    @RequestMapping(value = "/wx/page", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getWxPageAllStaff(SysStaffInfoPageDto dto){
+        try {
+            dto.setCompanyId(UserUtils.getUser().getCompanyId());
+            return R.success(sysStaffInfoService.getWxPageAllStaff(dto));
+        } catch (DefaultException e){
+            log.error("微信分页获取员工出错:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("微信分页获取员工出错:{}",e.getMessage());
+            return R.error("微信分页获取员工出错,请求异常");
+        }
+    }
 }

@@ -1060,6 +1060,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return sysStaffInfoMapper.selectStaffByUserId(userId);
     }
 
+    @Override
+    public IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto) {
+	    if(StringUtils.isEmpty(dto.getCompanyId())){
+	        throw new DefaultException("员工企业获取失败");
+        }
+        IPage<BosStaffInfoVo> iPage = new Page<>(dto.getCurrent(),dto.getPageSize());
+        return this.sysStaffInfoMapper.getWxPageAllStaff(dto, iPage);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

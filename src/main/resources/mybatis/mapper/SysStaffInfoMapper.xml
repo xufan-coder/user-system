@@ -320,6 +320,9 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="ids eq null">
+                sdi.admin_account != ssi.id
+            </if>
         </where>
     </select>
 
@@ -341,5 +344,19 @@
             ssi.status != -1
             and ssi.id = #{staffId}
         </where>
+    </select>
+    <select id="getWxPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT
+            sui.id AS id,
+            sui.user_name AS userName,
+            sui.phone_number AS phone
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        WHERE
+            ssi.status = 0 and ssi.comp_id = #{dto.companyId}
+            <if test="dto.staffName neq null and dto.staffName neq ''">
+                and ssi.user_name like concat('%',#{dto.uerName},'%')
+            </if>
     </select>
 </mapper>

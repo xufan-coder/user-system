@@ -91,4 +91,5 @@ public interface SysStaffInfoService {
 
     SysUserInfoVo selectStaffByUserId(String userId);
 
+    IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto);
 }

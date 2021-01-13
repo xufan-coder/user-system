@@ -72,4 +72,16 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @date 2021/1/11  10:50
      */
     CopyStaffInfoVo selectStaffInfo(@Param("staffId")String staffId);
+
+    /**
+     *
+     *  获取企业全部员工
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/13 15:15
+     * @param                dto
+     * @param                iPage
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>
+     */
+    IPage<BosStaffInfoVo> getWxPageAllStaff(@Param("dto") SysStaffInfoPageDto dto, IPage<BosStaffInfoVo> iPage);
 }
