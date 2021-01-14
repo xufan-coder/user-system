@@ -1025,11 +1025,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //用户id集合暂存部门id集合
             userIds.add(dep.getId());
             getChilden(userIds, deps, dep.getId() );
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage);
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage , staff.getCompId());
             userIds.removeAll(userIds);
         } else {
             //企业管理员不需要获取下级部门
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage);
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId());
 
         }
         iPage.getRecords().add(0, userInfo);
@@ -1042,7 +1042,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(CollectionUtils.isEmpty(clews)){
             return iPage;
         }
-        Map<String, SysUserClewCollectVo> userClewMap = iPage.getRecords().stream().collect(Collectors.toConcurrentMap(SysUserClewCollectVo::getUserId, a -> a));
+        //转为有序map
+        LinkedHashMap<String, SysUserClewCollectVo> userClewMap = iPage.getRecords().stream().collect(Collectors.toMap(SysUserClewCollectVo::getUserId, a -> a, (k1, k2) -> k1,LinkedHashMap::new));
         for (UserClewDto clew : clews){
             BeanUtils.copyProperties(clew, userClewMap.get(clew.getUserId()));
         }
