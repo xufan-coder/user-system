@@ -1,7 +1,10 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.feign.OauthFeignService;
@@ -11,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * @author  DaBai
@@ -29,5 +34,18 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         this.save(info);
         BeanUtils.copyProperties(info,cardUser);
         return cardUser;
+    }
+
+    @Override
+    public void bindPhoneNumber(CardUserInfo data) {
+        QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(CardUserInfo::getId,data.getId());
+        CardUserInfo one = this.getOne(qw);
+        if(DataUtil.isEmpty(one)){
+            throw new DefaultException("账号不存在！");
+        }
+        one.setPhoneNumber(data.getPhoneNumber());
+        one.setUpdateTime(new Date());
+        this.updateById(one);
     }
 }
