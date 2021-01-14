@@ -125,6 +125,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private CardUserInfoMapper cardUserInfoMapper;
 
     @Autowired
+    private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+
+    @Autowired
     private CustomerFeignService customerFeignService;
 
     @Autowired
@@ -870,6 +873,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardUserInfo.setCreateTime(new Date());
         cardUserInfo.setStatus(StatusEnum.激活.getValue());
         cardUserInfoMapper.insert(cardUserInfo);
+
+        //关联内部员工信息
+        CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
+        cardUserUnionUser.setCardId(cardUserInfo.getId());
+        cardUserUnionUser.setUserId(userInfo.getId());
+        cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
+
         //生成基础名片信息
         UserCardDto cardDto=new UserCardDto();
         cardDto.setMobile(cardUserInfo.getPhoneNumber());
