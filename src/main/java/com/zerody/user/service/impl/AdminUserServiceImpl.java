@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
@@ -61,6 +62,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         userInfo.setUserName(vo.getUserName());
         userInfo.setAvatar(vo.getAvatar());
         userInfo.setStaffId(vo.getStaffId());
+        userInfo.setDeleted(YesNo.NO);
         userInfo.setPhoneNumber(vo.getPhoneNumber());
         userInfo.setCreateBy(UserUtils.getUserId());
         userInfo.setCreateTime(new Date());
@@ -94,7 +96,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     @Override
     public void removeAdminUser(String id) {
         AdminUserInfo byId = this.getById(id);
-        byId.setDeleted(0);
+        byId.setDeleted(1);
         this.updateById(byId);
         QueryWrapper<UnionPlatformRoleStaff> qw =new QueryWrapper<>();
         qw.lambda().eq(UnionPlatformRoleStaff::getStaffId,byId.getStaffId());
