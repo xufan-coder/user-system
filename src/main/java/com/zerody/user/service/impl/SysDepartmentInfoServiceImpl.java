@@ -134,7 +134,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
-        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId()==null?"":d.getParentId())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(childs)){
             return new ArrayList<>();
         }
