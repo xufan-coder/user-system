@@ -1,6 +1,7 @@
 package com.zerody.user.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +10,7 @@ import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RefreshScope
 @Configuration
 public class JobConfig {
 	@Value("${xxl.job.admin.addresses}")
