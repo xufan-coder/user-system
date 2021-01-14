@@ -7,6 +7,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+/**
+ *
+ *
+ * @author               PengQiang
+ * @description          DELL
+ * @date                 2021/1/14 20:14
+ * @param                
+ * @return               
+ */
 @Data
 public class SysDepartmentInfo extends BaseModel {
 

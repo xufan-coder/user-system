@@ -5,13 +5,17 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.UnionStaffPosition;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.mapper.UnionStaffPositionMapper;
+import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysJobPositionService;
 import com.zerody.user.service.base.BaseService;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,21 +37,25 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     @Autowired
     private UnionStaffPositionMapper unionStaffPositionMapper;
 
+    @Autowired
+    private SysDepartmentInfoMapper sysDepartmentInfoMapper;
+
 
     @Override
-    public DataResult addJob(SysJobPosition sysJobPosition) {
-
+    public DataResult addJob(SysJobPosition job) {
+        SysDepartmentInfo dep =  sysDepartmentInfoMapper.selectById(job.getDepartId());
+        job.setCompId(dep.getCompId());
         //除了被删除的企业的岗位用名称查看数据库有没有这个名称
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
-        jobQW.lambda().eq(SysJobPosition::getPositionName, sysJobPosition.getPositionName());
-        jobQW.lambda().eq(SysJobPosition::getCompId, sysJobPosition.getCompId());
+        jobQW.lambda().eq(SysJobPosition::getPositionName, job.getPositionName());
+        jobQW.lambda().eq(SysJobPosition::getCompId, job.getCompId());
         jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
         Integer jobNameCount = this.count(jobQW);
         if(jobNameCount > 0 ){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
-        sysJobPosition.setStatus(StatusEnum.激活.getValue());
-        this.saveOrUpdate(sysJobPosition);
+        job.setStatus(StatusEnum.激活.getValue());
+        this.saveOrUpdate(job);
         return new DataResult();
     }
 
