@@ -327,10 +327,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(StringUtils.isEmpty(staffId)){
             throw new DefaultException( "员工id为空");
         }
-        SysStaffInfo staff = new SysStaffInfo();
-        staff.setId(staffId);
-        staff.setStatus(StaffStatusEnum.DELETE.getCode());
-        this.saveOrUpdate(staff);
+        SysStaffInfo staff = this.getById(staffId);
+        SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
+        userInfo.setStatus(StatusEnum.删除.getValue());
+        this.sysUserInfoMapper.updateById(userInfo);
         //删除部门
         QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
         qw.lambda().eq(UnionStaffDepart::getStaffId,staffId);
@@ -1042,6 +1042,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //企业管理员不需要获取下级部门
             iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId());
 
+        }
+        if(CollectionUtils.isEmpty(iPage.getRecords())){
+            iPage.setRecords(new ArrayList<>());
         }
         iPage.getRecords().add(0, userInfo);
         userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());

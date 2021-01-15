@@ -52,7 +52,7 @@
         FROM
             sys_job_position
         <where>
-            status = 1 and comp_id = #{companyId}
+            status = 0 and comp_id = #{companyId}
         </where>
     </select>
 </mapper>

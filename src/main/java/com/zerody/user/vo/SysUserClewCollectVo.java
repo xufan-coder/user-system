@@ -11,7 +11,6 @@ import java.util.Date;
  * @DateTime 2021/1/9_11:48
  * @Deacription TODO
  */
-@Data
 public class SysUserClewCollectVo {
 
     /**
@@ -76,4 +75,83 @@ public class SysUserClewCollectVo {
     )
     private Date loginTime;
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDepartName() {
+        return departName;
+    }
+
+    public void setDepartName(String departName) {
+        this.departName = departName;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public Integer getTotalClew() {
+        return totalClew == null ? 0 : totalClew;
+    }
+
+    public void setTotalClew(Integer totalClew) {
+        this.totalClew = totalClew;
+    }
+
+    public Integer getHaveCalled() {
+        return haveCalled == null ? 0 : haveCalled;
+    }
+
+    public void setHaveCalled(Integer haveCalled) {
+        this.haveCalled = haveCalled;
+    }
+
+    public Integer getTodayCalled() {
+        return todayCalled == null ? 0 : todayCalled;
+    }
+
+    public void setTodayCalled(Integer todayCalled) {
+        this.todayCalled = todayCalled;
+    }
+
+    public Date getLastCallTime() {
+        return lastCallTime;
+    }
+
+    public void setLastCallTime(Date lastCallTime) {
+        this.lastCallTime = lastCallTime;
+    }
+
+    public Date getLastStorageTime() {
+        return lastStorageTime;
+    }
+
+    public void setLastStorageTime(Date lastStorageTime) {
+        this.lastStorageTime = lastStorageTime;
+    }
+
+    public Date getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(Date loginTime) {
+        this.loginTime = loginTime;
+    }
 }
