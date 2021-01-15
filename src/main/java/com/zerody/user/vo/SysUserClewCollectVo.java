@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -51,16 +52,28 @@ public class SysUserClewCollectVo {
     /**
      * 最后呼叫时间
      */
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date lastCallTime;
 
     /**
      * 最后入库时间
      */
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date lastStorageTime;
 
     /**
      * 最后登录时间
      */
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date loginTime;
 
 }
