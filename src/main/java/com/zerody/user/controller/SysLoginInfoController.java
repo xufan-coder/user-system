@@ -7,11 +7,9 @@ import com.zerody.user.api.service.UserLoginInfoRemoteService;
 import com.zerody.user.service.CardUserService;
 import com.zerody.user.service.SysLoginInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -47,5 +45,19 @@ public class SysLoginInfoController implements UserLoginInfoRemoteService {
     @RequestMapping(value = "/card-add/inner",method = POST, produces = "application/json")
     public DataResult<CardUserDto> addCardUser(@RequestBody CardUserDto cardUser){
         return R.success(cardUserService.addCardUser(cardUser));
+    }
+
+    /**
+    *   CRM跳转登录名片时，查询关联
+    */
+    @Override
+    @RequestMapping(value = "/card-check/inner",method = GET, produces = "application/json")
+    public DataResult<CardUserDto> checkCardUser(@RequestParam(value = "userId") String userId){
+        try {
+            return R.success(cardUserService.checkCardUser(userId));
+        }catch (Exception e){
+            return R.error(e.getMessage());
+        }
+
     }
 }

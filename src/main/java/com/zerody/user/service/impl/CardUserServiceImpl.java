@@ -7,8 +7,10 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.domain.CardUserInfo;
+import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserMapper;
+import com.zerody.user.mapper.CardUserUnionCrmUserMapper;
 import com.zerody.user.service.CardUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +27,9 @@ import java.util.Date;
 @Slf4j
 @Service
 public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInfo> implements CardUserService {
+
+    @Autowired
+    private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
     @Override
     public CardUserDto addCardUser(CardUserDto cardUser) {
@@ -47,5 +52,25 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         one.setPhoneNumber(data.getPhoneNumber());
         one.setUpdateTime(new Date());
         this.updateById(one);
+    }
+
+    @Override
+    public CardUserDto checkCardUser(String userId) {
+        QueryWrapper<CardUserUnionUser> qw=new QueryWrapper<>();
+        qw.lambda().eq(CardUserUnionUser::getUserId,userId);
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
+        if(DataUtil.isEmpty(cardUserUnionUser)){
+            throw new DefaultException("该员工未关联名片夹！");
+        }
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getId,cardUserUnionUser.getCardId());
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isEmpty(cardUserUnionUser)){
+            throw new DefaultException("该名片用户不存在！");
+        }
+        CardUserDto cardUser=new CardUserDto();
+        BeanUtils.copyProperties(one,cardUser);
+        cardUser.setUserPwd(null);
+        return cardUser;
     }
 }

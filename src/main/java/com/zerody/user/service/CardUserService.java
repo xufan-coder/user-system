@@ -9,4 +9,6 @@ public interface CardUserService extends IService<CardUserInfo> {
     CardUserDto addCardUser(CardUserDto cardUser);
 
     void bindPhoneNumber(CardUserInfo data);
+
+    CardUserDto checkCardUser(String userId);
 }

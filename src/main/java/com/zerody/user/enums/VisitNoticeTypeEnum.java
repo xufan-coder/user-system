@@ -11,7 +11,7 @@ import java.util.List;
 public enum VisitNoticeTypeEnum {
     DAY7(1, "7天未联系跟进提醒"),
     DAY15(2, "15天未联系跟进提醒"),
-    DAY30(3, "30天未联系跟进提醒");
+    DAY21(3, "21天未联系跟进提醒");
 
     private Integer code;
 

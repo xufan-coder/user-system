@@ -51,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
                     dtos.add(buildNotice(userId, data.getDay15Msg(), VisitNoticeTypeEnum.DAY15.getDesc()));
                 }
                 if(DataUtil.isNotEmpty(data.getDay30Msg())){
-                    dtos.add(buildNotice(userId, data.getDay30Msg(), VisitNoticeTypeEnum.DAY30.getDesc()));
+                    dtos.add(buildNotice(userId, data.getDay30Msg(), VisitNoticeTypeEnum.DAY21.getDesc()));
                 }
             }
         }
