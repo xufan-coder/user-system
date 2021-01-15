@@ -5,6 +5,10 @@ spring:
      name: zerody-user-system
   profiles:
      active: '@project.active@'
+  redis:
+    host: 192.168.100.200
+    port: 6379
+    password: zerody123
   datasource: 
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver

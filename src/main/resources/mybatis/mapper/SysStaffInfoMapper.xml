@@ -45,6 +45,7 @@
 
   <select id="getPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
       SELECT
+      sui.id AS id,
       ssi.comp_id AS compId,
       ssi.user_name AS userName,
       sci.company_name AS companyName,
