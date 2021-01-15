@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -94,7 +95,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
         userQw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
-        userQw.lambda().eq(SysUserInfo::getPhoneNumber, sysCompanyInfo.getCompanyName());
+        userQw.lambda().eq(SysUserInfo::getPhoneNumber, sysCompanyInfo.getContactPhone());
         //查询该手机号码是否存在
         SysUserInfo user =  this.sysUserInfoMapper.selectOne(userQw);
         if(user != null ){
@@ -124,6 +125,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysLoginInfo.setUserId(userInfo.getId());
         sysLoginInfo.setCreateTime(new Date());
         sysLoginInfo.setCreateId(UserUtils.getUserId());
+        sysLoginInfo.setStatus(StatusEnum.激活.getValue());
         sysLoginInfoMapper.insert(sysLoginInfo);
         SysStaffInfo staff = new SysStaffInfo();
         staff.setId(UUIDutils.getUUID32());
@@ -133,6 +135,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staff.setUserId(userInfo.getId());
         staff.setCreateTime(new Date());
         staff.setCreateId(UserUtils.getUserId());
+        staff.setStatus(StatusEnum.激活.getValue());
         this.sysStaffInfoMapper.insert(staff);
         this.saveOrUpdate(sysCompanyInfo);
         CompanyAdmin admin = new CompanyAdmin();
@@ -230,6 +233,18 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         company.setStatus(StatusEnum.删除.getValue());
         company.setId(companyId);
         this.saveOrUpdate(company);
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
+        staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.删除.getValue());
+        List<SysStaffInfo> staffs = this.sysStaffInfoMapper.selectList(staffQw);
+
+        List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setStatus( StatusEnum.删除.getValue());
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+        userUw.lambda().in(SysUserInfo::getId, userIds);
+        this.sysUserInfoMapper.update(userInfo,userUw);
     }
 
     @Override

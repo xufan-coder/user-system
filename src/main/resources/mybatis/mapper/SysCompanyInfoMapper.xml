@@ -76,6 +76,7 @@
          and company_name like  concat('%',#{company.companyName},'%')
        </if>
      </where>
+     order by create_time desc
   </select>
   <select id="getAllCompnay"  resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
