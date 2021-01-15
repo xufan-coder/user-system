@@ -260,7 +260,7 @@
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = aui.staff_id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
-        LEFT JOIN union_role_staff urs ON urs.staff_id = aui.staff_id
+        LEFT JOIN union_platform_role_staff urs ON urs.staff_id = aui.staff_id
         <where>
             ssi.status != -1
             and aui.deleted !=1
