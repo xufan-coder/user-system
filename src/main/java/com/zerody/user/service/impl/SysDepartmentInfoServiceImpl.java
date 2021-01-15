@@ -49,6 +49,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
+        if(!StringUtils.isEmpty(sysDepartmentInfo.getParentId())){
+            String compId = this.sysDepartmentInfoMapper.selectById(sysDepartmentInfo.getParentId()).getCompId();
+            sysDepartmentInfo.setCompId(compId);
+        }
+        if(StringUtils.isEmpty(sysDepartmentInfo.getCompId())){
+            throw new DefaultException("非顶级部门时企业id不能为空");
+        }
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());

@@ -24,7 +24,7 @@ public class SysJobPosition  extends BaseModel {
 
     //岗位级别
     private Integer level;
-
+    @NotEmpty(message = "部门id不能为空")
     private String departId;
 
     //备注/描述
