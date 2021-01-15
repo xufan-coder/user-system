@@ -273,6 +273,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
         staff.setStatus(setSysUserInfoDto.getStatus());
+        staff.setUserName(setSysUserInfoDto.getUserName());
         this.saveOrUpdate(staff);
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
