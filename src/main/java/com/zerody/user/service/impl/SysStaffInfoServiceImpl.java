@@ -310,6 +310,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
+            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
+            SysDepartmentInfo depAdmin = this.sysDepartmentInfoMapper.selectOne(depQw);//原负责的部门id
+            if(depAdmin == null || depAdmin.getId().equals(setSysUserInfoDto.getDepartId())){
+                return;
+            }
+            depAdmin.setAdminAccount(null);
+            this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
     }
 
