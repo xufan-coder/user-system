@@ -36,7 +36,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @Deacription TODO
  */
 @Slf4j
-@RequestMapping("/sysUserInfo")
+@RequestMapping("/sys-user-info")
 @RestController
 public class SysUserInfoController implements UserRemoteService {
 
