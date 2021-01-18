@@ -66,7 +66,7 @@
      <where>
         <choose>
             <when test="company.status != null and company.status != -1">
-                status = #{status}
+                status = #{company.status}
             </when>
             <otherwise>
                 status != -1

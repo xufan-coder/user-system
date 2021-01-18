@@ -34,7 +34,7 @@ public class ZerodyAddrVo {
      *
      *父级地址编码
      */
-    private String pAddrCode;
+    private Integer pAddrCode;
 
     /**
      *
@@ -42,5 +42,13 @@ public class ZerodyAddrVo {
      */
     private Byte addrLevel;
 
+
+    public String getCode(){
+        return String.valueOf(this.code);
+    }
+
+    public String getpAddrCode() {
+        return String.valueOf(this.pAddrCode);
+    }
 
 }
