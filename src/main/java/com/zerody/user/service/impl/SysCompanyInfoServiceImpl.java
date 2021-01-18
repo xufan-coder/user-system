@@ -13,6 +13,7 @@ import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.sms.api.dto.SmsDto;
+import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -67,8 +68,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private CompanyAdminMapper companyAdminMapper;
 
+    @Autowired
+    private SmsFeignService smsFeignService;
 
-    private static final String INIT_PWD = "123456"; //初始密码
 
     /**
     * @Author               PengQiang
@@ -120,8 +122,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String initPwd = SysStaffInfoService.getInitPwd();
-//        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( initPwd )));
-        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));
+        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( initPwd )));
         sysLoginInfo.setUserId(userInfo.getId());
         sysLoginInfo.setCreateTime(new Date());
         sysLoginInfo.setCreateId(UserUtils.getUserId());
@@ -150,7 +151,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         SmsDto dto=new SmsDto();
         dto.setPhone(userInfo.getPhoneNumber());
         dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-//        smsFeignService.sendSms(dto);//发送短信
+        smsFeignService.sendSms(dto);//发送短信
     }
 
     /**

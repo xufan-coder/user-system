@@ -19,6 +19,7 @@ import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.sms.api.dto.SmsDto;
+import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.enums.StaffGenderEnum;
@@ -32,6 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -133,6 +135,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private CardFeignService cardFeignService;
 
+    @Autowired
+    private SmsFeignService smsFeignService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -166,15 +171,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setAvatar(sysUserInfo.getAvatar());
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
-//        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5("123456")));
+        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         SmsDto dto=new SmsDto();
         dto.setPhone(sysUserInfo.getPhoneNumber());
         dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-//        smsFeignService.sendSms(dto);
+        smsFeignService.sendSms(dto);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setUserName(sysUserInfo.getUserName());
@@ -474,6 +478,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String fileName = FileUtil.upload(inputStream, uploadPath, "xls", uploadPath);
             result.put("fileUrlName", fileName);
         }
+        sendInitPwdSms(smsDtos);
         return result;
     }
 
@@ -592,6 +597,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String fileName = FileUtil.upload(inputStream, "d:/", "xls", "d:/");
             result.put("fileUrlName", fileName);
         }
+        sendInitPwdSms(smsDtos);
         return result;
     }
 
@@ -635,8 +641,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
-//        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5("123456")));
+        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto dto=new SmsDto();
@@ -649,6 +654,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         saveCardUser(userInfo,loginInfo);
         return staff.getId();
     }
+
     private String checkCompanyParam(String[] row, StringBuilder errorStr,
                             UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff) {
         String companyId=null;
@@ -737,7 +743,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return companyId;
     }
 
-
     private String saveUser(String[] row,List<SmsDto> smsDtos) {
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
@@ -779,8 +784,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
-//        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5("123456")));
+        loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto dto=new SmsDto();
@@ -794,6 +798,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return staff.getId();
     }
+
     private void checkParam(String[] row, StringBuilder errorStr,
                             UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff) {
         //当前企业ID
@@ -871,7 +876,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
     }
 
-
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo){
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo=new CardUserInfo();
@@ -903,8 +907,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
     }
 
-
-
+    @Async
+    public void sendInitPwdSms(List<SmsDto> smsDtos){
+        if(DataUtil.isNotEmpty(smsDtos)) {
+            smsDtos.stream().forEach(item -> {
+                smsFeignService.sendSms(item);
+            });
+        }
+    }
 
 
     @Override
