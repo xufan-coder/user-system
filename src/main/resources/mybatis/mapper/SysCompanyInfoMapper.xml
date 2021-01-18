@@ -66,7 +66,7 @@
      <where>
         <choose>
             <when test="company.status != null and company.status != -1">
-                status = #{status}
+                status = #{company.status}
             </when>
             <otherwise>
                 status != -1
@@ -76,6 +76,7 @@
          and company_name like  concat('%',#{company.companyName},'%')
        </if>
      </where>
+     order by create_time desc
   </select>
   <select id="getAllCompnay"  resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT

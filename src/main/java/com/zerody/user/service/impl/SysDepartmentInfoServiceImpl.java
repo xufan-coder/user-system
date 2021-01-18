@@ -134,10 +134,18 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
         }
-        UpdateWrapper<SysDepartmentInfo> comUw = new UpdateWrapper<>();
-        comUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
-        comUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
-        this.update(comUw);
+        UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
+        depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
+        depUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
+        this.update(depUw);
+        QueryWrapper<UnionStaffDepart> staffDepQw = new QueryWrapper<>();
+        staffDepQw.lambda().eq(UnionStaffDepart::getDepartmentId, dto.getId());
+        staffDepQw.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
+        unionStaffDepartMapper.delete(staffDepQw);
+        UnionStaffDepart unSd = new UnionStaffDepart();
+        unSd.setDepartmentId(dto.getId());
+        unSd.setStaffId(dto.getStaffId());
+        unionStaffDepartMapper.insert(unSd);
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
