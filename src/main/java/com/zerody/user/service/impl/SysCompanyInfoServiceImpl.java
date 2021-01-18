@@ -237,14 +237,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
         staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.删除.getValue());
         List<SysStaffInfo> staffs = this.sysStaffInfoMapper.selectList(staffQw);
-
-        List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
-        SysUserInfo userInfo = new SysUserInfo();
-        userInfo.setStatus( StatusEnum.删除.getValue());
-        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
-        userUw.lambda().in(SysUserInfo::getId, userIds);
-        this.sysUserInfoMapper.update(userInfo,userUw);
+//
+//        List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+//        SysUserInfo userInfo = new SysUserInfo();
+//        userInfo.setStatus( StatusEnum.删除.getValue());
+//        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+//        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+//        userUw.lambda().in(SysUserInfo::getId, userIds);
+//        this.sysUserInfoMapper.update(userInfo,userUw);
     }
 
     @Override
