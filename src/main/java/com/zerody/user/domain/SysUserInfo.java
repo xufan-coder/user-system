@@ -79,6 +79,12 @@ public class  SysUserInfo extends BaseModel {
     //微信openId
     private String openId;
 
+
+    /**
+    *   微信unionId
+    */
+    private String union_id;
+
     /**
     *   紧急联系人姓名
     */
