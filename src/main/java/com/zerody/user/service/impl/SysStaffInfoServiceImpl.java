@@ -259,7 +259,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         //如果员工状态为离职状态 就把用户状态转换为 禁用状态
         if (StaffStatusEnum.DIMISSION.getCode().equals(setSysUserInfoDto.getStatus())){
-            sysUserInfo.setStatus(StatusEnum.激活.getValue());
+            sysUserInfo.setStatus(StatusEnum.删除.getValue());
         }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
