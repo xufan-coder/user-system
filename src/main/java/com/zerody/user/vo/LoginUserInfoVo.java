@@ -43,4 +43,19 @@ public class LoginUserInfoVo {
     *    头像
     */
     private String avatar;
+
+    /**
+    *    状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+    */
+    private Integer status;
+
+    /**
+    *    部门名称
+    */
+    private String departName;
+
+    /**
+    *    岗位名称
+    */
+    private String positionName;
 }

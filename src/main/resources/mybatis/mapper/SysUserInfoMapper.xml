@@ -148,13 +148,20 @@ WHERE
     SELECT
     sci.company_name AS companyName,
     ssi.id AS staffId,
+    ssi.STATUS AS status,
     sui.user_name AS userName,
     sui.phone_number AS phoneNumber,
     sui.email AS email,
-    sui.avatar AS avatar
+    sui.avatar AS avatar,
+    sdi.depart_name AS departName,
+    sjp.position_name AS positionName
     FROM sys_user_info sui
     LEFT JOIN sys_staff_info ssi ON sui.id=ssi.user_id
     LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
+    LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+    LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+    LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+    LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
     WHERE
 	sui.`status` = 0
 	AND sui.id=#{id}

@@ -17,7 +17,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @date  2020/12/31 9:48
  */
 
-@RequestMapping("/sysLoginInfo")
+@RequestMapping("/sys-login-info")
 @RestController
 public class SysLoginInfoController implements UserLoginInfoRemoteService {
 
