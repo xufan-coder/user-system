@@ -1,12 +1,22 @@
 package com.zerody.user.domain;
 
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:58
+ * @param
+ * @return
+ */
 public class UnionStaffDepart {
+    /** id **/
     private String id;
 
-    //员工id
+    /** 员工id **/
     private String staffId;
 
-    //部门id
+    /** 部门id **/
     private String departmentId;
 
     public UnionStaffDepart(){

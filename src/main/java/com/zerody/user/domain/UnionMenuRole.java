@@ -1,12 +1,21 @@
 package com.zerody.user.domain;
 
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:57
+ * @param
+ * @return
+ */
 public class UnionMenuRole {
     private String id;
 
-    //菜单id
+    /** 菜单id **/
     private String menuId;
 
-    //角色id
+    /** 角色id **/
     private String roleId;
 
     public String getId() {

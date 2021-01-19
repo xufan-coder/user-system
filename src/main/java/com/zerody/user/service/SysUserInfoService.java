@@ -17,18 +17,73 @@ import java.util.List;
  * @Deacription TODO
  */
 public interface SysUserInfoService {
+    /**
+     *
+     * 添加用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:26
+     * @param                userInfo
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult addUser(SysUserInfo userInfo);
 
+    /**
+     *
+     * 修改用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:26
+     * @param                userInfo
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult updateUser(SysUserInfo userInfo);
 
+    /**
+     *
+     * 修改用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:26
+     * @param                userId
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult deleteUserById(String userId);
 
+    /**
+     *
+     * 批量删除用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:26
+     * @param                ids
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult deleteUserBatchByIds(List<String> ids);
 
+    /**
+     *
+     *  分页查询用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:27
+     * @param                sysUserInfoPageDto
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult selectUserPage(SysUserInfoPageDto sysUserInfoPageDto);
 
 
 
+    /**
+     *
+     * 删除用户角色
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:27
+     * @param                staffId
+     * @param                roleId
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult deleteUserRole(String staffId, String roleId);
 
     /**************************************************************************************************

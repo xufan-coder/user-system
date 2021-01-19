@@ -7,83 +7,92 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
+/**
+ *
+ *
+ * @author               PengQiang
+ * @description          DELL
+ * @date                 2021/1/19 14:28
+ * @param
+ * @return
+ */
 @Data
 public class  SysUserInfo extends BaseModel {
 
-    //用户姓名
+    /** 用户名 **/
     @NotEmpty(message = "用户名不能为空")
     private String userName;
 
-    //性别
+    /** 性别 **/
     private Integer gender;
 
-    //手机号
+    /** 手机号 **/
     @NotEmpty(message = "手机号不能为空")
     @Size(max = 11, min = 11, message = "手机号必须为11位")
     private String phoneNumber;
 
-    //邮箱
+    /** 邮箱 **/
     private String email;
 
 
-    //昵称
+    /** 昵称 **/
     private String nickname;
 
-    //头像(相对路径)
+    /** 头像(相对路径) **/
     private String avatar;
 
-    //出生日期
+    /** 出生日期 **/
     private Date birthday;
 
 
-    //证件号码
+    /** 证件号码 **/
     private String certificateCard;
 
 
-    //身份证地址
+    /** 身份证地址 **/
     private String certificateCardAddress;
 
-    //省市区
+    /** 省市区 **/
     private String provCityDistrict;
 
-    //联系地址
+    /** 联系地址 **/
     private String contactAddress;
 
-    //注册时间
+    /** 注册时间 **/
     private Date registerTime;
 
-    //民族
+    /** 民族 **/
     private String nation;
 
-    //籍贯
+    /** 籍贯 **/
     private String ancestral;
 
-    //备注
+    /** 备注 **/
     private String description;
 
-    //状态: 1.enable,0. disable ,-1 deleted
+    /** 状态: 1.enable,0. disable ,-1 deleted **/
     private Integer status;
 
-    //最高学历
+    /** 最高学历 **/
     private String highestEducation;
 
-    //毕业院校
+    /** 毕业院校 **/
     private String graduatedFrom;
 
-    //所学专业
+    /** 所学专业 **/
     private String major;
 
-    //婚姻状态
+    /** 婚姻状态 **/
     private String maritalStatus;
 
-    //微信openId
+    /** 微信openId **/
     private String openId;
 
 
     /**
     *   微信unionId
     */
-    private String union_id;
+    private String unionId;
 
     /**
     *   紧急联系人姓名

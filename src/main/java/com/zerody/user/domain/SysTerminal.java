@@ -12,18 +12,18 @@ import lombok.Data;
 @Data
 public class SysTerminal extends BaseModel {
 
-    //终端名称
+    /** 终端名称 */
     private String sysName;
 
-    //系统描述
+    /** 系统描述 */
     private String sysDesc;
 
-    //编码
+    /** 编码 */
     private String sysCode;
 
-    //资源clientid
+    /** 资源clientid */
     private String clientId;
 
-    //备注
+    /** 备注 */
     private String remark;
 }
