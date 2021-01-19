@@ -1,5 +1,7 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -63,8 +65,10 @@ public class SysDepartmentInfo extends BaseModel {
      */
     private String departDesc;
 
+
     /**
-     * 部门管理员 手机号
+     * 部门管理员 id
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED )
     private String adminAccount;
 }
