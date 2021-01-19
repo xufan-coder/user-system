@@ -68,7 +68,7 @@ public interface MsgService extends IService<Msg>{
 	 **
 	 * 分页查询消息列表 
 	 *
-	 * @param null
+	 * @param pageDto
 	 * @return {@link null }
 	 * @author DaBai
 	 * @date 2021/1/12  14:52

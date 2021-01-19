@@ -13,16 +13,16 @@ public class UnionPlatformRoleStaff {
     @TableId(type = IdType.UUID)
     private String id;
 
-    //员工id
+    /** 员工id **/
     private String staffId;
 
-    //平台用户id
+    /** 平台用户id **/
     private String adminUserId;
 
-    //角色id
+    /** 角色id **/
     private String roleId;
 
-    //角色名
+    /** 角色名 **/
     private String roleName;
 
 }

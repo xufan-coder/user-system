@@ -10,6 +10,15 @@ import com.zerody.user.domain.SysLoginInfo;
  * @Deacription TODO
  */
 public interface SysLoginInfoService {
+    /**
+     *
+     * 新增或修改登录信息
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:06
+     * @param                logInfo
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult addOrUpdateLogin(SysLoginInfo logInfo);
 
     /**************************************************************************************************

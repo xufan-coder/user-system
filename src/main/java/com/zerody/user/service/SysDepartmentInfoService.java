@@ -16,14 +16,59 @@ import java.util.List;
  */
 public interface SysDepartmentInfoService {
 
+    /**
+     *  添加部门
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:02
+     * @param                sysDepartmentInfo
+     * @return               void
+     */
     void addDepartment(SysDepartmentInfo sysDepartmentInfo);
 
+    /**
+     *
+     * 修改部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:03
+     * @param                sysDepartmentInfo
+     * @return               void
+     */
     void updateDepartment(SysDepartmentInfo sysDepartmentInfo);
 
+    /**
+     *
+     * 删除部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:03
+     * @param                depId
+     * @return               void
+     */
     void deleteDepartmentById(String depId);
 
+    /**
+     *
+     * 查询企业下的部门 树形返回
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:03
+     * @param                companyId
+     * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
     List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
 
+    /**
+     *  查询企业部门
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:03
+     * @param                compId
+     * @return               java.util.List<com.zerody.user.domain.SysDepartmentInfo>
+     */
     List<SysDepartmentInfo> getDepartmentByComp(String compId);
 
     /**************************************************************************************************
@@ -31,6 +76,7 @@ public interface SysDepartmentInfoService {
      * 按部门名字查询本企业部门是否有，
      *
      * @param name
+     * @param compId
      * @return {@link SysDepartmentInfo }
      * @author DaBai
      * @date 2021/1/7  9:41
@@ -39,7 +85,7 @@ public interface SysDepartmentInfoService {
 
     /**
      *
-     *
+     * 设置部门管理员
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/8 15:55

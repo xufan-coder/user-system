@@ -5,30 +5,39 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:48
+ * @param
+ * @return
+ */
 @Data
 public class AppletsUserInfo extends BaseModel {
 
 
 
-    //用户姓名
+    /** 用户姓名 **/
     private String userName;
 
-    //手机号
+    /** 手机号 **/
     private String phoneNumber;
 
-    //头像(相对路径)
+    /** 头像(相对路径) **/
     private String avatar;
 
-    //出生日期
+    /**出生日期  **/
     private Date birthday;
 
-    //身份证件号码
+    /** 身份证件号码 **/
     private String certificateCard;
 
-    //openId
+    /** openId **/
     private String openId;
 
-    //备注
+    /** 备注 **/
     private String remark;
 
 }

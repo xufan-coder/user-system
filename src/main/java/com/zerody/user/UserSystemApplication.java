@@ -9,6 +9,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * @author DELL
+ */
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScan(basePackages = { "com.zerody.user.**" })

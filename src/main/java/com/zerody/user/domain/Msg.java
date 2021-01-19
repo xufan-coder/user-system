@@ -91,18 +91,23 @@ public class Msg implements java.io.Serializable {
 		 */
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
+			if (this == obj) {
+                return true;
+            }
+			if (obj == null) {
+                return false;
+            }
+			if (getClass() != obj.getClass()) {
+                return false;
+            }
 			Msg other = (Msg) obj;
 			if (getId()== null) {
-				if (other.getId()!= null)
-					return false;
-			} else if (!getId().equals(other.getId()))
-				return false;
+				if (other.getId()!= null) {
+                    return false;
+                }
+			} else if (!getId().equals(other.getId())) {
+                return false;
+            }
 			return true;
 		}
 			@Override
