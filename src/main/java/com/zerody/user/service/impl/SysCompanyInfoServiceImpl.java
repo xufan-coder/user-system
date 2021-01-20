@@ -18,6 +18,7 @@ import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
@@ -71,6 +72,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private SmsFeignService smsFeignService;
 
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     /**
     * @Author               PengQiang
@@ -148,6 +151,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setCreateUsername(UserUtils.getUserName());
         admin.setDeleted(YesNo.NO);
         this.companyAdminMapper.insert(admin);
+        //预设管理员角色
+        this.oauthFeignService.addCompanyRole(sysCompanyInfo.getId());
         SmsDto dto=new SmsDto();
         dto.setPhone(userInfo.getPhoneNumber());
         dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
@@ -238,14 +243,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
         staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.删除.getValue());
         List<SysStaffInfo> staffs = this.sysStaffInfoMapper.selectList(staffQw);
-//
-//        List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
-//        SysUserInfo userInfo = new SysUserInfo();
-//        userInfo.setStatus( StatusEnum.删除.getValue());
-//        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-//        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
-//        userUw.lambda().in(SysUserInfo::getId, userIds);
-//        this.sysUserInfoMapper.update(userInfo,userUw);
+
+        List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setStatus( StatusEnum.删除.getValue());
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+        userUw.lambda().in(SysUserInfo::getId, userIds);
+        this.sysUserInfoMapper.update(userInfo,userUw);
     }
 
     @Override

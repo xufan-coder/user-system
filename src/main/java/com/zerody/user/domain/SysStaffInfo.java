@@ -41,4 +41,6 @@ public class SysStaffInfo extends BaseModel {
     /** 离职时间 **/
     private Date dateLeft;
 
+    /** 是否删除 */
+    private Integer deleted;
 }

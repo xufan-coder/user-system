@@ -184,7 +184,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
      *
-     *  获取企业全部员工
+     *  获取企业全部在职员工
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/13 15:15
