@@ -6,7 +6,9 @@ package com.zerody.user.enums;
  */
 
 public enum LoginTypeEnum {
+    /** 用户登录 **/
     CRM(1, "用户登录"),
+    /** 管理员登录 **/
     BACK_PC(2, "管理员登录");
 
     private Integer code;

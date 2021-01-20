@@ -5,31 +5,42 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ *
+ *
+ * @author               PengQiang
+ * @description          DELL
+ * @date                 2021/1/19 14:55
+ * @param
+ * @return
+ */
 @Data
 public class SysStaffInfo extends BaseModel {
 
-    //企业id
+    /**  企业id**/
     private String compId;
 
-    //用户id
+    /**  用户id**/
     private String userId;
 
-    //用户姓名
+    /**  用户姓名**/
     private String userName;
 
-    //工作地点
+    /** 工作地点 **/
     private String workPlace;
 
-    //工号
+    /** 工号 **/
     private String jobNumber;
 
-    //转正时间
+    /** 转正时间 **/
     private Date dateJoin;
 
-    //入职时间
+    /** 入职时间 **/
     private Date conversionDate;
 
-    //离职时间
+    /** 离职时间 **/
     private Date dateLeft;
 
+    /** 是否删除 */
+    private Integer deleted;
 }

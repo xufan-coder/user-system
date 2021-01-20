@@ -17,6 +17,15 @@ import java.util.List;
 
 public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
+    /**
+     *  通过手机号 查询用户
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:16
+     * @param                userInfo
+     * @return               java.util.List<com.zerody.user.domain.SysUserInfo>
+     */
     List<SysUserInfo> selectUserByPhoneOrLogName(@Param("userInfo") SysUserInfo userInfo);
 
     /**
@@ -58,9 +67,36 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      */
     List<String> getUserSubordinates(@Param("deps") List<SysDepartmentInfo> deps);
 
+    /**
+     *
+     * 查询是否是企业管理员
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:16
+     * @param                userId
+     * @return               java.lang.Boolean
+     */
     Boolean checkUserAdmin(@Param("userId")String userId);
 
+    /**
+     *
+     * 是否是后台管理员
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:17
+     * @param                userId
+     * @return               java.lang.Boolean
+     */
     Boolean checkBackAdminUser(@Param("userId")String userId);
 
+    /**
+     *
+     * 查询全部用户id
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:18
+     * @param
+     * @return               java.util.List<java.lang.String>
+     */
     List<String> selectAllUserId();
 }

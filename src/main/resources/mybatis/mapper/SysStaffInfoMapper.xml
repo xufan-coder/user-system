@@ -64,7 +64,7 @@
       LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
       LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
       <where>
-          ssi.status != -1 and sui.status != -1
+          ssi.deleted = 0 and sui.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
               and sci.id = #{staff.companyId}
           </if>
@@ -154,7 +154,7 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         <where>
-            ssi.status != -1 and ssi.id = #{id}
+            ssi.deleted = 0 and ssi.id = #{id}
         </where>
     </select>
 
@@ -206,7 +206,7 @@
         sys_staff_info ssi
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
         <where>
-            ssi.status != -1
+            ssi.deleted = 0
             and ssi.comp_id = #{companyId}
             and ssi.user_id = #{userId}
         </where>
@@ -228,7 +228,7 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
-            ssi.status != -1
+            ssi.deleted = 0
         <if test="positionId != null and positionId != ''">
             and usp.position_id = #{positionId}
         </if>
@@ -263,7 +263,7 @@
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         LEFT JOIN union_platform_role_staff urs ON urs.staff_id = aui.staff_id
         <where>
-            ssi.status != -1
+            ssi.deleted = 0
             and aui.deleted !=1
         <if test="dto.userName != null and dto.userName != ''">
             and ssi.user_name like CONCAT('%',#{dto.userName},'%')
@@ -282,7 +282,7 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         <where>
-            ssi.status != -1 and ssi.id = #{staffId}
+            ssi.deleted = 0 and ssi.id = #{staffId}
         </where>
     </select>
     <select id="selectUserInfo" resultType="com.zerody.user.vo.SysUserClewCollectVo">
@@ -345,7 +345,7 @@
         JOIN sys_login_info sli ON sli.user_id = sui.id
         LEFT JOIN union_platform_role_staff urs ON urs.staff_id = ssi.id
         <where>
-            ssi.status != -1
+            ssi.deleted = 0
             and ssi.id = #{staffId}
         </where>
     </select>
@@ -358,7 +358,7 @@
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         WHERE
-            ssi.status = 0 and ssi.comp_id = #{dto.companyId}
+            ssi.status != 1 and ssi.comp_id = #{dto.companyId}
             <if test="dto.staffName neq null and dto.staffName neq ''">
                 and ssi.user_name like concat('%',#{dto.uerName},'%')
             </if>

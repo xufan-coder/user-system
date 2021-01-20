@@ -12,10 +12,10 @@ import lombok.Data;
 public class CardUserUnionUser {
     private String id;
 
-    //名片小程序用户ID
+    /** 名片小程序用户ID */
     private String cardId;
 
-    //CRM用户ID
+    /** CRM用户ID */
     private String userId;
     
 }

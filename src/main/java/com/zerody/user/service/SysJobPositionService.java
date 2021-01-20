@@ -14,12 +14,48 @@ import java.util.List;
  */
 public interface SysJobPositionService {
 
+    /**
+     * 添加岗位
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:05
+     * @param                sysJobPosition
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult addJob(SysJobPosition sysJobPosition);
 
+    /**
+     * 修改岗位
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:05
+     * @param                sysJobPosition
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult updateJob(SysJobPosition sysJobPosition);
 
+    /**
+     *
+     * 删除岗位
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:05
+     * @param                jobId
+     * @return               com.zerody.common.bean.DataResult
+     */
     DataResult deleteJobById(String jobId);
 
+    /**
+     *
+     * 部门id查岗位
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 15:05
+     * @param                departId
+     * @return               java.util.List<com.zerody.user.domain.SysJobPosition>
+     */
     List<SysJobPosition> getJob(String departId);
 
     /**************************************************************************************************

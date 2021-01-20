@@ -39,6 +39,7 @@ import com.zerody.user.service.MsgService;
 public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgService {
 	private static final Logger log = LoggerFactory.getLogger(MsgServiceImpl.class);
 	
+	@Override
 	public Msg addMsg(MsgDto data) throws Exception {
 		Msg po=new Msg();
 		BeanUtils.copyProperties(data, po);
@@ -46,6 +47,7 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 		this.save(po);
 		return po;
 	}
+	@Override
 	public void updateMsg(MsgDto data) throws Exception {
 		Msg po=new Msg();
 		BeanUtils.copyProperties(data, po);
@@ -96,9 +98,9 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 
 	@Override
 	public IPage<Msg> getPageList(PageQueryDto pageDto) {
-		IPage<Msg> infoVoIPage = new Page<>(pageDto.getCurrent(),pageDto.getPageSize());
+		IPage<Msg> infoVoiPage = new Page<>(pageDto.getCurrent(),pageDto.getPageSize());
 		QueryWrapper<Msg> qw=new QueryWrapper<>();
 		qw.lambda().orderByDesc(Msg::getCreateTime);
-		return this.page(infoVoIPage,qw);
+		return this.page(infoVoiPage,qw);
 	}
 }

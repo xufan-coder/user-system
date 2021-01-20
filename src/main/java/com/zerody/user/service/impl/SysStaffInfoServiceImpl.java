@@ -16,6 +16,7 @@ import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.ExcelToolUtil;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.sms.api.dto.SmsDto;
@@ -187,6 +188,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setUserId(sysUserInfo.getId());
         log.info("添加员工入库参数--{}",JSON.toJSONString(staff));
         staff.setStatus(StatusEnum.激活.getValue());
+        staff.setDeleted(YesNo.NO);
         this.saveOrUpdate(staff);
         //角色
         UnionRoleStaff rs = new UnionRoleStaff();
@@ -257,10 +259,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
         sysUserInfo.setUpdateId(UserUtils.getUserId());
-        //如果员工状态为离职状态 就把用户状态转换为 禁用状态
-        if (StaffStatusEnum.DIMISSION.getCode().equals(setSysUserInfoDto.getStatus())){
-            sysUserInfo.setStatus(StatusEnum.删除.getValue());
-        }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
@@ -635,6 +633,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer status =row[6].equals(StaffStatusEnum.BE_ON_THE_JOB.getDesc())?StaffStatusEnum.BE_ON_THE_JOB.getCode():
                 row[6].equals(StaffStatusEnum.DIMISSION.getDesc())?StaffStatusEnum.DIMISSION.getCode():StaffStatusEnum.COLLABORATE.getCode();
         staff.setStatus(status);
+        staff.setDeleted(YesNo.NO);
         //保存到员工表
         this.saveOrUpdate(staff);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -778,6 +777,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer status =row[5].equals(StaffStatusEnum.BE_ON_THE_JOB.getDesc())?StaffStatusEnum.BE_ON_THE_JOB.getCode():
                 row[5].equals(StaffStatusEnum.DIMISSION.getDesc())?StaffStatusEnum.DIMISSION.getCode():StaffStatusEnum.COLLABORATE.getCode();
         staff.setStatus(status);
+        staff.setDeleted(YesNo.NO);
         //保存到员工表
         this.saveOrUpdate(staff);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -889,6 +889,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //关联内部员工信息
         CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
+//        cardUserUnionUser.setId(UUIDutils.getUUID32());
         cardUserUnionUser.setCardId(cardUserInfo.getId());
         cardUserUnionUser.setUserId(userInfo.getId());
         cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
