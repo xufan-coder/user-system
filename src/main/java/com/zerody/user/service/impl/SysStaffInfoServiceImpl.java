@@ -142,6 +142,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Value("${upload.path}")
     private String uploadPath;
 
+    @Value("${sms.template.userTip:}")
+    String userTipTemplate;
+
+    @Value("${sms.sign.tsz:唐叁藏}")
+    String smsSign;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
@@ -176,10 +182,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(sysUserInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsFeignService.sendSms(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(sysUserInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",sysUserInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        //发送短信
+        smsFeignService.sendSms(smsDto);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setUserName(sysUserInfo.getUserName());
@@ -643,10 +655,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsDtos.add(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(userInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",userInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        smsDtos.add(smsDto);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
@@ -787,10 +804,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsDtos.add(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(userInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",userInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        smsDtos.add(smsDto);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
