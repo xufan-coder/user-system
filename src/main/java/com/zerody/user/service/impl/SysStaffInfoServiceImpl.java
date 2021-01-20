@@ -1103,6 +1103,55 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.getWxPageAllStaff(dto, iPage);
     }
 
+    @Override
+    public void doEmptySubordinatesUserClew(String id) {
+        //通过用户id获取员工
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getUserId, id);
+        staffQw.lambda().eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue());
+        SysStaffInfo staff = this.getOne(staffQw);
+        if (staff == null){
+            throw new DefaultException("未找到员工");
+        }
+        //获取当前员工企业
+        QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+        adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
+        adminQw.lambda().eq(CompanyAdmin::getCompanyId, staff.getCompId());
+        CompanyAdmin com = this.companyAdminMapper.selectOne(adminQw);
+        //用于请求获取用户分页
+        List<String> userIds = new ArrayList<>();
+        //线索集合
+        List<UserClewDto> clews;
+        SysUserClewCollectVo userInfo = this.sysStaffInfoMapper.selectUserInfo(staff.getId());
+        userIds.add(userInfo.getUserId());
+        List<SysUserClewCollectVo> users = new ArrayList<>();
+        //查看当前员工是否是企业管理员
+        if(!staff.getId().equals(com.getStaffId())){
+            //不是企业管理员 查看是否是部门管理员
+            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
+            //不是部门管理员获取自己的线索总汇
+            if(dep == null){
+                 this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+                return;
+            }
+            //获取全部的部门
+            List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(staff.getCompId());
+            //用户id集合暂存部门id集合
+            userIds.add(dep.getId());
+            getChilden(userIds, deps, dep.getId() );
+            users = this.sysStaffInfoMapper.getStaffAllByDepIds(userIds , staff.getCompId());
+            userIds.removeAll(userIds);
+        } else {
+            //企业管理员不需要获取下级部门
+            users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
+        }
+        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
+        this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

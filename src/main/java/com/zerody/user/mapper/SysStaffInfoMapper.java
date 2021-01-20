@@ -171,6 +171,9 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      */
     IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage, @Param("compId") String compId);
 
+
+    List<SysUserClewCollectVo> getStaffAllByDepIds(@Param("ids") List<String> deps, @Param("compId") String compId);
+
     /**************************************************************************************************
      **
      *  查询员工信息//创建管理员账户使用
