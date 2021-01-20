@@ -42,6 +42,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     public com.zerody.user.api.vo.AdminUserInfo checkLoginAdmin(String phone) {
         QueryWrapper<AdminUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(AdminUserInfo::getPhoneNumber,phone);
+        qw.lambda().eq(AdminUserInfo::getDeleted, YesNo.NO);
         com.zerody.user.api.vo.AdminUserInfo userInfo=null;
         AdminUserInfo one = this.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
@@ -57,7 +58,14 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         if(DataUtil.isEmpty(vo)){
             throw new DefaultException("选中的员工不存在！");
         }
-        AdminUserInfo userInfo=new AdminUserInfo();
+        QueryWrapper<AdminUserInfo> adminUserQw = new QueryWrapper<>();
+        adminUserQw.lambda().eq(AdminUserInfo::getPhoneNumber, vo.getPhoneNumber())
+                            .eq(AdminUserInfo::getDeleted, YesNo.NO);
+        AdminUserInfo userInfo = this.getOne(adminUserQw);
+        if(userInfo != null){
+            throw new DefaultException("该手机号码已存在");
+        }
+        userInfo = new AdminUserInfo();
         userInfo.setUserPwd(vo.getUserPwd());
         userInfo.setUserName(vo.getUserName());
         userInfo.setAvatar(vo.getAvatar());
@@ -68,7 +76,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         userInfo.setCreateTime(new Date());
         this.save(userInfo);
         //保存角色关系
-        UnionPlatformRoleStaff roleStaff=new UnionPlatformRoleStaff();
+        UnionPlatformRoleStaff roleStaff = new UnionPlatformRoleStaff();
         roleStaff.setAdminUserId(userInfo.getId());
         roleStaff.setRoleId(data.getRoleId());
         if(DataUtil.isEmpty(data.getRoleName())) {
