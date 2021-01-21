@@ -6,6 +6,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.CardUserDto;
+import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.feign.OauthFeignService;
@@ -42,7 +43,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     }
 
     @Override
-    public void bindPhoneNumber(CardUserInfo data) {
+    public CardUserInfoVo bindPhoneNumber(CardUserInfoVo data) {
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserInfo::getId,data.getId());
         CardUserInfo one = this.getOne(qw);
@@ -52,6 +53,8 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         one.setPhoneNumber(data.getPhoneNumber());
         one.setUpdateTime(new Date());
         this.updateById(one);
+        BeanUtils.copyProperties(data,one);
+        return data;
     }
 
     @Override
@@ -67,6 +70,20 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isEmpty(cardUserUnionUser)){
             throw new DefaultException("该名片用户不存在！");
+        }
+        CardUserDto cardUser=new CardUserDto();
+        BeanUtils.copyProperties(one,cardUser);
+        cardUser.setUserPwd(null);
+        return cardUser;
+    }
+
+    @Override
+    public CardUserDto getCardUserByUnionId(String unionId) {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isEmpty(one)){
+            throw new DefaultException("该微信用户不存在名片账户！");
         }
         CardUserDto cardUser=new CardUserDto();
         BeanUtils.copyProperties(one,cardUser);

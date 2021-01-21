@@ -70,4 +70,15 @@ public interface AdminUserService extends IService<AdminUserInfo> {
      * @return               void
      */
     void updateRole(String id, String roleId);
+
+    /**************************************************************************************************
+     **
+     * 根据手机号获取管理员用户
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2021/1/21  10:45
+     */
+    com.zerody.user.api.vo.AdminUserInfo getByMobile(String mobile);
 }
