@@ -142,6 +142,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Value("${upload.path}")
     private String uploadPath;
 
+    @Value("${sms.template.userTip:}")
+    String userTipTemplate;
+
+    @Value("${sms.sign.tsz:唐叁藏}")
+    String smsSign;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
@@ -176,10 +182,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setStatus(StatusEnum.激活.getValue());
         log.info("添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(sysUserInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsFeignService.sendSms(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(sysUserInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",sysUserInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        //发送短信
+        smsFeignService.sendSms(smsDto);
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setUserName(sysUserInfo.getUserName());
@@ -643,10 +655,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsDtos.add(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(userInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",userInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        smsDtos.add(smsDto);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
@@ -787,10 +804,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsDtos.add(dto);
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(userInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",userInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        smsDtos.add(smsDto);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
@@ -1101,6 +1123,55 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         IPage<BosStaffInfoVo> iPage = new Page<>(dto.getCurrent(),dto.getPageSize());
         return this.sysStaffInfoMapper.getWxPageAllStaff(dto, iPage);
+    }
+
+    @Override
+    public void doEmptySubordinatesUserClew(String id) {
+        //通过用户id获取员工
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getUserId, id);
+        staffQw.lambda().eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue());
+        SysStaffInfo staff = this.getOne(staffQw);
+        if (staff == null){
+            throw new DefaultException("未找到员工");
+        }
+        //获取当前员工企业
+        QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+        adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
+        adminQw.lambda().eq(CompanyAdmin::getCompanyId, staff.getCompId());
+        CompanyAdmin com = this.companyAdminMapper.selectOne(adminQw);
+        //用于请求获取用户分页
+        List<String> userIds = new ArrayList<>();
+        //线索集合
+        List<UserClewDto> clews;
+        SysUserClewCollectVo userInfo = this.sysStaffInfoMapper.selectUserInfo(staff.getId());
+        userIds.add(userInfo.getUserId());
+        List<SysUserClewCollectVo> users = new ArrayList<>();
+        //查看当前员工是否是企业管理员
+        if(!staff.getId().equals(com.getStaffId())){
+            //不是企业管理员 查看是否是部门管理员
+            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
+            //不是部门管理员获取自己的线索总汇
+            if(dep == null){
+                 this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+                return;
+            }
+            //获取全部的部门
+            List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(staff.getCompId());
+            //用户id集合暂存部门id集合
+            userIds.add(dep.getId());
+            getChilden(userIds, deps, dep.getId() );
+            users = this.sysStaffInfoMapper.getStaffAllByDepIds(userIds , staff.getCompId());
+            userIds.removeAll(userIds);
+        } else {
+            //企业管理员不需要获取下级部门
+            users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
+        }
+        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
+        this.customerFeignService.doEmpatySubordinateUserClew(userIds);
     }
 
 

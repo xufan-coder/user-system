@@ -363,4 +363,31 @@
                 and ssi.user_name like concat('%',#{dto.uerName},'%')
             </if>
     </select>
+    <select id="getStaffAllByDepIds" resultType="com.zerody.user.vo.SysUserClewCollectVo">
+        SELECT
+        sui.id AS userId,
+        sui.user_name AS name,
+        sdi.depart_name AS departName,
+        sjp.position_name AS jobName
+        FROM
+        sys_user_info AS sui
+        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id and ssi.status = 0
+        JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        <if test="ids eq null">
+            JOIN company_admin AS ca ON ca.company_id  = sci.id and ssi.id != ca.staff_id
+        </if>
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON  sdi.id = usd.department_id
+        <where>
+            sci.id = #{compId}
+            <if test="ids != null and ids.size() > 0">
+                and sdi.id in
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

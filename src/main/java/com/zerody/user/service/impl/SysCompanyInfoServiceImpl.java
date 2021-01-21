@@ -29,15 +29,13 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -74,6 +72,13 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Autowired
     private OauthFeignService oauthFeignService;
+
+
+    @Value("${sms.template.userTip:}")
+    String userTipTemplate;
+
+    @Value("${sms.sign.tsz:唐叁藏}")
+    String smsSign;
 
     /**
     * @Author               PengQiang
@@ -153,10 +158,16 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.companyAdminMapper.insert(admin);
         //预设管理员角色
         this.oauthFeignService.addCompanyRole(sysCompanyInfo.getId());
-        SmsDto dto=new SmsDto();
-        dto.setPhone(userInfo.getPhoneNumber());
-        dto.setSmsContent("【唐叁藏】您的账户初始密码为"+initPwd+"。请及时更改！");
-        smsFeignService.sendSms(dto);//发送短信
+        SmsDto smsDto=new SmsDto();
+        smsDto.setMobile(userInfo.getPhoneNumber());
+        Map<String, Object> content=new HashMap<>();
+        content.put("userName",userInfo.getPhoneNumber());
+        content.put("passWord",initPwd);
+        smsDto.setContent(content);
+        smsDto.setTemplateCode(userTipTemplate);
+        smsDto.setSign(smsSign);
+        //发送短信
+        smsFeignService.sendSms(smsDto);
     }
 
     /**

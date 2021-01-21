@@ -275,4 +275,30 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          清空下级员工线索 (包括自己)
+     * @date                 2021/1/20 17:31
+     * @param                [id]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @PostMapping(value = "/user-subordinates/empty-clew/{id}")
+    public DataResult<Object> doEmptySubordinatesUserClew(@PathVariable(name = "id") String id) {
+
+        try {
+            this.sysStaffInfoService.doEmptySubordinatesUserClew(id);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            return R.error("获取员工下级线索汇总信息出错！请求异常");
+        }
+    }
+
+
 }
