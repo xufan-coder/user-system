@@ -318,6 +318,7 @@ public class SysUserInfoController implements UserRemoteService {
      *   修改名片用户信息
      */
     @Override
+    @RequestMapping(value = "/card-user-bind/inner",method = POST, produces = "application/json")
     public DataResult<CardUserInfoVo> bindMobileCardUser(@RequestBody CardUserInfoVo data) {
         try {
             cardUserService.bindPhoneNumber(data);
