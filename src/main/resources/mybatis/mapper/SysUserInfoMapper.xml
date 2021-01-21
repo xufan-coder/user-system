@@ -97,10 +97,10 @@ JOIN (
 			mobile_number = #{userName}
 			and status=0
 ) li ON ui.id = li.user_id
-LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status`=0
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status` in (0, 3)
 LEFT JOIN union_staff_depart usd ON usd.staff_id=ssi.id
 WHERE
-	ui. STATUS = 0
+	ui. STATUS in (0,3)
 	limit 1
   </select>
 
@@ -131,7 +131,7 @@ JOIN (
 ) li ON ui.id = li.user_id
 LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id
 WHERE
-	ui. STATUS = 0
+	ui. STATUS in (0, 3)
 	limit 1
   </select>
 
@@ -163,7 +163,7 @@ WHERE
     LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
     LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
     WHERE
-	sui.`status` = 0
+	sui.`status` in (0, 3)
 	AND sui.id=#{id}
   </select>
     <select id="getUserSubordinates" resultType="java.lang.String">
@@ -193,8 +193,8 @@ WHERE
         JOIN sys_staff_info AS ssi ON ssi.user_id=sui.id
         JOIN company_admin AS ca ON ca.staff_id=ssi.id
         <where>
-            ssi.status=0
-            and sui.status=0
+            ssi.deleted = 0
+            and sui.status in (0,3)
             and sui.id=#{userId}
         </where>
     </select>
@@ -208,7 +208,7 @@ WHERE
         JOIN admin_user_info AS aui ON aui.staff_id=ssi.id
         <where>
             ssi.status=0
-            and sui.status=0
+            and sui.status in (0, 3)
             and aui.id=#{userId}
         </where>
     </select>
@@ -219,7 +219,7 @@ WHERE
         FROM
         sys_user_info AS sui
         <where>
-            sui.status=0
+            sui.status in (0, 3)
         </where>
     </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.api.dto.CardUserDto;
+import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 /**
  *
@@ -34,7 +35,7 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @param                data
      * @return               void
      */
-    void bindPhoneNumber(CardUserInfo data);
+    CardUserInfoVo bindPhoneNumber(CardUserInfoVo data);
 
     /**
      *
@@ -46,4 +47,15 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @return               com.zerody.user.api.dto.CardUserDto
      */
     CardUserDto checkCardUser(String userId);
+
+    /**************************************************************************************************
+     **
+     * 名片登录时UnionID账户是否存在
+     *
+     * @param unionId
+     * @return {@link CardUserDto }
+     * @author DaBai
+     * @date 2021/1/21  14:54
+     */
+    CardUserDto getCardUserByUnionId(String unionId);
 }

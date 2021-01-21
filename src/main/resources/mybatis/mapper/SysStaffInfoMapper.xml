@@ -93,7 +93,7 @@
 			sys_user_info sui
 		JOIN sys_staff_info ssi ON ssi.user_id = sui.id
 		WHERE
-			ssi.comp_id = #{companyId} and ssi.status != 2 and sui.status != -1
+			ssi.comp_id = #{companyId} and ssi.status != 2 and sui.status in (0, 3)
     </select>
 
     <select id="getStaffInfoByOpenId" resultType="com.zerody.user.vo.SysUserInfoVo">
@@ -195,7 +195,7 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         <where>
-            ssi.status != -1 and sui.id = #{userId}
+            ssi.status in (0, 3) and sui.id = #{userId}
         </where>
     </select>
 
@@ -290,10 +290,12 @@
             sui.id AS userId,
             sui.user_name AS name,
             sdi.depart_name AS departName,
-            sjp.position_name AS jobName
+            sjp.position_name AS jobName,
+            sli.login_time AS loginTime
         FROM
             sys_user_info AS sui
-        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id and ssi.status = 0
+        JOIN sys_login_info AS sli ON sli.user_id = sui.id
+        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN sys_company_info sci ON sci.id=ssi.comp_id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
@@ -307,10 +309,12 @@
             sui.id AS userId,
             sui.user_name AS name,
             sdi.depart_name AS departName,
-            sjp.position_name AS jobName
+            sjp.position_name AS jobName,
+            sli.login_time AS loginTime
         FROM
             sys_user_info AS sui
-        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id and ssi.status = 0
+        JOIN sys_login_info AS sli ON sli.user_id = sui.id
+        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN sys_company_info sci ON sci.id=ssi.comp_id
         <if test="ids eq null">
             JOIN company_admin AS ca ON ca.company_id  = sci.id and ssi.id != ca.staff_id
