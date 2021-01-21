@@ -73,4 +73,18 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         cardUser.setUserPwd(null);
         return cardUser;
     }
+
+    @Override
+    public CardUserDto getCardUserByUnionId(String unionId) {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isEmpty(one)){
+            throw new DefaultException("该微信用户不存在名片账户！");
+        }
+        CardUserDto cardUser=new CardUserDto();
+        BeanUtils.copyProperties(one,cardUser);
+        cardUser.setUserPwd(null);
+        return cardUser;
+    }
 }
