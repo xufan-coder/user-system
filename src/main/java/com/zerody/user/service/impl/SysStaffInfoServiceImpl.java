@@ -1034,7 +1034,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //通过用户id获取员工
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, userId);
-        staffQw.lambda().eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue());
+        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
         SysStaffInfo staff = this.getOne(staffQw);
         if (staff == null){
             throw new DefaultException("未找到员工");
@@ -1130,7 +1130,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //通过用户id获取员工
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, id);
-        staffQw.lambda().eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue());
+        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
         SysStaffInfo staff = this.getOne(staffQw);
         if (staff == null){
             throw new DefaultException("未找到员工");

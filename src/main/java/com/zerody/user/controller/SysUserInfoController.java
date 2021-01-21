@@ -4,19 +4,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.service.AdminUserService;
-import com.zerody.user.service.CompanyAdminService;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.*;
 import com.zerody.user.vo.CheckLoginVo;
+import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +51,9 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Autowired
     private AdminUserService amdinUserService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
     /**
     *    根据用户ID查询单个用户
     */
@@ -108,13 +111,17 @@ public class SysUserInfoController implements UserRemoteService {
         if(DataUtil.isEmpty(checkLoginVo)){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
+        String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+        SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+        if(company.getStatus() == StatusEnum.停用.getValue() || company.getStatus() == StatusEnum.删除.getValue()){
+            return R.error("当前账号未开通，请联系管理员开通！");
+        }
         //校验密码
         boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
-        if(success){
-            return R.success("密码正确！");
-        }else {
+        if(!success){
             return R.error("密码错误！");
         }
+        return R.success("密码正确！");
     }
 
     /**
