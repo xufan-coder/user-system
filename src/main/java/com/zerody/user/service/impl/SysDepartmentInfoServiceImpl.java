@@ -95,8 +95,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if (count > 0){
             throw new DefaultException("该部门下有员工不可删除!");
         }
+        SysDepartmentInfo dep = this.getById(depId);
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(dep.getCompId());
         //逻辑删除部门
-        SysDepartmentInfo dep = new SysDepartmentInfo();
         dep.setStatus(StatusEnum.删除.getValue());
         dep.setId(depId);
         this.saveOrUpdate(dep);
@@ -147,28 +148,57 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unSd.setStaffId(dto.getStaffId());
         unionStaffDepartMapper.insert(unSd);
     }
-
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          返回树形结构
+     * @date                 2021/1/21 9:48
+     * @param                [parentId, deps, jobs]
+     * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
         List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId()==null?"":d.getParentId())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(childs)){
             return new ArrayList<>();
         }
         for (SysDepartmentInfoVo dep : childs){
-            List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> dep.getId().equals(j.getDepartId())).collect(Collectors.toList());
-            dep.setJobChildrens(jobChilds);
+            //部门下的岗位
+            if(!CollectionUtils.isEmpty(jobs)){
+                List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> dep.getId().equals(j.getDepartId())).collect(Collectors.toList());
+                dep.setJobChildrens(jobChilds);
+            }
             dep.setDepartChildrens(getDepChildrens(dep.getId(), deps, jobs));
         }
         return childs;
     }
 
-    private List<SysJobPositionVo> getJobChildrens(String parentId, List<SysJobPositionVo> jobs){
-        List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> parentId.equals(j.getParentId())).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(jobChilds)){
-            return new ArrayList<>();
+
+    private List<String> getDepChildernsIds(String parentId, List<SysDepartmentInfoVo> deps, List<String> depChilderIds){
+        if(CollectionUtils.isEmpty(depChilderIds)){
+            depChilderIds = new ArrayList<>();
         }
-        for (SysJobPositionVo job : jobChilds){
-            job.setJobChildrens(getJobChildrens(job.getId(), jobs));
-        }
-        return jobChilds;
+
+        return depChilderIds;
     }
+
+//    /**
+//     *
+//     *
+//     * @author               PengQiang
+//     * @description          获取子级岗位
+//     * @date                 2021/1/21 9:50
+//     * @param                [parentId, jobs]
+//     * @return               java.util.List<com.zerody.user.vo.SysJobPositionVo>
+//     */
+//    private List<SysJobPositionVo> getJobChildrens(String parentId, List<SysJobPositionVo> jobs){
+//        List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> parentId.equals(j.getParentId())).collect(Collectors.toList());
+//        if(CollectionUtils.isEmpty(jobChilds)){
+//            return new ArrayList<>();
+//        }
+//        for (SysJobPositionVo job : jobChilds){
+//            job.setJobChildrens(getJobChildrens(job.getId(), jobs));
+//        }
+//        return jobChilds;
+//    }
 }
