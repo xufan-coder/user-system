@@ -119,6 +119,9 @@ public class SysUserInfoController implements UserRemoteService {
         }
         String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
         SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+        if(DataUtil.isEmpty(company)){
+            return R.error("当前账号未开通，请联系管理员开通！");
+        }
         if(company.getStatus() == StatusEnum.停用.getValue() || company.getStatus() == StatusEnum.删除.getValue()){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
