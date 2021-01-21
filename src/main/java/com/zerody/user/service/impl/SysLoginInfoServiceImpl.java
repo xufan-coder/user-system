@@ -39,6 +39,9 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
         if(DataUtil.isNotEmpty(logInfo.getLastChecKSms())){
             uw.lambda().set(SysLoginInfo::getLastCheckSms,logInfo.getLastChecKSms());
         }
+        if(DataUtil.isNotEmpty(logInfo.getLoginTime())){
+            uw.lambda().set(SysLoginInfo::getLoginTime,logInfo.getLoginTime());
+        }
         if(DataUtil.isNotEmpty(logInfo.getUserPwd())){
             uw.lambda().set(SysLoginInfo::getUserPwd,logInfo.getUserPwd());
         }
