@@ -7,6 +7,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysDepartmentInfo;
+import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.domain.UnionStaffDepart;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -97,10 +98,26 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         SysDepartmentInfo dep = this.getById(depId);
         List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(dep.getCompId());
-        //逻辑删除部门
-        dep.setStatus(StatusEnum.删除.getValue());
-        dep.setId(depId);
-        this.saveOrUpdate(dep);
+        List<String> list = this.getDepChildernsIds(depId, deps);
+        list.add(0, depId);
+        unQw = new QueryWrapper<>();
+        unQw.lambda().in(UnionStaffDepart::getDepartmentId, list);
+        count = unionStaffDepartMapper.selectCount(unQw);
+        if(count > 0){
+            throw new DefaultException("该子级部门下有员工不可删除!");
+        }
+        //删除当前部门以及子级部门
+        UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
+        depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());
+        depUw.lambda().in(SysDepartmentInfo::getId, list);
+        this.update(depUw);
+        //删除部门下的岗位
+        QueryWrapper<SysJobPosition> jobQw = new QueryWrapper<>();
+        jobQw.lambda().in(SysJobPosition::getDepartId, list);
+        jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
+        SysJobPosition job = new SysJobPosition();
+        job.setStatus(StatusEnum.删除.getValue());
+        this.sysJobPositionMapper.update(job, jobQw);
     }
 
     @Override
@@ -174,11 +191,27 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取子级部门
+     * @date                 2021/1/21 17:40
+     * @param                [parentId, deps]
+     * @return               java.util.List<java.lang.String>
+     */
+    private List<String> getDepChildernsIds(String parentId, List<SysDepartmentInfoVo> deps){
+       return this.getDepChildernsIds(parentId, deps, new ArrayList<>());
+    }
     private List<String> getDepChildernsIds(String parentId, List<SysDepartmentInfoVo> deps, List<String> depChilderIds){
-        if(CollectionUtils.isEmpty(depChilderIds)){
-            depChilderIds = new ArrayList<>();
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId()==null?"":d.getParentId())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(childs)){
+            return new ArrayList<>();
         }
-
+        for (SysDepartmentInfoVo dep : childs){
+            depChilderIds.add(dep.getId());
+            depChilderIds.addAll(getDepChildernsIds(dep.getId(), deps, new ArrayList<>()));
+        }
         return depChilderIds;
     }
 
