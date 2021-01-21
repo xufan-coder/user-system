@@ -43,7 +43,7 @@ mybatis-plus:
 logging:
   level:
     com:
-      zerody: debug
+      zerody: info
 
   #文件上传路径
 upload:
