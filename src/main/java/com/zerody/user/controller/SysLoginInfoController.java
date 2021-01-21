@@ -66,6 +66,7 @@ public class SysLoginInfoController implements UserLoginInfoRemoteService {
      *   名片登录时UnionID查用户
      */
     @Override
+    @RequestMapping(value = "/card-get/inner",method = GET, produces = "application/json")
     public DataResult<CardUserDto> getCardUserByUnionId(String unionId){
         try {
             return R.success(cardUserService.getCardUserByUnionId(unionId));

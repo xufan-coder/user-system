@@ -44,16 +44,29 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
 
     @Override
     public CardUserInfoVo bindPhoneNumber(CardUserInfoVo data) {
+        //先检查手机号是否存在，手机号存在则更新此账号的unionid和openID
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
-        qw.lambda().eq(CardUserInfo::getId,data.getId());
+        qw.lambda().eq(CardUserInfo::getPhoneNumber,data.getPhoneNumber());
         CardUserInfo one = this.getOne(qw);
         if(DataUtil.isEmpty(one)){
-            throw new DefaultException("账号不存在！");
+            //如果手机号查不到则绑定该手机号到该用户id
+            QueryWrapper<CardUserInfo> idQw =new QueryWrapper<>();
+            idQw.lambda().eq(CardUserInfo::getId,data.getId());
+            CardUserInfo idUser = this.getOne(qw);
+            if(DataUtil.isEmpty(idUser)){
+                throw new DefaultException("账户不存在！");
+            }
+            idUser.setPhoneNumber(data.getPhoneNumber());
+            idUser.setUpdateTime(new Date());
+            this.updateById(idUser);
+            BeanUtils.copyProperties(data,idUser);
+        }else {
+            one.setUnionId(data.getUnionId());
+            one.setOpenId(data.getOpenId());
+            one.setUpdateTime(new Date());
+            this.updateById(one);
+            BeanUtils.copyProperties(data,one);
         }
-        one.setPhoneNumber(data.getPhoneNumber());
-        one.setUpdateTime(new Date());
-        this.updateById(one);
-        BeanUtils.copyProperties(data,one);
         return data;
     }
 
