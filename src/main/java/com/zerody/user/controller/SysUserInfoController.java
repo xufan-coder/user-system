@@ -9,6 +9,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
+import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
@@ -166,7 +167,7 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
     /**
-    *   查询当前用户在这个企业员工关联的角色 
+    *   查询当前用户在这个企业员工关联的角色
     */
     @Override
     @RequestMapping(value = "/role/get/inner",method = GET, produces = "application/json")
@@ -259,6 +260,16 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("获取员工下级部门信息出错！请求异常");
         }
 	}
+
+    @Override
+    public DataResult<AdminUserInfo> getAdminUser(String mobile) {
+	    try{
+            AdminUserInfo adminUserInfo= amdinUserService.getByMobile(mobile);
+            return R.success(adminUserInfo);
+        } catch (Exception e) {
+            return R.error(e.getMessage());
+        }
+    }
 
     @GetMapping(value = "/user-subordinates/clew/collect")
     public DataResult<IPage<SysUserClewCollectVo>> geSubordinatestUserClewCollect(PageQueryDto dto) {

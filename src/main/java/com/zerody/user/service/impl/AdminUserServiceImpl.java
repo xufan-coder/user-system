@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
@@ -18,6 +19,7 @@ import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.CopyStaffInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -127,5 +129,19 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         roleStaff.setRoleId(roleId);
         roleStaff.setRoleName(platformRole.getData().getRoleName());
         roleStaffMapper.updateById(roleStaff);
+    }
+
+    @Override
+    public com.zerody.user.api.vo.AdminUserInfo getByMobile(String mobile) {
+        QueryWrapper<AdminUserInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(AdminUserInfo::getPhoneNumber,mobile)
+        .eq(AdminUserInfo::getStatus, StatusEnum.激活);
+        AdminUserInfo one = this.getOne(qw);
+        if(DataUtil.isEmpty(one)){
+            throw new DefaultException("该手机号不是管理员！");
+        }
+        com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
+        BeanUtils.copyProperties(userInfo,one);
+        return userInfo;
     }
 }

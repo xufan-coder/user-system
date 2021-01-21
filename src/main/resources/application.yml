@@ -44,6 +44,11 @@ logging:
   level:
     com:
       zerody: debug
+    root: debug
+  file: '@project.log@zerody-user.log'
+  pattern:
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'
 
   #文件上传路径
 upload:
