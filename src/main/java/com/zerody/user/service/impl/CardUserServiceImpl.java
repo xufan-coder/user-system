@@ -6,6 +6,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.CardUserDto;
+import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.feign.OauthFeignService;
@@ -42,7 +43,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     }
 
     @Override
-    public void bindPhoneNumber(CardUserInfo data) {
+    public CardUserInfoVo bindPhoneNumber(CardUserInfoVo data) {
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserInfo::getId,data.getId());
         CardUserInfo one = this.getOne(qw);
@@ -52,6 +53,8 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         one.setPhoneNumber(data.getPhoneNumber());
         one.setUpdateTime(new Date());
         this.updateById(one);
+        BeanUtils.copyProperties(data,one);
+        return data;
     }
 
     @Override

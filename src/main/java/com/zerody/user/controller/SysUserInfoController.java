@@ -10,13 +10,12 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.service.AdminUserService;
-import com.zerody.user.service.CompanyAdminService;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.*;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
@@ -49,6 +48,9 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Autowired
     private CompanyAdminService amdinService;
+
+    @Autowired
+    private CardUserService cardUserService;
 
     @Autowired
     private AdminUserService amdinUserService;
@@ -311,5 +313,19 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+    /**
+     * 【绑定手机号】
+     *   修改名片用户信息
+     */
+    @Override
+    public DataResult<CardUserInfoVo> bindMobileCardUser(@RequestBody CardUserInfoVo data) {
+        try {
+            cardUserService.bindPhoneNumber(data);
+            return R.success(data);
+        } catch (Exception e) {
+            log.error("修改名片用户出错:{}", e, e);
+            return R.error("修改名片用户出错:"+e.getMessage());
+        }
+    }
 
 }
