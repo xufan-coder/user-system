@@ -42,8 +42,13 @@ public class SysLoginUserInfoVo {
 	/**
 	 * open_id
 	 */
-	@TableField("open_id")
 	private String openId;
+
+
+	/**
+	 * open_id
+	 */
+	private String unionId;
 
 	/***
 	* ------密码
@@ -53,6 +58,15 @@ public class SysLoginUserInfoVo {
     *    企业ID
     */
 	private String companyId;
+	/**
+	 *    员工ID
+	 */
+	private String staffId;
+
+	/**
+	 *    是否是管理员
+	 */
+	private Boolean isAdmin;;
 
 	/**
 	*   最后验证短信时间

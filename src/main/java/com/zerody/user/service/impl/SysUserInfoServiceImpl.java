@@ -3,9 +3,11 @@ package com.zerody.user.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
@@ -164,7 +166,18 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public SysLoginUserInfoVo getUserInfo(String userName) {
-        return sysUserInfoMapper.selectUserInfo(userName);
+        SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoMapper.selectUserInfo(userName);
+        QueryWrapper<CompanyAdmin> qw =new QueryWrapper<>();
+        qw.lambda().eq(CompanyAdmin::getStaffId,sysLoginUserInfoVo.getStaffId())
+                .eq(CompanyAdmin::getCompanyId,sysLoginUserInfoVo.getCompanyId())
+                .eq(CompanyAdmin::getDeleted, YesNo.NO);
+        CompanyAdmin companyAdmin = companyAdminMapper.selectOne(qw);
+        if(DataUtil.isEmpty(companyAdmin)){
+            sysLoginUserInfoVo.setIsAdmin(false);
+        }else {
+            sysLoginUserInfoVo.setIsAdmin(true);
+        }
+        return sysLoginUserInfoVo;
     }
 
     @Override

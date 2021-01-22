@@ -485,8 +485,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             hw.write(os);
             InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-            String fileName = FileUtil.upload(inputStream, uploadPath, "xls", uploadPath);
-            result.put("fileUrlName", fileName);
+            String base64 = FileUtil.fileToBase64(inputStream);
+            result.put("base64File", base64);
         }
         sendInitPwdSms(smsDtos);
         return result;
@@ -604,8 +604,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             hw.write(os);
             InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-            String fileName = FileUtil.upload(inputStream, "d:/", "xls", "d:/");
-            result.put("fileUrlName", fileName);
+            String base64 = FileUtil.fileToBase64(inputStream);
+            result.put("base64File", base64);
         }
         sendInitPwdSms(smsDtos);
         return result;

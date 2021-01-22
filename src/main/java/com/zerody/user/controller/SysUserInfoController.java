@@ -23,6 +23,7 @@ import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -162,9 +163,11 @@ public class SysUserInfoController implements UserRemoteService {
     */
     @Override
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
-    public DataResult getUserInfo(@RequestParam("userName") String userName){
+    public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
-        return R.success(sysLoginUserInfoVo);
+        com.zerody.user.api.vo.SysLoginUserInfoVo info =new com.zerody.user.api.vo.SysLoginUserInfoVo();
+        BeanUtils.copyProperties(sysLoginUserInfoVo,info);
+        return R.success(info);
     }
 
     /**
