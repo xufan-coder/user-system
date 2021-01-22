@@ -166,7 +166,7 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
         com.zerody.user.api.vo.SysLoginUserInfoVo info =new com.zerody.user.api.vo.SysLoginUserInfoVo();
-        BeanUtils.copyProperties(info,sysLoginUserInfoVo);
+        BeanUtils.copyProperties(sysLoginUserInfoVo,info);
         return R.success(info);
     }
 
