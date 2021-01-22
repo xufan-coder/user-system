@@ -290,9 +290,11 @@
             sui.id AS userId,
             sui.user_name AS name,
             sdi.depart_name AS departName,
-            sjp.position_name AS jobName
+            sjp.position_name AS jobName,
+            sli.login_time AS loginTime
         FROM
             sys_user_info AS sui
+        JOIN sys_login_info AS sli ON sli.user_id = sui.id
         JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN sys_company_info sci ON sci.id=ssi.comp_id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
@@ -307,9 +309,11 @@
             sui.id AS userId,
             sui.user_name AS name,
             sdi.depart_name AS departName,
-            sjp.position_name AS jobName
+            sjp.position_name AS jobName,
+            sli.login_time AS loginTime
         FROM
             sys_user_info AS sui
+        JOIN sys_login_info AS sli ON sli.user_id = sui.id
         JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN sys_company_info sci ON sci.id=ssi.comp_id
         <if test="ids eq null">

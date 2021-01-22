@@ -1,5 +1,6 @@
 package com.zerody.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.domain.base.BaseStringModel;
 import lombok.Data;
 
@@ -30,6 +31,10 @@ public class SysLoginInfo extends BaseStringModel {
     //最后一次登录校验短信验证码时间
     private Date lastCheckSms;
 
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date loginTime;
 
 }
