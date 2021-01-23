@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
@@ -10,7 +11,6 @@ import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.domain.CardUserUnionUser;
-import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserMapper;
 import com.zerody.user.mapper.CardUserUnionCrmUserMapper;
 import com.zerody.user.service.CardUserService;
@@ -111,6 +111,38 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         CardUserDto cardUser=new CardUserDto();
         BeanUtils.copyProperties(one,cardUser);
         cardUser.setUserPwd(null);
+        return cardUser;
+    }
+
+    @Override
+    public CardUserDto unBindPhoneNumber(String unionId) {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isNotEmpty(one)){
+            one.setUnionId(null);
+            one.setUpdateTime(new Date());
+            this.updateById(one);
+        }
+        userQw.clear();
+        userQw.lambda().eq(CardUserInfo::getRegUnionId,unionId);
+        CardUserInfo info = this.getOne(userQw);
+        CardUserDto cardUser = new CardUserDto();
+        if(DataUtil.isNotEmpty(info)) {
+            BeanUtils.copyProperties(info, cardUser);
+            cardUser.setUserPwd(null);
+            return cardUser;
+        }else {
+            //正常情况下不会出现没注册访客账号
+            //创建一个名片用户
+            CardUserInfo user = new CardUserInfo();
+            //保存注册时unionID
+            user.setId(UUIDutils.getUUID32());
+            user.setRegUnionId(unionId);
+            user.setCreateTime(new Date());
+            this.save(user);
+            BeanUtils.copyProperties(user, cardUser);
+        }
         return cardUser;
     }
 }
