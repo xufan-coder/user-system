@@ -6,6 +6,7 @@ import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -44,10 +45,12 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
     }
 
     @Override
-    public Map<Object, Object> getAllAddr() {
-        List<Map<String, Object>> addrs = this.mapper.selectMaps(null);
+    @Cacheable(value = "addr", key = "#root.method.name")
+    public Map<String, Map<String, String>> getAllAddr() {
+        List<Map<String, String>> addrs = this.mapper.selectAllAddrMap();
         return addrs.stream().collect(Collectors.toMap(map -> map.get("code"), addr -> addr));
     }
+
 
 
 }

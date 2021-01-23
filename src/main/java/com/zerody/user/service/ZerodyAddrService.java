@@ -24,5 +24,5 @@ public interface ZerodyAddrService {
      */
     List<ZerodyAddrVo> getAddr(Integer parentCode);
 
-    Map<Object, Object> getAllAddr();
+    Map<String, Map<String, String>> getAllAddr();
 }

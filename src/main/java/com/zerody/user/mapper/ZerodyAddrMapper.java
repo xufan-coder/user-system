@@ -6,6 +6,7 @@ import com.zerody.user.vo.ZerodyAddrVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -17,4 +18,6 @@ import java.util.List;
 public interface ZerodyAddrMapper extends BaseMapper<ZerodyAddr> {
 
     List<ZerodyAddrVo> selectAddr(Integer parentCode);
+
+    List<Map<String, String>> selectAllAddrMap();
 }
