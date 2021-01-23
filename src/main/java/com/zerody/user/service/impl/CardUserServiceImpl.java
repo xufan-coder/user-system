@@ -50,6 +50,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserInfo::getPhoneNumber,data.getPhoneNumber());
         CardUserInfo one = this.getOne(qw);
+        CardUserInfoVo vo=new CardUserInfoVo();
         if(DataUtil.isEmpty(one)){
             //如果手机号查不到则绑定该手机号到该用户id
             QueryWrapper<CardUserInfo> idQw =new QueryWrapper<>();
@@ -62,13 +63,13 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             idUser.setPhoneNumber(data.getPhoneNumber());
             idUser.setUpdateTime(new Date());
             this.updateById(idUser);
-            BeanUtils.copyProperties(data,idUser);
+            BeanUtils.copyProperties(idUser,vo);
         }else {
             one.setUnionId(data.getUnionId());
             one.setOpenId(data.getOpenId());
             one.setUpdateTime(new Date());
             this.updateById(one);
-            BeanUtils.copyProperties(data,one);
+            BeanUtils.copyProperties(one,vo);
         }
         return data;
     }
