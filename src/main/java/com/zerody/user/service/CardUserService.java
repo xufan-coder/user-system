@@ -58,4 +58,15 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @date 2021/1/21  14:54
      */
     CardUserDto getCardUserByUnionId(String unionId);
+
+    /**************************************************************************************************
+     **
+     * 解绑名片用户手机号
+     *
+     * @param unionId
+     * @return {@link CardUserInfoVo }
+     * @author DaBai
+     * @date 2021/1/23  11:31
+     */
+    CardUserDto unBindPhoneNumber(String unionId);
 }

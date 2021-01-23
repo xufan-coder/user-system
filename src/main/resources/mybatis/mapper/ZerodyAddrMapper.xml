@@ -13,7 +13,7 @@
         id, code, address, p_addr_code, addr_level
   </sql>
 
-    <select id="selectAllAddr" resultType="com.zerody.user.vo.ZerodyAddrVo">
+    <select id="selectAddr" resultType="com.zerody.user.vo.ZerodyAddrVo">
         select
         <include refid="Base_Column_List" />
         from zerody_addr
