@@ -8,6 +8,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.AdminUserInfo;
@@ -339,6 +340,23 @@ public class SysUserInfoController implements UserRemoteService {
         try {
             cardUserService.bindPhoneNumber(data);
             return R.success(data);
+        } catch (Exception e) {
+            log.error("修改名片用户出错:{}", e, e);
+            return R.error("修改名片用户出错:"+e.getMessage());
+        }
+    }
+
+
+    /**
+     * 【解绑手机号】
+     *
+     */
+    @Override
+    @RequestMapping(value = "/card-user-unbind/inner",method = POST, produces = "application/json")
+    public DataResult<CardUserDto> unBindMobileCardUser(String unionId) {
+        try {
+            CardUserDto vo= cardUserService.unBindPhoneNumber(unionId);
+            return R.success(vo);
         } catch (Exception e) {
             log.error("修改名片用户出错:{}", e, e);
             return R.error("修改名片用户出错:"+e.getMessage());
