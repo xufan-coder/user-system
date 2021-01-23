@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
@@ -35,8 +36,9 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     @Override
     public CardUserDto addCardUser(CardUserDto cardUser) {
         CardUserInfo info =new CardUserInfo();
-        info.setId(UUIDutils.getUUID32());
         BeanUtils.copyProperties(cardUser,info);
+        info.setStatus(StatusEnum.激活.getValue());
+        info.setId(UUIDutils.getUUID32());
         this.save(info);
         BeanUtils.copyProperties(info,cardUser);
         return cardUser;
@@ -56,6 +58,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             if(DataUtil.isEmpty(idUser)){
                 throw new DefaultException("账户不存在！");
             }
+            idUser.setUnionId(data.getUnionId());
             idUser.setPhoneNumber(data.getPhoneNumber());
             idUser.setUpdateTime(new Date());
             this.updateById(idUser);
@@ -92,11 +95,18 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
 
     @Override
     public CardUserDto getCardUserByUnionId(String unionId) {
+        //免密登录时，根据unionId先查询该unionId绑定的已有手机号的用户
         QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
         userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isEmpty(one)){
-            throw new DefaultException("该微信用户不存在名片账户！");
+            //如果没有查到绑定手机号的用户，则查询该unionId注册时的账号
+            userQw.clear();
+            userQw.lambda().eq(CardUserInfo::getRegUnionId,unionId);
+            one=this.getOne(userQw);
+            if(DataUtil.isEmpty(one)){
+                throw new DefaultException("该微信用户不存在名片账户！");
+            }
         }
         CardUserDto cardUser=new CardUserDto();
         BeanUtils.copyProperties(one,cardUser);
