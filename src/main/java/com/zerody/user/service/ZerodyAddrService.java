@@ -4,6 +4,7 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.user.vo.ZerodyAddrVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -22,4 +23,6 @@ public interface ZerodyAddrService {
      * @return               java.util.List<com.zerody.user.vo.ZerodyAddrVo>
      */
     List<ZerodyAddrVo> getAddr(Integer parentCode);
+
+    Map<Object, Object> getAllAddr();
 }

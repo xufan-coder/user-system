@@ -16,5 +16,5 @@ import java.util.List;
 @Mapper
 public interface ZerodyAddrMapper extends BaseMapper<ZerodyAddr> {
 
-    List<ZerodyAddrVo> selectAllAddr(Integer parentCode);
+    List<ZerodyAddrVo> selectAddr(Integer parentCode);
 }
