@@ -1,7 +1,9 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.domain.SysUserInfo;
@@ -63,10 +65,13 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
 
         //如果该用户是平台管理员，则通过不修改平台管理员表的密码
         SysUserInfo userById = sysUserInfoService.getUserById(logInfo.getUserId());
-        AdminUserInfo byMobile = amdinUserService.getByMobile(userById.getPhoneNumber());
-        if(DataUtil.isNotEmpty(byMobile)){
+        QueryWrapper<com.zerody.user.domain.AdminUserInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(com.zerody.user.domain.AdminUserInfo::getPhoneNumber,userById.getPhoneNumber())
+                .eq(com.zerody.user.domain.AdminUserInfo::getStatus, StatusEnum.激活);
+        com.zerody.user.domain.AdminUserInfo one = amdinUserService.getOne(qw);
+        if(DataUtil.isNotEmpty(one)){
             com.zerody.user.domain.AdminUserInfo info=new com.zerody.user.domain.AdminUserInfo();
-            BeanUtils.copyProperties(byMobile,info);
+            BeanUtils.copyProperties(one,info);
             info.setUserPwd(logInfo.getUserPwd());
             amdinUserService.updateById(info);
         }

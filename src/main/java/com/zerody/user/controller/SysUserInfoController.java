@@ -338,8 +338,8 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/card-user-bind/inner",method = POST, produces = "application/json")
     public DataResult<CardUserInfoVo> bindMobileCardUser(@RequestBody CardUserInfoVo data) {
         try {
-            cardUserService.bindPhoneNumber(data);
-            return R.success(data);
+            CardUserInfoVo cardUserInfoVo = cardUserService.bindPhoneNumber(data);
+            return R.success(cardUserInfoVo);
         } catch (Exception e) {
             log.error("修改名片用户出错:{}", e, e);
             return R.error("修改名片用户出错:"+e.getMessage());

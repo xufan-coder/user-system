@@ -50,27 +50,28 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserInfo::getPhoneNumber,data.getPhoneNumber());
         CardUserInfo one = this.getOne(qw);
+        CardUserInfoVo vo=new CardUserInfoVo();
+
+        //如果手机号查不到则绑定该手机号到该用户id
+        QueryWrapper<CardUserInfo> idQw =new QueryWrapper<>();
+        idQw.lambda().eq(CardUserInfo::getId,data.getId());
+        CardUserInfo idUser = this.getOne(idQw);
+        if(DataUtil.isEmpty(idUser)){
+            throw new DefaultException("账户不存在！");
+        }
         if(DataUtil.isEmpty(one)){
-            //如果手机号查不到则绑定该手机号到该用户id
-            QueryWrapper<CardUserInfo> idQw =new QueryWrapper<>();
-            idQw.lambda().eq(CardUserInfo::getId,data.getId());
-            CardUserInfo idUser = this.getOne(qw);
-            if(DataUtil.isEmpty(idUser)){
-                throw new DefaultException("账户不存在！");
-            }
-            idUser.setUnionId(data.getUnionId());
+            idUser.setUnionId(idUser.getRegUnionId());
             idUser.setPhoneNumber(data.getPhoneNumber());
             idUser.setUpdateTime(new Date());
             this.updateById(idUser);
-            BeanUtils.copyProperties(data,idUser);
+            BeanUtils.copyProperties(idUser,vo);
         }else {
-            one.setUnionId(data.getUnionId());
-            one.setOpenId(data.getOpenId());
+            one.setUnionId(idUser.getRegUnionId());
             one.setUpdateTime(new Date());
             this.updateById(one);
-            BeanUtils.copyProperties(data,one);
+            BeanUtils.copyProperties(one,vo);
         }
-        return data;
+        return vo;
     }
 
     @Override
