@@ -6,8 +6,10 @@ import com.zerody.user.api.service.AddrRemoteService;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Key;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ public class ZerodyAddrController implements AddrRemoteService {
 
     @Override
     @RequestMapping(value = "/all/inner", method = RequestMethod.GET)
-    public DataResult<Map<Object, Object>> getAllAddr(){
+    public DataResult<Map<String, Map<String, String>>> getAllAddr(){
         return R.success(zerodyAddrService.getAllAddr());
     }
 }

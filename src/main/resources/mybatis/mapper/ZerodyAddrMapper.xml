@@ -21,4 +21,9 @@
             is_enabled = 0 and p_addr_code = #{parentCode}
         </where>
     </select>
+    <select id="selectAllAddrMap" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        code, address
+        from zerody_addr
+    </select>
 </mapper>
