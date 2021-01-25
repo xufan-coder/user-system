@@ -43,8 +43,8 @@ mybatis-plus:
 logging:
   level:
     com:
-      zerody: debug
-    root: debug
+      zerody: info
+    root: info
   file: '@project.log@zerody-user.log'
   pattern:
     file: '%d{yyyy-MM-dd HH:mm:ss} [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'

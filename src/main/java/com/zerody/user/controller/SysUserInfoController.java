@@ -122,9 +122,12 @@ public class SysUserInfoController implements UserRemoteService {
         String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
         SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
         if(DataUtil.isEmpty(company)){
-            return R.error("当前账号未开通，请联系管理员开通！");
+            return R.error("数据异常！");
         }
-        if(company.getStatus() == StatusEnum.停用.getValue() || company.getStatus() == StatusEnum.删除.getValue()){
+        if(StatusEnum.停用.getValue().equals(company.getStatus())){
+            return R.error("账号被停用！");
+        }
+        if(   StatusEnum.删除.getValue().equals(company.getStatus())){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
         //校验密码
@@ -166,6 +169,9 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
     public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
+        if(DataUtil.isEmpty(sysLoginUserInfoVo)){
+            return R.error("当前账号未开通，请联系管理员开通！");
+        }
         com.zerody.user.api.vo.SysLoginUserInfoVo info =new com.zerody.user.api.vo.SysLoginUserInfoVo();
         BeanUtils.copyProperties(sysLoginUserInfoVo,info);
         return R.success(info);
@@ -362,5 +368,20 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("修改名片用户出错:"+e.getMessage());
         }
     }
+
+
+    @RequestMapping(value = "/get/user-id/{id}", method = GET, produces = "application/json")
+    public DataResult<String> getUserIdByCompIdOrStaffId(@PathVariable(name = "id") String staffId) {
+        try {
+            String userId = this.sysUserInfoService.getUserIdByCompIdOrStaffId(staffId);
+            return R.success(userId);
+        } catch (Exception e) {
+            log.error("修改名片用户出错:{}", e, e);
+            return R.error("修改名片用户出错:"+e.getMessage());
+        }
+    }
+
+
+
 
 }
