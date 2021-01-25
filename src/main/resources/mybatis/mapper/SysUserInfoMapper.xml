@@ -143,6 +143,7 @@ WHERE
         sys_user_info
         WHERE
 			phone_number = #{phoneNumber}
+			and `status` != -1
   </select>
 
     <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
