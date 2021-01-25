@@ -370,8 +370,18 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
 
-    @RequestMapping(value = "/get/user-id/{id}", method = GET, produces = "application/json")
-    public DataResult<String> getUserIdByCompIdOrStaffId(@PathVariable(name = "id") String staffId) {
+    /**
+     * 通过员工id查询用户id api
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/25 19:08
+     * @param                [staffId]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/get/user-id/inner", method = GET, produces = "application/json")
+    public DataResult<String> getUserIdByCompIdOrStaffId(@RequestParam(name = "id") String staffId) {
         try {
             String userId = this.sysUserInfoService.getUserIdByCompIdOrStaffId(staffId);
             return R.success(userId);
