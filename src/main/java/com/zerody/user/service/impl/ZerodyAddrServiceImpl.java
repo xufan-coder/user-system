@@ -48,7 +48,7 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
     @Cacheable(value = "addr", key = "#root.method.name")
     public Map<String, Map<String, String>> getAllAddr() {
         List<Map<String, String>> addrs = this.mapper.selectAllAddrMap();
-        return addrs.stream().collect(Collectors.toMap(map -> map.get("code"), addr -> addr));
+        return addrs.stream().collect(Collectors.toMap(map -> String.valueOf(map.get("code")), addr -> addr));
     }
 
 
