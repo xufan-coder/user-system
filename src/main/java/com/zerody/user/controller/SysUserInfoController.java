@@ -169,6 +169,9 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
     public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
         SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
+        if(DataUtil.isEmpty(sysLoginUserInfoVo)){
+            return R.error("当前账号未开通，请联系管理员开通！");
+        }
         com.zerody.user.api.vo.SysLoginUserInfoVo info =new com.zerody.user.api.vo.SysLoginUserInfoVo();
         BeanUtils.copyProperties(sysLoginUserInfoVo,info);
         return R.success(info);
