@@ -167,15 +167,17 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public SysLoginUserInfoVo getUserInfo(String userName) {
         SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoMapper.selectUserInfo(userName);
-        QueryWrapper<CompanyAdmin> qw =new QueryWrapper<>();
-        qw.lambda().eq(CompanyAdmin::getStaffId,sysLoginUserInfoVo.getStaffId())
-                .eq(CompanyAdmin::getCompanyId,sysLoginUserInfoVo.getCompanyId())
-                .eq(CompanyAdmin::getDeleted, YesNo.NO);
-        CompanyAdmin companyAdmin = companyAdminMapper.selectOne(qw);
-        if(DataUtil.isEmpty(companyAdmin)){
-            sysLoginUserInfoVo.setIsAdmin(false);
-        }else {
-            sysLoginUserInfoVo.setIsAdmin(true);
+        if(DataUtil.isNotEmpty(sysLoginUserInfoVo)) {
+            QueryWrapper<CompanyAdmin> qw = new QueryWrapper<>();
+            qw.lambda().eq(CompanyAdmin::getStaffId, sysLoginUserInfoVo.getStaffId())
+                    .eq(CompanyAdmin::getCompanyId, sysLoginUserInfoVo.getCompanyId())
+                    .eq(CompanyAdmin::getDeleted, YesNo.NO);
+            CompanyAdmin companyAdmin = companyAdminMapper.selectOne(qw);
+            if (DataUtil.isEmpty(companyAdmin)) {
+                sysLoginUserInfoVo.setIsAdmin(false);
+            } else {
+                sysLoginUserInfoVo.setIsAdmin(true);
+            }
         }
         return sysLoginUserInfoVo;
     }
