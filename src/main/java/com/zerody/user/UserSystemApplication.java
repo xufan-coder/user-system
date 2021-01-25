@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = { "com.zerody.**" })
+@ComponentScan(basePackages = { "com.zerody.user.**"})
 @MapperScan("com.zerody.user.mapper")
 @EnableCaching
 @EnableFeignClients(basePackages= {"com.zerody.**"})
