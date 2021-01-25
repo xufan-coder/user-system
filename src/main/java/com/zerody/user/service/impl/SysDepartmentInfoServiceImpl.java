@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysJobPosition;
@@ -23,8 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,10 +68,30 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         sysDepartmentInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
-        //名称不存在 保存添加
-        this.saveOrUpdate(sysDepartmentInfo);
-    }
 
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String month = calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "";
+        month = month.concat(String.valueOf(calendar.get(Calendar.MONTH) + 1));
+        String date = String.valueOf(calendar.get(Calendar.DATE));
+        String id  = year.concat(month).concat(date).concat("xxxx");
+        if (StringUtils.isNotEmpty(sysDepartmentInfo.getParentId())){
+            id = sysDepartmentInfo.getParentId().concat(id);
+        }
+        boolean find = true;
+        do {
+            if (find) {
+                Random random = new Random();
+                id = id.substring(0, id.length() - 4).concat(String.valueOf(random.nextInt(9000)+1000));
+            }
+            find = DataUtil.isNotEmpty(this.sysDepartmentInfoMapper.selectById(id));
+        } while (find);
+        sysDepartmentInfo.setId(id);
+        //名称不存在 保存添加
+        this.save(sysDepartmentInfo);
+    }
     @Override
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
@@ -101,7 +121,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         List<String> list = this.getDepChildernsIds(depId, deps);
         list.add(0, depId);
         unQw = new QueryWrapper<>();
-        unQw.lambda().in(UnionStaffDepart::getDepartmentId, list);
+        unQw.lambda().like(UnionStaffDepart::getDepartmentId, depId);
         count = unionStaffDepartMapper.selectCount(unQw);
         if(count > 0){
             throw new DefaultException("该子级部门下有员工不可删除!");
@@ -109,11 +129,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         //删除当前部门以及子级部门
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());
-        depUw.lambda().in(SysDepartmentInfo::getId, list);
+        depUw.lambda().like(SysDepartmentInfo::getId, depId);
         this.update(depUw);
         //删除部门下的岗位
         QueryWrapper<SysJobPosition> jobQw = new QueryWrapper<>();
-        jobQw.lambda().in(SysJobPosition::getDepartId, list);
+        jobQw.lambda().like(SysJobPosition::getDepartId, depId);
         jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
         SysJobPosition job = new SysJobPosition();
         job.setStatus(StatusEnum.删除.getValue());

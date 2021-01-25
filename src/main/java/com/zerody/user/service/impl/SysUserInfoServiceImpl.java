@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.mapper.CompanyAdminMapper;
-import com.zerody.user.mapper.SysDepartmentInfoMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
-import com.zerody.user.mapper.UnionRoleStaffMapper;
+import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
@@ -51,6 +49,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
+
+    @Autowired
+    private SysStaffInfoMapper sysStaffInfoMapper;
 
     @Autowired
     private SysLoginInfoService sysLoginInfoService;
@@ -229,6 +230,24 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public List<String> selectAllUserId() {
         return sysUserInfoMapper.selectAllUserId();
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过员工id查用户id
+     * @date                 2021/1/25 14:47
+     * @param                [staffId]
+     * @return               java.lang.String
+     */
+    @Override
+    public String getUserIdByCompIdOrStaffId(String staffId) {
+        SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(staffId);
+        if (DataUtil.isEmpty(staffInfo)){
+            throw new DefaultException("获取异常！");
+        }
+        return staffInfo.getUserId();
     }
 
 
