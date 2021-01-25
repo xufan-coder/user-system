@@ -196,4 +196,15 @@ public interface SysUserInfoService {
      * @date 2021/1/11  18:42
      */
     List<String> selectAllUserId();
+
+    /**
+     *
+     *  通过企业id 员工id获取用户id
+     * @author               PengQiang
+     * @description
+     * @date                 2021/1/25 14:26
+     * @param                 staffId
+     * @return               java.lang.String
+     */
+    String getUserIdByCompIdOrStaffId(String staffId);
 }
