@@ -144,7 +144,7 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/check-admin/inner",method = POST, produces = "application/json")
-    public DataResult<com.zerody.user.api.vo.AdminUserInfo> checkLoginAdmin(LoginCheckParamDto params) {
+    public DataResult<com.zerody.user.api.vo.AdminUserInfo> checkLoginAdmin(@RequestBody LoginCheckParamDto params) {
         //查询账户信息,返回个密码来校验密码
         com.zerody.user.api.vo.AdminUserInfo userInfo = amdinUserService.checkLoginAdmin(params.getUserName());
         if(DataUtil.isEmpty(userInfo)){
@@ -359,9 +359,9 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/card-user-unbind/inner",method = POST, produces = "application/json")
-    public DataResult<CardUserDto> unBindMobileCardUser(String unionId) {
+    public DataResult<CardUserDto> unBindMobileCardUser(String openId) {
         try {
-            CardUserDto vo= cardUserService.unBindPhoneNumber(unionId);
+            CardUserDto vo= cardUserService.unBindPhoneNumber(openId);
             return R.success(vo);
         } catch (Exception e) {
             log.error("修改名片用户出错:{}", e, e);

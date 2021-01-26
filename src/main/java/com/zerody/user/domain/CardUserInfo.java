@@ -37,6 +37,6 @@ public class CardUserInfo {
 
     private String remark;
 
-    private String regUnionId;
+    private String regOpenId;
 
 }

@@ -19,7 +19,6 @@
     <result column="graduated_from" property="graduatedFrom" jdbcType="TIMESTAMP" />
     <result column="major" property="major" jdbcType="TIMESTAMP" />
     <result column="marital_status" property="maritalStatus" jdbcType="TIMESTAMP" />
-    <result column="open_id" property="openId" jdbcType="TIMESTAMP" />
     <result column="create_id" property="createId" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -37,7 +36,7 @@
     id, user_name, gender, phone_number, email, nickname, avatar, birthday,
      certificate_card,
     certificate_card_address, prov_city_district, contact_address, highest_education, graduated_from, major,
-    marital_status, open_id,
+    marital_status,
     register_time, create_id, create_user, create_time, update_id, update_user, update_time,
     status, nation, ancestral,description
   </sql>
@@ -68,7 +67,8 @@ SELECT
 	ui.email,
 	ui.avatar,
 	ui.nickname,
-	ui.open_id,
+	ui.crm_open_id AS crmOpenId,
+	ui.scrm_open_id AS scrmOpenId,
 	li.last_check_sms AS lastCheckSms,
 	ssi.comp_id AS companyId,
 	ssi.id AS staffId,
@@ -143,6 +143,7 @@ WHERE
         sys_user_info
         WHERE
 			phone_number = #{phoneNumber}
+			and `status` != -1
   </select>
 
     <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
