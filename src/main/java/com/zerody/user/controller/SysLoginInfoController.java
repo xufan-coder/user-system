@@ -67,9 +67,9 @@ public class SysLoginInfoController implements UserLoginInfoRemoteService {
      */
     @Override
     @RequestMapping(value = "/card-get/inner",method = GET, produces = "application/json")
-    public DataResult<CardUserDto> getCardUserByUnionId(String openId){
+    public DataResult<CardUserDto> getCardUserByOpenId(String openId){
         try {
-            return R.success(cardUserService.getCardUserByUnionId(openId));
+            return R.success(cardUserService.getCardUserByOpenId(openId));
         }catch (Exception e){
             return R.error(e.getMessage());
         }

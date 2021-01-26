@@ -95,7 +95,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     }
 
     @Override
-    public CardUserDto getCardUserByUnionId(String openId) {
+    public CardUserDto getCardUserByOpenId(String openId) {
         //免密登录时，根据unionId先查询该unionId绑定的已有手机号的用户
         QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
         userQw.lambda().eq(CardUserInfo::getOpenId,openId);

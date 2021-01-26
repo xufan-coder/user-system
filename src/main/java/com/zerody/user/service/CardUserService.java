@@ -57,7 +57,7 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @author DaBai
      * @date 2021/1/21  14:54
      */
-    CardUserDto getCardUserByUnionId(String unionId);
+    CardUserDto getCardUserByOpenId(String unionId);
 
     /**************************************************************************************************
      **
