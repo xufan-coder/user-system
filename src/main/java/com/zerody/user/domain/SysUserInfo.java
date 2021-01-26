@@ -85,9 +85,11 @@ public class  SysUserInfo extends BaseModel {
     /** 婚姻状态 **/
     private String maritalStatus;
 
-    /** 微信openId **/
-    private String openId;
+    /** crmOpenId **/
+    private String crmOpenId;
 
+    /** scrmOpenId **/
+    private String scrmOpenId;
 
     /**
     *   微信unionId
