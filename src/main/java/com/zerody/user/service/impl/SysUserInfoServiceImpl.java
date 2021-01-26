@@ -126,7 +126,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(StringUtils.isEmpty(userInfo.getId())){
            return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
         }
-        this.saveOrUpdate(userInfo);
+        this.updateById(userInfo);
         return new DataResult();
     }
 

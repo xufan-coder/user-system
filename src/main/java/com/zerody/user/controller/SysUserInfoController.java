@@ -183,7 +183,7 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/update/inner",method = PUT, produces = "application/json")
     public DataResult updateById(com.zerody.user.api.vo.SysUserInfo sysUserInfo) {
         SysUserInfo newInfo=new SysUserInfo();
-        DataUtil.getKeyAndValue(newInfo,sysUserInfo);
+        BeanUtils.copyProperties(sysUserInfo,newInfo);
         com.zerody.common.bean.DataResult dataResult = sysUserInfoService.updateUser(newInfo);
         if(!dataResult.isIsSuccess()){
             return R.error(dataResult.getMessage());
