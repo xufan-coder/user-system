@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -107,7 +109,7 @@ public class SysStaffInfoController {
     /**
     *    根据员工id查询员工信息
     */
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         return R.success(sysStaffInfoService.selectStaffById(staffId));
     }
@@ -269,4 +271,19 @@ public class SysStaffInfoController {
             return R.error("微信分页获取员工出错,请求异常");
         }
     }
+
+    @RequestMapping(value = "/get-is-admin", method = RequestMethod.GET)
+    public DataResult<Map<String, String>> getIsAdmin(){
+        try {
+            UserVo user = UserUtils.getUser();
+            return R.success(sysStaffInfoService.getIsAdmin(user));
+        } catch (DefaultException e){
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error("获取管理员信息,请求异常");
+        }
+    }
+
 }

@@ -18,6 +18,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.vo.UserVo;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
@@ -1196,6 +1197,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
         this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+    }
+
+    @Override
+    public Map<String, String> getIsAdmin(UserVo user) {
+        Map<String, String> adminMap = new HashMap<>();
+	    String staffId = this.getStaffIdByUserId(user.getUserId());
+	    QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
+	    comAdminQw.lambda().eq(CompanyAdmin::getCompanyId, user.getCompanyId());
+        CompanyAdmin comAdmin = this.companyAdminMapper.selectOne(comAdminQw);
+        adminMap.put("compangAdmin", comAdmin.getStaffId().equals(staffId) ? user.getCompanyId() : null);
+        if(!comAdmin.getStaffId().equals(staffId)){
+            QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
+            depAdminQw.lambda().select(SysDepartmentInfo::getId)
+                    .eq(SysDepartmentInfo::getAdminAccount, staffId).
+                    eq(SysDepartmentInfo::getStatus, StatusEnum.激活);
+            SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
+            adminMap.put("departAdmin", DataUtil.isEmpty(dep) ? null : dep.getId());
+            return adminMap;
+        }
+        adminMap.put("departAdmin", null);
+        return adminMap;
     }
 
 
