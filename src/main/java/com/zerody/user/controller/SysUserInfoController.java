@@ -31,8 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author PengQiang
@@ -181,6 +180,7 @@ public class SysUserInfoController implements UserRemoteService {
     *   修改用户表
     */
     @Override
+    @RequestMapping(value = "/update/inner",method = PUT, produces = "application/json")
     public DataResult updateById(com.zerody.user.api.vo.SysUserInfo sysUserInfo) {
         SysUserInfo newInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(newInfo,sysUserInfo);
