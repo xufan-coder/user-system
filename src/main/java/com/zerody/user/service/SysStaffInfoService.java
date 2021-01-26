@@ -97,4 +97,5 @@ public interface SysStaffInfoService {
     void doEmptySubordinatesUserClew(String id);
 
     Map<String, String> getIsAdmin(UserVo user);
+
 }
