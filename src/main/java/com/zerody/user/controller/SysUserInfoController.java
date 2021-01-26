@@ -404,11 +404,11 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/get-is-admin/inner", method = RequestMethod.GET)
-    public DataResult<Map<String, String>> getIsAdminInner(String userId, String comapnyId){
+    public DataResult<Map<String, String>> getIsAdminInner(String userId, String companyId){
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
-            user.setCompanyId(comapnyId);
+            user.setCompanyId(companyId);
             return R.success(sysStaffInfoService.getIsAdmin(user));
         } catch (DefaultException e){
             log.error("获取管理员信息:{}",e.getMessage());
