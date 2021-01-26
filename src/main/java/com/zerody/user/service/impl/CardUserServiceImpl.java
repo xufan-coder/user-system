@@ -60,13 +60,13 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             throw new DefaultException("账户不存在！");
         }
         if(DataUtil.isEmpty(one)){
-            idUser.setUnionId(idUser.getRegUnionId());
+            idUser.setOpenId(idUser.getRegOpenId());
             idUser.setPhoneNumber(data.getPhoneNumber());
             idUser.setUpdateTime(new Date());
             this.updateById(idUser);
             BeanUtils.copyProperties(idUser,vo);
         }else {
-            one.setUnionId(idUser.getRegUnionId());
+            one.setOpenId(idUser.getRegOpenId());
             one.setUpdateTime(new Date());
             this.updateById(one);
             BeanUtils.copyProperties(one,vo);
@@ -95,15 +95,15 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     }
 
     @Override
-    public CardUserDto getCardUserByUnionId(String unionId) {
+    public CardUserDto getCardUserByUnionId(String openId) {
         //免密登录时，根据unionId先查询该unionId绑定的已有手机号的用户
         QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
-        userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
+        userQw.lambda().eq(CardUserInfo::getOpenId,openId);
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isEmpty(one)){
             //如果没有查到绑定手机号的用户，则查询该unionId注册时的账号
             userQw.clear();
-            userQw.lambda().eq(CardUserInfo::getRegUnionId,unionId);
+            userQw.lambda().eq(CardUserInfo::getOpenId,openId);
             one=this.getOne(userQw);
             if(DataUtil.isEmpty(one)){
                 throw new DefaultException("该微信用户不存在名片账户！");
@@ -116,9 +116,9 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     }
 
     @Override
-    public CardUserDto unBindPhoneNumber(String unionId) {
+    public CardUserDto unBindPhoneNumber(String openId) {
         QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
-        userQw.lambda().eq(CardUserInfo::getUnionId,unionId);
+        userQw.lambda().eq(CardUserInfo::getOpenId,openId);
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isNotEmpty(one)){
             one.setUnionId(null);
@@ -126,7 +126,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             this.updateById(one);
         }
         userQw.clear();
-        userQw.lambda().eq(CardUserInfo::getRegUnionId,unionId);
+        userQw.lambda().eq(CardUserInfo::getRegOpenId,openId);
         CardUserInfo info = this.getOne(userQw);
         CardUserDto cardUser = new CardUserDto();
         if(DataUtil.isNotEmpty(info)) {
@@ -139,7 +139,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             CardUserInfo user = new CardUserInfo();
             //保存注册时unionID
             user.setId(UUIDutils.getUUID32());
-            user.setRegUnionId(unionId);
+            user.setOpenId(openId);
             user.setCreateTime(new Date());
             this.save(user);
             BeanUtils.copyProperties(user, cardUser);
