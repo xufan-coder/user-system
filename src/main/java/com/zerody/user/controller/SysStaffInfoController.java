@@ -278,11 +278,6 @@ public class SysStaffInfoController {
         try {
             UserVo user = UserUtils.getUser();
             AdminVo admin = sysStaffInfoService.getIsAdmin(user);
-            if (admin.getIsCompanyAdmin()){
-                admin.setCompanyId(null);
-            } else if (admin.getIsDepartAdmin()){
-                admin.setDepartId(null);
-            }
             return R.success(admin);
         } catch (DefaultException e){
             log.error("获取管理员信息:{}",e.getMessage());

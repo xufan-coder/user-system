@@ -1215,12 +1215,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     eq(SysDepartmentInfo::getStatus, StatusEnum.激活);
             SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
             admin.setIsDepartAdmin(DataUtil.isNotEmpty(dep));
-            if (admin.getIsDepartAdmin()){
-                admin.setDepartId(dep.getId());
-            }
             return admin;
         }
-        admin.setCompanyId(user.getCompanyId());
         return admin;
     }
 
