@@ -63,10 +63,10 @@ public interface CardUserService extends IService<CardUserInfo> {
      **
      * 解绑名片用户手机号
      *
-     * @param unionId
+     * @param openId
      * @return {@link CardUserInfoVo }
      * @author DaBai
      * @date 2021/1/23  11:31
      */
-    CardUserDto unBindPhoneNumber(String unionId);
+    CardUserDto unBindPhoneNumber(String openId);
 }

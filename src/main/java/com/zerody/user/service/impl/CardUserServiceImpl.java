@@ -137,9 +137,8 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             //正常情况下不会出现没注册访客账号
             //创建一个名片用户
             CardUserInfo user = new CardUserInfo();
-            //保存注册时unionID
             user.setId(UUIDutils.getUUID32());
-            user.setOpenId(openId);
+            user.setRegOpenId(openId);
             user.setCreateTime(new Date());
             this.save(user);
             BeanUtils.copyProperties(user, cardUser);
