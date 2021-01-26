@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -96,6 +97,6 @@ public interface SysStaffInfoService {
 
     void doEmptySubordinatesUserClew(String id);
 
-    Map<String, String> getIsAdmin(UserVo user);
+    AdminVo getIsAdmin(UserVo user);
 
 }

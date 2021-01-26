@@ -22,6 +22,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.enums.StaffGenderEnum;
@@ -1200,24 +1201,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public Map<String, String> getIsAdmin(UserVo user) {
-        Map<String, String> adminMap = new HashMap<>();
+    public AdminVo getIsAdmin(UserVo user) {
+	    AdminVo admin = new AdminVo();
 	    String staffId = this.getStaffIdByUserId(user.getUserId());
 	    QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
 	    comAdminQw.lambda().eq(CompanyAdmin::getCompanyId, user.getCompanyId());
         CompanyAdmin comAdmin = this.companyAdminMapper.selectOne(comAdminQw);
-        adminMap.put("compangAdmin", comAdmin.getStaffId().equals(staffId) ? user.getCompanyId() : null);
-        if(!comAdmin.getStaffId().equals(staffId)){
+        admin.setIsCompanyAdmin(comAdmin.getStaffId().equals(staffId));
+        if(!admin.getIsCompanyAdmin()){
             QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
             depAdminQw.lambda().select(SysDepartmentInfo::getId)
                     .eq(SysDepartmentInfo::getAdminAccount, staffId).
                     eq(SysDepartmentInfo::getStatus, StatusEnum.激活);
             SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
-            adminMap.put("departAdmin", DataUtil.isEmpty(dep) ? null : dep.getId());
-            return adminMap;
+            admin.setIsDepartAdmin(DataUtil.isNotEmpty(dep));
+            if (admin.getIsDepartAdmin()){
+                admin.setDepartId(dep.getId());
+            }
+            return admin;
         }
-        adminMap.put("departAdmin", null);
-        return adminMap;
+        admin.setCompanyId(user.getCompanyId());
+        return admin;
     }
 
 

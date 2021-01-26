@@ -13,6 +13,7 @@ import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -404,7 +405,7 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/get-is-admin/inner", method = RequestMethod.GET)
-    public DataResult<Map<String, String>> getIsAdminInner(String userId, String companyId){
+    public DataResult<AdminVo> getIsAdminInner(String userId, String companyId){
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);

@@ -6,6 +6,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysJobPosition;
@@ -188,13 +189,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     @Override
-    public List<SysDepartmentInfoVo> getSubordinateStructure(SysCompanyInfoDto dto) {
-        List<SysDepartmentInfoVo> deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(dto);
-        if(StringUtils.isNotEmpty(dto.getDepartId())){
-            SysDepartmentInfo dep = this.getById(dto.getDepartId());
-            dto.setDepartId(dep.getParentId());
-        }
-        return this.getDepChildrens(dto.getDepartId(), deps);
+    public List<SysDepartmentInfoVo> getSubordinateStructure(UserVo user) {
+        List<SysDepartmentInfoVo> deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(user);
+        SysDepartmentInfo dep = this.getById(user.getDeptId());
+        return this.getDepChildrens(dep.getParentId(), deps);
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){

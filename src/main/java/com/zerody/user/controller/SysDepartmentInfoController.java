@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -143,7 +145,18 @@ public class SysDepartmentInfoController {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
     @RequestMapping(value = "/subordinate/structure", method = RequestMethod.GET)
-    public DataResult<List<SysDepartmentInfoVo>> getSubordinateStructure(SysCompanyInfoDto dto){
-        return R.success(this.sysDepartmentInfoService.getSubordinateStructure(dto));
+    public DataResult<List<SysDepartmentInfoVo>> getSubordinateStructure(){
+
+        try {
+
+            UserVo user = UserUtils.getUser();
+            return R.success(this.sysDepartmentInfoService.getSubordinateStructure(user));
+        } catch (DefaultException e) {
+            log.error("设置部门管理员错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("设置部门管理员错误:{}", e.getMessage());
+            return R.error("设置部门管理员错误,请求异常");
+        }
     }
 }
