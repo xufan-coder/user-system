@@ -1,6 +1,5 @@
 package com.zerody.user.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -39,11 +38,11 @@ public class SysLoginUserInfoVo {
 	 */
 	private String avatar;
 
-	/**
-	 * open_id
-	 */
-	private String openId;
+	/** crmOpenId **/
+	private String crmOpenId;
 
+	/** scrmOpenId **/
+	private String scrmOpenId;
 
 	/**
 	 * open_id

@@ -359,9 +359,9 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/card-user-unbind/inner",method = POST, produces = "application/json")
-    public DataResult<CardUserDto> unBindMobileCardUser(String unionId) {
+    public DataResult<CardUserDto> unBindMobileCardUser(String openId) {
         try {
-            CardUserDto vo= cardUserService.unBindPhoneNumber(unionId);
+            CardUserDto vo= cardUserService.unBindPhoneNumber(openId);
             return R.success(vo);
         } catch (Exception e) {
             log.error("修改名片用户出错:{}", e, e);

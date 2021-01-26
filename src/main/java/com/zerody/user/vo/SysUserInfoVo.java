@@ -93,8 +93,11 @@ public class SysUserInfoVo {
     //婚姻状态
     private String maritalStatus;
 
-    //微信openId
-//    private String openId;
+    /** crmOpenId **/
+    private String crmOpenId;
+
+    /** scrmOpenId **/
+    private String scrmOpenId;
 
     //角色名
     private String roleName;
