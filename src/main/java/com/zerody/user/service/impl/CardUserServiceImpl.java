@@ -103,7 +103,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         if(DataUtil.isEmpty(one)){
             //如果没有查到绑定手机号的用户，则查询该unionId注册时的账号
             userQw.clear();
-            userQw.lambda().eq(CardUserInfo::getOpenId,openId);
+            userQw.lambda().eq(CardUserInfo::getRegOpenId,openId);
             one=this.getOne(userQw);
             if(DataUtil.isEmpty(one)){
                 throw new DefaultException("该微信用户不存在名片账户！");
