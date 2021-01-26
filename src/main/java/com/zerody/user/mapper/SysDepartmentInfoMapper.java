@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
@@ -64,4 +65,15 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      * @return               com.zerody.user.domain.SysDepartmentInfo
      */
     SysDepartmentInfo selectUserDep(String id);
+
+    /**
+     *  获取下级部门
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/26 15:15
+     * @param                dto
+     * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    List<SysDepartmentInfoVo> getSubordinateStructure(@Param("dto") SysCompanyInfoDto dto);
 }
