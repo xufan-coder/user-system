@@ -67,6 +67,8 @@ SELECT
 	ui.email,
 	ui.avatar,
 	ui.nickname,
+	ui.crm_open_id AS crmOpenId,
+	ui.scrm_open_id AS scrmOpenId,
 	li.last_check_sms AS lastCheckSms,
 	ssi.comp_id AS companyId,
 	ssi.id AS staffId,
