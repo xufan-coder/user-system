@@ -52,12 +52,12 @@ public interface CardUserService extends IService<CardUserInfo> {
      **
      * 名片登录时UnionID账户是否存在
      *
-     * @param unionId
+     * @param openId
      * @return {@link CardUserDto }
      * @author DaBai
      * @date 2021/1/21  14:54
      */
-    CardUserDto getCardUserByOpenId(String unionId);
+    CardUserDto getCardUserByOpenId(String openId);
 
     /**************************************************************************************************
      **

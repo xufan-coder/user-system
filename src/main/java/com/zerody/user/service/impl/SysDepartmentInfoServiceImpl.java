@@ -12,6 +12,7 @@ import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.domain.UnionStaffDepart;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetAdminAccountDto;
+import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
@@ -185,6 +186,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unSd.setStaffId(dto.getStaffId());
         unionStaffDepartMapper.insert(unSd);
     }
+
+    @Override
+    public List<SysDepartmentInfoVo> getSubordinateStructure(SysCompanyInfoDto dto) {
+        List<SysDepartmentInfoVo> deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(dto);
+        if(StringUtils.isNotEmpty(dto.getDepartId())){
+            SysDepartmentInfo dep = this.getById(dto.getDepartId());
+            dto.setDepartId(dep.getParentId());
+        }
+        return this.getDepChildrens(dto.getDepartId(), deps);
+    }
+
+    private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){
+        return this.getDepChildrens(parentId, deps, null);
+    }
     /**
      *
      *
@@ -195,7 +210,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
      * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
-        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId()==null?"":d.getParentId())).collect(Collectors.toList());
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> StringUtils.isEmpty(parentId) ? StringUtils.isEmpty(d.getParentId()) : parentId.equals(d.getParentId())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(childs)){
             return new ArrayList<>();
         }
@@ -224,7 +239,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
        return this.getDepChildernsIds(parentId, deps, new ArrayList<>());
     }
     private List<String> getDepChildernsIds(String parentId, List<SysDepartmentInfoVo> deps, List<String> depChilderIds){
-        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId()==null?"":d.getParentId())).collect(Collectors.toList());
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> StringUtils.isEmpty(parentId) ? StringUtils.isEmpty(d.getParentId()) : parentId.equals(d.getParentId())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(childs)){
             return new ArrayList<>();
         }

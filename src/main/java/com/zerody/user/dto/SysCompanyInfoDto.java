@@ -35,4 +35,10 @@ public class SysCompanyInfoDto extends PageQueryDto {
      */
     private Integer status;
 
+
+    /** 企业id */
+    private String companyId;
+
+    /** 部门id */
+    private String departId;
 }

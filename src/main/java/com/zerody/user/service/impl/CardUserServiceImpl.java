@@ -39,8 +39,16 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         BeanUtils.copyProperties(cardUser,info);
         info.setStatus(StatusEnum.激活.getValue());
         info.setId(UUIDutils.getUUID32());
-        this.save(info);
-        BeanUtils.copyProperties(info,cardUser);
+        //校验该openId是否已经存在
+        QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(CardUserInfo::getRegOpenId,info.getRegOpenId());
+        CardUserInfo one = this.getOne(qw);
+        if(DataUtil.isNotEmpty(one)){
+            BeanUtils.copyProperties(one,cardUser);
+        }else {
+            this.save(info);
+            BeanUtils.copyProperties(info,cardUser);
+        }
         return cardUser;
     }
 
@@ -103,7 +111,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         if(DataUtil.isEmpty(one)){
             //如果没有查到绑定手机号的用户，则查询该unionId注册时的账号
             userQw.clear();
-            userQw.lambda().eq(CardUserInfo::getOpenId,openId);
+            userQw.lambda().eq(CardUserInfo::getRegOpenId,openId);
             one=this.getOne(userQw);
             if(DataUtil.isEmpty(one)){
                 throw new DefaultException("该微信用户不存在名片账户！");

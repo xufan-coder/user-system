@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -94,4 +95,6 @@ public interface SysStaffInfoService {
     IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto);
 
     void doEmptySubordinatesUserClew(String id);
+
+    Map<String, String> getIsAdmin(UserVo user);
 }

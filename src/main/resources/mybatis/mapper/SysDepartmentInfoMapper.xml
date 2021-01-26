@@ -95,4 +95,18 @@
                 sdi.status = 0 AND ssi.user_id = #{id}
         </where>
     </select>
+    <select id="getSubordinateStructure" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name,
+            sdi.parent_id
+        FROM
+        sys_department_info AS sdi
+        <where>
+            sdi.status = 0 and sdi.comp_id = #{dto.companyId}
+            <if test="dto.departId neq null and dto.departId neq ''">
+                and id = #{dto.departId} or sdi.parent_id like concat('',#{dto.departId},'%')
+            </if>
+        </where>
+    </select>
 </mapper>
