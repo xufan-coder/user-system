@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.card.api.dto.UserCardDto;
+import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
@@ -152,7 +153,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addStaff(SetSysUserInfoDto setSysUserInfoDto) {
+    public SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto) {
         SysUserInfo sysUserInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
@@ -203,18 +204,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setStatus(StatusEnum.激活.getValue());
         staff.setDeleted(YesNo.NO);
         this.saveOrUpdate(staff);
-        //角色
-        UnionRoleStaff rs = new UnionRoleStaff();
-        rs.setStaffId(staff.getId());
-        rs.setRoleId(setSysUserInfoDto.getRoleId());
-        //去查询角色名
-        DataResult<?>  result= oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
-        if(!result.isSuccess()){
-            throw new DefaultException("服务异常！");
+        if(StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())){
+            //角色
+            UnionRoleStaff rs = new UnionRoleStaff();
+            rs.setStaffId(staff.getId());
+            rs.setRoleId(setSysUserInfoDto.getRoleId());
+            //去查询角色名
+            DataResult<?>  result= oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
+            if(!result.isSuccess()){
+                throw new DefaultException("服务异常！");
+            }
+            JSONObject obj=(JSONObject)JSON.toJSON(result.getData());
+            rs.setRoleName(obj.get("roleName").toString());
+            unionRoleStaffMapper.insert(rs);
         }
-        JSONObject obj=(JSONObject)JSON.toJSON(result.getData());
-        rs.setRoleName(obj.get("roleName").toString());
-        unionRoleStaffMapper.insert(rs);
         //岗位
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())){
             UnionStaffPosition sp = new UnionStaffPosition();
@@ -241,6 +244,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         saveCardUser(sysUserInfo,logInfo,sysCompanyInfo);
         //最后发送短信
         smsFeignService.sendSms(smsDto);
+        return staff;
     }
 
 
@@ -921,6 +925,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
+        QueryWrapper<SysUserInfo> userInfosQw = new QueryWrapper<>();
+        userInfosQw.lambda().eq(SysUserInfo::getPhoneNumber, userInfo.getPhoneNumber())
+                            .orderByDesc(SysUserInfo::getCreateTime);
+        List<SysUserInfo>  userInfos = this.sysUserInfoMapper.selectList(userInfosQw);
+        //取得当前手机号入库的所有生成用户的记录时间降序排序 第一条必是 新增的一条
+        if(CollectionUtils.isNotEmpty(userInfos) && userInfos.size() >1){
+            //通过手机号拿到最近的 删除或者离职的 员工的id
+            String oldUserId = userInfos.get(1).getId();
+            QueryWrapper<CardUserUnionUser> cardUnionQw = new QueryWrapper<>();
+            cardUnionQw.lambda().eq(CardUserUnionUser::getUserId, oldUserId);
+            CardUserUnionUser cardUserUnionUser = new CardUserUnionUser();
+            cardUserUnionUser.setUserId(userInfo.getId());
+            this.cardUserUnionCrmUserMapper.update(cardUserUnionUser, cardUnionQw);
+            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+            userReplace.setNewUserId(userInfo.getId());
+            userReplace.setOldUserId(oldUserId);
+            this.cardFeignService.updateCardUser(userReplace);
+            return;
+        }
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo=new CardUserInfo();
         cardUserInfo.setUserName(userInfo.getUserName());
@@ -948,6 +971,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardDto.setCustomerUserId(cardUserInfo.getId());
         cardDto.setAvatar(userInfo.getAvatar());
         cardDto.setEmail(userInfo.getEmail());
+        cardDto.setUserId(userInfo.getId());
+        cardDto.setCustomerUserId(cardUserInfo.getId());
         cardDto.setCreateBy(UserUtils.getUserId());
         cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
         cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());

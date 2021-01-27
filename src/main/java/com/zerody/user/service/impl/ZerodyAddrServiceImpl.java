@@ -4,12 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.zerody.user.mapper.ZerodyAddrMapper;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.naming.Name;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,12 +48,24 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
     }
 
     @Override
-    @Cacheable(value = "addr", key = "#root.method.name")
-    public Map<String, Map<String, String>> getAllAddr() {
-        List<Map<String, String>> addrs = this.mapper.selectAllAddrMap();
-        return addrs.stream().collect(Collectors.toMap(map -> String.valueOf(map.get("code")), addr -> addr));
+    public Map<String, String> getAddrName(String provinceCode, String cityCode, String areaCode) {
+        Map<String, String> addrMap = new HashMap<>();
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(provinceCode, this.getAddrName(provinceCode));
+        }
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(cityCode, this.getAddrName(cityCode));
+        }
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(areaCode, this.getAddrName(areaCode));
+        }
+        return addrMap;
     }
 
+    @Cacheable(value = "addrName", key = "#code")
+    private String getAddrName(String code){
+       return this.mapper.getAddrName(code);
+    }
 
 
 }

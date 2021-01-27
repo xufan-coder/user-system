@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.card.api.dto.UserCardDto;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
@@ -16,8 +18,10 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
+import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
+import com.zerody.user.feign.CardFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -56,6 +60,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     private SysStaffInfoMapper sysStaffInfoMapper;
 
     @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
 
     @Autowired
@@ -73,6 +80,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private OauthFeignService oauthFeignService;
 
+    @Autowired
+    private CardFeignService cardService;
+
+    @Autowired
+    private CardUserInfoMapper cardUserMapper;
+
+    @Autowired
+    private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
@@ -115,39 +130,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysCompanyInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
-        //生成用户
-        SysUserInfo userInfo = new SysUserInfo();
-        userInfo.setPhoneNumber(sysCompanyInfo.getContactPhone());
-        userInfo.setUserName(sysCompanyInfo.getContactName());
-        userInfo.setStatus(StatusEnum.激活.getValue());
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateTime(new Date());
-        userInfo.setCreateUser(UserUtils.getUserName());
-        userInfo.setId(UUIDutils.getUUID32());
-        sysUserInfoMapper.insert(userInfo);
-        //企业生成成功生成企业管理员登录账号
-        SysLoginInfo sysLoginInfo = new SysLoginInfo();
-        sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String initPwd = SysStaffInfoService.getInitPwd();
-        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( initPwd )));
-        sysLoginInfo.setUserId(userInfo.getId());
-        sysLoginInfo.setCreateTime(new Date());
-        sysLoginInfo.setCreateId(UserUtils.getUserId());
-        sysLoginInfo.setStatus(StatusEnum.激活.getValue());
-        sysLoginInfoMapper.insert(sysLoginInfo);
-        SysStaffInfo staff = new SysStaffInfo();
-        staff.setId(UUIDutils.getUUID32());
-        staff.setCompId(sysCompanyInfo.getId());
-        staff.setUserId(userInfo.getId());
-        staff.setUserName(userInfo.getUserName());
-        staff.setUserId(userInfo.getId());
-        staff.setCreateTime(new Date());
-        staff.setCreateId(UserUtils.getUserId());
-        staff.setStatus(StatusEnum.激活.getValue());
-        staff.setDeleted(YesNo.NO);
-        this.sysStaffInfoMapper.insert(staff);
-        this.saveOrUpdate(sysCompanyInfo);
+        SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
+        userInfoDto.setCompanyId(sysCompanyInfo.getId());
+        userInfoDto.setPhoneNumber(sysCompanyInfo.getContactPhone());
+        userInfoDto.setUserName(sysCompanyInfo.getAdminAccount());
+        SysStaffInfo staff = this.sysStaffInfoService.addStaff(userInfoDto);
         CompanyAdmin admin = new CompanyAdmin();
         admin.setId(UUIDutils.getUUID32());
         admin.setCompanyId(sysCompanyInfo.getId());
@@ -159,17 +146,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.companyAdminMapper.insert(admin);
         //预设管理员角色
         this.oauthFeignService.addCompanyRole(sysCompanyInfo.getId());
-        SmsDto smsDto=new SmsDto();
-        smsDto.setMobile(userInfo.getPhoneNumber());
-        Map<String, Object> content=new HashMap<>();
-        content.put("userName",userInfo.getPhoneNumber());
-        content.put("passWord",initPwd);
-        smsDto.setContent(content);
-        smsDto.setTemplateCode(userTipTemplate);
-        smsDto.setSign(smsSign);
-        //发送短信
-        smsFeignService.sendSms(smsDto);
+
     }
+
+
 
     /**
     * @Author               PengQiang
@@ -333,6 +313,38 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
     }
+    public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
+        //添加员工即为内部员工需要生成名片小程序用户账号
+        CardUserInfo cardUserInfo=new CardUserInfo();
+        cardUserInfo.setUserName(userInfo.getUserName());
+        cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
+        cardUserInfo.setCreateBy(UserUtils.getUserId());
+        cardUserInfo.setCreateTime(new Date());
+        cardUserInfo.setStatus(StatusEnum.激活.getValue());
+        this.cardUserMapper.insert(cardUserInfo);
 
+        //关联内部员工信息
+        CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
+        cardUserUnionUser.setId(UUIDutils.getUUID32());
+        cardUserUnionUser.setCardId(cardUserInfo.getId());
+        cardUserUnionUser.setUserId(userInfo.getId());
+        cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
 
+        //生成基础名片信息
+        UserCardDto cardDto=new UserCardDto();
+        cardDto.setMobile(cardUserInfo.getPhoneNumber());
+        cardDto.setUserName(cardUserInfo.getUserName());
+        cardDto.setUserId(cardUserInfo.getId());
+        cardDto.setAvatar(userInfo.getAvatar());
+        cardDto.setEmail(userInfo.getEmail());
+        cardDto.setCreateBy(UserUtils.getUserId());
+        cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
+        cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
+        cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
+        cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+        DataResult<String> card = cardService.createCard(cardDto);
+        if(!card.isSuccess()){
+            throw new DefaultException("服务异常！");
+        }
+    }
 }

@@ -28,17 +28,14 @@ import java.util.Random;
  */
 public interface SysStaffInfoService {
     static String getInitPwd() {
-        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new Random();
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < 8; i++) {
-            int number = random.nextInt(base.length());
-            sb.append(base.charAt(number));
-        }
+        sb.append((char)(Math.random()*26+'A'));
+        sb.append((int)((Math.random()*10)*100000));
+        sb.append((char)(Math.random()*26+'a'));
         return sb.toString();
     }
 
-    void addStaff(SetSysUserInfoDto setSysUserInfoDto);
+    SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
@@ -60,14 +57,14 @@ public interface SysStaffInfoService {
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
     IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto);
-    
+
     /**
      * 获取员工数据，包含公司，部门，岗位
      * @param userId
      * @return
      */
 	UserDeptVo getUserDeptVo(String userId);
-	
+
 	/**
 	 *  获取员工下属部门
 	 * @param userId

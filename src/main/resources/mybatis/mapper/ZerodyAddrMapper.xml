@@ -21,9 +21,11 @@
             is_enabled = 0 and p_addr_code = #{parentCode}
         </where>
     </select>
-    <select id="selectAllAddrMap" resultType="map">
+    <select id="getAddrName" resultType="java.lang.String">
         select
-        code, address
+            address
         from zerody_addr
+        where
+         code = #{code}
     </select>
 </mapper>
