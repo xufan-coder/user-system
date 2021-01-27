@@ -8,10 +8,12 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.CardUserInfoVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -30,6 +32,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -321,7 +324,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @param                [id]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @PostMapping(value = "/user-subordinates/empty-clew/{id}")
+    @DeleteMapping(value = "/user-subordinates/empty-clew/{id}")
     public DataResult<Object> doEmptySubordinatesUserClew(@PathVariable(name = "id") String id) {
 
         try {
@@ -391,6 +394,31 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+    /**
+     *
+     * 查看当前员工是否是  企业/部门 管理员
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/26 20:19
+     * @param                [userId, comapnyId]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.Map<java.lang.String,java.lang.String>>
+     */
+    @Override
+    @RequestMapping(value = "/get-is-admin/inner", method = RequestMethod.GET)
+    public DataResult<AdminVo> getIsAdminInner(String userId, String companyId){
+        try {
+            UserVo user = new UserVo();
+            user.setUserId(userId);
+            user.setCompanyId(companyId);
+            return R.success(sysStaffInfoService.getIsAdmin(user));
+        } catch (DefaultException e){
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error("获取管理员信息,请求异常");
+        }
+    }
 
 
 

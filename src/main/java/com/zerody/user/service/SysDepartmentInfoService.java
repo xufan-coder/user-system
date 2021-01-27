@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -101,8 +102,8 @@ public interface SysDepartmentInfoService {
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/26 14:51
-     * @param                dto
+     * @param                user
      * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
      */
-    List<SysDepartmentInfoVo> getSubordinateStructure(SysCompanyInfoDto dto);
+    List<SysDepartmentInfoVo> getSubordinateStructure(UserVo user);
 }

@@ -103,9 +103,9 @@
         FROM
         sys_department_info AS sdi
         <where>
-            sdi.status = 0 and sdi.comp_id = #{dto.companyId}
-            <if test="dto.departId neq null and dto.departId neq ''">
-                and id = #{dto.departId} or sdi.parent_id like concat('',#{dto.departId},'%')
+            sdi.status = 0 and sdi.comp_id = #{user.companyId}
+            <if test="user.deptId neq null and user.deptId neq ''">
+                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'%')
             </if>
         </where>
     </select>
