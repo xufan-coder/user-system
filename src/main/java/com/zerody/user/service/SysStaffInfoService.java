@@ -38,7 +38,7 @@ public interface SysStaffInfoService {
         return sb.toString();
     }
 
-    void addStaff(SetSysUserInfoDto setSysUserInfoDto);
+    SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
