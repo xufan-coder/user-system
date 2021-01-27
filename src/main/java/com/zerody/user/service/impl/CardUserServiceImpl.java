@@ -129,7 +129,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         userQw.lambda().eq(CardUserInfo::getOpenId,openId);
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isNotEmpty(one)){
-            one.setUnionId(null);
+            one.setOpenId(null);
             one.setUpdateTime(new Date());
             this.updateById(one);
         }
