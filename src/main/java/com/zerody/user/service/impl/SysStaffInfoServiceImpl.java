@@ -942,7 +942,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserCardDto cardDto=new UserCardDto();
         cardDto.setMobile(cardUserInfo.getPhoneNumber());
         cardDto.setUserName(cardUserInfo.getUserName());
-        cardDto.setUserId(cardUserInfo.getId());
+        //crm用户ID
+        cardDto.setUserId(userInfo.getId());
+        //名片用户ID
+        cardDto.setCustomerUserId(cardUserInfo.getId());
         cardDto.setAvatar(userInfo.getAvatar());
         cardDto.setEmail(userInfo.getEmail());
         cardDto.setCreateBy(UserUtils.getUserId());
