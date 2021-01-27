@@ -324,7 +324,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @param                [id]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @PostMapping(value = "/user-subordinates/empty-clew/{id}")
+    @DeleteMapping(value = "/user-subordinates/empty-clew/{id}")
     public DataResult<Object> doEmptySubordinatesUserClew(@PathVariable(name = "id") String id) {
 
         try {
