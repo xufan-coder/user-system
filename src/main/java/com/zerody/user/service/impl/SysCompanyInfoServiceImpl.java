@@ -130,6 +130,39 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysCompanyInfo.setStatus(StatusEnum.激活.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
+        //生成用户
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setPhoneNumber(sysCompanyInfo.getContactPhone());
+        userInfo.setUserName(sysCompanyInfo.getContactName());
+        userInfo.setStatus(StatusEnum.激活.getValue());
+        userInfo.setCreateId(UserUtils.getUserId());
+        userInfo.setCreateTime(new Date());
+        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setId(UUIDutils.getUUID32());
+        sysUserInfoMapper.insert(userInfo);
+        //企业生成成功生成企业管理员登录账号
+        SysLoginInfo sysLoginInfo = new SysLoginInfo();
+        sysLoginInfo.setMobileNumber(sysCompanyInfo.getContactPhone());
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String initPwd = SysStaffInfoService.getInitPwd();
+        sysLoginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( initPwd )));
+        sysLoginInfo.setUserId(userInfo.getId());
+        sysLoginInfo.setCreateTime(new Date());
+        sysLoginInfo.setCreateId(UserUtils.getUserId());
+        sysLoginInfo.setStatus(StatusEnum.激活.getValue());
+        sysLoginInfoMapper.insert(sysLoginInfo);
+        SysStaffInfo staff = new SysStaffInfo();
+        staff.setId(UUIDutils.getUUID32());
+        staff.setCompId(sysCompanyInfo.getId());
+        staff.setUserId(userInfo.getId());
+        staff.setUserName(userInfo.getUserName());
+        staff.setUserId(userInfo.getId());
+        staff.setCreateTime(new Date());
+        staff.setCreateId(UserUtils.getUserId());
+        staff.setStatus(StatusEnum.激活.getValue());
+        staff.setDeleted(YesNo.NO);
+        this.sysStaffInfoMapper.insert(staff);
+        this.saveOrUpdate(sysCompanyInfo);
 //        //生成用户
 //        SysUserInfo userInfo = new SysUserInfo();
 //        userInfo.setPhoneNumber(sysCompanyInfo.getContactPhone());
