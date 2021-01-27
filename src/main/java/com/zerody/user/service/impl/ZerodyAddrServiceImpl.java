@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zerody.user.mapper.ZerodyAddrMapper;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -49,10 +50,15 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
     @Override
     public Map<String, String> getAddrName(String provinceCode, String cityCode, String areaCode) {
         Map<String, String> addrMap = new HashMap<>();
-        addrMap.put("province", this.getAddrName(provinceCode));
-        addrMap.put("city", this.getAddrName(provinceCode));
-        addrMap.put("area", this.getAddrName(provinceCode));
-
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(provinceCode, this.getAddrName(provinceCode));
+        }
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(cityCode, this.getAddrName(cityCode));
+        }
+        if(StringUtils.isNotEmpty(provinceCode)){
+            addrMap.put(areaCode, this.getAddrName(areaCode));
+        }
         return addrMap;
     }
 
