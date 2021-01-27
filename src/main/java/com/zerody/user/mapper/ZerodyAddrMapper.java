@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zerody.user.domain.ZerodyAddr;
 import com.zerody.user.vo.ZerodyAddrVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -19,5 +20,5 @@ public interface ZerodyAddrMapper extends BaseMapper<ZerodyAddr> {
 
     List<ZerodyAddrVo> selectAddr(Integer parentCode);
 
-    List<Map<String, String>> selectAllAddrMap();
+    String getAddrName(String code);
 }
