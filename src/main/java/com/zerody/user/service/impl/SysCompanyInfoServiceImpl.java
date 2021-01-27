@@ -145,6 +145,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staff.setCreateTime(new Date());
         staff.setCreateId(UserUtils.getUserId());
         staff.setStatus(StatusEnum.激活.getValue());
+        staff.setDeleted(YesNo.NO);
         this.sysStaffInfoMapper.insert(staff);
         this.saveOrUpdate(sysCompanyInfo);
         CompanyAdmin admin = new CompanyAdmin();

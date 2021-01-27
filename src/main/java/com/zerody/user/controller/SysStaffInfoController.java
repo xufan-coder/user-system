@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -273,10 +274,11 @@ public class SysStaffInfoController {
     }
 
     @RequestMapping(value = "/get-is-admin", method = RequestMethod.GET)
-    public DataResult<Map<String, String>> getIsAdmin(){
+    public DataResult<AdminVo> getIsAdmin(){
         try {
             UserVo user = UserUtils.getUser();
-            return R.success(sysStaffInfoService.getIsAdmin(user));
+            AdminVo admin = sysStaffInfoService.getIsAdmin(user);
+            return R.success(admin);
         } catch (DefaultException e){
             log.error("获取管理员信息:{}",e.getMessage());
             return R.error(e.getMessage());
