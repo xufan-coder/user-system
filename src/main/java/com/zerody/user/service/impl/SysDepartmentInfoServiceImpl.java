@@ -7,6 +7,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysJobPosition;
@@ -18,6 +19,7 @@ import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
 import com.zerody.user.service.SysDepartmentInfoService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
@@ -45,6 +47,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private SysJobPositionMapper sysJobPositionMapper;
+
+    @Autowired
+    private SysStaffInfoService staffInfoService;
 
     @Autowired
     private UnionStaffDepartMapper unionStaffDepartMapper;
@@ -190,9 +195,18 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public List<SysDepartmentInfoVo> getSubordinateStructure(UserVo user) {
-        List<SysDepartmentInfoVo> deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(user);
-        SysDepartmentInfo dep = this.getById(user.getDeptId());
-        return this.getDepChildrens(dep.getParentId(), deps);
+        AdminVo admin = this.staffInfoService.getIsAdmin(user);
+        List<SysDepartmentInfoVo> deps = null;
+        String parentId = null;
+        if(admin.getIsCompanyAdmin()) {
+            deps = this.sysDepartmentInfoMapper.getAllDepByCompanyId(user.getCompanyId());
+        } else if (admin.getIsDepartAdmin()) {
+            deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(user);
+            parentId = this.getById(user.getDeptId()).getParentId();
+        } else {
+            return null;
+        }
+        return this.getDepChildrens(parentId, deps);
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){
