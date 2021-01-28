@@ -53,10 +53,10 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         if(StringUtils.isNotEmpty(provinceCode)){
             addrMap.put(provinceCode, this.getAddrName(provinceCode));
         }
-        if(StringUtils.isNotEmpty(provinceCode)){
+        if(StringUtils.isNotEmpty(cityCode)){
             addrMap.put(cityCode, this.getAddrName(cityCode));
         }
-        if(StringUtils.isNotEmpty(provinceCode)){
+        if(StringUtils.isNotEmpty(areaCode)){
             addrMap.put(areaCode, this.getAddrName(areaCode));
         }
         return addrMap;
