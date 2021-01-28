@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 /**
- * 
- * 消息控制类 
- * @author 黄华盛 
+ *
+ * 消息控制类
+ * @author 黄华盛
  * @date 2021-01-11
  */
 @RestController
@@ -48,7 +48,7 @@ public class MsgController {
 	 *   个人中心消息列表【分页】
 	 */
 	@GetMapping("/page/visit")
-	public DataResult<IPage<Msg>> getPageList(@RequestBody PageQueryDto pageDto) {
+	public DataResult<IPage<Msg>> getPageList(PageQueryDto pageDto) {
 		try {
 			IPage<Msg> data = this.service.getPageList(pageDto);
 			return R.success(data);
@@ -59,7 +59,7 @@ public class MsgController {
 	}
 
 	/**
-	 *  消息分页查询 
+	 *  消息分页查询
 	 * @param grid
 	 * @param session
 	 * @return
@@ -77,7 +77,7 @@ public class MsgController {
 			return R.error("分页查询消息出错:"+e.getMessage());
 		}
 	}
-	
+
 	@ApiOperation(value = "删除消息")
 	@DeleteMapping("/{id}")
 	public DataResult<?> del(@PathVariable String id) {
