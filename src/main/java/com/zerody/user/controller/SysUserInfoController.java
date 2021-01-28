@@ -423,7 +423,7 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Override
     @RequestMapping(value = "/get/derart-id/inner", method = RequestMethod.GET)
-    DataResult<String> getDepartId(@RequestParam("userId")String userId){
+    public DataResult<String> getDepartId(@RequestParam("userId") String userId){
         try {
             return R.success(sysStaffInfoService.getDepartId(userId));
         } catch (DefaultException e){
