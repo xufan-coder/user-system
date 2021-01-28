@@ -141,7 +141,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
             throw new DefaultException("该手机号不是管理员！");
         }
         com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
-        BeanUtils.copyProperties(userInfo,one);
+        BeanUtils.copyProperties(one,userInfo);
         return userInfo;
     }
 }
