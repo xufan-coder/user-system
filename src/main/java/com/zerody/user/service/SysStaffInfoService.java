@@ -96,4 +96,5 @@ public interface SysStaffInfoService {
 
     AdminVo getIsAdmin(UserVo user);
 
+    String getDepartId(String userId);
 }

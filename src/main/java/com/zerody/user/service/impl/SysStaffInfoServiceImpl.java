@@ -20,7 +20,9 @@ import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
+import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.AdminVo;
@@ -141,6 +143,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private SmsFeignService smsFeignService;
+
+    @Autowired
+    private ClewRemoteService clewService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -332,6 +337,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
+        UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
+        if (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+            SetUserDepartDto userDepart = new SetUserDepartDto();
+            userDepart.setDepartId(setSysUserInfoDto.getDepartId());
+            SysStaffInfo staffInfo = this.getById(staff.getId());
+            userDepart.setUserId(staffInfo.getUserId());
+            DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
+            if (!r.isSuccess()){
+                throw new DefaultException("网络错误");
+            }
+        }
         unionStaffDepartMapper.delete(usdQW);
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())){
             UnionStaffDepart sd = new UnionStaffDepart();
@@ -1248,6 +1264,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return admin;
     }
 
+    @Override
+    public String getDepartId(String userId) {
+	    String staffId = this.getStaffIdByUserId(userId);
+        QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+        UnionStaffDepart usd  = unionStaffDeparService.getOne(usdQW);
+        return usd.getDepartmentId();
+    }
 
 
     private String getStaffIdByUserId(String userId) {
