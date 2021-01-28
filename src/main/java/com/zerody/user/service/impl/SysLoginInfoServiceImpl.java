@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.AdminUserInfo;
@@ -63,17 +64,19 @@ public class SysLoginInfoServiceImpl extends BaseStringService<SysLoginInfoMappe
         uw.lambda().set(BaseStringModel::getUpdateTime,new Date())
                 .eq(SysLoginInfo::getUserId,logInfo.getUserId());
 
-        //如果该用户是平台管理员，则通过不修改平台管理员表的密码
-        SysUserInfo userById = sysUserInfoService.getUserById(logInfo.getUserId());
-        QueryWrapper<com.zerody.user.domain.AdminUserInfo> qw =new QueryWrapper<>();
-        qw.lambda().eq(com.zerody.user.domain.AdminUserInfo::getPhoneNumber,userById.getPhoneNumber())
-                .eq(com.zerody.user.domain.AdminUserInfo::getStatus, StatusEnum.激活);
-        com.zerody.user.domain.AdminUserInfo one = amdinUserService.getOne(qw);
-        if(DataUtil.isNotEmpty(one)){
-            com.zerody.user.domain.AdminUserInfo info=new com.zerody.user.domain.AdminUserInfo();
-            BeanUtils.copyProperties(one,info);
-            info.setUserPwd(logInfo.getUserPwd());
-            amdinUserService.updateById(info);
+        if(DataUtil.isNotEmpty(logInfo.getUserPwd())) {
+            //如果该用户是平台管理员，则同时修改平台管理员表的密码
+            SysUserInfo userById = sysUserInfoService.getUserById(logInfo.getUserId());
+            QueryWrapper<com.zerody.user.domain.AdminUserInfo> qw = new QueryWrapper<>();
+            qw.lambda().eq(com.zerody.user.domain.AdminUserInfo::getPhoneNumber, userById.getPhoneNumber())
+                    .eq(com.zerody.user.domain.AdminUserInfo::getDeleted, YesNo.NO);
+            com.zerody.user.domain.AdminUserInfo one = amdinUserService.getOne(qw);
+            if (DataUtil.isNotEmpty(one)) {
+                com.zerody.user.domain.AdminUserInfo info = new com.zerody.user.domain.AdminUserInfo();
+                BeanUtils.copyProperties(one, info);
+                info.setUserPwd(logInfo.getUserPwd());
+                amdinUserService.updateById(info);
+            }
         }
         sysLoginInfoMapper.update(null,uw);
     }
