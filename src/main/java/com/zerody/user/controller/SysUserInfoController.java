@@ -290,7 +290,8 @@ public class SysUserInfoController implements UserRemoteService {
 	}
 
     @Override
-    public DataResult<AdminUserInfo> getAdminUser(String mobile) {
+    @GetMapping(value = "/admin-user/inner")
+    public DataResult<AdminUserInfo> getAdminUser(@RequestParam("mobile") String mobile) {
 	    try{
             AdminUserInfo adminUserInfo= amdinUserService.getByMobile(mobile);
             return R.success(adminUserInfo);

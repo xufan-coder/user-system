@@ -135,7 +135,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     public com.zerody.user.api.vo.AdminUserInfo getByMobile(String mobile) {
         QueryWrapper<AdminUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(AdminUserInfo::getPhoneNumber,mobile)
-        .eq(AdminUserInfo::getStatus, StatusEnum.激活);
+        .eq(AdminUserInfo::getDeleted, YesNo.NO);
         AdminUserInfo one = this.getOne(qw);
         if(DataUtil.isEmpty(one)){
             throw new DefaultException("该手机号不是管理员！");
