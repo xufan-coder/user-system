@@ -421,6 +421,19 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+    @Override
+    @RequestMapping(value = "/get/derart-id/inner", method = RequestMethod.GET)
+    DataResult<String> getDepartId(@RequestParam("userId")String userId){
+        try {
+            return R.success(sysStaffInfoService.getDepartId(userId));
+        } catch (DefaultException e){
+            log.error("获取部门id错误:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取部门id错误:{}",e.getMessage());
+            return R.error("获取部门id错误,请求异常");
+        }
+    }
 
 
 }

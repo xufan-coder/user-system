@@ -1264,6 +1264,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return admin;
     }
 
+    @Override
+    public String getDepartId(String userId) {
+	    String staffId = this.getStaffIdByUserId(userId);
+        QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+        UnionStaffDepart usd  = unionStaffDeparService.getOne(usdQW);
+        return usd.getDepartmentId();
+    }
 
 
     private String getStaffIdByUserId(String userId) {
