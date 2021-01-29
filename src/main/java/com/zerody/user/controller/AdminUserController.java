@@ -71,10 +71,10 @@ public class AdminUserController {
 	/**
 	 *   编辑管理员权限
 	 */
-	@PostMapping("/update-role/{id}")
-	public DataResult updateRole(String roleId, @PathVariable String id) {
+	@PutMapping("/update-role")
+	public DataResult updateRole(@RequestBody AdminUserDto dto) {
 		try {
-			this.service.updateRole(id,roleId);
+			this.service.updateRole(dto.getId(),dto.getRoleId());
 			return R.success();
 		} catch (Exception e) {
 			log.error("修改管理员权限出错:{}", e, e);
