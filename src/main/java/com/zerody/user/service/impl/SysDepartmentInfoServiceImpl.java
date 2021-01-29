@@ -85,7 +85,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         String date = String.valueOf(calendar.get(Calendar.DATE));
         String id  = year.concat(month).concat(date).concat("xxxx");
         if (StringUtils.isNotEmpty(sysDepartmentInfo.getParentId())){
-            id = sysDepartmentInfo.getParentId().concat(id);
+            id = sysDepartmentInfo.getParentId().concat("_").concat(id);
         }
         boolean find = true;
         do {
