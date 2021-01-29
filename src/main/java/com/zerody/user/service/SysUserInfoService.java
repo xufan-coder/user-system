@@ -149,7 +149,7 @@ public interface SysUserInfoService {
      * @param roleId
      * @return {@link Boolean }
      * @author DaBai
-     * @date 2021/1/4  16:43 
+     * @date 2021/1/4  16:43
      */
     Boolean checkRoleBind(String roleId);
 
@@ -177,7 +177,7 @@ public interface SysUserInfoService {
 
     /**************************************************************************************************
      **
-     *  查询用户是否是平台管理员
+     *  查询用户是否是admin账户
      *
      * @param userId
      * @return {@link Boolean }

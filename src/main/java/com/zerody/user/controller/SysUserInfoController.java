@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
@@ -202,6 +203,35 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<List<String>> getRoles(@RequestParam("userId")String userId, @RequestParam("companyId")String companyId) {
         List<String> roles=sysStaffInfoService.getStaffRoles(userId,companyId);
         return R.success(roles);
+    }
+
+    /**
+     *   查询后台管理员的平台角色
+     */
+    @Override
+    @RequestMapping(value = "/platform-role/get/inner",method = GET, produces = "application/json")
+    public DataResult<String> getPlatformRoles(@RequestParam("userId")String userId) {
+        try {
+            String role = amdinUserService.getPlatfoemRoles(userId);
+            return R.success(role);
+        }catch (Exception e){
+            return R.error(e.getMessage());
+        }
+
+    }
+
+    /**
+    *    根据用户id获取平台管理员信息
+    */
+    @Override
+    @RequestMapping(value = "/admin-user-id/inner",method = GET, produces = "application/json")
+    public DataResult<AdminUserInfo> getAdminUserById(@RequestParam("userId")String userId){
+        try{
+            AdminUserInfo userById = amdinUserService.getUserById(userId);
+            return R.success(userById);
+        } catch (Exception e) {
+            return R.error(e.getMessage());
+        }
     }
 
     /**

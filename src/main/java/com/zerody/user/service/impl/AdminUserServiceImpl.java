@@ -39,6 +39,8 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     private UnionPlatformRoleStaffMapper roleStaffMapper;
     @Autowired
     private OauthFeignService oauthFeignService;
+    @Autowired
+    private AdminUserMapper adminUserMapper;
 
     @Override
     public com.zerody.user.api.vo.AdminUserInfo checkLoginAdmin(String phone) {
@@ -56,9 +58,13 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public AdminUserInfo addAdminUser(AdminUserDto data) {
+
         CopyStaffInfoVo vo=sysStaffInfoService.selectStaffInfo(data.getStaffId());
         if(DataUtil.isEmpty(vo)){
             throw new DefaultException("选中的员工不存在！");
+        }
+        if(vo.getUserName().equals("admin")){
+            throw new DefaultException("该员工名称已存在,请修改后再设置！");
         }
         QueryWrapper<AdminUserInfo> adminUserQw = new QueryWrapper<>();
         adminUserQw.lambda().eq(AdminUserInfo::getPhoneNumber, vo.getPhoneNumber())
@@ -139,6 +145,24 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         AdminUserInfo one = this.getOne(qw);
         if(DataUtil.isEmpty(one)){
             throw new DefaultException("该手机号不是管理员！");
+        }
+        com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
+        BeanUtils.copyProperties(one,userInfo);
+        return userInfo;
+    }
+
+    @Override
+    public String getPlatfoemRoles(String userId) {
+        return adminUserMapper.selectRoleByUserId(userId);
+    }
+
+    @Override
+    public com.zerody.user.api.vo.AdminUserInfo getUserById(String userId) {
+        QueryWrapper<AdminUserInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(AdminUserInfo::getId,userId);
+        AdminUserInfo one = this.getOne(qw);
+        if(DataUtil.isEmpty(one)){
+            throw new DefaultException("用户信息错误！");
         }
         com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
         BeanUtils.copyProperties(one,userInfo);
