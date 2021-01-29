@@ -209,6 +209,7 @@ WHERE
         <where>
         aui.deleted=0
         and  aui.id=#{userId}
+        and  aui.user_name='admin'
         </where>
     </select>
 

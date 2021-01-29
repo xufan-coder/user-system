@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zerody.user.domain.AdminUserInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author  DaBai
@@ -9,4 +10,6 @@ import com.zerody.user.domain.AdminUserInfo;
  */
 
 public interface AdminUserMapper extends  BaseMapper<AdminUserInfo>{
+
+    String selectRoleByUserId(@Param("userId") String userId);
 }
