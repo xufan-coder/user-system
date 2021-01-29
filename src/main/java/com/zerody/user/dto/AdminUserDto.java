@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.zerody.user.dto;
 
@@ -25,5 +25,10 @@ public class AdminUserDto{
      *    平台角色名称
      */
     private String roleName;
+
+    /**
+     *    id
+     */
+    private String id;
 
 }
