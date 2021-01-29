@@ -59,8 +59,9 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         qw.lambda().eq(CardUserInfo::getPhoneNumber,data.getPhoneNumber());
         CardUserInfo one = this.getOne(qw);
         CardUserInfoVo vo=new CardUserInfoVo();
+        CardUserInfo newUser=null;
 
-        //如果手机号查不到则绑定该手机号到该用户id
+        //获取原OPENID
         QueryWrapper<CardUserInfo> idQw =new QueryWrapper<>();
         idQw.lambda().eq(CardUserInfo::getId,data.getId());
         CardUserInfo idUser = this.getOne(idQw);
@@ -68,11 +69,13 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             throw new DefaultException("账户不存在！");
         }
         if(DataUtil.isEmpty(one)){
-            idUser.setOpenId(idUser.getRegOpenId());
-            idUser.setPhoneNumber(data.getPhoneNumber());
-            idUser.setUpdateTime(new Date());
-            this.updateById(idUser);
-            BeanUtils.copyProperties(idUser,vo);
+            newUser=new CardUserInfo();
+            newUser.setId(UUIDutils.getUUID32());
+            newUser.setOpenId(idUser.getRegOpenId());
+            newUser.setPhoneNumber(data.getPhoneNumber());
+            newUser.setCreateTime(new Date());
+            this.save(newUser);
+            BeanUtils.copyProperties(newUser,vo);
         }else {
             one.setOpenId(idUser.getRegOpenId());
             one.setUpdateTime(new Date());
