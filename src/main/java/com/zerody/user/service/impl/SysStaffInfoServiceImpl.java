@@ -122,7 +122,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SysDepartmentInfoService sysDepartmentInfoService;
     @Autowired
     private SysJobPositionService sysJobPositionService;
-
+    @Autowired
+    private SysJobPositionMapper sysJobPositionMapper;
     @Autowired
     private OauthFeignService oauthFeignService;
 
@@ -224,11 +225,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             unionRoleStaffMapper.insert(rs);
         }
         //岗位
+        String positionName=null;
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())){
             UnionStaffPosition sp = new UnionStaffPosition();
             sp.setPositionId(setSysUserInfoDto.getPositionId());
             sp.setStaffId(staff.getId());
             unionStaffPositionMapper.insert(sp);
+            QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
+            qw.lambda().eq(SysJobPosition::getId,setSysUserInfoDto.getPositionId())
+                    .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+            SysJobPosition sysJobPosition = sysJobPositionMapper.selectOne(qw);
+            if(DataUtil.isNotEmpty(sysJobPosition)){
+                positionName=sysJobPosition.getPositionName();
+            }
         }
         //部门
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())){
@@ -246,7 +255,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(sysUserInfo,logInfo,sysCompanyInfo);
+        saveCardUser(sysUserInfo,logInfo,sysCompanyInfo,positionName);
         //最后发送短信
         smsFeignService.sendSms(smsDto);
         return staff;
@@ -709,7 +718,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo,loginInfo,sysCompanyInfo);
+        saveCardUser(userInfo,loginInfo,sysCompanyInfo,row[4]);
         return staff.getId();
     }
 
@@ -858,7 +867,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo,loginInfo,sysCompanyInfo);
+        saveCardUser(userInfo,loginInfo,sysCompanyInfo,row[3]);
 
         return staff.getId();
     }
@@ -940,7 +949,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
     }
 
-    public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
+    public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo,String positionName){
         QueryWrapper<SysUserInfo> userInfosQw = new QueryWrapper<>();
         userInfosQw.lambda().eq(SysUserInfo::getPhoneNumber, userInfo.getPhoneNumber())
                             .orderByDesc(SysUserInfo::getCreateTime);
@@ -994,6 +1003,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
         cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
         cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+        cardDto.setPosition(positionName);
         DataResult<String> card = cardFeignService.createCard(cardDto);
         if(!card.isSuccess()){
             throw new DefaultException("服务异常！");
