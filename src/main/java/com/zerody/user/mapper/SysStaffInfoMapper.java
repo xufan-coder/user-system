@@ -169,7 +169,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param               compId
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysUserClewCollectVo>
      */
-    IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage, @Param("compId") String compId);
+    IPage<SysUserClewCollectVo> getStaffByDepIds(@Param("ids") List<String> deps, IPage<SysUserClewCollectVo> iPage, @Param("compId") String compId,@Param("adminId")String adminId);
 
 
     List<SysUserClewCollectVo> getStaffAllByDepIds(@Param("ids") List<String> deps, @Param("compId") String compId);
