@@ -69,4 +69,15 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @date 2021/1/23  11:31
      */
     CardUserDto unBindPhoneNumber(String openId);
+
+    /**************************************************************************************************
+     **
+     * 绑定OPENID
+     *
+     * @param openId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2021/1/30  17:40
+     */
+    CardUserInfoVo bindOpenId(String openId,String userId);
 }

@@ -778,6 +778,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     } else {
                         JSONObject obj = (JSONObject) JSON.toJSON(roleByName.getData());
                         unionRoleStaff.setRoleId(obj.get("id").toString());
+                        unionRoleStaff.setRoleName(roleName);
                     }
                 }
                 //本企业部门是否存在
@@ -918,6 +919,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }else {
                     JSONObject obj=(JSONObject)JSON.toJSON(roleByName.getData());
                     unionRoleStaff.setRoleId(obj.get("id").toString());
+                    unionRoleStaff.setRoleName(roleName);
                 }
             }
             //本企业部门是否存在
@@ -1005,6 +1007,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
         cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
         cardDto.setPosition(positionName);
+        cardDto.setCompany(sysCompanyInfo.getCompanyName());
         DataResult<String> card = cardFeignService.createCard(cardDto);
         if(!card.isSuccess()){
             throw new DefaultException("服务异常！");
