@@ -83,6 +83,12 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             this.updateById(one);
             BeanUtils.copyProperties(one,vo);
         }
+        //检查是否是内部员工
+        QueryWrapper<CardUserUnionUser> uQw=new QueryWrapper<>();
+        uQw.lambda().eq(CardUserUnionUser::getUserId,vo.getId());
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(uQw);
+        vo.setIsInternal(DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
+
         return vo;
     }
 
@@ -124,6 +130,12 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         CardUserDto cardUser=new CardUserDto();
         BeanUtils.copyProperties(one,cardUser);
         cardUser.setUserPwd(null);
+        //检查是否是内部员工
+        QueryWrapper<CardUserUnionUser> qw=new QueryWrapper<>();
+        qw.lambda().eq(CardUserUnionUser::getUserId,cardUser.getId());
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
+        cardUser.setIsInternal( DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
+
         return cardUser;
     }
 
@@ -155,6 +167,25 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             this.save(user);
             BeanUtils.copyProperties(user, cardUser);
         }
+        //检查是否是内部员工
+        QueryWrapper<CardUserUnionUser> qw=new QueryWrapper<>();
+        qw.lambda().eq(CardUserUnionUser::getUserId,cardUser.getId());
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
+        cardUser.setIsInternal( DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
+        return cardUser;
+    }
+
+    @Override
+    public CardUserInfoVo bindOpenId(String openId,String userId) {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getId,userId);
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isNotEmpty(one)) {
+            one.setOpenId(openId);
+            this.updateById(one);
+        }
+        CardUserInfoVo cardUser = new CardUserInfoVo();
+        BeanUtils.copyProperties(one, cardUser);
         return cardUser;
     }
 }
