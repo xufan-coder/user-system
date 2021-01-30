@@ -165,9 +165,9 @@ public class SysStaffInfoController {
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("charset", "utf-8");
             response.addHeader("Pragma", "no-cache");
-//            String encodeName = URLEncoder.encode(chinaeseName, StandardCharsets.UTF_8.toString());
+            String encodeName = URLEncoder.encode(chinaeseName, StandardCharsets.UTF_8.toString());
 //            response.addHeader("content-disposition", encodeName);
-            response.addHeader("Content-Disposition","inline;filename=" + new String(chinaeseName.getBytes(),StandardCharsets.UTF_8.toString()));
+            response.addHeader("Content-Disposition","inline;filename=" + new String(encodeName.getBytes(),StandardCharsets.UTF_8.toString()));
 
             inputStream = resource.getInputStream();
             servletOutputStream = response.getOutputStream();
