@@ -39,6 +39,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         BeanUtils.copyProperties(cardUser,info);
         info.setStatus(StatusEnum.激活.getValue());
         info.setId(UUIDutils.getUUID32());
+        info.setCreateTime(new Date());
         //校验该openId是否已经存在
         QueryWrapper<CardUserInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserInfo::getRegOpenId,info.getRegOpenId());
