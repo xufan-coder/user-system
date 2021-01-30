@@ -1280,6 +1280,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staffId);
         UnionStaffDepart usd  = unionStaffDeparService.getOne(usdQW);
+        if(DataUtil.isEmpty(usd)){
+            return  null;
+        }
         return usd.getDepartmentId();
     }
 
@@ -1288,9 +1291,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    StaffInfoVo staffInfoVo = new StaffInfoVo();
 	    String staffId = this.getStaffIdByUserId(userId);
 	    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-	    staffQw.select("comp_id as companyId","user_name").lambda().eq(SysStaffInfo::getId, staffId);
+	    staffQw.select("comp_id ","user_name").lambda().eq(SysStaffInfo::getId, staffId);
 	    SysStaffInfo staffInfo = this.getOne(staffQw);
         BeanUtils.copyProperties(staffInfo, staffInfoVo);
+        staffInfoVo.setCompanyId(staffInfo.getCompId());
         staffInfoVo.setDepartId(this.getDepartId(userId));
         return staffInfoVo;
     }
