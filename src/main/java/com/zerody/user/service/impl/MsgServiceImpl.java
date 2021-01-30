@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.vo.BosStaffInfoVo;
@@ -30,15 +31,15 @@ import com.zerody.user.dto.MsgDto;
 import com.zerody.user.dto.MsgPageDto;
 import com.zerody.user.service.MsgService;
 /**
- * 
+ *
  * 消息业务实现类
- * @author 黄华盛 
+ * @author 黄华盛
  * @date 2021-01-11
  */
 @Service
 public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgService {
 	private static final Logger log = LoggerFactory.getLogger(MsgServiceImpl.class);
-	
+
 	@Override
 	public Msg addMsg(MsgDto data) throws Exception {
 		Msg po=new Msg();
@@ -73,7 +74,7 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 			//userId user_id
 			String userIdValue=pageQuery.getUserId();
 			if(StringUtils.isNotEmpty(userIdValue)){
-					qw.lambda().like(StringUtils.isNotBlank(userIdValue), Msg::getUserId, userIdValue);				
+					qw.lambda().like(StringUtils.isNotBlank(userIdValue), Msg::getUserId, userIdValue);
 			}
 		IPage<Msg> pageResult = this.page(page,qw);
 		return pageResult;
@@ -100,6 +101,7 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 	public IPage<Msg> getPageList(PageQueryDto pageDto) {
 		IPage<Msg> infoVoiPage = new Page<>(pageDto.getCurrent(),pageDto.getPageSize());
 		QueryWrapper<Msg> qw=new QueryWrapper<>();
+		qw.lambda().eq(Msg::getUserId, UserUtils.getUserId());
 		qw.lambda().orderByDesc(Msg::getCreateTime);
 		return this.page(infoVoiPage,qw);
 	}
