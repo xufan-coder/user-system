@@ -385,6 +385,22 @@ public class SysUserInfoController implements UserRemoteService {
 
 
     /**
+     * 【绑定openID】
+     *
+     */
+    @Override
+    @RequestMapping(value = "/openid-bind/inner",method = POST, produces = "application/json")
+    public DataResult<CardUserInfoVo> bindOpenId(@RequestParam(name = "openId")String openId,@RequestParam(name = "userId")String userId) {
+        try {
+            CardUserInfoVo vo= cardUserService.bindOpenId(openId,userId);
+            return R.success(vo);
+        } catch (Exception e) {
+            log.error("修改名片用户出错:{}", e, e);
+            return R.error("修改名片用户出错:"+e.getMessage());
+        }
+    }
+
+    /**
      * 【解绑手机号】
      *
      */
