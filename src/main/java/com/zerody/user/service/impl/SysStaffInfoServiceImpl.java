@@ -1005,6 +1005,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
         cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
         cardDto.setPosition(positionName);
+        cardDto.setCompany(sysCompanyInfo.getCompanyName());
         DataResult<String> card = cardFeignService.createCard(cardDto);
         if(!card.isSuccess()){
             throw new DefaultException("服务异常！");
