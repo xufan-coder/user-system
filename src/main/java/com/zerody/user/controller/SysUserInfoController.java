@@ -13,10 +13,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.AdminUserInfo;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.CardUserInfoVo;
-import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
@@ -457,13 +454,25 @@ public class SysUserInfoController implements UserRemoteService {
         try {
             return R.success(sysStaffInfoService.getDepartId(userId));
         } catch (DefaultException e){
-            log.error("获取部门id错误:{}",e.getMessage());
+            log.error("获取部门id错误:{}",e,e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("获取部门id错误:{}",e.getMessage());
+            log.error("获取部门id错误:{}",e,e);
             return R.error("获取部门id错误,请求异常");
         }
     }
 
-
+    @Override
+    @RequestMapping(value = "/sys-user-info/get/staff-info/inner", method = RequestMethod.GET)
+    DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
+        try {
+            return R.success(sysStaffInfoService.getStaffInfo(userId));
+        } catch (DefaultException e){
+            log.error("获取员工id错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取部门id错误:{}",e,e);
+            return R.error("获取部门id错误,请求异常");
+        }
+    }
 }
