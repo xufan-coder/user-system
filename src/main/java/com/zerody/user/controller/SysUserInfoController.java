@@ -463,7 +463,7 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
     @Override
-    @RequestMapping(value = "/sys-user-info/get/staff-info/inner", method = RequestMethod.GET)
+    @RequestMapping(value = "/get/staff-info/inner", method = RequestMethod.GET)
     public DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
         try {
             return R.success(sysStaffInfoService.getStaffInfo(userId));
