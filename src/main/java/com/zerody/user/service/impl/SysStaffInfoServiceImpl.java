@@ -1126,7 +1126,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, staff.getCompId());
         CompanyAdmin com = this.companyAdminMapper.selectOne(adminQw);
         //设置分页参数
-        IPage<SysUserClewCollectVo> iPage = new Page<>(dto.getCurrent(), dto.getCurrent() == 1 ? dto.getPageSize() - 1 : dto.getPageSize());
+        IPage<SysUserClewCollectVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
         //用于请求获取用户分页
         List<String> userIds = new ArrayList<>();
         //线索集合
@@ -1158,23 +1158,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //用户id集合暂存部门id集合
             userIds.add(dep.getId());
             getChilden(userIds, deps, dep.getId() );
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage , staff.getCompId());
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage , staff.getCompId(), userInfo.getUserId());
+            iPage.getRecords().get(0).setDepartAdmin(true);
             userIds.removeAll(userIds);
         } else {
             //企业管理员不需要获取下级部门
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId());
-
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId(),userInfo.getUserId());
+            iPage.getRecords().get(0).setCompanyAdmin(true);
         }
         if(CollectionUtils.isEmpty(iPage.getRecords())){
             iPage.setRecords(new ArrayList<>());
         }
-        iPage.getRecords().add(0, userInfo);
         userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
         clews = this.customerFeignService.getClews(userIds).getData();
-        if(iPage.getCurrent() == 1){
-            iPage.setSize(iPage.getSize() + iPage.getCurrent());
-            iPage.setTotal(iPage.getTotal() + iPage.getCurrent());
-        }
         if(CollectionUtils.isEmpty(clews)){
             return iPage;
         }
