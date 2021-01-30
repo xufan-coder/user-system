@@ -122,4 +122,28 @@ public class SysUserInfoVo {
     *   岗位ID
     */
     private String positionId;
+
+    /** 紧急联系姓名 */
+    private String urgentName;
+
+    /** 紧急联系人关系 */
+    private String urgentRelation;
+
+    /** 紧急联系人电话 */
+    private String urgentPhone;
+
+    /** 家庭成员姓名 */
+    private String familyName;
+
+    /** 家庭成员关系 */
+    private String familyRelation;
+
+    /** 家庭成员电话 */
+    private String familyPhone;
+
+    /** 家庭成员职业 */
+    private String familyJob;
+
+    /** 家庭成员地址 */
+    private String familyAddr;
 }
