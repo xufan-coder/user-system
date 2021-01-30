@@ -26,6 +26,7 @@ import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.enums.StaffGenderEnum;
@@ -1281,6 +1282,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staffId);
         UnionStaffDepart usd  = unionStaffDeparService.getOne(usdQW);
         return usd.getDepartmentId();
+    }
+
+    @Override
+    public StaffInfoVo getStaffInfo(String userId) {
+	    StaffInfoVo staffInfoVo = new StaffInfoVo();
+	    String staffId = this.getStaffIdByUserId(userId);
+	    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+	    staffQw.select("comp_id").lambda().eq(SysStaffInfo::getId, staffId);
+	    SysStaffInfo staffInfo = this.getOne(staffQw);
+        staffInfoVo.setDepartId(this.getDepartId(userId));
+        staffInfoVo.setCompanyId(staffInfo.getCompId());
+        return staffInfoVo;
     }
 
 
