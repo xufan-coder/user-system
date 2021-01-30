@@ -778,6 +778,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     } else {
                         JSONObject obj = (JSONObject) JSON.toJSON(roleByName.getData());
                         unionRoleStaff.setRoleId(obj.get("id").toString());
+                        unionRoleStaff.setRoleName(roleName);
                     }
                 }
                 //本企业部门是否存在
@@ -918,6 +919,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }else {
                     JSONObject obj=(JSONObject)JSON.toJSON(roleByName.getData());
                     unionRoleStaff.setRoleId(obj.get("id").toString());
+                    unionRoleStaff.setRoleName(roleName);
                 }
             }
             //本企业部门是否存在
