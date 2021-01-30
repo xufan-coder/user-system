@@ -59,7 +59,7 @@ public class SysStaffInfoController {
     }
 
     /**
-    *   添加员工 
+    *   添加员工
     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public DataResult<Object> addStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
@@ -143,7 +143,7 @@ public class SysStaffInfoController {
     }
 
     /**
-    *   下载模板 
+    *   下载模板
     */
     @GetMapping("/get-template")
     public void getTemplateUrl(Integer type) throws Exception {
@@ -165,8 +165,9 @@ public class SysStaffInfoController {
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("charset", "utf-8");
             response.addHeader("Pragma", "no-cache");
-            String encodeName = URLEncoder.encode(chinaeseName, StandardCharsets.UTF_8.toString());
-            response.addHeader("content-disposition", encodeName);
+//            String encodeName = URLEncoder.encode(chinaeseName, StandardCharsets.UTF_8.toString());
+//            response.addHeader("content-disposition", encodeName);
+            response.addHeader("Content-Disposition","inline;filename=" + new String(chinaeseName.getBytes(),StandardCharsets.UTF_8.toString()));
 
             inputStream = resource.getInputStream();
             servletOutputStream = response.getOutputStream();
