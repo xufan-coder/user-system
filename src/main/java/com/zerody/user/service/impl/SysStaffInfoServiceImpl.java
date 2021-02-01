@@ -1147,7 +1147,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 iPage = new Page<>(dto.getCurrent(), dto.getCurrent());
                 iPage.setRecords(new ArrayList<>());
                 iPage.getRecords().add(userInfo);
-                iPage.setTotal(0);
+                iPage.setTotal(1);
                 userIds.add(iPage.getRecords().get(0).getUserId());
                 clews = this.customerFeignService.getClews(userIds).getData();
                 if(CollectionUtils.isEmpty(clews)){
