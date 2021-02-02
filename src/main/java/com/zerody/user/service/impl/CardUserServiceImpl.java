@@ -83,6 +83,14 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             this.updateById(one);
             BeanUtils.copyProperties(one,vo);
         }
+        //同时删除原先绑定的openId用户
+        QueryWrapper<CardUserInfo> openidQw =new QueryWrapper<>();
+        openidQw.lambda().eq(CardUserInfo::getOpenId,idUser.getRegOpenId());
+        CardUserInfo oldUser = this.getOne(idQw);
+        if(DataUtil.isNotEmpty(oldUser)){
+            oldUser.setOpenId("");
+            this.updateById(oldUser);
+        }
         //检查是否是内部员工
         QueryWrapper<CardUserUnionUser> uQw=new QueryWrapper<>();
         uQw.lambda().eq(CardUserUnionUser::getUserId,vo.getId());
@@ -181,6 +189,14 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         userQw.lambda().eq(CardUserInfo::getId,userId);
         CardUserInfo one = this.getOne(userQw);
         if(DataUtil.isNotEmpty(one)) {
+            //同时删除原先绑定的openId用户
+            QueryWrapper<CardUserInfo> openidQw =new QueryWrapper<>();
+            openidQw.lambda().eq(CardUserInfo::getOpenId,openId);
+            CardUserInfo oldUser = this.getOne(openidQw);
+            if(DataUtil.isNotEmpty(oldUser)){
+                oldUser.setOpenId("");
+                this.updateById(oldUser);
+            }
             one.setOpenId(openId);
             this.updateById(one);
         }
