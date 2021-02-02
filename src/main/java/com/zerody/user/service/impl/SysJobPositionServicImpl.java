@@ -43,6 +43,9 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
 
     @Override
     public DataResult addJob(SysJobPosition job) {
+        if(StringUtils.isEmpty(job.getDepartId())){
+            throw new DefaultException("部门id不能为空");
+        }
         SysDepartmentInfo dep =  sysDepartmentInfoMapper.selectById(job.getDepartId());
         job.setCompId(dep.getCompId());
         //除了被删除的企业的岗位用名称查看数据库有没有这个名称
