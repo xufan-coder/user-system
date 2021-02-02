@@ -1,6 +1,7 @@
 package com.zerody.user.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.common.utils.DataUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -87,5 +88,18 @@ public class SysUserClewCollectVo {
 
     public Boolean getDepartAdmin() {
         return departAdmin != null ? departAdmin : false;
+    }
+
+
+    public Integer getTotalClew() {
+        return DataUtil.isEmpty(totalClew) ? 0 : totalClew;
+    }
+
+    public Integer getHaveCalled() {
+        return DataUtil.isEmpty(haveCalled) ? 0 : haveCalled;
+    }
+
+    public Integer getTodayCalled() {
+        return DataUtil.isEmpty(todayCalled) ? 0 : todayCalled;
     }
 }
