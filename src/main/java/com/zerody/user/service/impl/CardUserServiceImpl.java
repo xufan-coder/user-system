@@ -93,7 +93,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         }
         //检查是否是内部员工
         QueryWrapper<CardUserUnionUser> uQw=new QueryWrapper<>();
-        uQw.lambda().eq(CardUserUnionUser::getUserId,vo.getId());
+        uQw.lambda().eq(CardUserUnionUser::getCardId,vo.getId());
         CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(uQw);
         vo.setIsInternal(DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
 
@@ -140,7 +140,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         cardUser.setUserPwd(null);
         //检查是否是内部员工
         QueryWrapper<CardUserUnionUser> qw=new QueryWrapper<>();
-        qw.lambda().eq(CardUserUnionUser::getUserId,cardUser.getId());
+        qw.lambda().eq(CardUserUnionUser::getCardId,cardUser.getId());
         CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
         cardUser.setIsInternal( DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
 
@@ -177,7 +177,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         }
         //检查是否是内部员工
         QueryWrapper<CardUserUnionUser> qw=new QueryWrapper<>();
-        qw.lambda().eq(CardUserUnionUser::getUserId,cardUser.getId());
+        qw.lambda().eq(CardUserUnionUser::getCardId,cardUser.getId());
         CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
         cardUser.setIsInternal( DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
         return cardUser;
