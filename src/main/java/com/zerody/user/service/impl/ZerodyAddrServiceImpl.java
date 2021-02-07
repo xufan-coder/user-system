@@ -82,7 +82,7 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         if(StringUtils.isNotEmpty(areaName)){
             addrMap.put(areaName, this.getAddrCode(areaName));
         }
-        return null;
+        return addrMap;
     }
 
     @Cacheable(value = "addrName", key = "#code")

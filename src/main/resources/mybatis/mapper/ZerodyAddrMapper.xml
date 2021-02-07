@@ -38,7 +38,7 @@
         </where>
     </select>
 
-    <select id="getAddrName" resultType="java.lang.String">
+    <select id="getAddrCode" resultType="java.lang.String">
         select
             code
         from zerody_addr
