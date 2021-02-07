@@ -84,7 +84,7 @@ public class ZerodyAddrController implements AddrRemoteService {
      */
     @Override
     @GetMapping(value = "/get/addr-code/inner")
-    public DataResult<Map<String, String>> getAddCode(
+    public DataResult<Map<String, String>> getAddrCode(
             @RequestParam(value = "provinceName", required = false) String provinceName,
             @RequestParam(value = "cityName", required = false) String cityName,
             @RequestParam(value = "areaName", required = false) String areaName){
