@@ -1,6 +1,8 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zerody.user.domain.ZerodyAddr;
 import com.zerody.user.mapper.ZerodyAddrMapper;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
@@ -62,10 +64,36 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         return addrMap;
     }
 
+    @Override
+    public List<ZerodyAddrVo> getAllCity() {
+        return this.mapper.getAllCity();
+    }
+
+    @Override
+    public Map<String, String> getAddCode(String provinceName, String cityName, String areaName) {
+
+        Map<String, String> addrMap = new HashMap<>();
+        if(StringUtils.isNotEmpty(provinceName)){
+            addrMap.put(provinceName, this.getAddrCode(provinceName));
+        }
+        if(StringUtils.isNotEmpty(cityName)){
+            addrMap.put(cityName, this.getAddrCode(cityName));
+        }
+        if(StringUtils.isNotEmpty(areaName)){
+            addrMap.put(areaName, this.getAddrCode(areaName));
+        }
+        return null;
+    }
+
     @Cacheable(value = "addrName", key = "#code")
     private String getAddrName(String code){
        return this.mapper.getAddrName(code);
     }
 
+
+    @Cacheable(value = "addrCode", key = "#method+#name")
+    private String getAddrCode(String name){
+        return this.mapper.getAddrCode(name);
+    }
 
 }

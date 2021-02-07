@@ -28,4 +28,21 @@
         where
          code = #{code}
     </select>
+
+    <select id="getAllCity" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        <include refid="Base_Column_List" />
+        from zerody_addr
+        <where>
+            is_enabled = 0 and addr_level = 2
+        </where>
+    </select>
+
+    <select id="getAddrName" resultType="java.lang.String">
+        select
+            code
+        from zerody_addr
+        where
+         address = #{name}
+    </select>
 </mapper>
