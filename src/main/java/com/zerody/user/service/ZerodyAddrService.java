@@ -25,4 +25,8 @@ public interface ZerodyAddrService {
     List<ZerodyAddrVo> getAddr(Integer parentCode);
 
     Map<String, String> getAddrName(String provinceCode, String cityCode, String areaCode);
+
+    List<ZerodyAddrVo> getAllCity();
+
+    Map<String, String> getAddCode(String provinceName, String cityName, String areaName);
 }

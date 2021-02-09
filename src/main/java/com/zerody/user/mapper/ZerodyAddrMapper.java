@@ -21,4 +21,8 @@ public interface ZerodyAddrMapper extends BaseMapper<ZerodyAddr> {
     List<ZerodyAddrVo> selectAddr(Integer parentCode);
 
     String getAddrName(String code);
+
+    List<ZerodyAddrVo> getAllCity();
+
+    String getAddrCode(String name);
 }

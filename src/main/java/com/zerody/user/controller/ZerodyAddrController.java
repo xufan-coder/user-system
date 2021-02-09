@@ -40,6 +40,15 @@ public class ZerodyAddrController implements AddrRemoteService {
         return R.success(zerodyAddrService.getAddr(parentId));
     }
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过code查询地址名称
+     * @date                 2021/2/7 17:09
+     * @param                [provinceCode, cityCode, areaCode]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.Map<java.lang.String,java.lang.String>>
+     */
     @Override
     @GetMapping(value = "/get/addr-name/inner")
     public DataResult<Map<String, String>> getAddrName(
@@ -47,5 +56,38 @@ public class ZerodyAddrController implements AddrRemoteService {
             @RequestParam(value = "cityCode", required = false) String cityCode,
             @RequestParam(value = "areaCode", required = false) String areaCode){
         return R.success(zerodyAddrService.getAddrName(provinceCode, cityCode, areaCode));
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取全部市地址
+     * @date                 2021/2/7 16:53
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ZerodyAddrVo>>
+     */
+    @RequestMapping(value = "/get/all-city", method = RequestMethod.GET)
+    public DataResult<List<ZerodyAddrVo>> getAllCity(){
+        return R.success(zerodyAddrService.getAllCity());
+    }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过地址名称查询code值
+     * @date                 2021/2/7 17:09
+     * @param                [provinceCode, cityCode, areaCode]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.Map<java.lang.String,java.lang.String>>
+     */
+    @Override
+    @GetMapping(value = "/get/addr-code/inner")
+    public DataResult<Map<String, String>> getAddrCode(
+            @RequestParam(value = "provinceName", required = false) String provinceName,
+            @RequestParam(value = "cityName", required = false) String cityName,
+            @RequestParam(value = "areaName", required = false) String areaName){
+        return R.success(zerodyAddrService.getAddCode(provinceName, cityName, areaName));
     }
 }
