@@ -69,7 +69,16 @@
               and sci.id = #{staff.companyId}
           </if>
           <if test="staff.departId != null and staff.departId != ''">
-              and sdi.id = #{staff.departId}
+              and
+              <choose>
+                  <when test="staff.showSubordinates">
+                      sdi.id like concat('', #{staff.departId}, '%')
+                  </when>
+                  <otherwise>
+                      sdi.id = #{staff.departId}
+                  </otherwise>
+              </choose>
+
           </if>
           <if test="staff.jobId != null and staff.jobId != ''">
               and sjp.id = #{staff.jobId}

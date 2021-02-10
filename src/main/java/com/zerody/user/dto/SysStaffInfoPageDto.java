@@ -44,4 +44,7 @@ public class SysStaffInfoPageDto extends PageQueryDto {
     */
     private String phoneNumber;
 
+    /** 是否模糊查询(模糊查询 获取下级部门的员工(包括本级)) */
+    private boolean showSubordinates;
+
 }
