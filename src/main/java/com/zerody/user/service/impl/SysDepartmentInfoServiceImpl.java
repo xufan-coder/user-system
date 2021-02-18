@@ -174,7 +174,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
         if(StringUtils.isEmpty(dto.getId())){
-            throw new DefaultException("企业id为空");
+            throw new DefaultException("部门id为空");
         }
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
