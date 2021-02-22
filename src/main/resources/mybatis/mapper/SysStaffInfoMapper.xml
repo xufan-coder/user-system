@@ -425,7 +425,12 @@
                     #{id}
                 </foreach>
             </if>
-
+            <if test="dto.phoneNumber neq null and dto.phoneNumber neq ''">
+                 and sui.phone_number like concat('%',#{dto.phoneNumber},'%')
+            </if>
+            <if test="dto.staffName neq null and dto.staffName neq ''">
+                and sui.user_name like concat('%',#{dto.staffName},'%')
+            </if>
         </where>
         order by ssi.create_time desc
     </select>
