@@ -57,8 +57,15 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
+
     /**
-     *   分页查询员工信息
+     *
+     *
+     * @author               PengQiang
+     * @description          分页查询上级部门员工
+     * @date                 2021/2/22 16:13
+     * @param                [sysStaffInfoPageDto]
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
      */
     @RequestMapping(value = "/superior/page/get", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto){

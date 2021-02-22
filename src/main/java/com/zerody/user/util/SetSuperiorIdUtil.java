@@ -1,5 +1,7 @@
 package com.zerody.user.util;
 
+import io.micrometer.core.instrument.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,9 @@ public class SetSuperiorIdUtil {
      * @return               java.util.List<java.lang.String>
      */
     public static List<String> getSuperiorIds(String id){
+        if (StringUtils.isEmpty(id)){
+            return null;
+        }
         return getSuperiorIds(id, new ArrayList<>());
     }
 
@@ -37,9 +42,11 @@ public class SetSuperiorIdUtil {
      */
     private static List<String> getSuperiorIds(String id, List<String> superiorIds){
         superiorIds.add(id);
+        //如果没有下划线 表示已是顶级id
         if(id.lastIndexOf(SUPERIOR_SYMBOL) == -1){
             return superiorIds;
         }
+        //从最后一个_ 进行截取 最后一个_ 前面的为上级部门id
         id = id.substring(0, id.lastIndexOf(SUPERIOR_SYMBOL));
         return getSuperiorIds(id, superiorIds);
     }
