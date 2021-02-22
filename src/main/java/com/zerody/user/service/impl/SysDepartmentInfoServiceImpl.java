@@ -187,9 +187,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             throw new DefaultException("员工id为空");
         }
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
-        usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getId());
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
-        if (!dep.getDepartmentId().equals(dto.getId())){
+        if (!dto.getId().equals(dep.getDepartmentId())){
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(dto.getId());
             SysStaffInfo staffInfo = this.stafffMapper.selectById(dto.getStaffId());

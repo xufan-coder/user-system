@@ -127,10 +127,10 @@ public class SysDepartmentInfoController {
             sysDepartmentInfoService.updateAdminAccout(dto);
             return R.success();
         } catch (DefaultException e) {
-            log.error("设置部门管理员错误:{}", e.getMessage());
+            log.error("设置部门管理员错误:{}", e.getMessage(), e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("设置部门管理员错误:{}", e.getMessage());
+            log.error("设置部门管理员错误:{}", e.getMessage(), e);
             return R.error("设置部门管理员错误,请求异常");
         }
     }
