@@ -69,7 +69,7 @@
               and sci.id = #{staff.companyId}
           </if>
           <if test="staff.departId != null and staff.departId != ''">
-              and sdi.id = #{staff.departId}
+              and sdi.id like concat('', #{staff.departId}, '%')
           </if>
           <if test="staff.jobId != null and staff.jobId != ''">
               and sjp.id = #{staff.jobId}
@@ -404,5 +404,34 @@
                 </foreach>
             </if>
         </where>
+    </select>
+    <select id="getPageAllSuperiorStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT
+        sui.id AS id,
+        ssi.user_name AS userName,
+        ssi.id AS staffId
+        FROM
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        <where>
+            ssi.deleted = 0 and sui.status != -1
+            <if test="dto.companyId neq null and dto.companyId neq ''">
+                and ssi.comp_id = #{dto.companyId}
+            </if>
+            <if test="depIds neq null and depIds.size() > 0">
+                and usd.department_id in
+                <foreach collection="depIds" item="id" open=" (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="dto.phoneNumber neq null and dto.phoneNumber neq ''">
+                 and sui.phone_number like concat('%',#{dto.phoneNumber},'%')
+            </if>
+            <if test="dto.staffName neq null and dto.staffName neq ''">
+                and sui.user_name like concat('%',#{dto.staffName},'%')
+            </if>
+        </where>
+        order by ssi.create_time desc
     </select>
 </mapper>

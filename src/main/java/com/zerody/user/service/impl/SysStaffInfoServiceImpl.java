@@ -35,6 +35,7 @@ import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
+import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
@@ -267,6 +268,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
         IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
         return sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
+    }
+
+    @Override
+    public IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
+        List<String> depIds = SetSuperiorIdUtil.getSuperiorIds(sysStaffInfoPageDto.getDepartId());
+        return sysStaffInfoMapper.getPageAllSuperiorStaff(sysStaffInfoPageDto, infoVoIPage, depIds);
     }
 
     @Override
@@ -1298,6 +1306,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffInfoVo.setDepartId(this.getDepartId(userId));
         return staffInfoVo;
     }
+
 
 
     private String getStaffIdByUserId(String userId) {

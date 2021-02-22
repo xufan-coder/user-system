@@ -2,21 +2,22 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.customer.api.dto.SetUserDepartDto;
+import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.domain.SysDepartmentInfo;
-import com.zerody.user.domain.SysJobPosition;
-import com.zerody.user.domain.UnionStaffDepart;
+import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysJobPositionMapper;
+import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.UnionStaffDepartMapper;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
@@ -52,7 +53,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     private SysStaffInfoService staffInfoService;
 
     @Autowired
+    private SysStaffInfoMapper stafffMapper;
+
+    @Autowired
     private UnionStaffDepartMapper unionStaffDepartMapper;
+
+    @Autowired
+    private ClewRemoteService clewService;
 
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
@@ -174,10 +181,23 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
         if(StringUtils.isEmpty(dto.getId())){
-            throw new DefaultException("企业id为空");
+            throw new DefaultException("部门id为空");
         }
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
+        }
+        QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getId());
+        UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
+        if (!dep.getDepartmentId().equals(dto.getId())){
+            SetUserDepartDto userDepart = new SetUserDepartDto();
+            userDepart.setDepartId(dto.getId());
+            SysStaffInfo staffInfo = this.stafffMapper.selectById(dto.getStaffId());
+            userDepart.setUserId(staffInfo.getUserId());
+            DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
+            if (!r.isSuccess()){
+                throw new DefaultException("网络错误");
+            }
         }
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());

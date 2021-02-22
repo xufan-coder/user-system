@@ -196,4 +196,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>
      */
     IPage<BosStaffInfoVo> getWxPageAllStaff(@Param("dto") SysStaffInfoPageDto dto, IPage<BosStaffInfoVo> iPage);
+
+    IPage<BosStaffInfoVo> getPageAllSuperiorStaff(@Param("dto")  SysStaffInfoPageDto sysStaffInfoPageDto, IPage<BosStaffInfoVo> infoVoIPage,@Param("depIds")  List<String> depIds);
 }
