@@ -1,5 +1,7 @@
 package com.zerody.user.util;
 
+import io.micrometer.core.instrument.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,9 @@ public class SetSuperiorIdUtil {
      * @return               java.util.List<java.lang.String>
      */
     public static List<String> getSuperiorIds(String id){
+        if (StringUtils.isEmpty(id)){
+            return null;
+        }
         return getSuperiorIds(id, new ArrayList<>());
     }
 
