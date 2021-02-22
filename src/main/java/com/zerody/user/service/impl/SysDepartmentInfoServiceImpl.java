@@ -189,9 +189,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
-        if (dep.getDepartmentId().equals(dto.getId())){
-            return;
-        } else {
+        if (!dep.getDepartmentId().equals(dto.getId())){
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(dto.getId());
             SysStaffInfo staffInfo = this.stafffMapper.selectById(dto.getStaffId());

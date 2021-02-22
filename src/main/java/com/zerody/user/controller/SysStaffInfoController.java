@@ -58,6 +58,13 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
     /**
+     *   分页查询员工信息
+     */
+    @RequestMapping(value = "/superior/page/get", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        return R.success(sysStaffInfoService.getPageAllSuperiorStaff(sysStaffInfoPageDto));
+    }
+    /**
     *   添加员工
     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)

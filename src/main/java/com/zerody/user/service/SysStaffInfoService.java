@@ -40,6 +40,10 @@ public interface SysStaffInfoService {
 
     IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
+
+
+    IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
+
     void updateStaffStatus(String staffId, Integer status);
 
 
