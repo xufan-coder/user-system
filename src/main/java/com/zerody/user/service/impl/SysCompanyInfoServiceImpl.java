@@ -313,6 +313,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
     }
+
+    @Override
+    public List<SysComapnyInfoVo> getCompanyInfoByAddr(String provinceCode, String cityCode) {
+        return this.sysCompanyInfoMapper.getCompanyInfoByAddr(provinceCode, cityCode);
+    }
+
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo=new CardUserInfo();

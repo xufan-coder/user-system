@@ -11,6 +11,7 @@ import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,5 +209,22 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         CompanyInfoVo companyInfoInner = new CompanyInfoVo();
         BeanUtils.copyProperties(companyInfo, companyInfoInner);
         return R.success(companyInfoInner);
+    }
+
+    @GetMapping("/get/addr-filtrate")
+    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("provinceCode") String provinceCode,
+                                                             @RequestParam("cityCode") String cityCode){
+        try {
+            if (StringUtils.isEmpty(provinceCode) || StringUtils.isEmpty(cityCode)){
+                return R.error("地址code值均为必填");
+            }
+           return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(provinceCode, cityCode));
+        } catch (DefaultException e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        }
     }
 }

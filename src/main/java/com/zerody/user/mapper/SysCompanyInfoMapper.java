@@ -64,4 +64,16 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               com.zerody.user.vo.SysComapnyInfoVo
      */
     SysComapnyInfoVo getCompanyByUserId(String userId);
+
+    /**
+     *
+     * 通过地址获取企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/2/24 19:17
+     * @param                provinceCode
+     * @param                cityCode
+     * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    List<SysComapnyInfoVo> getCompanyInfoByAddr(@Param("province") String provinceCode, @Param("city") String cityCode);
 }
