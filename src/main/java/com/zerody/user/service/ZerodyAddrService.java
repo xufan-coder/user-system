@@ -29,4 +29,6 @@ public interface ZerodyAddrService {
     List<ZerodyAddrVo> getAllCity();
 
     Map<String, String> getAddCode(String provinceName, String cityName, String areaName);
+
+    List<ZerodyAddrVo> getAddrTreeByLevel(Integer level);
 }

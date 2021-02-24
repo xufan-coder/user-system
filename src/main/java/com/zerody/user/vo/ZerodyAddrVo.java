@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName ZerodyAddrVo
@@ -42,6 +44,7 @@ public class ZerodyAddrVo {
      */
     private Byte addrLevel;
 
+    private List<ZerodyAddrVo> childrenAddr;
 
     public String getCode(){
         return String.valueOf(this.code);

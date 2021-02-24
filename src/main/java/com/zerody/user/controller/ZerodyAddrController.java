@@ -90,4 +90,18 @@ public class ZerodyAddrController implements AddrRemoteService {
             @RequestParam(value = "areaName", required = false) String areaName){
         return R.success(zerodyAddrService.getAddCode(provinceName, cityName, areaName));
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          根据地址等级获取树形结构
+     * @date                 2021/2/24 16:44
+     * @param                [level]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ZerodyAddrVo>>
+     */
+    @GetMapping(value = "/get/addr-tree")
+    public DataResult<List<ZerodyAddrVo>> getAddrTreeByLevel(@RequestParam(name = "level") Integer level){
+        return R.success(zerodyAddrService.getAddrTreeByLevel(level));
+    }
 }
