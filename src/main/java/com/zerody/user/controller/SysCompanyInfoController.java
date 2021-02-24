@@ -203,7 +203,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
      */
     @Override
     @RequestMapping(value = "/get/company-info/inner", method = RequestMethod.GET)
-    public DataResult<CompanyInfoVo> getCompanyInfoByIdInner(@PathVariable(name = "id") String id){
+    public DataResult<CompanyInfoVo> getCompanyInfoByIdInner(@PathVariable(name = "companyId") String id){
         SysComapnyInfoVo companyInfo = sysCompanyInfoService.getCompanyInfoById(id);
         CompanyInfoVo companyInfoInner = new CompanyInfoVo();
         BeanUtils.copyProperties(companyInfo, companyInfoInner);
