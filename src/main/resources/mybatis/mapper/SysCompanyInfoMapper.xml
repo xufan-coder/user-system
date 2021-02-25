@@ -149,9 +149,12 @@
         FROM
         sys_company_info AS sci
         <where>
-            sci.company_addr_province_code = #{province}
+            sci.deleted = 0
             and
-            sci.company_address_city_code = #{city}
+            sci.company_address_city_code in
+            <foreach collection="cityCodes" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach>
         </where>
     </select>
 </mapper>

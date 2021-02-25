@@ -31,5 +31,5 @@ public interface SysCompanyInfoService {
 
     void updateAdminAccout(SetAdminAccountDto dto);
 
-    List<SysComapnyInfoVo> getCompanyInfoByAddr(String provinceCode, String cityCode);
+    List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes);
 }

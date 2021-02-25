@@ -315,8 +315,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<SysComapnyInfoVo> getCompanyInfoByAddr(String provinceCode, String cityCode) {
-        return this.sysCompanyInfoMapper.getCompanyInfoByAddr(provinceCode, cityCode);
+    public List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes) {
+        return this.sysCompanyInfoMapper.getCompanyInfoByAddr(cityCodes);
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

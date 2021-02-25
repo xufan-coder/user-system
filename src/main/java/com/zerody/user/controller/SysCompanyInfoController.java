@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.api.service.CompanyRemoteService;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -212,13 +213,12 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     }
 
     @GetMapping("/get/addr-filtrate")
-    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("provinceCode") String provinceCode,
-                                                             @RequestParam("cityCode") String cityCode){
+    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("cityCodes") List<String> cityCodes){
         try {
-            if (StringUtils.isEmpty(provinceCode) || StringUtils.isEmpty(cityCode)){
-                return R.error("地址code值均为必填");
+            if ( CollectionUtils.isEmpty(cityCodes)){
+                return R.error("地址code值必填");
             }
-           return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(provinceCode, cityCode));
+           return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(cityCodes));
         } catch (DefaultException e){
             log.error("通过地址获取企业错误!", e , e);
             return R.error(e.getMessage());
