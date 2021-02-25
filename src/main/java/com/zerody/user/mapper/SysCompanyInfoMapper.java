@@ -74,5 +74,5 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @param                cityCodes
      * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
      */
-    List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes);
+    List<SysComapnyInfoVo> getCompanyInfoByAddr(@Param("cityCodes") List<String> cityCodes);
 }
