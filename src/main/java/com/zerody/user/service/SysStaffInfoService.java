@@ -6,6 +6,7 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
@@ -104,4 +105,6 @@ public interface SysStaffInfoService {
     String getDepartId(String userId);
 
     StaffInfoVo getStaffInfo(String userId);
+
+    List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
 }

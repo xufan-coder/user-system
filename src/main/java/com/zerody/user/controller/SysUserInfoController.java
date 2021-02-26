@@ -23,6 +23,7 @@ import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -483,6 +484,24 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
         try {
             return R.success(sysStaffInfoService.getStaffInfo(userId));
+        } catch (DefaultException e){
+            log.error("获取员工id错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取部门id错误:{}",e,e);
+            return R.error("获取部门id错误,请求异常");
+        }
+    }
+
+    @RequestMapping(value = "/get/user", method = RequestMethod.GET)
+    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
+                                                                              @RequestParam(value = "roleId", required = false) String roleId,
+                                                                                    @RequestParam(value = "companyId", required = false) String companyId){
+        try {
+            if (StringUtils.isEmpty(departId) && StringUtils.isEmpty(roleId)){
+                return R.success();
+            }
+            return R.success(sysStaffInfoService.getUserByDepartOrRole(departId, roleId, companyId));
         } catch (DefaultException e){
             log.error("获取员工id错误:{}",e,e);
             return R.error(e.getMessage());

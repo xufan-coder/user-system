@@ -1307,6 +1307,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return staffInfoVo;
     }
 
+    @Override
+    public List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId) {
+
+        return this.sysStaffInfoMapper.getUserByDepartOrRole(departId, roleId, companyId);
+    }
 
 
     private String getStaffIdByUserId(String userId) {
