@@ -454,7 +454,10 @@
                 AND usd.department_id LIKE CONCAT('',#{departId},'%')
             </if>
             <if test="roleId neq null and roleId neq ''">
-                AND urs.role_id = #{roleId} AND ssi.comp_id = #{companyId}
+                AND urs.role_id = #{roleId} 
+            </if>
+            <if test="companyId neq null and companyId neq ''">
+                AND ssi.comp_id = #{companyId}
             </if>
         </where>
     </select>
