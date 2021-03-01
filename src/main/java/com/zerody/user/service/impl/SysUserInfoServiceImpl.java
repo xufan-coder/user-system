@@ -94,7 +94,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         //如果校验不通过提示前端
         CheckUser.checkParam(userInfo);
         //通过校验 把状态设为正常使用状态
-        userInfo.setStatus(StatusEnum.激活.getValue());
+        userInfo.setStatus(StatusEnum.activity.getValue());
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(userInfo);
         DataResult dataResult = new DataResult(ResultCodeEnum.RESULT_ERROR,true,"操作成功",null);
@@ -115,7 +115,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5( INIT_PWD )));//初始化密码登录并加密
         logInfo.setNickname(userInfo.getNickname());
         logInfo.setAvatar(userInfo.getAvatar());
-        logInfo.setStatus(StatusEnum.激活.getValue());
+        logInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         return dataResult;
@@ -136,7 +136,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
         }
         SysUserInfo userInfo = new SysUserInfo();
-        userInfo.setStatus(StatusEnum.删除.getValue());
+        userInfo.setStatus(StatusEnum.deleted.getValue());
         userInfo.setId(userId);
         this.saveOrUpdate(userInfo);
         return new DataResult();
@@ -146,7 +146,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public DataResult deleteUserBatchByIds(List<String> ids) {
         for (String id : ids){
             SysUserInfo userInfo = new SysUserInfo();
-            userInfo.setStatus(StatusEnum.删除.getValue());
+            userInfo.setStatus(StatusEnum.deleted.getValue());
             userInfo.setId(id);
             this.saveOrUpdate(userInfo);
         }

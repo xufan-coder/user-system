@@ -125,10 +125,10 @@ public class SysUserInfoController implements UserRemoteService {
         if(DataUtil.isEmpty(company)){
             return R.error("数据异常！");
         }
-        if(StatusEnum.停用.getValue().equals(company.getStatus())){
+        if(StatusEnum.stop.getValue().equals(company.getStatus())){
             return R.error("账号被停用！");
         }
-        if(   StatusEnum.删除.getValue().equals(company.getStatus())){
+        if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
         //校验密码

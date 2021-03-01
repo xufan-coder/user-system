@@ -52,12 +52,12 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
         jobQW.lambda().eq(SysJobPosition::getPositionName, job.getPositionName());
         jobQW.lambda().eq(SysJobPosition::getCompId, job.getCompId());
-        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
+        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.deleted.getValue());
         Integer jobNameCount = this.count(jobQW);
         if(jobNameCount > 0 ){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
-        job.setStatus(StatusEnum.激活.getValue());
+        job.setStatus(StatusEnum.activity.getValue());
         this.saveOrUpdate(job);
         return new DataResult();
     }
@@ -71,7 +71,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
             throw new DefaultException("该岗位已有员工存在，不可删除！");
         }
         SysJobPosition job = new SysJobPosition();
-        job.setStatus(StatusEnum.删除.getValue());
+        job.setStatus(StatusEnum.deleted.getValue());
         job.setId(jobId);
         this.updateJob(job);
         return new DataResult();
@@ -81,7 +81,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     public  List<SysJobPosition> getJob(String departId) {
         QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
         qw.lambda().eq(SysJobPosition::getDepartId,departId);
-        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         List<SysJobPosition> sysJobPositions = sysJobPositionMapper.selectList(qw);
         return sysJobPositions;
     }
@@ -92,7 +92,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         qw.lambda().eq(SysJobPosition::getDepartId,departId);
         qw.lambda().eq(SysJobPosition::getCompId,compId);
         qw.lambda().eq(SysJobPosition::getPositionName,name);
-        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         return sysJobPositionMapper.selectOne(qw);
     }
 
@@ -101,7 +101,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
         qw.lambda().eq(SysJobPosition::getCompId,compId);
         qw.lambda().eq(SysJobPosition::getPositionName,name);
-        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         return sysJobPositionMapper.selectOne(qw);
     }
 
@@ -112,7 +112,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<SysJobPosition> jobQW = new QueryWrapper<>();
         jobQW.lambda().eq(SysJobPosition::getPositionName, sysJobPosition.getPositionName());
         jobQW.lambda().eq(SysJobPosition::getCompId, sysJobPosition.getCompId());
-        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
+        jobQW.lambda().ne(SysJobPosition::getStatus, StatusEnum.deleted.getValue());
         jobQW.lambda().ne(SysJobPosition::getId, sysJobPosition.getId());
         //此处少了企业条件
         Integer jobNameCount = this.count(jobQW);

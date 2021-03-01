@@ -178,7 +178,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setCreateTime(new Date());
         sysUserInfo.setCreateUser(UserUtils.getUserName());
         sysUserInfo.setCreateId(UserUtils.getUserId());
-        sysUserInfo.setStatus(StatusEnum.激活.getValue());
+        sysUserInfo.setStatus(StatusEnum.activity.getValue());
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -190,7 +190,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        logInfo.setStatus(StatusEnum.激活.getValue());
+        logInfo.setStatus(StatusEnum.activity.getValue());
         log.info("添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         SmsDto smsDto=new SmsDto();
@@ -209,7 +209,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setUserId(sysUserInfo.getId());
         log.info("添加员工入库参数--{}",JSON.toJSONString(staff));
-        staff.setStatus(StatusEnum.激活.getValue());
+        staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
         this.saveOrUpdate(staff);
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())){
@@ -235,7 +235,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             unionStaffPositionMapper.insert(sp);
             QueryWrapper<SysJobPosition> qw=new QueryWrapper<>();
             qw.lambda().eq(SysJobPosition::getId,setSysUserInfoDto.getPositionId())
-                    .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+                    .ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
             SysJobPosition sysJobPosition = sysJobPositionMapper.selectOne(qw);
             if(DataUtil.isNotEmpty(sysJobPosition)){
                 positionName=sysJobPosition.getPositionName();
@@ -251,7 +251,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw=new QueryWrapper<>();
         qw.lambda().eq(SysCompanyInfo::getId,setSysUserInfoDto.getCompanyId())
-                .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+                .ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
 
@@ -315,7 +315,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setMobileNumber(sysUserInfo.getPhoneNumber());
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
-        logInfo.setStatus(StatusEnum.激活.getValue());
+        logInfo.setStatus(StatusEnum.activity.getValue());
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
 
@@ -399,7 +399,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staff = this.getById(staffId);
         SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
-        userInfo.setStatus(StatusEnum.删除.getValue());
+        userInfo.setStatus(StatusEnum.deleted.getValue());
         this.sysUserInfoMapper.updateById(userInfo);
         //删除部门
         QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
@@ -472,7 +472,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw=new QueryWrapper<>();
         qw.lambda().eq(SysCompanyInfo::getId,UserUtils.getUser().getCompanyId())
-                .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+                .ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
         //循环行
         for (int rowIndex = dataIndex; rowIndex < dataList.size();rowIndex++) {
@@ -684,7 +684,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[17]);
         userInfo.setMajor(row[18]);
         userInfo.setRegisterTime(new Date());
-        userInfo.setStatus(StatusEnum.激活.getValue());
+        userInfo.setStatus(StatusEnum.activity.getValue());
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
         userInfo.setCreateTime(new Date());
@@ -722,7 +722,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw=new QueryWrapper<>();
         qw.lambda().eq(SysCompanyInfo::getId,companyId)
-                .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+                .ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
@@ -765,7 +765,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String companyName=row[2];
             QueryWrapper<SysCompanyInfo> qw=new QueryWrapper<>();
             qw.lambda().eq(SysCompanyInfo::getCompanyName,companyName)
-                    .ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+                    .ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
             SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
             if(DataUtil.isEmpty(sysCompanyInfo)){
                 errorStr.append(companyName+"该企业不存在,");
@@ -840,7 +840,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[16]);
         userInfo.setMajor(row[17]);
         userInfo.setRegisterTime(new Date());
-        userInfo.setStatus(StatusEnum.激活.getValue());
+        userInfo.setStatus(StatusEnum.activity.getValue());
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
         userInfo.setCreateTime(new Date());
@@ -987,7 +987,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardUserInfo.setUserPwd(loginInfo.getUserPwd());
         cardUserInfo.setCreateBy(UserUtils.getUserId());
         cardUserInfo.setCreateTime(new Date());
-        cardUserInfo.setStatus(StatusEnum.激活.getValue());
+        cardUserInfo.setStatus(StatusEnum.activity.getValue());
         cardUserInfoMapper.insert(cardUserInfo);
 
         //关联内部员工信息
@@ -1105,7 +1105,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(!staff.getId().equals(com.getStaffId())){
             QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
             depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
-            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             if(dep == null){
                 return null;
@@ -1126,7 +1126,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //通过用户id获取员工
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, userId);
-        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
+        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.activity.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
         SysStaffInfo staff = this.getOne(staffQw);
         if (staff == null){
             throw new DefaultException("未找到员工");
@@ -1148,7 +1148,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //不是企业管理员 查看是否是部门管理员
             QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
             depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
-            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
@@ -1218,7 +1218,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //通过用户id获取员工
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, id);
-        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.激活.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
+        staffQw.lambda().and(sta ->sta.eq(SysStaffInfo::getStatus, StatusEnum.activity.getValue()).or().eq(SysStaffInfo::getStatus, StaffStatusEnum.COLLABORATE.getCode()));
         SysStaffInfo staff = this.getOne(staffQw);
         if (staff == null){
             throw new DefaultException("未找到员工");
@@ -1240,7 +1240,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //不是企业管理员 查看是否是部门管理员
             QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
             depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
-            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.激活.getValue());
+            depQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
@@ -1274,7 +1274,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
             depAdminQw.lambda().select(SysDepartmentInfo::getId)
                     .eq(SysDepartmentInfo::getAdminAccount, staffId).
-                    eq(SysDepartmentInfo::getStatus, StatusEnum.激活);
+                    eq(SysDepartmentInfo::getStatus, StatusEnum.activity);
             SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
             admin.setIsDepartAdmin(DataUtil.isNotEmpty(dep));
             return admin;
