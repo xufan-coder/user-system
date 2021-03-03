@@ -463,7 +463,8 @@
     </select>
     <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT 
-            sui.id
+            sui.id,
+            sui.user_name
         FROM 
             sys_staff_info AS ssi 
         JOIN sys_user_info AS sui ON  ssi.user_id = sui.id
