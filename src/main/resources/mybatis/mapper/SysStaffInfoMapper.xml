@@ -461,4 +461,17 @@
             </if>
         </where>
     </select>
+    <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
+        SELECT 
+            sui.id
+        FROM 
+            sys_staff_info AS ssi 
+        JOIN sys_user_info AS sui ON  ssi.user_id = sui.id
+        <where>
+            sui.status in (0, 3) and ssi.id in
+            <foreach collection="staffIds" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </select>
 </mapper>

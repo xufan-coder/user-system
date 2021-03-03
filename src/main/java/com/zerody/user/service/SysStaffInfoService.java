@@ -107,4 +107,6 @@ public interface SysStaffInfoService {
     StaffInfoVo getStaffInfo(String userId);
 
     List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
+
+    List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 }

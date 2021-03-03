@@ -510,4 +510,28 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("获取部门id错误,请求异常");
         }
     }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过用户id、角色id获取它的上级用户
+     * @date                 2021/3/3 16:34
+     * @param                [userId, roleId]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
+     */
+    @RequestMapping(value = "/get/superior-uesr-role", method = GET)
+    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
+                                                                                     @RequestParam("roleId")String roleId){
+        try {
+            return R.success(sysStaffInfoService.getSuperiorUesrByUserAndRole(userId, roleId));
+        } catch (DefaultException e){
+            log.error("获取上级员工错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取上级员工错误:{}",e,e);
+            return R.error("获取上级员工错误,请求异常");
+        }
+    }
 }

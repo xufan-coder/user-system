@@ -212,5 +212,17 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      */
     List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(@Param("departId") String departId,
                                                                  @Param("roleId") String roleId,
+
                                                                  @Param("companyId") String companyId);
+
+    /**
+     *
+     * 通过员工id查询用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/3 16:02
+     * @param                staffIds
+     * @return               com.zerody.user.vo.SysUserInfoVo
+     */
+    List<com.zerody.user.vo.SysUserInfoVo> getStaffByIds(@Param("staffIds") List<String> staffIds);
 }

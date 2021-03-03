@@ -1313,6 +1313,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.getUserByDepartOrRole(departId, roleId, companyId);
     }
 
+    @Override
+    public List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {
+	    String staffId = this.getStaffIdByUserId(userId);
+	    QueryWrapper<UnionStaffDepart> usdQw = new QueryWrapper<>();
+	    usdQw.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+	    UnionStaffDepart usd = this.unionStaffDeparService.getOne(usdQw);
+	    if (DataUtil.isEmpty(usd)){
+	        return null;
+        }
+	    List<UnionStaffDepart> usds = this.unionStaffDepartMapper.getStaffByRole(roleId);
+	    List<String> staffIds = this.getSuperiorStaff(usd.getDepartmentId(), usds);
+	    if (CollectionUtils.isNotEmpty(staffIds)){
+	        return this.sysStaffInfoMapper.getStaffByIds(staffIds);
+        }
+        return null;
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
@@ -1342,5 +1359,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
 
+    private List<String> getSuperiorStaff(String parent, List<UnionStaffDepart> usds){
+	    List<UnionStaffDepart> us = usds.stream().filter(a-> parent.equals(a.getDepartmentId())).collect(Collectors.toList());
+	    if (CollectionUtils.isNotEmpty(us)){
+	        List<String> staffIds = us.stream().map(UnionStaffDepart::getStaffId).collect(Collectors.toList());
+	        return staffIds;
+        }
+	    if (parent.lastIndexOf("_") == -1){
+	        return null;
+        }
+	    return this.getSuperiorStaff(parent.substring(0, parent.lastIndexOf("_")), usds);
+    }
 
 }
