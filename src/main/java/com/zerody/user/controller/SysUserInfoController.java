@@ -1,6 +1,24 @@
 package com.zerody.user.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
+import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
@@ -13,27 +31,26 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.*;
-import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.domain.CardUserInfo;
-import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.CardUserInfoVo;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.service.*;
+import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.service.AdminUserService;
+import com.zerody.user.service.CardUserService;
+import com.zerody.user.service.CompanyAdminService;
+import com.zerody.user.service.SysCompanyInfoService;
+import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
+
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author PengQiang
@@ -521,7 +538,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @param                [userId, roleId]
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
      */
-    @RequestMapping(value = "/get/superior-uesr-role", method = GET)
+	@RequestMapping(value = "/superior", method = GET)
     public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
                                                                                      @RequestParam("roleId")String roleId){
         try {
