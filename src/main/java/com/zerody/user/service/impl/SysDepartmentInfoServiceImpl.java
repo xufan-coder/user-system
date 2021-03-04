@@ -196,7 +196,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             userDepart.setUserId(staffInfo.getUserId());
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()){
-                throw new DefaultException("网络错误");
+                throw new DefaultException("修改线索负责人失败");
             }
         }
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
