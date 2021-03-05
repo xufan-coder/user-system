@@ -127,10 +127,10 @@ public class SysDepartmentInfoController {
             sysDepartmentInfoService.updateAdminAccout(dto);
             return R.success();
         } catch (DefaultException e) {
-            log.error("设置部门管理员错误:{}", e.getMessage());
+            log.error("设置部门管理员错误:{}", e.getMessage(), e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("设置部门管理员错误:{}", e.getMessage());
+            log.error("设置部门管理员错误:{}", e.getMessage(), e);
             return R.error("设置部门管理员错误,请求异常");
         }
     }
@@ -152,11 +152,11 @@ public class SysDepartmentInfoController {
             UserVo user = UserUtils.getUser();
             return R.success(this.sysDepartmentInfoService.getSubordinateStructure(user));
         } catch (DefaultException e) {
-            log.error("设置部门管理员错误:{}", e.getMessage());
+            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("设置部门管理员错误:{}", e.getMessage());
-            return R.error("设置部门管理员错误,请求异常");
+            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
+            return R.error("获取下级部门组织架构错误,请求异常");
         }
     }
 }

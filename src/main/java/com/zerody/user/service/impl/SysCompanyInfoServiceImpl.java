@@ -111,7 +111,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业联系人号码格式错误");
         }
         QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
-        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.删除.getValue());
+        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.deleted.getValue());
         comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
         //查询该企业是否存在
         Integer count = sysCompanyInfoMapper.selectCount(comQW);
@@ -119,7 +119,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业名称已被占用");
         }
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
-        userQw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+        userQw.lambda().ne(SysUserInfo::getStatus, StatusEnum.deleted.getValue());
         userQw.lambda().eq(SysUserInfo::getPhoneNumber, sysCompanyInfo.getContactPhone());
         //查询该手机号码是否存在
         SysUserInfo user =  this.sysUserInfoMapper.selectOne(userQw);
@@ -127,7 +127,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("该手机号码已存在！");
         }
         //添加企业默认为该企业为有效状态
-        sysCompanyInfo.setStatus(StatusEnum.激活.getValue());
+        sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
         this.saveOrUpdate(sysCompanyInfo);
         SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
@@ -204,7 +204,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业联系人号码格式错误");
         }
         QueryWrapper<SysCompanyInfo> comQW = new QueryWrapper<>();
-        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.删除.getValue());
+        comQW.lambda().ne(SysCompanyInfo::getStatus, StatusEnum.deleted.getValue());
         comQW.lambda().eq(SysCompanyInfo::getCompanyName, sysCompanyInfo.getCompanyName());
         comQW.lambda().ne(SysCompanyInfo::getId, sysCompanyInfo.getId());
         //查询该企业是否存在
@@ -228,19 +228,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业id为空");
         }
         SysCompanyInfo company = new SysCompanyInfo();
-        company.setStatus(StatusEnum.删除.getValue());
+        company.setStatus(StatusEnum.deleted.getValue());
         company.setId(companyId);
         this.saveOrUpdate(company);
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
-        staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.删除.getValue());
+        staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.deleted.getValue());
         List<SysStaffInfo> staffs = this.sysStaffInfoMapper.selectList(staffQw);
 
         List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
         SysUserInfo userInfo = new SysUserInfo();
-        userInfo.setStatus( StatusEnum.删除.getValue());
+        userInfo.setStatus( StatusEnum.deleted.getValue());
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.删除.getValue());
+        userUw.lambda().ne(SysUserInfo::getStatus, StatusEnum.deleted.getValue());
         userUw.lambda().in(SysUserInfo::getId, userIds);
         this.sysUserInfoMapper.update(userInfo,userUw);
     }
@@ -313,6 +313,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
     }
+
+    @Override
+    public List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes) {
+        return this.sysCompanyInfoMapper.getCompanyInfoByAddr(cityCodes);
+    }
+
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo=new CardUserInfo();
@@ -320,7 +326,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
         cardUserInfo.setCreateBy(UserUtils.getUserId());
         cardUserInfo.setCreateTime(new Date());
-        cardUserInfo.setStatus(StatusEnum.激活.getValue());
+        cardUserInfo.setStatus(StatusEnum.activity.getValue());
         this.cardUserMapper.insert(cardUserInfo);
 
         //关联内部员工信息

@@ -37,7 +37,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
     public CardUserDto addCardUser(CardUserDto cardUser) {
         CardUserInfo info =new CardUserInfo();
         BeanUtils.copyProperties(cardUser,info);
-        info.setStatus(StatusEnum.激活.getValue());
+        info.setStatus(StatusEnum.activity.getValue());
         info.setId(UUIDutils.getUUID32());
         info.setCreateTime(new Date());
         //校验该openId是否已经存在

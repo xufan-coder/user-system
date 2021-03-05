@@ -198,4 +198,31 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     IPage<BosStaffInfoVo> getWxPageAllStaff(@Param("dto") SysStaffInfoPageDto dto, IPage<BosStaffInfoVo> iPage);
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(@Param("dto")  SysStaffInfoPageDto sysStaffInfoPageDto, IPage<BosStaffInfoVo> infoVoIPage,@Param("depIds")  List<String> depIds);
+
+    /**
+     *  根据角色或部门查询用户
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/2/26 17:30
+     * @param                departId
+     * @param                roleId
+     * @param                companyId
+     * @return               com.zerody.user.vo.SysUserInfoVo
+     */
+    List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(@Param("departId") String departId,
+                                                                 @Param("roleId") String roleId,
+
+                                                                 @Param("companyId") String companyId);
+
+    /**
+     *
+     * 通过员工id查询用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/3 16:02
+     * @param                staffIds
+     * @return               com.zerody.user.vo.SysUserInfoVo
+     */
+    List<com.zerody.user.vo.SysUserInfoVo> getStaffByIds(@Param("staffIds") List<String> staffIds);
 }

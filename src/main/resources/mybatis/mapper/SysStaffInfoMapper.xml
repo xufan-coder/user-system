@@ -434,4 +434,45 @@
         </where>
         order by ssi.create_time desc
     </select>
+    <select id="getUserByDepartOrRole" resultType="com.zerody.user.vo.SysUserInfoVo">
+        SELECT
+            sui.id,
+            sui.user_name,
+            sui.phone_number
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        <if test="departId neq null and departId neq ''">
+            JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        </if>
+        <if test="roleId neq null and roleId neq ''">
+            JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        </if>
+        <where>
+            sui.status IN (0, 2)
+            <if test="departId neq null and departId neq ''">
+                AND usd.department_id LIKE CONCAT('',#{departId},'%')
+            </if>
+            <if test="roleId neq null and roleId neq ''">
+                AND urs.role_id = #{roleId} 
+            </if>
+            <if test="companyId neq null and companyId neq ''">
+                AND ssi.comp_id = #{companyId}
+            </if>
+        </where>
+    </select>
+    <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
+        SELECT 
+            sui.id,
+            sui.user_name
+        FROM 
+            sys_staff_info AS ssi 
+        JOIN sys_user_info AS sui ON  ssi.user_id = sui.id
+        <where>
+            sui.status in (0, 3) and ssi.id in
+            <foreach collection="staffIds" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </select>
 </mapper>

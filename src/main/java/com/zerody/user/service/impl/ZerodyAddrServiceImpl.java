@@ -8,15 +8,13 @@ import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.naming.Name;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +83,13 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         return addrMap;
     }
 
+    @Override
+    public List<ZerodyAddrVo> getAddrTreeByLevel(Integer level) {
+        List<ZerodyAddrVo> addrs = this.mapper.getAddrTreeByLevel(level);
+        addrs = this.getChildrenAddr("0", addrs);
+        return addrs;
+    }
+
     @Cacheable(value = "addrName", key = "#code")
     private String getAddrName(String code){
        return this.mapper.getAddrName(code);
@@ -96,4 +101,15 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         return this.mapper.getAddrCode(name);
     }
 
+
+    private List<ZerodyAddrVo> getChildrenAddr(String parentId, List<ZerodyAddrVo> addrs){
+        List<ZerodyAddrVo> childrens = addrs.stream().filter(a -> parentId.equals(a.getpAddrCode())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(childrens)){
+            for (ZerodyAddrVo addr : childrens){
+                addr.setChildrenAddr(getChildrenAddr(addr.getCode(), addrs));
+            }
+            return childrens;
+        }
+        return new ArrayList<>();
+    }
 }

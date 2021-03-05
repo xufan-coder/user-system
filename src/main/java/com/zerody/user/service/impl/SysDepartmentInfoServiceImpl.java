@@ -73,14 +73,14 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
-        depQW.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());
+        depQW.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().eq(SysDepartmentInfo::getCompId, sysDepartmentInfo.getCompId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
             throw new DefaultException("该部门名称已存在!");
         }
-        sysDepartmentInfo.setStatus(StatusEnum.激活.getValue());
+        sysDepartmentInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
 
 
@@ -111,7 +111,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
         //查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
-        depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.删除.getValue());
+        depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().ne(SysDepartmentInfo::getId, sysDepartmentInfo.getId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
@@ -142,15 +142,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         //删除当前部门以及子级部门
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
-        depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.删除.getValue());
+        depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
         depUw.lambda().like(SysDepartmentInfo::getId, depId);
         this.update(depUw);
         //删除部门下的岗位
         QueryWrapper<SysJobPosition> jobQw = new QueryWrapper<>();
         jobQw.lambda().like(SysJobPosition::getDepartId, depId);
-        jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.删除.getValue());
+        jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.deleted.getValue());
         SysJobPosition job = new SysJobPosition();
-        job.setStatus(StatusEnum.删除.getValue());
+        job.setStatus(StatusEnum.deleted.getValue());
         this.sysJobPositionMapper.update(job, jobQw);
     }
 
@@ -165,7 +165,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     public List<SysDepartmentInfo> getDepartmentByComp(String compId) {
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(SysDepartmentInfo::getCompId,compId);
-        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         return sysDepartmentInfoMapper.selectList(qw);
     }
 
@@ -174,7 +174,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         qw.lambda().eq(SysDepartmentInfo::getCompId,compId);
         qw.lambda().eq(SysDepartmentInfo::getDepartName,name);
-        qw.lambda().ne(BaseModel::getStatus,StatusEnum.删除.getValue());
+        qw.lambda().ne(BaseModel::getStatus,StatusEnum.deleted.getValue());
         return sysDepartmentInfoMapper.selectOne(qw);
     }
 
@@ -187,16 +187,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             throw new DefaultException("员工id为空");
         }
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
-        usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getId());
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
-        if (!dep.getDepartmentId().equals(dto.getId())){
+        if (!dto.getId().equals(dep.getDepartmentId())){
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(dto.getId());
             SysStaffInfo staffInfo = this.stafffMapper.selectById(dto.getStaffId());
             userDepart.setUserId(staffInfo.getUserId());
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()){
-                throw new DefaultException("网络错误");
+                throw new DefaultException("修改线索负责人失败");
             }
         }
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();

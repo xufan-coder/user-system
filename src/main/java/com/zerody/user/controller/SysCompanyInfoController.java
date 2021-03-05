@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.api.service.CompanyRemoteService;
+import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/company-info")
-public class SysCompanyInfoController {
+public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Autowired
     private SysCompanyInfoService sysCompanyInfoService;
@@ -186,6 +191,40 @@ public class SysCompanyInfoController {
         }  catch (Exception e) {
             log.error("设置企业管理员错误:{}",e.getMessage());
             return R.error("设置企业管理员错误,请求异常");
+        }
+    }
+
+    /**
+     *
+     *  获取企业详情inner
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/5 11:02
+     * @param                [id]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    @Override
+    @RequestMapping(value = "/get/company-info/inner", method = RequestMethod.GET)
+    public DataResult<CompanyInfoVo> getCompanyInfoByIdInner(@PathVariable(name = "companyId") String id){
+        SysComapnyInfoVo companyInfo = sysCompanyInfoService.getCompanyInfoById(id);
+        CompanyInfoVo companyInfoInner = new CompanyInfoVo();
+        BeanUtils.copyProperties(companyInfo, companyInfoInner);
+        return R.success(companyInfoInner);
+    }
+
+    @GetMapping("/get/addr-filtrate")
+    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("cityCodes") List<String> cityCodes){
+        try {
+            if ( CollectionUtils.isEmpty(cityCodes)){
+                return R.error("地址code值必填");
+            }
+           return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(cityCodes));
+        } catch (DefaultException e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
         }
     }
 }

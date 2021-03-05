@@ -134,4 +134,27 @@
         </where>
 
     </select>
+    <select id="getCompanyInfoByAddr" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+        sci.id,
+        sci.company_name,
+        sci.company_code,
+        sci.company_addr_province_code,
+        sci.company_address_city_code,
+        sci.company_address_area_code,
+        sci.company_address,
+        sci.contact_name,
+        sci.contact_phone,
+        sci.status
+        FROM
+        sys_company_info AS sci
+        <where>
+            sci.status = 0
+            and
+            sci.company_address_city_code in
+            <foreach collection="cityCodes" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach>
+        </where>
+    </select>
 </mapper>

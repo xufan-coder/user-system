@@ -30,4 +30,6 @@ public interface SysCompanyInfoService {
     SysComapnyInfoVo getCompanyInfoById(String id);
 
     void updateAdminAccout(SetAdminAccountDto dto);
+
+    List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes);
 }

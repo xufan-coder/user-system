@@ -45,4 +45,13 @@
         where
          address = #{name}
     </select>
+
+    <select id="getAddrTreeByLevel" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        <include refid="Base_Column_List" />
+        from zerody_addr
+        <where>
+            is_enabled = 0 and addr_level &lt;=  #{level}
+        </where>
+    </select>
 </mapper>

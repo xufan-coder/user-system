@@ -1,6 +1,24 @@
 package com.zerody.user.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
+import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
@@ -13,26 +31,26 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.*;
-import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.domain.CardUserInfo;
-import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.CardUserInfoVo;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.service.*;
+import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.service.AdminUserService;
+import com.zerody.user.service.CardUserService;
+import com.zerody.user.service.CompanyAdminService;
+import com.zerody.user.service.SysCompanyInfoService;
+import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
+
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author PengQiang
@@ -124,10 +142,10 @@ public class SysUserInfoController implements UserRemoteService {
         if(DataUtil.isEmpty(company)){
             return R.error("数据异常！");
         }
-        if(StatusEnum.停用.getValue().equals(company.getStatus())){
+        if(StatusEnum.stop.getValue().equals(company.getStatus())){
             return R.error("账号被停用！");
         }
-        if(   StatusEnum.删除.getValue().equals(company.getStatus())){
+        if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
             return R.error("当前账号未开通，请联系管理员开通！");
         }
         //校验密码
@@ -489,6 +507,48 @@ public class SysUserInfoController implements UserRemoteService {
         }  catch (Exception e) {
             log.error("获取部门id错误:{}",e,e);
             return R.error("获取部门id错误,请求异常");
+        }
+    }
+
+    @RequestMapping(value = "/get/user", method = RequestMethod.GET)
+    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
+                                                                              @RequestParam(value = "roleId", required = false) String roleId,
+                                                                                    @RequestParam(value = "companyId", required = false) String companyId){
+        try {
+            if (StringUtils.isEmpty(departId) && StringUtils.isEmpty(roleId)){
+                return R.success();
+            }
+            return R.success(sysStaffInfoService.getUserByDepartOrRole(departId, roleId, companyId));
+        } catch (DefaultException e){
+            log.error("获取员工id错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取部门id错误:{}",e,e);
+            return R.error("获取部门id错误,请求异常");
+        }
+    }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过用户id、角色id获取它的上级用户
+     * @date                 2021/3/3 16:34
+     * @param                [userId, roleId]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
+     */
+	@RequestMapping(value = "/superior", method = GET)
+    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
+                                                                                     @RequestParam("roleId")String roleId){
+        try {
+            return R.success(sysStaffInfoService.getSuperiorUesrByUserAndRole(userId, roleId));
+        } catch (DefaultException e){
+            log.error("获取上级员工错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取上级员工错误:{}",e,e);
+            return R.error("获取上级员工错误,请求异常");
         }
     }
 }

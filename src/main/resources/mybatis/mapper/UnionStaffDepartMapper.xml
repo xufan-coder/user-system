@@ -9,5 +9,19 @@
   <sql id="Base_Column_List" >
     Id, staff_id, department_id
   </sql>
+    <select id="getStaffByRole" resultType="com.zerody.user.domain.UnionStaffDepart">
+      SELECT
+        ssi.id as staffId,
+        usd.department_id AS departmentId
+      FROM
+        sys_staff_info AS ssi
+      JOIN union_role_staff AS urs ON ssi.id = urs.staff_id
+      JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+      <where>
+            <if test="roleId neq null and roleId neq ''">
+                urs.role_id = #{roleId}
+            </if>
+      </where>
+    </select>
 
 </mapper>
