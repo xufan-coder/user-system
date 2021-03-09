@@ -16,6 +16,7 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -317,6 +318,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes) {
         return this.sysCompanyInfoMapper.getCompanyInfoByAddr(cityCodes);
+    }
+
+    @Override
+    public List<CompanyInfoVo> getCompanyInfoByIds(List<String> ids) {
+        List<CompanyInfoVo> coms = this.sysCompanyInfoMapper.getCompanyInfoByIds(ids);
+        return coms;
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

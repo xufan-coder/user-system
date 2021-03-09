@@ -227,4 +227,11 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.error(e.getMessage());
         }
     }
+
+    @Override
+    @RequestMapping(value = "/get/company-infos/inner", method = RequestMethod.GET)
+    public DataResult<List<CompanyInfoVo>> getCompanyInfoByIdsInner(@PathVariable(name = "companyIds") List<String> ids){
+        List<CompanyInfoVo> companyInfos = sysCompanyInfoService.getCompanyInfoByIds(ids);
+        return R.success(companyInfos);
+    }
 }
