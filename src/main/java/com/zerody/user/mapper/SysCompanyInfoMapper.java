@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.SysComapnyInfoVo;
@@ -75,4 +76,17 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
      */
     List<SysComapnyInfoVo> getCompanyInfoByAddr(@Param("cityCodes") List<String> cityCodes);
+
+    /**
+     *
+     *  根据多个id查询企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/9 11:36
+     * @param                ids
+     * @return               java.util.List<com.zerody.user.api.vo.CompanyInfoVo>
+     */
+    List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
+
+    List<SysComapnyInfoVo> getCompanyAll();
 }

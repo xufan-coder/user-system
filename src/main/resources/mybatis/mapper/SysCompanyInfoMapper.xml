@@ -157,4 +157,28 @@
             </foreach>
         </where>
     </select>
+    <select id="getCompanyInfoByIds" resultType="com.zerody.user.api.vo.CompanyInfoVo">
+        SELECT
+            ci.id AS companyId,
+            ci.company_name
+        FROM
+            sys_company_info AS ci
+        <where>
+            <if test="ids neq null and ids.size() > 0">
+                ci.id IN
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getCompanyAll" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+            id,
+            company_name AS companyName
+        FROM
+            sys_company_info
+        WHERE
+            status = 0
+    </select>
 </mapper>

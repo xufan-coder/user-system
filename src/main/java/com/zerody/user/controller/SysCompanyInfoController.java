@@ -227,4 +227,34 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.error(e.getMessage());
         }
     }
+
+    @Override
+    @RequestMapping(value = "/get/company-infos/inner", method = RequestMethod.GET)
+    public DataResult<List<CompanyInfoVo>> getCompanyInfoByIdsInner(@PathVariable(name = "companyIds") List<String> ids){
+        List<CompanyInfoVo> companyInfos = sysCompanyInfoService.getCompanyInfoByIds(ids);
+        return R.success(companyInfos);
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取全部企业
+     * @date                 2021/3/10 10:40
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @GetMapping("/get/all")
+    public DataResult<List<SysComapnyInfoVo>> getCompanyAll(){
+        try {
+
+            return R.success(this.sysCompanyInfoService.getCompanyAll());
+        } catch (DefaultException e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        }
+    }
 }
