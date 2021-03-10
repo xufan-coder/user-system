@@ -87,4 +87,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               java.util.List<com.zerody.user.api.vo.CompanyInfoVo>
      */
     List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
+
+    List<SysComapnyInfoVo> getCompanyAll();
 }

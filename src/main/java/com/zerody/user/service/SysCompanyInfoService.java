@@ -35,4 +35,6 @@ public interface SysCompanyInfoService {
     List<SysComapnyInfoVo> getCompanyInfoByAddr(List<String> cityCodes);
 
     List<CompanyInfoVo> getCompanyInfoByIds(List<String> ids);
+
+    List<SysComapnyInfoVo> getCompanyAll();
 }
