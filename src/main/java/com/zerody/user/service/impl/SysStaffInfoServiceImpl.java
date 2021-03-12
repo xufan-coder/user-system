@@ -20,6 +20,7 @@ import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
@@ -29,8 +30,10 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.ContractFeignService;
 import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
@@ -149,6 +152,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private ClewRemoteService clewService;
+
+    @Autowired
+    private ContractFeignService contractService;
+
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1328,6 +1335,31 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	        return this.sysStaffInfoMapper.getStaffByIds(staffIds);
         }
         return null;
+    }
+
+    @Override
+    public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) {
+        IPage<UserPerformanceReviewsVo>  iPage = new Page<>(param.getCurrent(), param.getPageSize());
+        iPage = this.sysStaffInfoMapper.getPagePerformanceReviews(param, iPage);
+        if (DataUtil.isEmpty(iPage.getRecords())){
+            return iPage;
+        }
+        List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
+        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
+        if (!prResult.isSuccess()){
+            throw new DefaultException("获取业绩总结报表出错");
+        }
+        List<PerformanceReviewsVo> prs = prResult.getData();
+        if (CollectionUtils.isEmpty(prs)){
+            return iPage;
+        }
+        Map<String, PerformanceReviewsVo> perMap = prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
+        iPage.getRecords().stream().forEach(r->{
+            if (DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
+                BeanUtils.copyProperties(perMap.get(r.getUserId()), r);
+            }
+        });
+	    return iPage;
     }
 
 

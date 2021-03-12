@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import java.util.List;
 
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -225,4 +226,16 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.zerody.user.vo.SysUserInfoVo
      */
     List<com.zerody.user.vo.SysUserInfoVo> getStaffByIds(@Param("staffIds") List<String> staffIds);
+
+    /**
+     *
+     *  获取企业用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/10 17:02
+     * @param                param
+     * @param                iPage
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.UserPerformanceReviewsVo>
+     */
+    IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(@Param("param") UserPerformanceReviewsPageDto param, IPage<UserPerformanceReviewsVo> iPage);
 }
