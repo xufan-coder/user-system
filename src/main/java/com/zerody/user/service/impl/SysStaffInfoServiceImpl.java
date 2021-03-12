@@ -1303,14 +1303,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public StaffInfoVo getStaffInfo(String userId) {
-	    StaffInfoVo staffInfoVo = new StaffInfoVo();
-	    String staffId = this.getStaffIdByUserId(userId);
-	    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-	    staffQw.select("comp_id ","user_name").lambda().eq(SysStaffInfo::getId, staffId);
-	    SysStaffInfo staffInfo = this.getOne(staffQw);
-        BeanUtils.copyProperties(staffInfo, staffInfoVo);
-        staffInfoVo.setCompanyId(staffInfo.getCompId());
-        staffInfoVo.setDepartId(this.getDepartId(userId));
+        StaffInfoVo staffInfoVo = this.sysStaffInfoMapper.getStaffInfoInner(userId);
         return staffInfoVo;
     }
 
