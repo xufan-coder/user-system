@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1337,20 +1338,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isEmpty(iPage.getRecords())){
             return iPage;
         }
+        String time = null;
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            param.setTime(sdf.format(new Date()));
+        }
         List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
         DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
         if (!prResult.isSuccess()){
             throw new DefaultException("获取业绩总结报表出错");
         }
         List<PerformanceReviewsVo> prs = prResult.getData();
-        if (CollectionUtils.isEmpty(prs)){
-            return iPage;
-        }
-        Map<String, PerformanceReviewsVo> perMap = prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
+        String[] times = param.getTime().split("-");
+        time = times[0].concat("年");
+        time = time.concat(times[1].concat("日"));
+        String finalTime = time;
+        Map<String, PerformanceReviewsVo> perMap = CollectionUtils.isEmpty(prs)? null : prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
         iPage.getRecords().stream().forEach(r->{
-            if (DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
+            if (DataUtil.isNotEmpty(perMap) && DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
                 BeanUtils.copyProperties(perMap.get(r.getUserId()), r);
             }
+            r.setMonth(finalTime);
         });
 	    return iPage;
     }
