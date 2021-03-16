@@ -559,7 +559,7 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
     @Override
-    @RequestMapping("/sys-user-info/update/performance-password/inner")
+    @RequestMapping("/update/performance-password/inner")
     public DataResult<Object> updatePerformancePassword(AdminUserInfo userInfo){
         try {
             this.sysUserInfoService.updatePerformancePassword(userInfo);
@@ -617,8 +617,8 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
      */
     @Override
-    @RequestMapping(value = "/sys-user-info/get/show/performance/inner", method = RequestMethod.GET)
-    public DataResult<String> getShowPerformancePassword(String mobile){
+    @RequestMapping(value = "/get/show/performance/inner", method = RequestMethod.GET)
+    public DataResult<String> getShowPerformancePassword(@RequestParam("mobile")String mobile){
         try {
             String pass = this.sysUserInfoService.getShowPerformancePassword(mobile);
             return R.success(pass);
