@@ -475,4 +475,50 @@
             </foreach>
         </where>
     </select>
+    <select id="getPagePerformanceReviews" resultType="com.zerody.user.vo.UserPerformanceReviewsVo">
+        SELECT
+            sui.user_name,
+            sci.company_name,
+            sdi.depart_name AS departmentName,
+            urs.role_id,
+            urs.role_name
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            sui.status IN (0, 3)
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND sci.id = #{param.companyId}
+            </if>
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                AND sdi.id = #{param.departmentId}
+            </if>
+            <if test="param.userId neq null and param.userId neq ''">
+                AND sui.id = #{param.userId}
+            </if>
+        </where>
+    </select>
+    <select id="getStaffInfoInner" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            sui.user_name,
+            sui.id AS userId,
+            sci.company_name,
+            sci.id AS companyId,
+            sdi.id AS departmentId,
+            sdi.depart_name AS departmentName
+
+        FROM
+            sys_staff_info AS ssi
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
+        <where>
+            sui.id = #{id}
+        </where>
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import com.zerody.common.util.ExcelToolUtil;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
@@ -29,8 +31,10 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.ContractFeignService;
 import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
@@ -149,6 +153,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private ClewRemoteService clewService;
+
+    @Autowired
+    private ContractFeignService contractService;
+
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1296,14 +1304,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public StaffInfoVo getStaffInfo(String userId) {
-	    StaffInfoVo staffInfoVo = new StaffInfoVo();
-	    String staffId = this.getStaffIdByUserId(userId);
-	    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-	    staffQw.select("comp_id ","user_name").lambda().eq(SysStaffInfo::getId, staffId);
-	    SysStaffInfo staffInfo = this.getOne(staffQw);
-        BeanUtils.copyProperties(staffInfo, staffInfoVo);
-        staffInfoVo.setCompanyId(staffInfo.getCompId());
-        staffInfoVo.setDepartId(this.getDepartId(userId));
+        StaffInfoVo staffInfoVo = this.sysStaffInfoMapper.getStaffInfoInner(userId);
         return staffInfoVo;
     }
 
@@ -1328,6 +1329,38 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	        return this.sysStaffInfoMapper.getStaffByIds(staffIds);
         }
         return null;
+    }
+
+    @Override
+    public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) {
+        IPage<UserPerformanceReviewsVo>  iPage = new Page<>(param.getCurrent(), param.getPageSize());
+        iPage = this.sysStaffInfoMapper.getPagePerformanceReviews(param, iPage);
+        if (DataUtil.isEmpty(iPage.getRecords())){
+            return iPage;
+        }
+        String time = null;
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            param.setTime(sdf.format(new Date()));
+        }
+        List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
+        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
+        if (!prResult.isSuccess()){
+            throw new DefaultException("获取业绩总结报表出错");
+        }
+        List<PerformanceReviewsVo> prs = prResult.getData();
+        String[] times = param.getTime().split("-");
+        time = times[0].concat("年");
+        time = time.concat(times[1].concat("日"));
+        String finalTime = time;
+        Map<String, PerformanceReviewsVo> perMap = CollectionUtils.isEmpty(prs)? null : prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
+        iPage.getRecords().stream().forEach(r->{
+            if (DataUtil.isNotEmpty(perMap) && DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
+                BeanUtils.copyProperties(perMap.get(r.getUserId()), r);
+            }
+            r.setMonth(finalTime);
+        });
+	    return iPage;
     }
 
 

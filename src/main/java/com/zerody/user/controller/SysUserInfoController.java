@@ -6,6 +6,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.List;
 
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -44,10 +46,6 @@ import com.zerody.user.service.CompanyAdminService;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -551,4 +549,19 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("获取上级员工错误,请求异常");
         }
     }
+    /*************************************************1.1版本api接口*******************************************************************/
+
+    @RequestMapping(value = "/get/page/performance-reviews/collect", method = GET)
+    public DataResult<IPage<UserPerformanceReviewsVo>> getPagePerformanceReviews(UserPerformanceReviewsPageDto param){
+        try {
+            return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
+        } catch (DefaultException e){
+            log.error("获取业绩总结列表出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取业绩总结列表出错:{}",e,e);
+            return R.error("获取业绩总结列表出错,请求异常");
+        }
+    }
+
 }

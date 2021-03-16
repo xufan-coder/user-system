@@ -12,10 +12,8 @@ import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.vo.BosStaffInfoVo;
-import com.zerody.user.vo.CopyStaffInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
-import com.zerody.user.vo.SysUserInfoVo;
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -109,4 +107,6 @@ public interface SysStaffInfoService {
     List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
 
     List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
+
+    IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param);
 }
