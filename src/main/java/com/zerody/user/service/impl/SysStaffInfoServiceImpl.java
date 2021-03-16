@@ -1351,7 +1351,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<PerformanceReviewsVo> prs = prResult.getData();
         String[] times = param.getTime().split("-");
         time = times[0].concat("年");
-        time = time.concat(times[1].concat("日"));
+        time = time.concat(times[1].concat("月"));
         String finalTime = time;
         Map<String, PerformanceReviewsVo> perMap = CollectionUtils.isEmpty(prs)? null : prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
         iPage.getRecords().stream().forEach(r->{

@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.zerody.common.utils.DataUtil;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.Data;
 
@@ -62,4 +63,31 @@ public class UserPerformanceReviewsVo {
         return StringUtils.isEmpty(this.performanceIncome) ? "0.00" : this.performanceIncome;
     }
 
+    public Integer getPaymentNumber(){
+        return DataUtil.isEmpty(this.paymentNumber) ? 0 : this.paymentNumber;
+    }
+
+    public String getLoanMoney(){
+        return StringUtils.isEmpty(this.loanMoney) ? "0.00" : this.loanMoney;
+    }
+
+    public Integer getLoanNumber(){
+        return DataUtil.isEmpty(this.loanNumber) ? 0 : this.loanNumber;
+    }
+
+    public String getSignOrderMoney(){
+        return StringUtils.isEmpty(this.signOrderMoney) ? "0.00" : this.signOrderMoney;
+    }
+
+    public Integer getSignOrderNumber() {
+        return DataUtil.isEmpty(this.signOrderNumber) ? 0 : this.signOrderNumber;
+    }
+
+    public String getWaitApprovalMoney(){
+        return StringUtils.isEmpty(this.waitApprovalMoney) ? "0.00" : this.waitApprovalMoney;
+    }
+
+    public Integer getWaitApprovalNumber(){
+        return DataUtil.isEmpty(this.waitApprovalNumber) ? 0 : this.waitApprovalNumber;
+    }
 }
