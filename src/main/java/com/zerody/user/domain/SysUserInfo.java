@@ -136,4 +136,6 @@ public class  SysUserInfo extends BaseModel {
     */
     private String familyAddr;
 
+    /** 业绩查看密码 */
+    private String performanceShowPassword;
 }

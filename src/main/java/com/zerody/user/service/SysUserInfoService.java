@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
+import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.CheckLoginVo;
@@ -207,4 +208,6 @@ public interface SysUserInfoService {
      * @return               java.lang.String
      */
     String getUserIdByCompIdOrStaffId(String staffId);
+
+    void updatePerformancePassword(AdminUserInfo userInfo);
 }

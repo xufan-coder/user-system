@@ -16,6 +16,8 @@ import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -109,4 +111,6 @@ public interface SysStaffInfoService {
     List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param);
+
+    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param,  HttpServletResponse res) throws IOException;
 }

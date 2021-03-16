@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -248,6 +249,14 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             throw new DefaultException("获取异常！");
         }
         return staffInfo.getUserId();
+    }
+
+    @Override
+    public void updatePerformancePassword(com.zerody.user.api.vo.AdminUserInfo userInfo) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getPhoneNumber, userInfo.getPhoneNumber());
+        userUw.lambda().set(SysUserInfo::getPerformanceShowPassword, userInfo.getUserPwd());
+        this.update(userUw);
     }
 
 
