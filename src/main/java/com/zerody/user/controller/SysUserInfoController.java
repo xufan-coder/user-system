@@ -618,7 +618,7 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/sys-user-info/get/show/performance/inner", method = RequestMethod.GET)
-    DataResult<String> getShowPerformancePassword(String mobile){
+    public DataResult<String> getShowPerformancePassword(String mobile){
         try {
             String pass = this.sysUserInfoService.getShowPerformancePassword(mobile);
             return R.success(pass);
