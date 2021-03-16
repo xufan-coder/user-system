@@ -560,7 +560,7 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Override
     @RequestMapping("/update/performance-password/inner")
-    public DataResult<Object> updatePerformancePassword(AdminUserInfo userInfo){
+    public DataResult<Object> updatePerformancePassword(@RequestBody AdminUserInfo userInfo){
         try {
             this.sysUserInfoService.updatePerformancePassword(userInfo);
             return R.success();
