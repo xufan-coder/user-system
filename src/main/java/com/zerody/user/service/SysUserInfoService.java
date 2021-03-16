@@ -210,4 +210,6 @@ public interface SysUserInfoService {
     String getUserIdByCompIdOrStaffId(String staffId);
 
     void updatePerformancePassword(AdminUserInfo userInfo);
+
+    String getShowPerformancePassword(String mobile);
 }

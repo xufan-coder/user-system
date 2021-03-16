@@ -607,4 +607,28 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+    /**
+     *
+     * 查询业绩密码
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/16 19:19
+     * @param                mobile
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/sys-user-info/get/show/performance/inner", method = RequestMethod.GET)
+    DataResult<String> getShowPerformancePassword(String mobile){
+        try {
+            String pass = this.sysUserInfoService.getShowPerformancePassword(mobile);
+            return R.success(pass);
+        } catch (DefaultException e){
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error("获取业绩密码出错"+ e);
+        }
+    }
+
 }

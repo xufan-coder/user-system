@@ -13,6 +13,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysUserInfoService;
@@ -28,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -257,6 +259,21 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         userUw.lambda().eq(SysUserInfo::getPhoneNumber, userInfo.getPhoneNumber());
         userUw.lambda().set(SysUserInfo::getPerformanceShowPassword, userInfo.getUserPwd());
         this.update(userUw);
+    }
+
+    @Override
+    public String getShowPerformancePassword(String mobile) {
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.lambda().eq(SysUserInfo::getPhoneNumber, mobile);
+        List<Integer> list = new ArrayList<>();
+        list.add(0);
+        list.add(3);
+        userQw.lambda().in(SysUserInfo::getStatus, list);
+        SysUserInfo user = this.getOne(userQw);
+        if (DataUtil.isEmpty(user)){
+            throw new DefaultException("用户不存在");
+        }
+        return user.getPerformanceShowPassword();
     }
 
 
