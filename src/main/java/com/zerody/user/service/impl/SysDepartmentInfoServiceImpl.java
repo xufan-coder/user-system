@@ -204,7 +204,6 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         depUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
         this.update(depUw);
         QueryWrapper<UnionStaffDepart> staffDepQw = new QueryWrapper<>();
-        staffDepQw.lambda().eq(UnionStaffDepart::getDepartmentId, dto.getId());
         staffDepQw.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
         unionStaffDepartMapper.delete(staffDepQw);
         UnionStaffDepart unSd = new UnionStaffDepart();
