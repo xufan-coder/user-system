@@ -6,7 +6,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.List;
 
+import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/sys-user-info")
 @RestController
 public class SysUserInfoController implements UserRemoteService {
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Autowired
     private SysUserInfoService sysUserInfoService;
@@ -554,6 +559,7 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/get/page/performance-reviews/collect", method = GET)
     public DataResult<IPage<UserPerformanceReviewsVo>> getPagePerformanceReviews(UserPerformanceReviewsPageDto param){
         try {
+            checkUtil.SetUserPositionInfo(param);
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
             log.error("获取业绩总结列表出错:{}",e,e);
