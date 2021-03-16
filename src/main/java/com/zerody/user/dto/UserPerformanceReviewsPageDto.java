@@ -3,6 +3,7 @@ package com.zerody.user.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.dto.bean.UserPositionPageParam;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,18 +16,11 @@ import java.util.Date;
  * @Deacription TODO
  */
 @Data
-public class UserPerformanceReviewsPageDto extends PageQueryDto {
+public class UserPerformanceReviewsPageDto extends UserPositionPageParam {
 
-    /** 企业id */
-    private String companyId;
-
-    private String departmentId;
 
     /** 客户名称 */
     private String customerName;
-
-    private String userId;
-
     private String time;
 
 }
