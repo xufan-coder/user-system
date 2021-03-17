@@ -508,7 +508,7 @@
             sui.id AS userId,
             sci.company_name,
             sci.id AS companyId,
-            sdi.id AS departmentId,
+            sdi.id AS departId,
             sdi.depart_name AS departmentName
 
         FROM
