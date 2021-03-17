@@ -256,7 +256,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public void updatePerformancePassword(com.zerody.user.api.vo.AdminUserInfo userInfo) {
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().eq(SysUserInfo::getPhoneNumber, userInfo.getPhoneNumber());
+        userUw.lambda().eq(SysUserInfo::getId, userInfo.getId());
         userUw.lambda().set(SysUserInfo::getPerformanceShowPassword, userInfo.getUserPwd());
         this.update(userUw);
     }
