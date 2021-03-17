@@ -262,14 +262,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public String getShowPerformancePassword(String mobile) {
-        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
-        userQw.lambda().eq(SysUserInfo::getPhoneNumber, mobile);
-        List<Integer> list = new ArrayList<>();
-        list.add(0);
-        list.add(3);
-        userQw.lambda().in(SysUserInfo::getStatus, list);
-        SysUserInfo user = this.getOne(userQw);
+    public String getShowPerformancePassword(String id) {
+        SysUserInfo user = this.getById(id);
         if (DataUtil.isEmpty(user)){
             throw new DefaultException("用户不存在");
         }

@@ -211,5 +211,5 @@ public interface SysUserInfoService {
 
     void updatePerformancePassword(AdminUserInfo userInfo);
 
-    String getShowPerformancePassword(String mobile);
+    String getShowPerformancePassword(String id);
 }

@@ -618,9 +618,9 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/get/show/performance/inner", method = RequestMethod.GET)
-    public DataResult<String> getShowPerformancePassword(@RequestParam("mobile")String mobile){
+    public DataResult<String> getShowPerformancePassword(@RequestParam("id")String id){
         try {
-            String pass = this.sysUserInfoService.getShowPerformancePassword(mobile);
+            String pass = this.sysUserInfoService.getShowPerformancePassword(id);
             return R.success(pass);
         } catch (DefaultException e){
             log.error("获取业绩密码出错:{}",e,e);
