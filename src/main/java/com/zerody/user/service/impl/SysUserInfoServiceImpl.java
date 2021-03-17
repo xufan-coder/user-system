@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -12,6 +13,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysUserInfoService;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -248,6 +251,23 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             throw new DefaultException("获取异常！");
         }
         return staffInfo.getUserId();
+    }
+
+    @Override
+    public void updatePerformancePassword(com.zerody.user.api.vo.AdminUserInfo userInfo) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, userInfo.getId());
+        userUw.lambda().set(SysUserInfo::getPerformanceShowPassword, userInfo.getUserPwd());
+        this.update(userUw);
+    }
+
+    @Override
+    public String getShowPerformancePassword(String id) {
+        SysUserInfo user = this.getById(id);
+        if (DataUtil.isEmpty(user)){
+            throw new DefaultException("用户不存在");
+        }
+        return user.getPerformanceShowPassword();
     }
 
 

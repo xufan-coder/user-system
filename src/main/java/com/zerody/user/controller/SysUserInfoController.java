@@ -10,6 +10,7 @@ import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
+import javafx.geometry.Pos;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -51,6 +52,8 @@ import com.zerody.user.service.SysUserInfoService;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author PengQiang
@@ -554,7 +557,24 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("获取上级员工错误,请求异常");
         }
     }
+
+    @Override
+    @RequestMapping("/update/performance-password/inner")
+    public DataResult<Object> updatePerformancePassword(@RequestBody AdminUserInfo userInfo){
+        try {
+            this.sysUserInfoService.updatePerformancePassword(userInfo);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("修改业绩查看密码错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("修改业绩查看密码错误:{}",e,e);
+            return R.error("修改业绩查看密码错误!"+ e);
+        }
+    }
+
     /*************************************************1.1版本api接口*******************************************************************/
+
 
     @RequestMapping(value = "/get/page/performance-reviews/collect", method = GET)
     public DataResult<IPage<UserPerformanceReviewsVo>> getPagePerformanceReviews(UserPerformanceReviewsPageDto param){
@@ -567,6 +587,47 @@ public class SysUserInfoController implements UserRemoteService {
         }  catch (Exception e) {
             log.error("获取业绩总结列表出错:{}",e,e);
             return R.error("获取业绩总结列表出错,请求异常");
+        }
+    }
+
+    @RequestMapping(value = "/get/page/performance-reviews/collect-export", method = POST)
+    public DataResult<Object> doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res){
+        try {
+            checkUtil.SetUserPositionInfo(param);
+            param.setCurrent(1);
+            param.setPageSize(10000);
+            sysStaffInfoService.doPerformanceReviewsExport(param, res);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("导出业绩总结列表出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("导出业绩总结列表出错:{}",e,e);
+            return R.error("导出业绩总结列表出错"+ e);
+        }
+    }
+
+    /**
+     *
+     * 查询业绩密码
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/16 19:19
+     * @param                mobile
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/get/show/performance/inner", method = RequestMethod.GET)
+    public DataResult<String> getShowPerformancePassword(@RequestParam("id")String id){
+        try {
+            String pass = this.sysUserInfoService.getShowPerformancePassword(id);
+            return R.success(pass);
+        } catch (DefaultException e){
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error("获取业绩密码出错"+ e);
         }
     }
 
