@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -1332,16 +1333,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) {
+    public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException {
         IPage<UserPerformanceReviewsVo>  iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.sysStaffInfoMapper.getPagePerformanceReviews(param, iPage);
         if (DataUtil.isEmpty(iPage.getRecords())){
             return iPage;
         }
         String time = null;
+        //限制放款日期条件查询不能超过今天
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
             param.setTime(sdf.format(new Date()));
+        } else {
+            String thisDateString = sdf.format(new Date());
+            String[] times = param.getTime().split("-");
+            String[] thisDateStrings = thisDateString.split("-");
+            if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
+                param.setTime(sdf.format(new Date()));
+            }
         }
         List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
         DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
@@ -1364,7 +1373,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse response) throws IOException {
+    public void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse response) throws IOException, ParseException {
         List<UserPerformanceReviewsVo> list = this.getPagePerformanceReviews(param).getRecords();
         List<String[]> rowData = new ArrayList<>();
         list.stream().forEach(p->{

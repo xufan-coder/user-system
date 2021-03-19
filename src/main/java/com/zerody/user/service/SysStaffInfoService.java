@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -110,7 +111,7 @@ public interface SysStaffInfoService {
 
     List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 
-    IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param);
+    IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
 
-    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param,  HttpServletResponse res) throws IOException;
+    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param,  HttpServletResponse res) throws IOException, ParseException;
 }
