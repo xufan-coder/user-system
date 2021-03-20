@@ -31,4 +31,16 @@ public interface ZerodyAddrService {
     Map<String, String> getAddCode(String provinceName, String cityName, String areaName);
 
     List<ZerodyAddrVo> getAddrTreeByLevel(Integer level);
+
+    /**
+     *  根据 地址名称模糊查询
+     * @param provinceName
+     * @param cityName
+     * @param areaName
+     * @return
+     */
+    Map<String, String> getCodeByLikeName(String provinceName, String cityName, String areaName);
+
+
+
 }
