@@ -212,4 +212,6 @@ public interface SysUserInfoService {
     void updatePerformancePassword(AdminUserInfo userInfo);
 
     String getShowPerformancePassword(String id);
+
+    void updateUserIsSignOrder(String userId);
 }

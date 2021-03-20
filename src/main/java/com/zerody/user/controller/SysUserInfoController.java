@@ -579,7 +579,10 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/get/page/performance-reviews/collect", method = GET)
     public DataResult<IPage<UserPerformanceReviewsVo>> getPagePerformanceReviews(UserPerformanceReviewsPageDto param){
         try {
-            checkUtil.SetUserPositionInfo(param);
+//            checkUtil.SetUserPositionInfo(param);
+            if (UserUtils.getUser().isBackAdmin()) {
+                param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
             log.error("获取业绩总结列表出错:{}",e,e);
@@ -631,4 +634,21 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+
+    @Override
+    @RequestMapping(value = "/update/is-sign-order/inner", method = POST)
+    public DataResult<Object> updateUserIsSignOrder(@RequestParam("id") String userId){
+        try {
+            this.sysUserInfoService.updateUserIsSignOrder(userId);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取业绩密码出错:{}",e,e);
+            return R.error("获取业绩密码出错"+ e);
+        }
+    }
+
+/**-------------------------------------------------------------------------------------------------------------------  */
 }
