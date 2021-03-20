@@ -596,7 +596,10 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/get/page/performance-reviews/collect-export", method = POST)
     public DataResult<Object> doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res){
         try {
-            checkUtil.SetUserPositionInfo(param);
+//            checkUtil.SetUserPositionInfo(param);
+            if (UserUtils.getUser().isBackAdmin()) {
+                param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }
             param.setCurrent(1);
             param.setPageSize(10000);
             sysStaffInfoService.doPerformanceReviewsExport(param, res);
