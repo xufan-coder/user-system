@@ -54,4 +54,12 @@
             is_enabled = 0 and addr_level &lt;=  #{level}
         </where>
     </select>
+    <select id="getCodeByLikeName" resultType="java.lang.String" >
+         select
+            code
+        from zerody_addr
+        where
+         address like concat('%',#{name},'%')
+         and  addr_level = #{level} limit 1
+    </select>
 </mapper>
