@@ -242,6 +242,18 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
      *
+     *  获取企业用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/10 17:02
+     * @param                userIds
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.UserPerformanceReviewsVo>
+     */
+    List<UserPerformanceReviewsVo> getPagePerformanceReviewsByUserIds(@Param("userIds")List<String> userIds);
+
+
+    /**
+     *
      *  11
      * @author               PengQiang
      * @description          DELL
