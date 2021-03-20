@@ -491,7 +491,7 @@
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            sui.status IN (0, 3)
+            sui.status IN (0, 3) AND sui.is_sign_order = 1
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sci.id = #{param.companyId}
             </if>

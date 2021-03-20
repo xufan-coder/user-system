@@ -1349,7 +1349,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String[] times = param.getTime().split("-");
             String[] thisDateStrings = thisDateString.split("-");
             if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
-                param.setTime(sdf.format(new Date()));
+                iPage.setTotal(0);
+                iPage.setRecords(new ArrayList<>());
+                return iPage;
             }
         }
         List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());

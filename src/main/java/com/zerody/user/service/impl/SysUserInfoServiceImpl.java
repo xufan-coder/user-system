@@ -270,5 +270,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return user.getPerformanceShowPassword();
     }
 
+    @Override
+    public void updateUserIsSignOrder(String userId) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, userId);
+        userUw.lambda().set(SysUserInfo::getIsSignOrder, YesNo.YES);
+        this.update(userUw);
+    }
+
 
 }

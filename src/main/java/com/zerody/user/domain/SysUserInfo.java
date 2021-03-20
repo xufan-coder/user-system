@@ -138,4 +138,7 @@ public class  SysUserInfo extends BaseModel {
 
     /** 业绩查看密码 */
     private String performanceShowPassword;
+
+    /** 是否有签单 */
+    private Integer isSignOrder;
 }
