@@ -90,6 +90,28 @@ public class ZerodyAddrServiceImpl implements ZerodyAddrService {
         return addrs;
     }
 
+
+    @Override
+    public Map<String, String> getCodeByLikeName(String provinceName, String cityName, String areaName) {
+        Map<String, String> addrMap = new HashMap<>();
+        if(StringUtils.isNotEmpty(provinceName)){
+            addrMap.put(provinceName, this.getCodeByLikeName(provinceName,1));
+        }
+        if(StringUtils.isNotEmpty(cityName)){
+            addrMap.put(cityName, this.getCodeByLikeName(cityName,2));
+        }
+        if(StringUtils.isNotEmpty(areaName)){
+            addrMap.put(areaName, this.getCodeByLikeName(areaName,3));
+        }
+        return addrMap;
+    }
+
+    @Cacheable(value = "addrCode", key = "#method+#name")
+    private String getCodeByLikeName(String name,Integer level){
+       return this.mapper.getCodeByLikeName(name ,level);
+    }
+
+
     @Cacheable(value = "addrName", key = "#code")
     private String getAddrName(String code){
        return this.mapper.getAddrName(code);
