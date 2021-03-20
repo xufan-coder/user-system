@@ -637,7 +637,7 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Override
     @RequestMapping(value = "/update/is-sign-order/inner", method = POST)
-    DataResult<Object> updateUserIsSignOrder(@RequestParam("id") String userId){
+    public DataResult<Object> updateUserIsSignOrder(@RequestParam("id") String userId){
         try {
             this.sysUserInfoService.updateUserIsSignOrder(userId);
             return R.success();
