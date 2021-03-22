@@ -114,4 +114,6 @@ public interface SysStaffInfoService {
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
 
     void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param,  HttpServletResponse res) throws IOException, ParseException;
+
+    StaffInfoVo getStaffInfoByCardUserId(String cardUserId);
 }
