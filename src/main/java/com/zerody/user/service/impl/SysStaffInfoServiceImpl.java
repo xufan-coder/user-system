@@ -72,6 +72,7 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.smartcardio.Card;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1406,6 +1407,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         OutputStream os = response.getOutputStream();
         workbook.write(os);
         os.close();
+    }
+
+    @Override
+    public StaffInfoVo getStaffInfoByCardUserId(String cardUserId) {
+	    QueryWrapper<CardUserUnionUser> cardUserQw = new QueryWrapper<>();
+	    cardUserQw.lambda().eq(CardUserUnionUser::getCardId, cardUserId);
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(cardUserQw);
+        if (DataUtil.isEmpty(cardUserId)) {
+            return null;
+        }
+        return this.getStaffInfo(cardUserUnionUser.getUserId());
     }
 
 

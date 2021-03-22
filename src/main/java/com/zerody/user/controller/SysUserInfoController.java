@@ -573,6 +573,30 @@ public class SysUserInfoController implements UserRemoteService {
         }
     }
 
+    /**
+     * 通过小程序用户id查询用户
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/get/card-user/staff-info/inner", method = RequestMethod.GET)
+    DataResult<StaffInfoVo> getStaffInfoByCardUserId(@RequestParam("userId")String cardUserId){
+        try {
+
+            return R.success(sysStaffInfoService.getStaffInfoByCardUserId(cardUserId));
+        } catch (DefaultException e){
+            log.error("获取用户信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取用户信息失败:{}",e,e);
+            return R.error("获取用户信息失败!"+ e);
+        }
+    }
+
     /*************************************************1.1版本api接口*******************************************************************/
 
 
@@ -594,7 +618,7 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
     @RequestMapping(value = "/get/page/performance-reviews/collect-export", method = POST)
-    public DataResult<Object> doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res){
+    public DataResult<Object> doPerformanceReviewsExport(@RequestBody UserPerformanceReviewsPageDto param, HttpServletResponse res){
         try {
 //            checkUtil.SetUserPositionInfo(param);
             if (UserUtils.getUser().isBackAdmin()) {
