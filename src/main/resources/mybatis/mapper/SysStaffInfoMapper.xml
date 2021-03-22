@@ -53,7 +53,11 @@
       sjp.position_name AS positionName,
       sdi.depart_name AS departName,
       ssi.id AS staffId,
-      urs.role_name AS roleName
+      urs.role_name AS roleName,
+      sui.status AS staffStatus,
+      sui.status = 0 AS activity,
+      sui.status = 3 AS teamwork,
+      sui.status = 1 AS stops
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -84,7 +88,7 @@
               and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
           </if>
       </where>
-      order by ssi.create_time desc
+      order by teamwork,stops,activity,ssi.create_time desc
   </select>
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
