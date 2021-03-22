@@ -685,7 +685,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setAncestral(row[8]);
         userInfo.setNation(row[9]);
         userInfo.setMaritalStatus(row[10]);
-        userInfo.setBirthday(new Date(row[11]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
         userInfo.setCertificateCard(row[12]);
         userInfo.setCertificateCardAddress(row[13]);
         userInfo.setContactAddress(row[14]);
@@ -841,7 +841,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setAncestral(row[7]);
         userInfo.setNation(row[8]);
         userInfo.setMaritalStatus(row[9]);
-        userInfo.setBirthday(new Date(row[10]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[10]) ? null: new Date(row[10]));
         userInfo.setCertificateCard(row[11]);
         userInfo.setCertificateCardAddress(row[12]);
         userInfo.setContactAddress(row[13]);
