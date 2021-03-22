@@ -1416,7 +1416,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    QueryWrapper<CardUserUnionUser> cardUserQw = new QueryWrapper<>();
 	    cardUserQw.lambda().eq(CardUserUnionUser::getCardId, cardUserId);
         CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(cardUserQw);
-        if (DataUtil.isEmpty(cardUserId)) {
+        if (DataUtil.isEmpty(cardUserUnionUser)) {
             return null;
         }
         return this.getStaffInfo(cardUserUnionUser.getUserId());
