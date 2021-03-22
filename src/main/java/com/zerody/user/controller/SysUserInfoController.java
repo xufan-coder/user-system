@@ -584,7 +584,7 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/get/card-user/staff-info/inner", method = RequestMethod.GET)
-    DataResult<StaffInfoVo> getStaffInfoByCardUserId(@RequestParam("userId")String cardUserId){
+    public DataResult<StaffInfoVo> getStaffInfoByCardUserId(@RequestParam("userId")String cardUserId){
         try {
 
             return R.success(sysStaffInfoService.getStaffInfoByCardUserId(cardUserId));
