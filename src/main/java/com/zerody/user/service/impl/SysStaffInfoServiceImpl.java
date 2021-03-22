@@ -1384,23 +1384,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             list = this.sysStaffInfoMapper.getPagePerformanceReviewsByUserIds(param.getUserIds());
         }
         List<String[]> rowData = new ArrayList<>();
-        list.stream().forEach(p->{
-            rowData.add(new String[13]);
-            rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
-            rowData.get(rowData.size() - 1)[1] = p.getDepartmentName();
-            rowData.get(rowData.size() - 1)[2] = p.getRoleName();
-            rowData.get(rowData.size() - 1)[3] = p.getUserName();
-            rowData.get(rowData.size() - 1)[4] = p.getPerformanceIncome();
-            rowData.get(rowData.size() - 1)[5] = p.getPaymentNumber().toString();
-            rowData.get(rowData.size() - 1)[6] = p.getLoanMoney();
-            rowData.get(rowData.size() - 1)[7] = p.getLoanNumber().toString();
-            rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
-            rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
-            rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
-            rowData.get(rowData.size() - 1)[11] = p.getSignOrderNumber().toString();
-            rowData.get(rowData.size() - 1)[12] = p.getMonth();
+        if (CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(p->{
+                rowData.add(new String[13]);
+                rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
+                rowData.get(rowData.size() - 1)[1] = p.getDepartmentName();
+                rowData.get(rowData.size() - 1)[2] = p.getRoleName();
+                rowData.get(rowData.size() - 1)[3] = p.getUserName();
+                rowData.get(rowData.size() - 1)[4] = p.getPerformanceIncome();
+                rowData.get(rowData.size() - 1)[5] = p.getPaymentNumber().toString();
+                rowData.get(rowData.size() - 1)[6] = p.getLoanMoney();
+                rowData.get(rowData.size() - 1)[7] = p.getLoanNumber().toString();
+                rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
+                rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
+                rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
+                rowData.get(rowData.size() - 1)[11] = p.getSignOrderNumber().toString();
+                rowData.get(rowData.size() - 1)[12] = p.getMonth();
 
-        });
+            });
+        }
         HSSFWorkbook workbook = ExcelToolUtil.createExcel(PERFORMANCE_REVIEWS_EXPORT_TITLE, rowData, null);
 //        response.setContentType("octets/stream");
         response.addHeader("Content-Disposition", "attachment;filename="+new String( "业绩总结报表".getBytes("gb2312"), "ISO8859-1" )+".xls");
