@@ -1335,14 +1335,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException {
+        String time = null;
+        //限制放款日期条件查询不能超过当前月
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         IPage<UserPerformanceReviewsVo>  iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.sysStaffInfoMapper.getPagePerformanceReviews(param, iPage);
         if (DataUtil.isEmpty(iPage.getRecords())){
             return iPage;
         }
-        String time = null;
-        //限制放款日期条件查询不能超过当前月
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+            param.setTime(sdf.format(new Date()));
+        }
         String thisDateString = sdf.format(new Date());
         String[] times = param.getTime().split("-");
         String[] thisDateStrings = thisDateString.split("-");
@@ -1361,8 +1364,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (CollectionUtils.isEmpty(param.getUserIds())) {
             list = this.getPagePerformanceReviews(param).getRecords();
         } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+                param.setTime(sdf.format(new Date()));
+            }
             list = this.sysStaffInfoMapper.getPagePerformanceReviewsByUserIds(param.getUserIds());
-            this.setPerformanceReviews(param, list);
+            String thisDateString = sdf.format(new Date());
+            String[] times = param.getTime().split("-");
+            String[] thisDateStrings = thisDateString.split("-");
+            if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
+
+            } else {
+                this.setPerformanceReviews(param, list);
+            }
         }
         List<String[]> rowData = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
