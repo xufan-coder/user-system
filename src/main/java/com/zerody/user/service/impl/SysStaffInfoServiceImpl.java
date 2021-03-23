@@ -1384,7 +1384,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             list = this.sysStaffInfoMapper.getPagePerformanceReviewsByUserIds(param.getUserIds());
         }
         List<String[]> rowData = new ArrayList<>();
-        if (CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             list.stream().forEach(p->{
                 rowData.add(new String[13]);
                 rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
