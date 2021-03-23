@@ -1,5 +1,8 @@
 package com.zerody.user.vo;
 
+import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.enums.StaffStatusEnum;
 import lombok.Data;
 
 import java.util.Date;
@@ -62,4 +65,17 @@ public class BosStaffInfoVo {
     */
     private String roleName;
 
+    /** 员工状态 */
+    private Integer staffStatus;
+
+    public String getStaffStatusString(){
+         if (DataUtil.isEmpty(this.staffStatus)) {
+             return "";
+         }
+        StatusEnum statusEnum = StatusEnum.getByValue(this.staffStatus);
+         if (DataUtil.isEmpty(statusEnum)) {
+             return "";
+         }
+         return statusEnum.getDesc();
+    }
 }

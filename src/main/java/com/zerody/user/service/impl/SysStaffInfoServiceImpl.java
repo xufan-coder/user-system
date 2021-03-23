@@ -72,6 +72,7 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.smartcardio.Card;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -684,7 +685,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setAncestral(row[8]);
         userInfo.setNation(row[9]);
         userInfo.setMaritalStatus(row[10]);
-        userInfo.setBirthday(new Date(row[11]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
         userInfo.setCertificateCard(row[12]);
         userInfo.setCertificateCardAddress(row[13]);
         userInfo.setContactAddress(row[14]);
@@ -840,7 +841,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setAncestral(row[7]);
         userInfo.setNation(row[8]);
         userInfo.setMaritalStatus(row[9]);
-        userInfo.setBirthday(new Date(row[10]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[10]) ? null: new Date(row[10]));
         userInfo.setCertificateCard(row[11]);
         userInfo.setCertificateCardAddress(row[12]);
         userInfo.setContactAddress(row[13]);
@@ -1334,43 +1335,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException {
+        String time = null;
+        //限制放款日期条件查询不能超过当前月
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         IPage<UserPerformanceReviewsVo>  iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.sysStaffInfoMapper.getPagePerformanceReviews(param, iPage);
         if (DataUtil.isEmpty(iPage.getRecords())){
             return iPage;
         }
-        String time = null;
-        //限制放款日期条件查询不能超过今天
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
             param.setTime(sdf.format(new Date()));
-        } else {
-            String thisDateString = sdf.format(new Date());
-            String[] times = param.getTime().split("-");
-            String[] thisDateStrings = thisDateString.split("-");
-            if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
-                iPage.setTotal(0);
-                iPage.setRecords(new ArrayList<>());
-                return iPage;
-            }
         }
-        List<String> userId  = iPage.getRecords().stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
-        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
-        if (!prResult.isSuccess()){
-            throw new DefaultException("获取业绩总结报表出错");
-        }
-        List<PerformanceReviewsVo> prs = prResult.getData();
+        String thisDateString = sdf.format(new Date());
         String[] times = param.getTime().split("-");
-        time = times[0].concat("年");
-        time = time.concat(times[1].concat("月"));
-        String finalTime = time;
-        Map<String, PerformanceReviewsVo> perMap = CollectionUtils.isEmpty(prs)? null : prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
-        iPage.getRecords().stream().forEach(r->{
-            if (DataUtil.isNotEmpty(perMap) && DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
-                BeanUtils.copyProperties(perMap.get(r.getUserId()), r);
-            }
-            r.setMonth(finalTime);
-        });
+        String[] thisDateStrings = thisDateString.split("-");
+        if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
+            iPage.setTotal(0);
+            iPage.setRecords(new ArrayList<>());
+            return iPage;
+        }
+        this.setPerformanceReviews(param, iPage.getRecords());
 	    return iPage;
     }
 
@@ -1380,32 +1364,57 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (CollectionUtils.isEmpty(param.getUserIds())) {
             list = this.getPagePerformanceReviews(param).getRecords();
         } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+                param.setTime(sdf.format(new Date()));
+            }
             list = this.sysStaffInfoMapper.getPagePerformanceReviewsByUserIds(param.getUserIds());
+            String thisDateString = sdf.format(new Date());
+            String[] times = param.getTime().split("-");
+            String[] thisDateStrings = thisDateString.split("-");
+            if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
+
+            } else {
+                this.setPerformanceReviews(param, list);
+            }
         }
         List<String[]> rowData = new ArrayList<>();
-        list.stream().forEach(p->{
-            rowData.add(new String[13]);
-            rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
-            rowData.get(rowData.size() - 1)[1] = p.getDepartmentName();
-            rowData.get(rowData.size() - 1)[2] = p.getRoleName();
-            rowData.get(rowData.size() - 1)[3] = p.getUserName();
-            rowData.get(rowData.size() - 1)[4] = p.getPerformanceIncome();
-            rowData.get(rowData.size() - 1)[5] = p.getPaymentNumber().toString();
-            rowData.get(rowData.size() - 1)[6] = p.getLoanMoney();
-            rowData.get(rowData.size() - 1)[7] = p.getLoanNumber().toString();
-            rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
-            rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
-            rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
-            rowData.get(rowData.size() - 1)[11] = p.getSignOrderNumber().toString();
-            rowData.get(rowData.size() - 1)[12] = p.getMonth();
+        if (CollectionUtils.isNotEmpty(list)) {
+            list.stream().forEach(p->{
+                rowData.add(new String[13]);
+                rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
+                rowData.get(rowData.size() - 1)[1] = p.getDepartmentName();
+                rowData.get(rowData.size() - 1)[2] = p.getRoleName();
+                rowData.get(rowData.size() - 1)[3] = p.getUserName();
+                rowData.get(rowData.size() - 1)[4] = p.getPerformanceIncome();
+                rowData.get(rowData.size() - 1)[5] = p.getPaymentNumber().toString();
+                rowData.get(rowData.size() - 1)[6] = p.getLoanMoney();
+                rowData.get(rowData.size() - 1)[7] = p.getLoanNumber().toString();
+                rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
+                rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
+                rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
+                rowData.get(rowData.size() - 1)[11] = p.getSignOrderNumber().toString();
+                rowData.get(rowData.size() - 1)[12] = p.getMonth();
 
-        });
+            });
+        }
         HSSFWorkbook workbook = ExcelToolUtil.createExcel(PERFORMANCE_REVIEWS_EXPORT_TITLE, rowData, null);
 //        response.setContentType("octets/stream");
         response.addHeader("Content-Disposition", "attachment;filename="+new String( "业绩总结报表".getBytes("gb2312"), "ISO8859-1" )+".xls");
         OutputStream os = response.getOutputStream();
         workbook.write(os);
         os.close();
+    }
+
+    @Override
+    public StaffInfoVo getStaffInfoByCardUserId(String cardUserId) {
+	    QueryWrapper<CardUserUnionUser> cardUserQw = new QueryWrapper<>();
+	    cardUserQw.lambda().eq(CardUserUnionUser::getCardId, cardUserId);
+        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(cardUserQw);
+        if (DataUtil.isEmpty(cardUserUnionUser)) {
+            return null;
+        }
+        return this.getStaffInfo(cardUserUnionUser.getUserId());
     }
 
 
@@ -1448,5 +1457,29 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 	    return this.getSuperiorStaff(parent.substring(0, parent.lastIndexOf("_")), usds);
     }
-
+    private void setPerformanceReviews(UserPerformanceReviewsPageDto param, List<UserPerformanceReviewsVo> list){
+        String time = null;
+        //限制放款日期条件查询不能超过当前月
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())){
+            param.setTime(sdf.format(new Date()));
+        }
+        List<String> userId  = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
+        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
+        if (!prResult.isSuccess()){
+            throw new DefaultException("获取业绩总结报表出错");
+        }
+        List<PerformanceReviewsVo> prs = prResult.getData();
+        String[] times = param.getTime().split("-");
+        time = times[0].concat("年");
+        time = time.concat(times[1].concat("月"));
+        String finalTime = time;
+        Map<String, PerformanceReviewsVo> perMap = CollectionUtils.isEmpty(prs)? null : prs.stream().collect(Collectors.toMap(PerformanceReviewsVo::getUserId, p -> p , (k1, k2)-> k1, HashMap::new));
+        list.stream().forEach(r->{
+            if (DataUtil.isNotEmpty(perMap) && DataUtil.isNotEmpty(perMap.get(r.getUserId()))){
+                BeanUtils.copyProperties(perMap.get(r.getUserId()), r);
+            }
+            r.setMonth(finalTime);
+        });
+    }
 }

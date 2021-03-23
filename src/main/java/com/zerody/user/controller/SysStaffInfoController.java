@@ -217,10 +217,10 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.batchImportStaff(file));
         } catch (DefaultException e){
-            log.error("批量导入员工错误:{}",e.getMessage());
+            log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("批量导入员工错误:{}",e.getMessage());
+            log.error("批量导入员工错误:{}", e, e);
             return R.error("批量导入员工失败,请求异常");
         }
     }
@@ -234,10 +234,10 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.batchImportCompanyUser(file));
         } catch (DefaultException e){
-            log.error("批量导入员工错误:{}",e.getMessage());
+            log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("批量导入员工错误:{}",e.getMessage());
+            log.error("批量导入员工错误:{}",e, e);
             return R.error("批量导入员工失败,请求异常");
         }
     }
