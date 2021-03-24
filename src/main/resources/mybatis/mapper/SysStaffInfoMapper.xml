@@ -140,7 +140,7 @@
         sui.contact_address,
         sui.register_time,
         sui.major,
-        ssi.STATUS,
+        sui.STATUS,
         sui.nation,
         sui.ancestral,
         sui.marital_status,
