@@ -705,8 +705,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCompId(companyId);
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
-        Integer status =row[6].equals(StaffStatusEnum.BE_ON_THE_JOB.getDesc())?StaffStatusEnum.BE_ON_THE_JOB.getCode():
-                row[6].equals(StaffStatusEnum.DIMISSION.getDesc())?StaffStatusEnum.DIMISSION.getCode():StaffStatusEnum.COLLABORATE.getCode();
+        Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue():
+                row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
         //保存到员工表
