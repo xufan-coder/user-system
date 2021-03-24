@@ -909,15 +909,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //手机号码校验
         String phone=row[1];
         if(DataUtil.isNotEmpty(phone)){
-
             //手机号码进行格式校验
-            if(checkPhone(phone)){
-                errorStr.append("手机号码格式不正确,");
-            }else {
-                //手机号码判断是否已注册账户
-                if(sysUserInfoMapper.selectUserByPhone(phone)){
-                    errorStr.append("此手机号码已注册过账户,");
-                }
+            phone = PhoneHomeLocationUtils.importPhoneDispose(phone);
+            row[1] = phone;
+            boolean fild = true;
+            try {
+                PhoneHomeLocationUtils.checkPhone(phone);
+            } catch (DefaultException e){
+                errorStr.append(e.getMessage());
+                fild = !fild;
+            }
+            //手机号码判断是否已注册账户
+            if(fild && sysUserInfoMapper.selectUserByPhone(phone)){
+                errorStr.append("此手机号码已注册过账户,");
             }
             //身份证号码校验
             String cardId=row[11];
