@@ -678,6 +678,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
+        Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue():
+                row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo=new SysUserInfo();
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
@@ -694,7 +696,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[17]);
         userInfo.setMajor(row[18]);
         userInfo.setRegisterTime(new Date());
-        userInfo.setStatus(StatusEnum.activity.getValue());
+        userInfo.setStatus(status);
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
         userInfo.setCreateTime(new Date());
@@ -705,8 +707,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCompId(companyId);
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
-        Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue():
-                row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
+
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
         //保存到员工表
