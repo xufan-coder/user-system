@@ -16,8 +16,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
-import com.zerody.common.util.ExcelToolUtil;
-import com.zerody.common.util.UUIDutils;
+import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.contract.api.vo.PerformanceReviewsVo;
@@ -56,8 +55,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.exception.DefaultException;
-import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.user.api.vo.UserDeptVo;
@@ -756,13 +753,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String phone=row[1];
         if(DataUtil.isNotEmpty(phone)){
             //手机号码进行格式校验
-            if(checkPhone(phone)){
-                errorStr.append("手机号码格式不正确,");
-            }else {
-                //手机号码判断是否已注册账户
-                if(sysUserInfoMapper.selectUserByPhone(phone)){
-                    errorStr.append("此手机号码已注册过账户,");
-                }
+            phone = PhoneHomeLocationUtils.importPhoneDispose(phone);
+            row[1] = phone;
+            boolean fild = true;
+            try {
+                PhoneHomeLocationUtils.checkPhone(phone);
+            } catch (DefaultException e){
+                errorStr.append(e.getMessage());
+                 fild = !fild;
+            }
+            //手机号码判断是否已注册账户
+            if(fild && sysUserInfoMapper.selectUserByPhone(phone)){
+                errorStr.append("此手机号码已注册过账户,");
             }
             //身份证号码校验
             String cardId=row[12];
@@ -907,6 +909,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //手机号码校验
         String phone=row[1];
         if(DataUtil.isNotEmpty(phone)){
+
             //手机号码进行格式校验
             if(checkPhone(phone)){
                 errorStr.append("手机号码格式不正确,");
