@@ -88,7 +88,7 @@
               and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
           </if>
       </where>
-      order by teamwork,stops,activity,ssi.create_time desc
+      order by stops,teamwork,activity,ssi.create_time desc
   </select>
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
