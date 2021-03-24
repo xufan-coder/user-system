@@ -28,5 +28,5 @@ public interface ZerodyAddrMapper extends BaseMapper<ZerodyAddr> {
 
     List<ZerodyAddrVo> getAddrTreeByLevel(Integer level);
 
-    String getCodeByLikeName(String name,Integer level);
+    String getCodeByLikeName(@Param("name") String name,@Param("level") Integer level);
 }
