@@ -1,5 +1,6 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -141,4 +142,8 @@ public class  SysUserInfo extends BaseModel {
 
     /** 是否有签单 */
     private Integer isSignOrder;
+
+    /** 角色名称 */
+    @TableField(exist = false)
+    private String roleName;
 }

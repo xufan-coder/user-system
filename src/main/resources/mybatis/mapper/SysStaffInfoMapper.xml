@@ -442,16 +442,13 @@
         SELECT
             sui.id,
             sui.user_name,
-            sui.phone_number
+            sui.phone_number,
+            urs.role_name
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        <if test="departId neq null and departId neq ''">
-            JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        </if>
-        <if test="roleId neq null and roleId neq ''">
-            JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
-        </if>
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>
             sui.status IN (0, 2)
             <if test="departId neq null and departId neq ''">
@@ -468,10 +465,12 @@
     <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT 
             sui.id,
-            sui.user_name
+            sui.user_name,
+            urs.role_name
         FROM 
             sys_staff_info AS ssi 
         JOIN sys_user_info AS sui ON  ssi.user_id = sui.id
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>
             sui.status in (0, 3) and ssi.id in
             <foreach collection="staffIds" item="id" open="(" close=")" separator=",">
