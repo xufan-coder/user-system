@@ -188,7 +188,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public SysUserInfo getUserById(String id) {
-        return sysUserInfoMapper.selectById(id);
+        SysUserInfo user =  sysUserInfoMapper.selectById(id);
+        String staffId = sysStaffInfoMapper.getStaffIdByUserId(id);
+        QueryWrapper<UnionRoleStaff> urQw = new QueryWrapper<>();
+        urQw.lambda().eq(UnionRoleStaff::getStaffId, staffId);
+        UnionRoleStaff role = this.unionRoleStaffMapper.selectOne(urQw);
+        user.setRoleName(role.getRoleName());
+        return user;
     }
 
     @Override
