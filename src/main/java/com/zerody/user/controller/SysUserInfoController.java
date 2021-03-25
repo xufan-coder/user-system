@@ -680,6 +680,16 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
 /**-------------------------------------------------------------------------------------------------------------------  */
+    
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          修改用户头像
+     * @date                 2021/3/25 18:08
+     * @param                [param]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
     @RequestMapping(value = "/update/avatar", method = PUT)
     public DataResult<Object> updateUserAvatar(@RequestBody @Validated SetUpdateAvatarDto param) {
         try {
@@ -694,7 +704,16 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("设置用户头像出错"+ e);
         }
     }
-
+    
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取用户头像
+     * @date                 2021/3/25 18:08
+     * @param                [userId, request, response]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
     @RequestMapping(value = "/get/avatar-image", method = GET)
     public DataResult<Object> getAvatarImageByUserId(@RequestParam("userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         try {
