@@ -14,7 +14,6 @@ import javax.validation.constraints.NotEmpty;
 public class SetUpdateAvatarDto {
 
     /** 用户id */
-    @NotEmpty(message = "用户id不能为空")
     private String userId;
 
     /** 用户头像 */
