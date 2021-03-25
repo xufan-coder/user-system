@@ -7,6 +7,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.util.List;
 
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
@@ -53,6 +54,7 @@ import com.zerody.user.service.SysUserInfoService;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -678,4 +680,32 @@ public class SysUserInfoController implements UserRemoteService {
     }
 
 /**-------------------------------------------------------------------------------------------------------------------  */
+    @RequestMapping(value = "/update/avatar", method = PUT)
+    public DataResult<Object> updateUserAvatar(@RequestBody @Validated SetUpdateAvatarDto param) {
+        try {
+            param.setUserId(UserUtils.getUser().getUserId());
+            this.sysUserInfoService.updateUserAvatar(param);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error("设置用户头像出错"+ e);
+        }
+    }
+
+    @RequestMapping(value = "/get/avatar-image", method = GET)
+    public DataResult<Object> getAvatarImageByUserId(@RequestParam("userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            this.sysUserInfoService.getAvatarImageByUserId(userId, request, response);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error("设置用户头像出错"+ e);
+        }
+    }
 }

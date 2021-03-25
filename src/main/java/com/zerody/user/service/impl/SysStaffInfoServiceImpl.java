@@ -186,6 +186,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setCreateUser(UserUtils.getUserName());
         sysUserInfo.setCreateId(UserUtils.getUserId());
         sysUserInfo.setStatus(StatusEnum.activity.getValue());
+        String avatar = sysUserInfo.getAvatar();
+        sysUserInfo.setAvatar(null);
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -211,6 +213,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
+        staff.setAvatar(avatar);
         staff.setUserName(sysUserInfo.getUserName());
         staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
@@ -315,6 +318,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
         sysUserInfo.setUpdateId(UserUtils.getUserId());
+        String avatar = setSysUserInfoDto.getAvatar();
+        sysUserInfo.setAvatar(null);
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
@@ -331,6 +336,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
         staff.setStatus(setSysUserInfoDto.getStatus());
+        staff.setAvatar(setSysUserInfoDto.getAvatar());
         staff.setUserName(setSysUserInfoDto.getUserName());
         this.saveOrUpdate(staff);
         //修改员工的时候删除该员工的全部角色
