@@ -10,6 +10,8 @@ import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+
 /**
  * @author  DaBai
  * @date  2020/12/29 16:19
@@ -98,5 +100,5 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @param
      * @return               java.util.List<java.lang.String>
      */
-    List<String> selectAllUserId();
+    List<Map<String, String>> selectAllUserId();
 }

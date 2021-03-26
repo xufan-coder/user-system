@@ -13,6 +13,7 @@ import com.zerody.user.vo.SysLoginUserInfoVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -199,7 +200,7 @@ public interface SysUserInfoService {
      * @author DaBai
      * @date 2021/1/11  18:42
      */
-    List<String> selectAllUserId();
+    List<Map<String, String>> selectAllUserId();
 
     /**
      *

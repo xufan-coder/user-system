@@ -3,8 +3,10 @@ package com.zerody.user.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.customer.api.dto.CustomerStatisUnContactMsgDto;
+import com.zerody.customer.api.dto.UnContactMsg;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.feign.CustomerStatisFeignService;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author  DaBai
@@ -36,24 +39,26 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void buildVisitNoticeInfo() {
         //获取所有用户ID
-        List<String> list= sysUserInfoService.selectAllUserId();
+        List<Map<String, String>> list= sysUserInfoService.selectAllUserId();
         List<Msg> dtos= new ArrayList<>();
         //统计客户跟进提醒三种类型的，客户数
-        for (String userId : list) {
-            DataResult<CustomerStatisUnContactMsgDto> uncontact = customerStatisFeignService.uncontact(userId);
-
-            if(uncontact.isSuccess()&&DataUtil.isNotEmpty(uncontact.getData())){
-                CustomerStatisUnContactMsgDto data = uncontact.getData();
-                if(DataUtil.isNotEmpty(data.getDay7Msg())){
-                    dtos.add(buildNotice(userId, data.getDay7Msg(), VisitNoticeTypeEnum.DAY7.getDesc()));
-                }
-                if(DataUtil.isNotEmpty(data.getDay15Msg())){
-                    dtos.add(buildNotice(userId, data.getDay15Msg(), VisitNoticeTypeEnum.DAY15.getDesc()));
-                }
-                if(DataUtil.isNotEmpty(data.getDay30Msg())){
-                    dtos.add(buildNotice(userId, data.getDay30Msg(), VisitNoticeTypeEnum.DAY21.getDesc()));
-                }
+        for (Map<String, String> user : list) {
+            DataResult<CustomerStatisUnContactMsgDto> result = customerStatisFeignService.uncontact(user.get("id"), user.get("companyId"));
+            if(!result.isSuccess()){
+                continue;
             }
+            CustomerStatisUnContactMsgDto dto = result.getData();
+            if (DataUtil.isEmpty(dto)) {
+                continue;
+            }
+            List<UnContactMsg> contactMsgs = dto.getMsgs();
+            if (CollectionUtils.isEmpty(contactMsgs)) {
+                continue;
+            }
+            contactMsgs.stream().forEach(c -> {
+                dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getNum()).concat("天未联系提醒")));
+            });
+
         }
         log.info("客户未跟进消息:"+JSONObject.toJSONString(dtos));
         msgService.saveBatch(dtos);

@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -248,7 +249,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public List<String> selectAllUserId() {
+    public List<Map<String, String>> selectAllUserId() {
         return sysUserInfoMapper.selectAllUserId();
     }
 

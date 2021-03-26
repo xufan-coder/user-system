@@ -215,11 +215,13 @@ WHERE
         </where>
     </select>
 
-    <select id="selectAllUserId" resultType="java.lang.String">
+    <select id="selectAllUserId" resultType="map">
         SELECT
-        sui.id
+        sui.id,
+        ssi.comp_id AS companyId
         FROM
         sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         <where>
             sui.status in (0, 3)
         </where>
