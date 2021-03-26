@@ -710,7 +710,7 @@ public class SysUserInfoController implements UserRemoteService {
      *
      * @author               PengQiang
      * @description          获取用户头像
-     * @date                 2021/3/25 18:08
+     * @date                 2021/3/26 14:02
      * @param                [userId, request, response]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */

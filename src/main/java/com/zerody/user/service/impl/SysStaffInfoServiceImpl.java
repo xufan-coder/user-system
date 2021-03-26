@@ -1407,7 +1407,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
                 rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
                 rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
-                rowData.get(rowData.size() - 1)[11] = p.getSignOrderNumber().toString();
+                rowData.get(rowData.size() - 1)[11] = p.getWaitApprovalNumber().toString();
                 rowData.get(rowData.size() - 1)[12] = p.getMonth();
 
             });
