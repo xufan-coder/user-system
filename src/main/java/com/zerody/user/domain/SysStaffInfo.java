@@ -20,6 +20,8 @@ public class SysStaffInfo extends BaseModel {
     /**  企业id**/
     private String compId;
 
+    private String avatar;
+
     /**  用户id**/
     private String userId;
 

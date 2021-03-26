@@ -12,6 +12,7 @@ import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
+import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.*;
@@ -29,6 +30,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -193,7 +202,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<UnionRoleStaff> urQw = new QueryWrapper<>();
         urQw.lambda().eq(UnionRoleStaff::getStaffId, staffId);
         UnionRoleStaff role = this.unionRoleStaffMapper.selectOne(urQw);
-        user.setRoleName(role.getRoleName());
+        if (!DataUtil.isEmpty(role)){
+            user.setRoleName(role.getRoleName());
+        }
         return user;
     }
 
@@ -284,5 +295,49 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         this.update(userUw);
     }
 
+    @Override
+    public void updateUserAvatar(SetUpdateAvatarDto param) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().set(SysUserInfo::getAvatar, param.getAvatar());
+        userUw.lambda().eq(SysUserInfo::getId, param.getUserId());
+        this.update(userUw);
+    }
+
+    @Override
+    public void getAvatarImageByUserId(String userId, HttpServletRequest request, HttpServletResponse response) {
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.lambda().select(SysUserInfo::getAvatar).eq(SysUserInfo::getId, userId);
+        SysUserInfo user = this.getOne(userQw);
+        if (DataUtil.isEmpty(user) || StringUtils.isEmpty(user.getAvatar())) {
+            return;
+        }
+        try {
+            URL url = new URL(user.getAvatar());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5 * 1000);
+            InputStream inStream = conn.getInputStream();//通过输入流获取图片数据
+            byte data[] = readInputStream(inStream);
+            inStream.read(data);  //读数据
+            inStream.close();
+            response.addHeader("Content-Disposition", "attachment;filename="+new String( "用户头像".getBytes("gb2312"), "ISO8859-1" )+".jpg");
+            OutputStream os = response.getOutputStream();
+            os.write(data);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public  byte[] readInputStream(InputStream inStream) throws Exception{
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[2048];
+        int len = 0;
+        while( (len=inStream.read(buffer)) != -1 ){
+            outStream.write(buffer, 0, len);
+        }
+//        inStream.close();
+        return outStream.toByteArray();
+    }
 
 }

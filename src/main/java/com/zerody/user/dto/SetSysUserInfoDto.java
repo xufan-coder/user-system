@@ -47,5 +47,6 @@ public class SetSysUserInfoDto extends SysUserInfo{
     */
     private Integer status;
 
-
+    /** 头像 */
+    private String avatar;
 }

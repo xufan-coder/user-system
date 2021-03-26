@@ -130,7 +130,7 @@
         sui.phone_number,
         sui.email,
         sui.nickname,
-        sui.avatar,
+        ssi.avatar,
         sui.birthday,
         sui.certificate_card,
         sui.certificate_card_address,

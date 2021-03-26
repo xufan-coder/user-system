@@ -3,12 +3,15 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
 import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -214,4 +217,8 @@ public interface SysUserInfoService {
     String getShowPerformancePassword(String id);
 
     void updateUserIsSignOrder(String userId);
+
+    void updateUserAvatar(SetUpdateAvatarDto param);
+
+    void getAvatarImageByUserId(String userId, HttpServletRequest request, HttpServletResponse response);
 }
