@@ -74,6 +74,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     private static final String  INIT_PWD = "123456";//初始化密码
 
+    private static final String DEFAULT_AVATAR = "https://tangsanzangkeji.oss-cn-beijing.aliyuncs.com/scrm/38bb2ab88a82ed2e84d187bfc065c131/picture:67730b2a883141c9a51b3da812087c26";
+
     /**
     * @Author               PengQiang
     * @Description //TODO   手机合法查看
@@ -309,8 +311,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
         userQw.lambda().select(SysUserInfo::getAvatar).eq(SysUserInfo::getId, userId);
         SysUserInfo user = this.getOne(userQw);
-        if (DataUtil.isEmpty(user) || StringUtils.isEmpty(user.getAvatar())) {
-            return;
+        //没有头像时使用默认图片
+        if (DataUtil.isEmpty(user)) {
+            user = new SysUserInfo();
+        }
+        if (StringUtils.isEmpty(user.getAvatar())) {
+            user.setAvatar(DEFAULT_AVATAR);
         }
         try {
             URL url = new URL(user.getAvatar());
