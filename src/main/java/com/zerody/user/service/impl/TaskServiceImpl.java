@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
         List<Msg> dtos= new ArrayList<>();
         //统计客户跟进提醒三种类型的，客户数
         for (Map<String, String> user : list) {
-            DataResult<CustomerStatisUnContactMsgDto> result = customerStatisFeignService.uncontact(user.get("id"), user.get("companyId"));
+            DataResult<CustomerStatisUnContactMsgDto> result = customerStatisFeignService.uncontactInner(user.get("id"), user.get("companyId"));
             if(!result.isSuccess()){
                 continue;
             }
