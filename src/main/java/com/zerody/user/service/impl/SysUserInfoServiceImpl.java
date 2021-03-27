@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +73,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     private static final String  INIT_PWD = "123456";//初始化密码
+
+    private static final String DEFAULT_AVATAR = "https://tangsanzangkeji.oss-cn-beijing.aliyuncs.com/scrm/38bb2ab88a82ed2e84d187bfc065c131/picture:67730b2a883141c9a51b3da812087c26";
 
     /**
     * @Author               PengQiang
@@ -248,7 +251,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public List<String> selectAllUserId() {
+    public List<Map<String, String>> selectAllUserId() {
         return sysUserInfoMapper.selectAllUserId();
     }
 
@@ -308,8 +311,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
         userQw.lambda().select(SysUserInfo::getAvatar).eq(SysUserInfo::getId, userId);
         SysUserInfo user = this.getOne(userQw);
-        if (DataUtil.isEmpty(user) || StringUtils.isEmpty(user.getAvatar())) {
-            return;
+        //没有头像时使用默认图片
+        if (DataUtil.isEmpty(user)) {
+            user = new SysUserInfo();
+        }
+        if (StringUtils.isEmpty(user.getAvatar())) {
+            user.setAvatar(DEFAULT_AVATAR);
         }
         try {
             URL url = new URL(user.getAvatar());
