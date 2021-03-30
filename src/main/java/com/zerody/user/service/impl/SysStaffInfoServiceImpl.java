@@ -1005,14 +1005,49 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return;
         }
         //添加员工即为内部员工需要生成名片小程序用户账号
-        CardUserInfo cardUserInfo=new CardUserInfo();
-        cardUserInfo.setUserName(userInfo.getUserName());
-        cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
-        cardUserInfo.setUserPwd(loginInfo.getUserPwd());
-        cardUserInfo.setCreateBy(UserUtils.getUserId());
-        cardUserInfo.setCreateTime(new Date());
-        cardUserInfo.setStatus(StatusEnum.activity.getValue());
-        cardUserInfoMapper.insert(cardUserInfo);
+
+        //先查询改手机号是否存在绑定了的名片用户
+        QueryWrapper<CardUserInfo> qw=new QueryWrapper<>();
+        qw.lambda().eq(CardUserInfo::getPhoneNumber,userInfo.getPhoneNumber());
+        List<CardUserInfo> cardUserInfos = cardUserInfoMapper.selectList(qw);
+        CardUserInfo cardUserInfo=null;
+        if(DataUtil.isNotEmpty(cardUserInfos)){
+            //如果内部员工先注册的名片，则不生成基础信息
+             cardUserInfo = cardUserInfos.get(0);
+        }else {
+            cardUserInfo=new CardUserInfo();
+            cardUserInfo.setUserName(userInfo.getUserName());
+            cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
+            cardUserInfo.setUserPwd(loginInfo.getUserPwd());
+            cardUserInfo.setCreateBy(UserUtils.getUserId());
+            cardUserInfo.setCreateTime(new Date());
+            cardUserInfo.setStatus(StatusEnum.activity.getValue());
+            cardUserInfoMapper.insert(cardUserInfo);
+
+            //生成基础名片信息
+            UserCardDto cardDto=new UserCardDto();
+            cardDto.setMobile(cardUserInfo.getPhoneNumber());
+            cardDto.setUserName(cardUserInfo.getUserName());
+            //crm用户ID
+            cardDto.setUserId(userInfo.getId());
+            //名片用户ID
+            cardDto.setCustomerUserId(cardUserInfo.getId());
+            cardDto.setAvatar(userInfo.getAvatar());
+            cardDto.setEmail(userInfo.getEmail());
+            cardDto.setUserId(userInfo.getId());
+            cardDto.setCustomerUserId(cardUserInfo.getId());
+            cardDto.setCreateBy(UserUtils.getUserId());
+            cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
+            cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
+            cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
+            cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+            cardDto.setPosition(positionName);
+            cardDto.setCompany(sysCompanyInfo.getCompanyName());
+            DataResult<String> card = cardFeignService.createCard(cardDto);
+            if(!card.isSuccess()){
+                throw new DefaultException("服务异常！");
+            }
+        }
 
         //关联内部员工信息
         CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
@@ -1020,30 +1055,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         cardUserUnionUser.setCardId(cardUserInfo.getId());
         cardUserUnionUser.setUserId(userInfo.getId());
         cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
-
-        //生成基础名片信息
-        UserCardDto cardDto=new UserCardDto();
-        cardDto.setMobile(cardUserInfo.getPhoneNumber());
-        cardDto.setUserName(cardUserInfo.getUserName());
-        //crm用户ID
-        cardDto.setUserId(userInfo.getId());
-        //名片用户ID
-        cardDto.setCustomerUserId(cardUserInfo.getId());
-        cardDto.setAvatar(userInfo.getAvatar());
-        cardDto.setEmail(userInfo.getEmail());
-        cardDto.setUserId(userInfo.getId());
-        cardDto.setCustomerUserId(cardUserInfo.getId());
-        cardDto.setCreateBy(UserUtils.getUserId());
-        cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
-        cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
-        cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
-        cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
-        cardDto.setPosition(positionName);
-        cardDto.setCompany(sysCompanyInfo.getCompanyName());
-        DataResult<String> card = cardFeignService.createCard(cardDto);
-        if(!card.isSuccess()){
-            throw new DefaultException("服务异常！");
-        }
     }
 
     @Async
