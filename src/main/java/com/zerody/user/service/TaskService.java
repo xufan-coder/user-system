@@ -1,5 +1,7 @@
 package com.zerody.user.service;
 
+import java.util.Map;
+
 /**
  * 定时任务业务实现类
  * @author  DaBai
@@ -16,5 +18,5 @@ public interface TaskService {
      * @author DaBai
      * @date 2021/1/11  17:46
      */
-    void buildVisitNoticeInfo();
+	void buildVisitNoticeInfo(Map<String, String> user);
 }
