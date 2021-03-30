@@ -7,6 +7,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.service.DepartRemoteService;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -30,7 +31,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/depart")
-public class SysDepartmentInfoController {
+public class SysDepartmentInfoController implements DepartRemoteService {
 
     @Autowired
     private SysDepartmentInfoService sysDepartmentInfoService;
@@ -151,6 +152,31 @@ public class SysDepartmentInfoController {
 
             UserVo user = UserUtils.getUser();
             return R.success(this.sysDepartmentInfoService.getSubordinateStructure(user));
+        } catch (DefaultException e) {
+            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
+            return R.error("获取下级部门组织架构错误,请求异常");
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取下级直属部门
+     * @date                 2020/12/31 9:57
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @Override
+    @RequestMapping(value = "/subordinate/directly-depart/inner", method = RequestMethod.GET)
+    public DataResult<List<SysDepartmentInfoVo>> getSubordinateDirectlyDepart(@RequestParam("depart") String departId){
+
+        try {
+//            return R.success(this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId));
+            return R.success();
         } catch (DefaultException e) {
             log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
