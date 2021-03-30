@@ -33,7 +33,11 @@ public interface SysStaffInfoService {
     static String getInitPwd() {
         StringBuffer sb = new StringBuffer();
         sb.append((char)(Math.random()*26+'A'));
-        sb.append((int)((Math.random()*10)*100000));
+        double num = Math.random() * 10;
+        if(num<1) {
+            num += 1;
+        }
+        sb.append((int)(num*100000));
         sb.append((char)(Math.random()*26+'a'));
         return sb.toString();
     }
