@@ -1431,6 +1431,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.getStaffInfo(cardUserUnionUser.getUserId());
     }
 
+    @Override
+    public List<SysDepartmentInfoVo> getUserSubordinateStructure(String userId) {
+        return null;
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

@@ -56,7 +56,9 @@ public class TaskServiceImpl implements TaskService {
                 continue;
             }
             contactMsgs.stream().forEach(c -> {
-                dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getNum()).concat("天未联系提醒")));
+                if (c.getNum() > 0) {
+                    dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getDays()).concat("天未联系提醒")));
+                }
             });
 
         }
