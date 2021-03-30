@@ -1,34 +1,29 @@
 package com.zerody.user.service.impl;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 
-import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.util.UserUtils;
-import com.zerody.common.utils.DateUtil;
-import com.zerody.user.enums.VisitNoticeTypeEnum;
-import com.zerody.user.vo.BosStaffInfoVo;
-import org.springframework.beans.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.user.mapper.*;
+import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.dto.MsgDto;
 import com.zerody.user.dto.MsgPageDto;
+import com.zerody.user.enums.VisitNoticeTypeEnum;
+import com.zerody.user.mapper.MsgMapper;
 import com.zerody.user.service.MsgService;
 /**
  *
@@ -105,4 +100,13 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 		qw.lambda().orderByDesc(Msg::getCreateTime);
 		return this.page(infoVoiPage,qw);
 	}
+
+	@Override
+	public void deleteExpiredMessage(String userId) {
+		UpdateWrapper<Msg> qw = new UpdateWrapper<>();
+		qw.lambda().eq(Msg::getUserId, userId).lt(Msg::getCreateTime,
+				Date.from(LocalDateTime.now().minusDays(30).toInstant(ZoneOffset.UTC)));
+		this.baseMapper.delete(qw);
+	}
+
 }

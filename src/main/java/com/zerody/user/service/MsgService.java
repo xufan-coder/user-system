@@ -2,12 +2,12 @@ package com.zerody.user.service;
 
 import java.util.List;
 
-import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.user.dto.MsgPageDto;
-import com.zerody.user.dto.MsgDto;
-import com.zerody.user.domain.Msg;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.user.domain.Msg;
+import com.zerody.user.dto.MsgDto;
+import com.zerody.user.dto.MsgPageDto;
 /**
  * 
  * 消息业务接口 
@@ -74,4 +74,11 @@ public interface MsgService extends IService<Msg>{
 	 * @date 2021/1/12  14:52
 	 */
 	IPage<Msg> getPageList(PageQueryDto pageDto);
+
+	/**
+	 * 删除过期消息
+	 * 
+	 * @param userId
+	 */
+	void deleteExpiredMessage(String userId);
 }
