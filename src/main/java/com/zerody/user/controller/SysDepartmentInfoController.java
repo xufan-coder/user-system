@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
+import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -172,7 +173,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      */
     @Override
     @RequestMapping(value = "/subordinate/directly-depart/inner", method = RequestMethod.GET)
-    public DataResult<List<SysDepartmentInfoVo>> getSubordinateDirectlyDepart(@RequestParam("depart") String departId){
+    public DataResult<List<UserDepartInfoVo>> getSubordinateDirectlyDepart(@RequestParam("depart") String departId){
 
         try {
 //            return R.success(this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId));
