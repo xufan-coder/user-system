@@ -1,5 +1,13 @@
 package com.zerody.user.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.util.UUIDutils;
@@ -8,19 +16,12 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.customer.api.dto.CustomerStatisUnContactMsgDto;
 import com.zerody.customer.api.dto.UnContactMsg;
 import com.zerody.user.domain.Msg;
-import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.feign.CustomerStatisFeignService;
 import com.zerody.user.service.MsgService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.TaskService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author  DaBai
@@ -37,23 +38,22 @@ public class TaskServiceImpl implements TaskService {
     private MsgService msgService;
 
     @Override
-    public void buildVisitNoticeInfo() {
+	public void buildVisitNoticeInfo(Map<String, String> user) {
         //获取所有用户ID
-        List<Map<String, String>> list= sysUserInfoService.selectAllUserId();
         List<Msg> dtos= new ArrayList<>();
         //统计客户跟进提醒三种类型的，客户数
-        for (Map<String, String> user : list) {
             DataResult<CustomerStatisUnContactMsgDto> result = customerStatisFeignService.uncontactInner(user.get("id"), user.get("companyId"));
             if(!result.isSuccess()){
-                continue;
+			log.error("获取用户消息出错,userId={},{}", user.get("id"), result.getMessage());
+			return;
             }
             CustomerStatisUnContactMsgDto dto = result.getData();
             if (DataUtil.isEmpty(dto)) {
-                continue;
+			return;
             }
             List<UnContactMsg> contactMsgs = dto.getMsgs();
             if (CollectionUtils.isEmpty(contactMsgs)) {
-                continue;
+			return;
             }
             contactMsgs.stream().forEach(c -> {
                 if (c.getNum() > 0) {
@@ -61,8 +61,8 @@ public class TaskServiceImpl implements TaskService {
                 }
             });
 
-        }
         log.info("客户未跟进消息:"+JSONObject.toJSONString(dtos));
+		this.msgService.deleteExpiredMessage(user.get("id"));
         msgService.saveBatch(dtos);
     }
 
