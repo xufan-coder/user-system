@@ -176,14 +176,14 @@ public class SysDepartmentInfoController implements DepartRemoteService {
     public DataResult<List<UserDepartInfoVo>> getSubordinateDirectlyDepart(@RequestParam("depart") String departId){
 
         try {
-//            return R.success(this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId));
+            List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
             return R.success();
         } catch (DefaultException e) {
-            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("获取下级部门组织架构错误:{}", e.getMessage(),e);
-            return R.error("获取下级部门组织架构错误,请求异常");
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error("获取下级直属部门错误,请求异常");
         }
     }
 }

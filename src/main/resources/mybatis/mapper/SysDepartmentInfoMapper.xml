@@ -109,4 +109,14 @@
             </if>
         </where>
     </select>
+    <select id="getSubordinateDirectlyDepart" resultType="com.zerody.user.api.vo.UserDepartInfoVo">
+        SELECT
+            sdi.depart_name AS departName,
+            sdi.id AS departId
+        FROM
+            sys_department_info AS sdi
+        <where>
+            sdi.parent_id = #{departId}
+        </where>
+    </select>
 </mapper>
