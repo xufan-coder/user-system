@@ -178,7 +178,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
 
         try {
             List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
-            return R.success();
+            return R.success(departs);
         } catch (DefaultException e) {
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
