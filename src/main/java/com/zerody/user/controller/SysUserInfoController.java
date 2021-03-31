@@ -765,7 +765,7 @@ public class SysUserInfoController implements UserRemoteService {
     public DataResult<List<StaffInfoVo>> getDepartDirectStaffInfo(@RequestParam(value = "departId") String departId) {
         try {
             List<StaffInfoVo>  departs = this.sysStaffInfoService.getDepartDirectStaffInfo(departId);
-            return R.success();
+            return R.success(departs);
         } catch (DefaultException e){
             log.error("设置用户头像出错:{}",e,e);
             return R.error(e.getMessage());
