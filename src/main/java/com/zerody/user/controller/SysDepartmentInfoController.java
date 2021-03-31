@@ -173,7 +173,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      */
     @Override
     @RequestMapping(value = "/subordinate/directly-depart/inner", method = RequestMethod.GET)
-    public DataResult<List<UserDepartInfoVo>> getSubordinateDirectlyDepart(@RequestParam("depart") String departId){
+    public DataResult<List<UserDepartInfoVo>> getSubordinateDirectlyDepart(@RequestParam("departId") String departId){
 
         try {
             List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
