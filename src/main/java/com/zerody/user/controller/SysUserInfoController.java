@@ -727,4 +727,51 @@ public class SysUserInfoController implements UserRemoteService {
             return R.error("设置用户头像出错"+ e);
         }
     }
+
+    /**
+     *  当前登录用户的下级组织架构
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 17:59
+     * @param                [userId]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    @RequestMapping(value = "/get/logn-user/subordinate/structure", method = GET)
+    public DataResult<List<SysDepartmentInfoVo>> getUserSubordinateStructure(@RequestParam(value = "userId", required = false) String userId) {
+        try {
+            List<SysDepartmentInfoVo>  departs = this.sysStaffInfoService.getUserSubordinateStructure(userId);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error("设置用户头像出错"+ e);
+        }
+    }
+
+    /**
+     *  获取部门直属员工
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 17:59
+     * @param                [departId]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    @Override
+    @RequestMapping(value = "/get/depart-direct-staff", method = GET)
+    public DataResult<List<StaffInfoVo>> getDepartDirectStaffInfo(@RequestParam(value = "departId") String departId) {
+        try {
+            List<StaffInfoVo>  departs = this.sysStaffInfoService.getDepartDirectStaffInfo(departId);
+            return R.success(departs);
+        } catch (DefaultException e){
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("设置用户头像出错:{}",e,e);
+            return R.error("设置用户头像出错"+ e);
+        }
+    }
 }
