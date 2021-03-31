@@ -16,6 +16,7 @@ import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.UserStructureVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -177,6 +178,31 @@ public class SysDepartmentInfoController implements DepartRemoteService {
 
         try {
             List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error("获取下级直属部门错误,请求异常");
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取下级直属部门和用户
+     * @date                 2020/12/31 9:57
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @RequestMapping(value = "/get/directly-depart-user", method = RequestMethod.GET)
+    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUser(@RequestParam(value = "compayId", required = false) String companyId,
+                                                  @RequestParam(value = "departId", required = false) String departId){
+
+        try {
+//            List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
             return R.success();
         } catch (DefaultException e) {
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);
