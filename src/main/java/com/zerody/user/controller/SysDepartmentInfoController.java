@@ -204,7 +204,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
     @RequestMapping(value = "/get/directly-depart-user", method = RequestMethod.GET)
-    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUser(@RequestParam(value = "compayId", required = false) String companyId,
+    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUser(@RequestParam(value = "companyId", required = false) String companyId,
                                                   @RequestParam(value = "departId", required = false) String departId){
 
         try {
