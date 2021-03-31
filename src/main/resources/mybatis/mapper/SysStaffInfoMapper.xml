@@ -551,7 +551,7 @@
         SELECT
             ssi.id AS staffId,
             ssi.user_id AS userId,
-            ssi.avatar AS staffAvatar
+            ssi.avatar AS staffAvatar,
             ssi.user_name AS userName
         FROM
             sys_staff_info AS ssi
