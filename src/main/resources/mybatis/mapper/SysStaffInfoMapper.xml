@@ -560,4 +560,16 @@
             usd.department_id = #{departId}
         </where>
     </select>
+    <select id="getUserNameByDepartId" resultType="com.zerody.user.vo.UserStructureVo">
+        SELECT
+        ssi.user_id AS userId,
+        ssi.user_name AS userName,
+        3 AS type
+        FROM
+        sys_staff_info AS ssi
+        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            usd.department_id = #{departId}
+        </where>
+    </select>
 </mapper>

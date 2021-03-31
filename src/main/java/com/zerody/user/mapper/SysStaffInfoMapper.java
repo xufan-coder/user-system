@@ -273,4 +273,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               java.util.List<com.zerody.user.api.vo.StaffInfoVo>
      */
     List<StaffInfoVo> getDepartDirectStaffInfo(@Param("departId") String departId);
+
+    /**
+     *
+     * 获取员工直属员工 并且返回type
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 19:27
+     * @param                departId
+     * @return               java.util.List<com.zerody.user.vo.UserStructureVo>
+     */
+    List<UserStructureVo> getUserNameByDepartId(@Param("departId")String departId);
 }

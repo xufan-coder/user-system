@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
@@ -16,15 +17,13 @@ import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
-import com.zerody.user.mapper.SysDepartmentInfoMapper;
-import com.zerody.user.mapper.SysJobPositionMapper;
-import com.zerody.user.mapper.SysStaffInfoMapper;
-import com.zerody.user.mapper.UnionStaffDepartMapper;
+import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
+import com.zerody.user.vo.UserStructureVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +60,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private ClewRemoteService clewService;
+
+    @Autowired
+    private SysCompanyInfoMapper companyMapper;
 
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
@@ -232,6 +234,32 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public List<UserDepartInfoVo> getSubordinateDirectlyDepart(String departId) {
         return this.sysDepartmentInfoMapper.getSubordinateDirectlyDepart(departId);
+    }
+
+    @Override
+    public List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId,  UserVo user) {
+        List<UserStructureVo> userStructureVos = userStructureVos = new ArrayList<>();
+        if (!DataUtil.isEmpty(user)) {
+            AdminVo admin =  this.staffInfoService.getIsAdmin(UserUtils.getUser());
+            if (admin.getIsCompanyAdmin()) {
+                //如果企业id并且 部门id为空 并且 是企业管理员 则返回企业名称跟id 类型为1
+                UserStructureVo companyInfo =  this.companyMapper.getCompanyNameById(user.getCompanyId());
+                userStructureVos.add(companyInfo);
+            } else if (admin.getIsDepartAdmin()) {
+                //如果企业id并且 部门id为空 并且 是部门管理员 则返回部门名称跟id 类型为2
+                UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+                userStructureVos.add(departInfo);
+            } else {
+                return null;
+            }
+            return userStructureVos;
+        }
+        if (StringUtils.isNotEmpty(departId)) {
+            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId);
+        }
+        List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
+        userStructureVos.addAll(departInfos);
+        return userStructureVos;
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){

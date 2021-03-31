@@ -8,15 +8,18 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
+import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.service.SysDepartmentInfoService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.UserStructureVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +40,9 @@ public class SysDepartmentInfoController implements DepartRemoteService {
 
     @Autowired
     private SysDepartmentInfoService sysDepartmentInfoService;
+
+    @Autowired
+    private SysStaffInfoService staffService;
 
     /**
     *    根据企业获取部门
@@ -202,8 +208,12 @@ public class SysDepartmentInfoController implements DepartRemoteService {
                                                   @RequestParam(value = "departId", required = false) String departId){
 
         try {
-//            List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getSubordinateDirectlyDepart(departId);
-            return R.success();
+            UserVo user = null;
+            if (StringUtils.isEmpty(companyId) && StringUtils.isEmpty(departId)) {
+                user = UserUtils.getUser();
+            }
+            List<UserStructureVo> departs = this.sysDepartmentInfoService.getDirectLyDepartOrUser(companyId, departId, user);
+            return R.success(departs);
         } catch (DefaultException e) {
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
