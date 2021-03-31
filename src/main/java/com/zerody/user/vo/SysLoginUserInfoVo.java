@@ -81,4 +81,9 @@ public class SysLoginUserInfoVo {
 	 *    角色ID
 	 */
 	private String roleId;
+
+	/**
+	 *    部门名称
+	 */
+	private String deptName;
 }
