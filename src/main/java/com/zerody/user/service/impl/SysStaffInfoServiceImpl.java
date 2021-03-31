@@ -1447,6 +1447,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return null;
     }
 
+    @Override
+    public List<StaffInfoVo> getDepartDirectStaffInfo(String departId) {
+	    List<StaffInfoVo> staffs = this.sysStaffInfoMapper.getDepartDirectStaffInfo(departId);
+        return staffs;
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

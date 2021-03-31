@@ -122,4 +122,6 @@ public interface SysStaffInfoService {
     StaffInfoVo getStaffInfoByCardUserId(String cardUserId);
 
     List<SysDepartmentInfoVo> getUserSubordinateStructure(String userId);
+
+    List<StaffInfoVo> getDepartDirectStaffInfo(String departId);
 }
