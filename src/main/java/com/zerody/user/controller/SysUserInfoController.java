@@ -14,6 +14,7 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import javafx.geometry.Pos;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -804,12 +805,15 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     @Override
-    @RequestMapping(value = "/get/user-type/Inner", method = GET)
-    public DataResult<UserTypeInfoInnerVo> getDepartDirectStaffInfoInner(@RequestParam("userId")String userId, @RequestParam("companyId")String companyId) {
+    @RequestMapping(value = "/get/user-type/inner", method = GET)
+    public DataResult<UserTypeInfoInnerVo> getDepartDirectStaffInfoInner(@RequestParam("userId")String userId,
+                                                                         @RequestParam("companyId")String companyId,
+                                                                         @Param("departId") String departId) {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
             user.setCompanyId(companyId);
+            user.setDeptId(departId);
             UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
             UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
             BeanUtils.copyProperties(departs, innerVo);
