@@ -10,18 +10,21 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.constant.UserTypeInfo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysLoginInfoService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.LoginUserInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +74,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
 
     private static final String  INIT_PWD = "123456";//初始化密码
 
@@ -336,6 +342,32 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             e.printStackTrace();
         }
     }
+
+    @Override
+    public UserTypeInfoVo getUserTypeInfo(UserVo user) {
+        UserTypeInfoVo userTypeInfoVo = new UserTypeInfoVo();
+        AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
+        if(admin.getIsCompanyAdmin()) {
+            userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
+            return userTypeInfoVo;
+        } else if (admin.getIsDepartAdmin()){
+            QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+            departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
+            departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
+            Integer count = this.sysDepartmentInfoMapper.selectCount(departQw);
+            if (count > 0) {
+                userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
+            } else {
+                userTypeInfoVo.setUserType(UserTypeInfo.DEPUTY_GENERAL_MANAGERv);
+            }
+        } else {
+            userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
+        }
+        UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+        userTypeInfoVo.setDepartName(departVo.getDepartName());
+        return userTypeInfoVo;
+    }
+
     public  byte[] readInputStream(InputStream inStream) throws Exception{
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];

@@ -6,11 +6,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.List;
 
+import com.zerody.user.api.vo.*;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.SysLoginUserInfoVo;
 import javafx.geometry.Pos;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +39,6 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.AdminUserInfo;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.CardUserInfoVo;
-import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.service.AdminUserService;
@@ -761,7 +758,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     @Override
-    @RequestMapping(value = "/get/depart-direct-staff", method = GET)
+    @RequestMapping(value = "/get/depart-direct-staff/inner", method = GET)
     public DataResult<List<StaffInfoVo>> getDepartDirectStaffInfo(@RequestParam(value = "departId") String departId) {
         try {
             List<StaffInfoVo>  departs = this.sysStaffInfoService.getDepartDirectStaffInfo(departId);
@@ -772,6 +769,57 @@ public class SysUserInfoController implements UserRemoteService {
         }  catch (Exception e) {
             log.error("设置用户头像出错:{}",e,e);
             return R.error("设置用户头像出错"+ e);
+        }
+    }
+
+    /**
+     *  获取员工类型
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 17:59
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    @RequestMapping(value = "/get/user-type", method = GET)
+    public DataResult<UserTypeInfoVo> getDepartDirectStaffInfo() {
+        try {
+            UserVo user = UserUtils.getUser();
+            UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
+            return R.success(departs);
+        } catch (DefaultException e){
+            log.error("获取员工类型出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工类型出错:{}",e,e);
+            return R.error("获取员工类型出错"+ e);
+        }
+    }
+
+    /**
+     *  获取员工类型
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 17:59
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    @Override
+    @RequestMapping(value = "/get/user-type/Inner", method = GET)
+    public DataResult<UserTypeInfoInnerVo> getDepartDirectStaffInfoInner(@RequestParam("userId")String userId, @RequestParam("companyId")String companyId) {
+        try {
+            UserVo user = new UserVo();
+            user.setUserId(userId);
+            user.setCompanyId(companyId);
+            UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
+            UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
+            BeanUtils.copyProperties(departs, innerVo);
+            return R.success(innerVo);
+        } catch (DefaultException e){
+            log.error("获取员工类型出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工类型出错:{}",e,e);
+            return R.error("获取员工类型出错"+ e);
         }
     }
 }
