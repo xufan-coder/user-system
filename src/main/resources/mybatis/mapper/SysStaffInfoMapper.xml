@@ -513,7 +513,8 @@
             sci.company_name,
             sdi.id AS departId,
             sci.id AS companyId,
-            sdi.depart_name AS departmentName
+            sdi.depart_name AS departmentName,
+            sui.phone_number AS mobile
 
         FROM
             sys_staff_info AS ssi
