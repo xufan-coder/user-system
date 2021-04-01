@@ -2,11 +2,13 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.UserStructureVo;
 
 import java.util.List;
 
@@ -106,4 +108,28 @@ public interface SysDepartmentInfoService {
      * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     List<SysDepartmentInfoVo> getSubordinateStructure(UserVo user);
+
+    /**
+     *
+     *  获取下级直属部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 19:58
+     * @param                departId
+     * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
+     */
+    List<UserDepartInfoVo> getSubordinateDirectlyDepart(String departId);
+
+    /**
+     *
+     *  获取直属部门或者用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 18:20
+     * @param                departId
+     * @param                companyId
+     * @param                user
+     * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
+     */
+    List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId, UserVo user);
 }

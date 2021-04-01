@@ -6,6 +6,7 @@ import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -89,4 +90,15 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
 
     List<SysComapnyInfoVo> getCompanyAll();
+
+    /**
+     *
+     * 获取企业名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 19:12
+     * @param                companyId
+     * @return               com.zerody.user.vo.UserStructureVo
+     */
+    UserStructureVo getCompanyNameById(@Param("companyId") String companyId);
 }

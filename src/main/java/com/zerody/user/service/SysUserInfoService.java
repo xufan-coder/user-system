@@ -2,13 +2,16 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
+import com.zerody.user.vo.UserTypeInfoVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -222,4 +225,6 @@ public interface SysUserInfoService {
     void updateUserAvatar(SetUpdateAvatarDto param);
 
     void getAvatarImageByUserId(String userId, HttpServletRequest request, HttpServletResponse response);
+
+    UserTypeInfoVo getUserTypeInfo(UserVo user);
 }

@@ -3,10 +3,12 @@ package com.zerody.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -77,4 +79,38 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     List<SysDepartmentInfoVo> getSubordinateStructure(@Param("user") UserVo user);
+
+    /**
+     *
+     *  获取下级直属部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/30 20:00
+     * @param                departId
+     * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
+     */
+    List<UserDepartInfoVo> getSubordinateDirectlyDepart(@Param("departId") String departId);
+
+    /**
+     *
+     *  获取部门名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 19:17
+     * @param                departId
+     * @return               com.zerody.user.vo.UserStructureVo
+     */
+    UserStructureVo getDepartNameById(@Param("departId") String departId);
+
+    /**
+     *
+     *  根据上级部门 或者 企业id获取直属部门名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 19:17
+     * @param                companyId
+     * @param                departId
+     * @return               com.zerody.user.vo.UserStructureVo
+     */
+    List<UserStructureVo> getDepartNameByCompanyIdOrParentId(@Param("companyId")String companyId,@Param("departId") String departId);
 }

@@ -181,4 +181,14 @@
         WHERE
             status = 0
     </select>
+    <select id="getCompanyNameById" resultType="com.zerody.user.vo.UserStructureVo">
+        SELECT
+            id AS companyId,
+            company_name AS companyName,
+            1 AS type
+        FROM
+            sys_company_info
+        WHERE
+            id = #{companyId}
+    </select>
 </mapper>

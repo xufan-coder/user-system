@@ -59,7 +59,10 @@
             code
         from zerody_addr
         where
-         address like concat('%',#{name},'%')
-         and  addr_level = #{level} limit 1
+         addr_level = #{level}
+        <if test="name != null and name != ''">
+            and  address like concat('%',#{name},'%')
+        </if>
+           limit 1
     </select>
 </mapper>
