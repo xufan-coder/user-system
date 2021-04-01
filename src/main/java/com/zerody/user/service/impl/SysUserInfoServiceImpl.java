@@ -352,9 +352,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
             Integer count = this.sysDepartmentInfoMapper.selectCount(departQw);
             if (count > 0) {
-                userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
-            } else {
                 userTypeInfoVo.setUserType(UserTypeInfo.DEPUTY_GENERAL_MANAGERv);
+            } else {
+                userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
             }
         } else {
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
