@@ -808,7 +808,7 @@ public class SysUserInfoController implements UserRemoteService {
     @RequestMapping(value = "/get/user-type/inner", method = GET)
     public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam("userId")String userId,
                                                                          @RequestParam("companyId")String companyId,
-                                                                         @Param("departId") String departId) {
+                                                                         @RequestParam("departId") String departId) {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
