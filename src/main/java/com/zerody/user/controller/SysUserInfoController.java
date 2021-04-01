@@ -4,19 +4,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.util.Date;
 import java.util.List;
 
-import com.zerody.user.api.vo.*;
-import com.zerody.user.check.CheckUser;
-import com.zerody.user.dto.SetUpdateAvatarDto;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
-import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.*;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import javafx.geometry.Pos;
-import org.apache.ibatis.annotations.Param;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.LastModified;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
@@ -40,20 +37,33 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
+import com.zerody.user.api.vo.AdminUserInfo;
+import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.CardUserInfoVo;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.api.vo.UserTypeInfoInnerVo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.CardUserService;
 import com.zerody.user.service.CompanyAdminService;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.CheckLoginVo;
+import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.SysDepartmentInfoVo;
+import com.zerody.user.vo.SysLoginUserInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
+import com.zerody.user.vo.UserPerformanceReviewsVo;
+import com.zerody.user.vo.UserTypeInfoVo;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author PengQiang
@@ -64,7 +74,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping("/sys-user-info")
 @RestController
-public class SysUserInfoController implements UserRemoteService {
+public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Autowired
     private CheckUtil checkUtil;
@@ -86,9 +96,15 @@ public class SysUserInfoController implements UserRemoteService {
 
     @Autowired
     private SysCompanyInfoService sysCompanyInfoService;
-    /**
-    *    根据用户ID查询单个用户
-    */
+
+	@Override
+	public long getLastModified(HttpServletRequest request) {
+		return System.currentTimeMillis();
+	}
+
+	/**
+	 * 根据用户ID查询单个用户
+	 */
     @GetMapping("/get/{id}")
     public DataResult getUserInfoById(@PathVariable String id){
         return R.success(sysUserInfoService.getUserInfoById(id));
@@ -714,7 +730,26 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @RequestMapping(value = "/get/avatar-image", method = GET)
     public DataResult<Object> getAvatarImageByUserId(@RequestParam("userId") String userId, HttpServletRequest request, HttpServletResponse response) {
-        try {
+		String lastModified = request.getHeader("If-Modified-Since");
+		Date lastModifiedTime = null;
+		if (lastModified != null) {
+			try {
+				lastModifiedTime = new Date(lastModified);
+			} catch (Exception e) {
+				log.error("lastModifiedTime error:" + lastModified);
+			}
+		}
+		try {
+			UserVo user = UserUtils.getUser();
+			if (lastModifiedTime != null) {
+//				boolean isModified = this.formProcessService.isModifiedForm(key, user.getCompanyId(), lastModifiedTime);
+				boolean isModified = false;
+				if (isModified) {
+					response.setStatus(HttpStatus.NOT_MODIFIED.value());
+					return null;
+				}
+			}
+			response.setHeader("Last-Modified", (new Date()).toString());
             this.sysUserInfoService.getAvatarImageByUserId(userId, request, response);
             return R.success();
         } catch (DefaultException e){
