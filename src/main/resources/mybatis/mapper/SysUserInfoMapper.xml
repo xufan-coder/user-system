@@ -47,7 +47,7 @@
     select <include refid="Base_Column_List"/>
     from sys_user_info
     <where>
-      status != -1
+      status in (0, 3)
       <if test="userInfo.id != null and userInfo.id != ''">
         and id != #{userInfo.id}
       </if>
@@ -147,7 +147,7 @@ WHERE
         sys_user_info
         WHERE
 			phone_number = #{phoneNumber}
-			and `status` != -1
+			and `status` in (0,3)
   </select>
 
     <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
