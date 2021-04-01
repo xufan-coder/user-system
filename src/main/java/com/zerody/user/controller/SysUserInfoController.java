@@ -806,7 +806,7 @@ public class SysUserInfoController implements UserRemoteService {
      */
     @Override
     @RequestMapping(value = "/get/user-type/inner", method = GET)
-    public DataResult<UserTypeInfoInnerVo> getDepartDirectStaffInfoInner(@RequestParam("userId")String userId,
+    public DataResult<UserTypeInfoInnerVo> getUtypeInfoInner(@RequestParam("userId")String userId,
                                                                          @RequestParam("companyId")String companyId,
                                                                          @Param("departId") String departId) {
         try {
