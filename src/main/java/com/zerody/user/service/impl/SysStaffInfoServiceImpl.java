@@ -157,6 +157,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private ContractFeignService contractService;
 
 
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -188,6 +189,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setStatus(StatusEnum.activity.getValue());
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
+        sysUserInfo.setIsDeleted(YesNo.NO);
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -394,6 +396,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             depAdmin.setAdminAccount(null);
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
+       if (StatusEnum.stop.equals(sysUserInfo.getStatus())) {
+           List<String> userIds = new ArrayList<>();
+           userIds.add(sysUserInfo.getId());
+           this.oauthFeignService.removeToken(userIds);
+       }
     }
 
     @Override
@@ -426,6 +433,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionStaffPosition> qw2 = new QueryWrapper<>();
         qw2.lambda().eq(UnionStaffPosition::getStaffId,staffId);
         unionStaffPositionMapper.delete(qw2);
+        List<String> userIds = new ArrayList<>();
+        userIds.add(userInfo.getId());
+        this.oauthFeignService.removeToken(userIds);
     }
 
     @Override

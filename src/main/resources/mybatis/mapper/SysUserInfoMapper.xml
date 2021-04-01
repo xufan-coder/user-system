@@ -43,7 +43,19 @@
   <sql id="Blob_Column_List" >
 
   </sql>
-  <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
+    <update id="updateUserStatusAndIsDeleted">
+        UPDATE sys_user_info
+        <set>
+            is_deleted = 0, status = -1
+        </set>
+        <where>
+            id IN
+            <foreach collection="userIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </update>
+    <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from sys_user_info
     <where>
