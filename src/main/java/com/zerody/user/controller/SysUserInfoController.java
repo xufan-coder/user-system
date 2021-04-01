@@ -782,7 +782,7 @@ public class SysUserInfoController implements UserRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     @RequestMapping(value = "/get/user-type", method = GET)
-    public DataResult<UserTypeInfoVo> getDepartDirectStaffInfo() {
+    public DataResult<UserTypeInfoVo> getUserTypeInfo() {
         try {
             UserVo user = UserUtils.getUser();
             UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
