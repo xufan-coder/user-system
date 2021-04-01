@@ -146,4 +146,6 @@ public class  SysUserInfo extends BaseModel {
     /** 角色名称 */
     @TableField(exist = false)
     private String roleName;
+
+    private Date avatarUpdateTime;
 }
