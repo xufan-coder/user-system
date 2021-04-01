@@ -807,13 +807,19 @@ public class SysUserInfoController implements UserRemoteService {
     @Override
     @RequestMapping(value = "/get/user-type/inner", method = GET)
     public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam("userId")String userId,
-                                                                         @RequestParam("companyId")String companyId,
-                                                                         @RequestParam("departId") String departId) {
+                                                                         @RequestParam(value = "companyId",required = false)String companyId,
+                                                                         @RequestParam(value = "departId", required = false) String departId) {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
-            user.setCompanyId(companyId);
-            user.setDeptId(departId);
+            if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId)) {
+                StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
+                user.setCompanyId(staff.getCompanyId());
+                user.setDeptId(staff.getDepartId());
+            } else {
+                user.setDeptId(departId);
+                user.setCompanyId(companyId);
+            }
             UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
             UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
             BeanUtils.copyProperties(departs, innerVo);
