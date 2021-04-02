@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
@@ -305,7 +306,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     @Override
+    @Transactional
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+        SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(setSysUserInfoDto.getId());
         SysUserInfo sysUserInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
         sysUserInfo.setId(setSysUserInfoDto.getId());
@@ -396,6 +399,40 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             depAdmin.setAdminAccount(null);
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
+        //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
+        if(DataUtil.isNotEmpty(oldUserInfo)&&(!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))){
+            //先新增名片
+            CardUserInfo cardUserInfo=new CardUserInfo();
+            cardUserInfo.setUserName(sysUserInfo.getUserName());
+            cardUserInfo.setPhoneNumber(sysUserInfo.getPhoneNumber());
+            cardUserInfo.setCreateTime(new Date());
+            cardUserInfo.setStatus(StatusEnum.activity.getValue());
+            cardUserInfoMapper.insert(cardUserInfo);
+
+            //生成基础名片信息
+            UserCardDto cardDto=new UserCardDto();
+            cardDto.setMobile(cardUserInfo.getPhoneNumber());
+            cardDto.setUserName(cardUserInfo.getUserName());
+            //crm用户ID
+            cardDto.setUserId(sysUserInfo.getId());
+            //名片用户ID
+            cardDto.setCustomerUserId(cardUserInfo.getId());
+            cardDto.setAvatar(sysUserInfo.getAvatar());
+            cardDto.setEmail(sysUserInfo.getEmail());
+            cardDto.setCustomerUserId(cardUserInfo.getId());
+            cardDto.setCreateBy(UserUtils.getUserId());
+            DataResult<String> card = cardFeignService.createCard(cardDto);
+            if(!card.isSuccess()){
+                throw new DefaultException("服务异常！");
+            }
+            //直接修改该用户关联的名片，且解除旧关联
+            UpdateWrapper<CardUserUnionUser> uw = new UpdateWrapper<>();
+            uw.lambda().eq(CardUserUnionUser::getUserId,oldUserInfo.getId());
+            uw.lambda().set(CardUserUnionUser::getCardId,cardUserInfo.getId());
+            cardUserUnionCrmUserMapper.update(null,uw);
+        }
+
+
        if (StatusEnum.stop.equals(sysUserInfo.getStatus())) {
            List<String> userIds = new ArrayList<>();
            userIds.add(sysUserInfo.getId());
