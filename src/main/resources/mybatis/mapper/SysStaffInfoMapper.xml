@@ -573,4 +573,12 @@
             usd.department_id = #{departId}
         </where>
     </select>
+    <select id="getCompanyIdByUserId" resultType="java.lang.String">
+        SELECT
+            comp_id
+        FROM
+            sys_staff_info
+        where
+            user_id = #{userId}
+    </select>
 </mapper>

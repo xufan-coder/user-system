@@ -132,4 +132,15 @@ public interface SysDepartmentInfoService {
      * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
      */
     List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId, UserVo user);
+
+    /**
+     *
+     *  根据用户权限获取直属部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/2 12:32
+     * @param                userId
+     * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
+     */
+    List<UserDepartInfoVo> getJurisdictionDirectly(String userId);
 }
