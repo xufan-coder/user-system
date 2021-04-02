@@ -557,8 +557,9 @@
         FROM
             sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            usd.department_id = #{departId}
+            usd.department_id = #{departId} and ssi.id !=sdi.admin_account
         </where>
     </select>
     <select id="getUserNameByDepartId" resultType="com.zerody.user.vo.UserStructureVo">
@@ -570,7 +571,7 @@
         sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
-            usd.department_id = #{departId}
+            usd.department_id = #{departId} AND usd.user_id = #{userId}
         </where>
     </select>
     <select id="getCompanyIdByUserId" resultType="java.lang.String">

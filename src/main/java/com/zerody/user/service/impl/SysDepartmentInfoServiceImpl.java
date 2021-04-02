@@ -259,7 +259,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return userStructureVos;
         }
         if (StringUtils.isNotEmpty(departId)) {
-            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId);
+            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId, user.getUserId());
         }
         List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
         userStructureVos.addAll(departInfos);
