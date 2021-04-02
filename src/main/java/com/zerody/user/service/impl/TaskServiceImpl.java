@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.zerody.user.feign.OauthFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,9 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private MsgService msgService;
 
+    @Autowired
+    private OauthFeignService oauthFeignService;
+
     @Override
 	public void buildVisitNoticeInfo(Map<String, String> user) {
         //获取所有用户ID
@@ -64,6 +68,16 @@ public class TaskServiceImpl implements TaskService {
         log.info("客户未跟进消息:"+JSONObject.toJSONString(dtos));
 		this.msgService.deleteExpiredMessage(user.get("id"));
         msgService.saveBatch(dtos);
+    }
+
+    @Override
+    public int removeUser() {
+        List<String> userIds = this.sysUserInfoService.doUserIsDeleted();
+        if (CollectionUtils.isEmpty(userIds)) {
+           return 0;
+        }
+        this.oauthFeignService.removeToken(userIds);
+        return userIds.size();
     }
 
     public Msg buildNotice(String userId, String msg, String title){

@@ -19,4 +19,15 @@ public interface TaskService {
      * @date 2021/1/11  17:46
      */
 	void buildVisitNoticeInfo(Map<String, String> user);
+
+	/**
+	 *
+	 * 异步删除用户
+	 * @author               PengQiang
+	 * @description          DELL
+	 * @date                 2021/4/1 20:48
+	 * @param
+	 * @return               int
+	 */
+    int removeUser();
 }

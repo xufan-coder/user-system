@@ -227,4 +227,6 @@ public interface SysUserInfoService {
     void getAvatarImageByUserId(String userId, HttpServletRequest request, HttpServletResponse response);
 
     UserTypeInfoVo getUserTypeInfo(UserVo user);
+
+    List<String> doUserIsDeleted();
 }

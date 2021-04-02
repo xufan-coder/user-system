@@ -148,4 +148,6 @@ public class  SysUserInfo extends BaseModel {
     private String roleName;
 
     private Date avatarUpdateTime;
+
+    private Integer isDeleted;
 }

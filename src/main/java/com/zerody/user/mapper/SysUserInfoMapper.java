@@ -8,6 +8,8 @@ import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Map;
@@ -101,4 +103,27 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @return               java.util.List<java.lang.String>
      */
     List<Map<String, String>> selectAllUserId();
+
+    /**
+     *  找到要删除的用户id
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/1 20:56
+     * @param                []
+     * @return               java.util.List<java.lang.String>
+     */
+    @Select("SELECT id FROM sys_user_info where is_deleted = 1")
+    List<String> getUserIdsByIsDeleted();
+
+    /**
+     *
+     * 修改用户状态
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/1 20:59
+     * @param                userIds
+     * @return               void
+     */
+    void updateUserStatusAndIsDeleted(@Param("userIds") List<String> userIds);
 }

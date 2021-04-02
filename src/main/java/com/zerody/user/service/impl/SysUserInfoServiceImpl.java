@@ -10,6 +10,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
@@ -363,6 +364,16 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
         userTypeInfoVo.setDepartName(departVo.getDepartName());
         return userTypeInfoVo;
+    }
+
+    @Override
+    public List<String> doUserIsDeleted() {
+        List<String> userIds = this.sysUserInfoMapper.getUserIdsByIsDeleted();
+        if (CollectionUtils.isEmpty(userIds)) {
+            return null;
+        }
+        this.sysUserInfoMapper.updateUserStatusAndIsDeleted(userIds);
+        return userIds;
     }
 
     public  byte[] readInputStream(InputStream inStream) throws Exception{
