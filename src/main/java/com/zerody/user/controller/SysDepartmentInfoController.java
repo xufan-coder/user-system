@@ -248,4 +248,30 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             return R.error("获取下级直属部门错误,请求异常");
         }
     }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          权限直属部门接口
+     * @date                 2020/12/31 9:57
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @Override
+    @RequestMapping(value = "/get/jurisdiction-directly", method = RequestMethod.GET)
+    public DataResult<List<UserDepartInfoVo>> getJurisdictionDirectly(@RequestParam("userId") String userId){
+
+        try {
+            List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getJurisdictionDirectly(userId);
+            return R.success(departs);
+        } catch (DefaultException e) {
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error("获取下级直属部门错误,请求异常");
+        }
+    }
 }
