@@ -206,7 +206,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      * @date 2021/4/2  10:41
      */
     @Override
-    @RequestMapping(value = "/depart/get/charge-user/inner", method = RequestMethod.GET)
+    @RequestMapping(value = "/get/charge-user/inner", method = RequestMethod.GET)
     public DataResult<SysUserInfo> getChargeUser(@RequestParam("departId") String departId) {
 
         try {
