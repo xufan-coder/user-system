@@ -283,6 +283,31 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return null;
     }
 
+    @Override
+    public List<UserDepartInfoVo> getJurisdictionDirectly(String userId) {
+        List<UserDepartInfoVo> departVos = new ArrayList<>();
+        UserVo userVo = new UserVo();
+        userVo.setUserId(userId);
+        String companyId = this.stafffMapper.getCompanyIdByUserId(userId);
+        userVo.setCompanyId(companyId);
+        //获取用户最高权限
+        AdminVo adminVo = this.staffInfoService.getIsAdmin(userVo);
+        if(adminVo.getIsCompanyAdmin()) {
+            List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, null);
+            for (UserStructureVo vo : departInfos) {
+
+                departVos.add(new UserDepartInfoVo());
+                BeanUtils.copyProperties(vo, departVos.get(departVos.size() - 1));
+            }
+        } else if (adminVo.getIsDepartAdmin()){
+            String departId = this.staffInfoService.getDepartId(userId);
+            departVos = this.sysDepartmentInfoMapper.getSubordinateDirectlyDepart(departId);
+        } else {
+            return null;
+        }
+        return departVos;
+    }
+
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){
         return this.getDepChildrens(parentId, deps, null);
     }

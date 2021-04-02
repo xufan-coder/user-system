@@ -130,7 +130,7 @@
              sdi.id = #{departId}
     </select>
     <select id="getDepartNameByCompanyIdOrParentId" resultType="com.zerody.user.vo.UserStructureVo">
-                SELECT
+        SELECT
             sdi.depart_name AS departName,
             sdi.id AS departId,
             2 AS type
@@ -140,11 +140,13 @@
             sdi.status = 0
              <if test="companyId neq null and companyId neq ''">
                  AND sdi.comp_id = #{companyId}
-                 AND sdi.parent_id IS NULL
              </if>
-             <if test="departId neq null and departId neq ''">
+             <if test="departId neq null and  departId neq ''">
                  AND sdi.parent_id = #{departId}
              </if>
+            <if test="departId eq null or departId eq ''">
+                AND sdi.parent_id IS NULL
+            </if>
         </where>
     </select>
 </mapper>
