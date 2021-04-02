@@ -740,7 +740,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 			}
 		}
 		try {
-			UserVo user = UserUtils.getUser();
+//			UserVo user = UserUtils.getUser();
 			if (lastModifiedTime != null) {
 //				boolean isModified = this.formProcessService.isModifiedForm(key, user.getCompanyId(), lastModifiedTime);
 				boolean isModified = false;
