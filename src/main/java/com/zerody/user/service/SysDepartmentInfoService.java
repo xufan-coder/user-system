@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -132,6 +133,8 @@ public interface SysDepartmentInfoService {
      * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
      */
     List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId, UserVo user);
+
+    com.zerody.user.api.vo.SysUserInfo getChargeUser(String departId);
 
     /**
      *
