@@ -362,6 +362,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
         }
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+        if (DataUtil.isEmpty(departVo)) {
+            return userTypeInfoVo;
+        }
         userTypeInfoVo.setDepartName(departVo.getDepartName());
         return userTypeInfoVo;
     }
