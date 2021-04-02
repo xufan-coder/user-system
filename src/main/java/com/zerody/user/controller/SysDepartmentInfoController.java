@@ -9,6 +9,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.SysUserInfo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -191,6 +192,31 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         } catch (Exception e){
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);
             return R.error("获取下级直属部门错误,请求异常");
+        }
+    }
+
+
+    /**************************************************************************************************
+     **
+     *  根据部门id获取负责人的用户信息
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2021/4/2  10:41
+     */
+    @Override
+    @RequestMapping(value = "/depart/get/charge-user/inner", method = RequestMethod.GET)
+    public DataResult<SysUserInfo> getChargeUser(@RequestParam("departId") String departId) {
+
+        try {
+            return R.success(this.sysDepartmentInfoService.getChargeUser(departId));
+        } catch (DefaultException e) {
+            log.error("获取部门负责人错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取部门负责人错误:{}", e.getMessage(),e);
+            return R.error("获取部门负责人错误,请求异常");
         }
     }
 

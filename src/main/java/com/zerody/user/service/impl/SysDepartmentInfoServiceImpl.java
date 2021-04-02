@@ -16,16 +16,17 @@ import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetAdminAccountDto;
-import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import com.zerody.user.vo.UserStructureVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private SysStaffInfoService staffInfoService;
+
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
 
     @Autowired
     private SysStaffInfoMapper stafffMapper;
@@ -260,6 +264,23 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
         userStructureVos.addAll(departInfos);
         return userStructureVos;
+    }
+
+    @Override
+    public com.zerody.user.api.vo.SysUserInfo getChargeUser(String departId) {
+        SysDepartmentInfo sysDepartmentInfo = this.sysDepartmentInfoMapper.selectById(departId);
+        if(DataUtil.isNotEmpty(sysDepartmentInfo)){
+            String adminAccount = sysDepartmentInfo.getAdminAccount();
+            if(DataUtil.isNotEmpty(adminAccount)){
+                SysUserInfo userById = sysUserInfoService.getUserById(adminAccount);
+                if(DataUtil.isNotEmpty(userById)){
+                    com.zerody.user.api.vo.SysUserInfo result=new com.zerody.user.api.vo.SysUserInfo();
+                    BeanUtils.copyProperties(userById,result);
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){
