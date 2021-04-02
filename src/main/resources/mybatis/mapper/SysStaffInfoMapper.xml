@@ -571,7 +571,7 @@
         sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
-            usd.department_id = #{departId} AND usd.user_id = #{userId}
+            usd.department_id = #{departId} AND ssi.user_id = #{userId}
         </where>
     </select>
     <select id="getCompanyIdByUserId" resultType="java.lang.String">
