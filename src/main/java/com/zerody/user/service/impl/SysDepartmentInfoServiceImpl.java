@@ -259,7 +259,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return userStructureVos;
         }
         if (StringUtils.isNotEmpty(departId)) {
-            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId, user.getUserId());
+            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId, UserUtils.getUser().getUserId());
         }
         List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
         userStructureVos.addAll(departInfos);
@@ -295,7 +295,6 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if(adminVo.getIsCompanyAdmin()) {
             List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, null);
             for (UserStructureVo vo : departInfos) {
-
                 departVos.add(new UserDepartInfoVo());
                 BeanUtils.copyProperties(vo, departVos.get(departVos.size() - 1));
             }
