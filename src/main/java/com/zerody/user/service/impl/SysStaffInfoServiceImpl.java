@@ -38,6 +38,7 @@ import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -157,7 +158,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private ContractFeignService contractService;
 
-
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -347,6 +349,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
+        UnionRoleStaff userRole = this.unionRoleStaffMapper.selectOne(ursQW);
         unionRoleStaffMapper.delete(ursQW);
         UnionRoleStaff rs = new UnionRoleStaff();
         //给员工赋予角色
@@ -382,6 +385,37 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()){
                 throw new DefaultException("修改线索负责人名称失败!");
+            }
+        }
+        boolean removeToken = true;
+        if(DataUtil.isEmpty(dep)) {
+            if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
+                this.checkUtil.removeUserToken(sysUserInfo.getId());
+                removeToken = !removeToken;
+            }
+        } else{
+            if (DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
+                this.checkUtil.removeUserToken(sysUserInfo.getId());
+                removeToken = !removeToken;
+            } else if (!dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+                this.checkUtil.removeUserToken(sysUserInfo.getId());
+                removeToken = !removeToken;
+            }
+        }
+        if (removeToken) {
+            if (DataUtil.isEmpty(userRole)) {
+                if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
+                    this.checkUtil.removeUserToken(sysUserInfo.getId());
+                    removeToken = !removeToken;
+                }
+            } else {
+                if (StringUtils.isEmpty(setSysUserInfoDto.getRoleId())) {
+                    this.checkUtil.removeUserToken(sysUserInfo.getId());
+                    removeToken = !removeToken;
+                } else if (!setSysUserInfoDto.getRoleId().equals(userRole.getRoleId())) {
+                    this.checkUtil.removeUserToken(sysUserInfo.getId());
+                    removeToken = !removeToken;
+                }
             }
         }
         unionStaffDepartMapper.delete(usdQW);
@@ -433,10 +467,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
 
-       if (StatusEnum.stop.equals(sysUserInfo.getStatus())) {
-           List<String> userIds = new ArrayList<>();
-           userIds.add(sysUserInfo.getId());
-           this.oauthFeignService.removeToken(userIds);
+       if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
        }
     }
 
