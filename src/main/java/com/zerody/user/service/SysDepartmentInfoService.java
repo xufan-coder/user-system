@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.SysUserInfo;
@@ -19,7 +20,7 @@ import java.util.List;
  * @DateTime 2020/12/19_13:20
  * @Deacription TODO
  */
-public interface SysDepartmentInfoService {
+public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
 
     /**
      *  添加部门

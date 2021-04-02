@@ -1,7 +1,10 @@
 package com.zerody.user.controller;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
@@ -9,6 +12,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.DepartmentInfoVo;
 import com.zerody.user.api.vo.SysUserInfo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -22,6 +26,7 @@ import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -266,6 +271,33 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         try {
             List<UserDepartInfoVo> departs = this.sysDepartmentInfoService.getJurisdictionDirectly(userId);
             return R.success(departs);
+        } catch (DefaultException e) {
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取下级直属部门错误:{}", e.getMessage(),e);
+            return R.error("获取下级直属部门错误,请求异常");
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取部门信息
+     * @date                 2020/12/31 9:57
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @Override
+    @RequestMapping(value = "/get/depart-info/inner", method = RequestMethod.GET)
+    public DataResult<DepartmentInfoVo> getDepartInfoById(@RequestParam("departId") String departId){
+
+        try {
+            DepartmentInfoVo  departInfo = new DepartmentInfoVo();
+            SysDepartmentInfo depart = this.sysDepartmentInfoService.getById(departId);
+            BeanUtils.copyProperties(depart, departInfo);
+            return R.success(departInfo);
         } catch (DefaultException e) {
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);
             return R.error(e.getMessage());
