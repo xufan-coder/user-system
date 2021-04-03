@@ -799,6 +799,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
+        loginInfo.setStatus(status);
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto smsDto=new SmsDto();
@@ -922,6 +923,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
+        Integer status = StringUtils.isEmpty(row[5]) ? StatusEnum.activity.getValue() : row[5].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue():
+                row[5].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo=new SysUserInfo();
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
@@ -938,7 +941,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[16]);
         userInfo.setMajor(row[17]);
         userInfo.setRegisterTime(new Date());
-        userInfo.setStatus(StatusEnum.activity.getValue());
+        userInfo.setStatus(status);
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
         userInfo.setCreateTime(new Date());
@@ -950,8 +953,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCompId(UserUtils.getUser().getCompanyId());
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
-        Integer status =row[5].equals(StaffStatusEnum.BE_ON_THE_JOB.getDesc())?StaffStatusEnum.BE_ON_THE_JOB.getCode():
-                row[5].equals(StaffStatusEnum.DIMISSION.getDesc())?StaffStatusEnum.DIMISSION.getCode():StaffStatusEnum.COLLABORATE.getCode();
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
         //保存到员工表
@@ -961,6 +962,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
+        loginInfo.setStatus(status);
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto smsDto=new SmsDto();
