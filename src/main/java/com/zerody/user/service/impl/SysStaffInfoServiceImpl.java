@@ -799,7 +799,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        loginInfo.setStatus(status);
+        loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto smsDto=new SmsDto();
@@ -962,7 +962,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        loginInfo.setStatus(status);
+        loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
         SmsDto smsDto=new SmsDto();
