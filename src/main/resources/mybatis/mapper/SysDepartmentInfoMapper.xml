@@ -116,6 +116,7 @@
         FROM
             sys_department_info AS sdi
         <where>
+            sdi.status = 0 AND
             sdi.parent_id = #{departId}
         </where>
     </select>
