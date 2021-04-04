@@ -127,6 +127,7 @@
         FROM
          sys_department_info AS sdi
         WHERE
+             sdi.status = 0 AND
              sdi.id = #{departId}
     </select>
     <select id="getDepartNameByCompanyIdOrParentId" resultType="com.zerody.user.vo.UserStructureVo">
