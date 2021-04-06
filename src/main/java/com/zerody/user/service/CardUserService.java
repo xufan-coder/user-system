@@ -80,4 +80,15 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @date 2021/1/30  17:40
      */
     CardUserInfoVo bindOpenId(String openId,String userId);
+
+    /**************************************************************************************************
+     **
+     *
+     *
+     * @param id
+     * @return {@link id }
+     * @author DaBai
+     * @date 2021/4/6  13:29
+     */
+    CardUserInfoVo getCardUserById(String id);
 }
