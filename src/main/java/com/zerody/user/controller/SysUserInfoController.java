@@ -694,7 +694,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
 /**-------------------------------------------------------------------------------------------------------------------  */
-    
+
     /**
      *
      *
@@ -718,7 +718,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("设置用户头像出错"+ e);
         }
     }
-    
+
     /**
      *
      *
@@ -870,5 +870,17 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             log.error("获取员工类型出错:{}",e,e);
             return R.error("获取员工类型出错"+ e);
         }
+    }
+
+
+
+    @Override
+    @RequestMapping(value = "/get-card/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<CardUserInfoVo> getCardUserById(@PathVariable String id) {
+        CardUserInfoVo cardUserById = cardUserService.getCardUserById(id);
+        if(DataUtil.isEmpty(cardUserById)){
+            return R.error("用户不存在！");
+        }
+        return R.success(cardUserById);
     }
 }

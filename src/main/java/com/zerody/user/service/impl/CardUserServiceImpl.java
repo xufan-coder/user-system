@@ -204,4 +204,19 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         BeanUtils.copyProperties(one, cardUser);
         return cardUser;
     }
+
+    @Override
+    public CardUserInfoVo getCardUserById(String id) {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getId,id);
+        CardUserInfo one = this.getOne(userQw);
+        if(DataUtil.isNotEmpty(one)){
+            CardUserInfoVo cardUser = new CardUserInfoVo();
+            BeanUtils.copyProperties(one, cardUser);
+            return cardUser;
+        }else {
+            return null;
+        }
+
+    }
 }
