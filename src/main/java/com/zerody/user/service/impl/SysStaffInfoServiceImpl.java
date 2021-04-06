@@ -918,7 +918,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
         if (StringUtils.isNotEmpty(row[10])) {
-            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[9]))) {
+            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[10]))) {
                 errorStr.append("婚姻状况错误");
             }
         }
