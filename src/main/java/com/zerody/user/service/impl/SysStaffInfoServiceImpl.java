@@ -399,6 +399,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             } else if (!dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+                SysDepartmentInfo depInfo = this.sysDepartmentInfoMapper.selectById(dep.getDepartmentId());
+                if (staff.getId().equals(depInfo.getAdminAccount())) {
+                    UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
+                    depUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+                    depUw.lambda().eq(SysDepartmentInfo::getId, depInfo.getId());
+                    this.sysDepartmentInfoService.update(depUw);
+                }
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             }
