@@ -399,6 +399,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             } else if (!dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+                // todo 如果修改了部门并且是上个部门的负责人 则把该员工的负责人删除
                 SysDepartmentInfo depInfo = this.sysDepartmentInfoMapper.selectById(dep.getDepartmentId());
                 if (staff.getId().equals(depInfo.getAdminAccount())) {
                     UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();

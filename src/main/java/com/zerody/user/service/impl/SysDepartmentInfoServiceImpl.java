@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.utils.RedisUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.service.ClewRemoteService;
@@ -30,7 +31,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +72,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Autowired
     private SysCompanyInfoMapper companyMapper;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
+    // todo 添加部门redis 自动增长key
+    private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
+
+    // todo 添加部门redis 自动增长 过期时间 单位天
+    private final static Long ADD_DEPART_REDIS_OUTTIME = 2L;
+
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
@@ -89,24 +102,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         sysDepartmentInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加部门入库-{}",sysDepartmentInfo);
-
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-        String month = calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "";
-        month = month.concat(String.valueOf(calendar.get(Calendar.MONTH) + 1));
-        String date = String.valueOf(calendar.get(Calendar.DATE));
-        String id  = year.concat(month).concat(date).concat("xxxx");
-        if (StringUtils.isNotEmpty(sysDepartmentInfo.getParentId())){
-            id = sysDepartmentInfo.getParentId().concat("_").concat(id);
-        }
+        SimpleDateFormat simdf = new SimpleDateFormat("yyMMdd");
+        String id  = simdf.format(new Date());
         boolean find = true;
         do {
             if (find) {
-                Random random = new Random();
-                id = id.substring(0, id.length() - 4).concat(String.valueOf(random.nextInt(9000)+1000));
+                // todo 获取redis 自增长
+                long departDayCount = redisUtils.increase(ADD_DEPART_REIDS_KEY, 0, ADD_DEPART_REDIS_OUTTIME, TimeUnit.DAYS);
+                id = id.concat(String.valueOf(departDayCount));
+                // todo 如果是子部门 把改部门的父级部门id拼在前面
+                if (StringUtils.isNotEmpty(sysDepartmentInfo.getParentId())){
+                    id = sysDepartmentInfo.getParentId().concat("_").concat(id);
+                }
             }
+            // todo 判断改id数据库是否存在
             find = DataUtil.isNotEmpty(this.sysDepartmentInfoMapper.selectById(id));
         } while (find);
         sysDepartmentInfo.setId(id);
@@ -305,6 +314,21 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return null;
         }
         return departVos;
+    }
+
+    @Override
+    public Integer getDepartType(String departId) {
+        // todo 默认为部门
+        Integer deaprtType = 1;
+        QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+        departQw.lambda().eq(SysDepartmentInfo::getParentId, departId);
+        departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
+        Integer count = this.count(departQw);
+        // todo 如果没有下级部门 则为团队部门
+        if (count.equals(0)) {
+            deaprtType = 0;
+        }
+        return deaprtType;
     }
 
     private List<SysDepartmentInfoVo> getDepChildrens(String parentId, List<SysDepartmentInfoVo> deps){
