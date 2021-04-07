@@ -91,7 +91,7 @@ public class SysUserInfoVo {
     private String major;
 
     //婚姻状态
-    private String maritalStatus;
+    private Integer maritalStatus;
 
     /** crmOpenId **/
     private String crmOpenId;
