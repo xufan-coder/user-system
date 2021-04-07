@@ -147,4 +147,15 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
      */
     List<UserDepartInfoVo> getJurisdictionDirectly(String userId);
+
+    /**
+     *
+     *  获取部门类型 0部门 1团队部门(没有下级部门)
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/7 19:07
+     * @param                departId
+     * @return               java.lang.Integer
+     */
+    Integer getDepartType(String departId);
 }
