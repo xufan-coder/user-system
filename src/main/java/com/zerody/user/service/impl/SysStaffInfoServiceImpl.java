@@ -17,6 +17,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.enums.customer.MaritalStatusEnum;
 import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
@@ -398,6 +399,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             } else if (!dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+                // todo 如果修改了部门并且是上个部门的负责人 则把该员工的负责人删除
+                SysDepartmentInfo depInfo = this.sysDepartmentInfoMapper.selectById(dep.getDepartmentId());
+                if (staff.getId().equals(depInfo.getAdminAccount())) {
+                    UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
+                    depUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+                    depUw.lambda().eq(SysDepartmentInfo::getId, depInfo.getId());
+                    this.sysDepartmentInfoService.update(depUw);
+                }
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             }
@@ -768,7 +777,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGender(row[7].equals(StaffGenderEnum.MALE.getDesc())?StaffGenderEnum.MALE.getValue():StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[8]);
         userInfo.setNation(row[9]);
-        userInfo.setMaritalStatus(row[10]);
+        userInfo.setMaritalStatus(StringUtils.isEmpty(row[10]) ? null : MaritalStatusEnum.getCodeByName(row[10]).getCode());
         userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
         userInfo.setCertificateCard(row[12]);
         userInfo.setCertificateCardAddress(row[13]);
@@ -916,6 +925,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
+        if (StringUtils.isNotEmpty(row[10])) {
+            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[10]))) {
+                errorStr.append("婚姻状况错误");
+            }
+        }
         return companyId;
     }
 
@@ -931,7 +945,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGender(row[6].equals(StaffGenderEnum.MALE.getDesc())?StaffGenderEnum.MALE.getValue():StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[7]);
         userInfo.setNation(row[8]);
-        userInfo.setMaritalStatus(row[9]);
+        userInfo.setMaritalStatus(StringUtils.isEmpty(row[9]) ? null : MaritalStatusEnum.getCodeByName(row[9]).getCode());
         userInfo.setBirthday(StringUtils.isEmpty(row[10]) ? null: new Date(row[10]));
         userInfo.setCertificateCard(row[11]);
         userInfo.setCertificateCardAddress(row[12]);
@@ -1061,6 +1075,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 } else {
                     unionStaffPosition.setPositionId(jobByDepart.getId());
                 }
+            }
+        }
+        if (StringUtils.isNotEmpty(row[10])) {
+            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[9]))) {
+                errorStr.append("婚姻状况错误");
             }
         }
     }

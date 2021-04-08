@@ -783,11 +783,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //			UserVo user = UserUtils.getUser();
 			if (lastModifiedTime != null) {
 //				boolean isModified = this.formProcessService.isModifiedForm(key, user.getCompanyId(), lastModifiedTime);
-				boolean isModified = false;
-				if (isModified) {
-					response.setStatus(HttpStatus.NOT_MODIFIED.value());
-					return null;
-				}
+                SysUserInfo user = this.sysUserInfoService.getById(userId);
+                if (DataUtil.isNotEmpty(user.getAvatarUpdateTime())) {
+                    boolean isModified = lastModifiedTime.getTime() > user.getAvatarUpdateTime().getTime();
+                    if (isModified) {
+                        response.setStatus(HttpStatus.NOT_MODIFIED.value());
+                        return null;
+                    }
+                }
+
 			}
 			response.setHeader("Last-Modified", (new Date()).toString());
             this.sysUserInfoService.getAvatarImageByUserId(userId, request, response);

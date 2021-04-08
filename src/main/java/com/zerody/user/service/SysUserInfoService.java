@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
@@ -24,7 +25,7 @@ import java.util.Map;
  * @DateTime 2020/12/16_17:12
  * @Deacription TODO
  */
-public interface SysUserInfoService {
+public interface SysUserInfoService extends IService<SysUserInfo> {
     /**
      *
      * 添加用户

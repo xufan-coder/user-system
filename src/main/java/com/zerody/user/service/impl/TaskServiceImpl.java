@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.zerody.user.feign.OauthFeignService;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
             }
             contactMsgs.stream().forEach(c -> {
                 if (c.getNum() > 0) {
-                    dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getDays()).concat("天未联系提醒")));
+                    dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getDays()).concat("天未联系提醒"), c.getDays(), "CUSTOMER_NOT_CONTACT"));
                 }
             });
 
@@ -80,13 +81,15 @@ public class TaskServiceImpl implements TaskService {
         return userIds.size();
     }
 
-    public Msg buildNotice(String userId, String msg, String title){
+    public Msg buildNotice(String userId, String msg, String title, Integer days, String msgType){
         Msg dto=new Msg();
         dto.setId(UUIDutils.getUUID32());
         dto.setCreateTime(new Date());
         dto.setMessageContent(msg);
         dto.setUserId(userId);
         dto.setMessageTile(title);
+        dto.setNotContactDays(days);
+        dto.setMsgType(msgType);
         return dto;
     }
 }

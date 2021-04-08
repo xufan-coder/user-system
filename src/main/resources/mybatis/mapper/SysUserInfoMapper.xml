@@ -18,7 +18,7 @@
     <result column="highest_education" property="highestEducation" jdbcType="TIMESTAMP" />
     <result column="graduated_from" property="graduatedFrom" jdbcType="TIMESTAMP" />
     <result column="major" property="major" jdbcType="TIMESTAMP" />
-    <result column="marital_status" property="maritalStatus" jdbcType="TIMESTAMP" />
+    <result column="marital_status" property="maritalStatus" jdbcType="TINYINT" />
     <result column="create_id" property="createId" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />

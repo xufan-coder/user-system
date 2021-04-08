@@ -103,10 +103,10 @@ public class MsgServiceImpl extends ServiceImpl<MsgMapper, Msg> implements MsgSe
 
 	@Override
 	public void deleteExpiredMessage(String userId) {
-		UpdateWrapper<Msg> qw = new UpdateWrapper<>();
-		qw.lambda().eq(Msg::getUserId, userId).lt(Msg::getCreateTime,
-				Date.from(LocalDateTime.now().minusDays(30).toInstant(ZoneOffset.UTC)));
-		this.baseMapper.delete(qw);
+			QueryWrapper<Msg> qw = new QueryWrapper<>();
+			qw.lambda().eq(Msg::getUserId, userId).lt(Msg::getCreateTime,
+					Date.from(LocalDateTime.now().minusDays(30).toInstant(ZoneOffset.UTC)));
+			this.baseMapper.delete(qw);
 	}
 
 }

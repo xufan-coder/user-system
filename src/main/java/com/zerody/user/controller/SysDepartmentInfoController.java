@@ -306,4 +306,28 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             return R.error("获取下级直属部门错误,请求异常");
         }
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取部门类型
+     * @date                 2021/4/7 19:14
+     * @param                departId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Integer>
+     */
+    @RequestMapping(value = "/get/depart-type", method = RequestMethod.GET)
+    public DataResult<Integer> getDepartType(@RequestParam("departId") String departId){
+
+        try {
+            Integer departType = this.sysDepartmentInfoService.getDepartType(departId);
+            return R.success(departType);
+        } catch (DefaultException e) {
+            log.error("获取部门类型错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取部门类型错误:{}", e.getMessage(),e);
+            return R.error("获取部门类型错误,请求异常");
+        }
+    }
 }
