@@ -112,10 +112,10 @@ public class SysStaffInfoController {
             sysStaffInfoService.updateStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
-            log.error("修改员工信息错误:{}",e.getMessage());
+            log.error("修改员工信息错误:{}",e.getMessage(), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("修改员工信息错误:{}",e.getMessage());
+            log.error("修改员工信息错误:{}",e.getMessage(), e);
             return R.error("修改员工信息失败,请求异常");
         }
     }
