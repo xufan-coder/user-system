@@ -34,9 +34,6 @@ public class BuildVisitNoticeTask {
 		List<Map<String, String>> list = sysUserInfoService.selectAllUserId();
 		// 统计客户跟进提醒三种类型的，客户数
 		for (Map<String, String> user : list) {
-		    if (user.get("id").equals("ffbc4eb1dbf5e700de1443f8fd92bfb5")) {
-                System.out.println("我来了");
-            }
 			taskService.buildVisitNoticeInfo(user);
 		}
         return ReturnT.SUCCESS;
