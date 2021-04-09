@@ -61,9 +61,9 @@ public interface SysStaffInfoService {
 
     List<String> getStaffRoles(String userId, String companyId);
 
-    Map<String, Object> batchImportStaff(MultipartFile file) throws Exception;
+    Map<String, Object> doBatchImportUser(MultipartFile file) throws Exception;
 
-    Map<String, Object> batchImportCompanyUser(MultipartFile file) throws Exception;
+    Map<String, Object> doBatchImportCompanyUser(MultipartFile file) throws Exception;
 
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
