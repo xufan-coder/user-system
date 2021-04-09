@@ -411,6 +411,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
+        // todo 员工为离职状态时 清除token
+        if (removeToken && StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
+            removeToken = !removeToken;
+        }
         if (removeToken) {
             if (DataUtil.isEmpty(userRole)) {
                 if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
