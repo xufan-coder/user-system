@@ -178,6 +178,46 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         return R.success("密码正确！");
     }
 
+	/**
+	 * 通过用户名和密码获取用户数据
+	 * 
+	 * @param params
+	 * @return
+	 */
+	@Override
+	@RequestMapping(value = "/login-user/inner", method = POST, produces = "application/json")
+	public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getLoginUser(@RequestBody LoginCheckParamDto params) {
+		// 查询账户信息,返回个密码来校验密码
+		CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
+		if (DataUtil.isEmpty(checkLoginVo)) {
+			return R.error("当前账号未开通，请联系管理员开通！");
+		}
+		String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+		SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+		if (DataUtil.isEmpty(company)) {
+			return R.error("数据异常！");
+		}
+		if (StatusEnum.stop.getValue().equals(company.getStatus())) {
+			return R.error("账号被停用！");
+		}
+		if (StatusEnum.deleted.getValue().equals(company.getStatus())) {
+			return R.error("当前账号未开通，请联系管理员开通！");
+		}
+		// 校验密码
+		boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
+		if (!success) {
+			return R.error("密码错误！");
+		}
+		SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(params.getUserName());
+		if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
+			return R.error("当前账号未开通，请联系管理员开通！");
+		}
+		com.zerody.user.api.vo.SysLoginUserInfoVo info = new com.zerody.user.api.vo.SysLoginUserInfoVo();
+		BeanUtils.copyProperties(sysLoginUserInfoVo, info);
+		info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
+		return R.success(info);
+	}
+
     /**
     *    登录平台管理后台校验账户和密码
      * @return
