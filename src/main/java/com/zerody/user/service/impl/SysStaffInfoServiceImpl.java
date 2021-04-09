@@ -524,7 +524,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> batchImportStaff(MultipartFile file) throws Exception {
+    public Map<String, Object> doBatchImportUser(MultipartFile file) throws Exception {
         Map<String, Object> result = new HashMap<String, Object>();
         List<String[]> dataList = FileUtil.fileImport(file);
         if(DataUtil.isEmpty(dataList)){
@@ -648,7 +648,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> batchImportCompanyUser(MultipartFile file) throws Exception {
+    public Map<String, Object> doBatchImportCompanyUser(MultipartFile file) throws Exception {
         Map<String, Object> result = new HashMap<String, Object>();
         List<String[]> dataList = FileUtil.fileImport(file);
         if(DataUtil.isEmpty(dataList)){
@@ -1077,7 +1077,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
-        if (StringUtils.isNotEmpty(row[10])) {
+        if (StringUtils.isNotEmpty(row[9])) {
             if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[9]))) {
                 errorStr.append("婚姻状况错误");
             }

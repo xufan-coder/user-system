@@ -213,9 +213,9 @@ public class SysStaffInfoController {
     *    批量导入用户excel
     */
     @PostMapping("/import")
-    public DataResult<Object> batchImportUser(MultipartFile file){
+    public DataResult<Object> doBatchImportUser(MultipartFile file){
         try {
-            return R.success(sysStaffInfoService.batchImportStaff(file));
+            return R.success(sysStaffInfoService.doBatchImportUser(file));
         } catch (DefaultException e){
             log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
@@ -230,9 +230,9 @@ public class SysStaffInfoController {
      *    批量导入用户excel
      */
     @PostMapping("/company/import")
-    public DataResult<Object> batchImportCompanyUser(MultipartFile file){
+    public DataResult<Object> doBatchImportCompanyUser(MultipartFile file){
         try {
-            return R.success(sysStaffInfoService.batchImportCompanyUser(file));
+            return R.success(sysStaffInfoService.doBatchImportCompanyUser(file));
         } catch (DefaultException e){
             log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
