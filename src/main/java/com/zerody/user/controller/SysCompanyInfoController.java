@@ -91,9 +91,9 @@ public class SysCompanyInfoController implements CompanyRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public DataResult<Object> updataCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
+    public DataResult<Object> updateCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
         try {
-            sysCompanyInfoService.updataCompany(sysCompanyInfo);
+            sysCompanyInfoService.updateCompany(sysCompanyInfo);
             return R.success();
         } catch (DefaultException e){
             log.error("企业修改错误:{}",e.getMessage());

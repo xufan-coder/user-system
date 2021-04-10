@@ -200,7 +200,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public void updataCompany(SysCompanyInfo sysCompanyInfo) {
+    public void updateCompany(SysCompanyInfo sysCompanyInfo) {
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
             throw new DefaultException("企业联系人号码格式错误");
         }
