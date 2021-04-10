@@ -22,7 +22,7 @@ public interface SysCompanyInfoService {
 
     IPage<SysComapnyInfoVo> getPageCompany(SysCompanyInfoDto companyInfoDto);
 
-    void updataCompany(SysCompanyInfo sysCompanyInfo);
+    void updateCompany(SysCompanyInfo sysCompanyInfo);
 
     void deleteCompanyById(String companyId);
 
