@@ -660,7 +660,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<IPage<UserPerformanceReviewsVo>> getPagePerformanceReviews(UserPerformanceReviewsPageDto param){
         try {
 //            checkUtil.SetUserPositionInfo(param);
-            if (UserUtils.getUser().isBackAdmin()) {
+			if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
