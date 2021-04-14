@@ -583,6 +583,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //循环行
         for (int rowIndex = dataIndex; rowIndex < dataList.size();rowIndex++) {
             //这一行的数据
+            boolean rowIsEmpty = true;
             String[] row = dataList.get(rowIndex);
             for (int lineIndex = 0,lineLength = row.length; lineIndex<lineLength; lineIndex++){
                 if(row[lineIndex] == null || "".equals(row[lineIndex])){
@@ -590,8 +591,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
                 //去掉空格
                 row[lineIndex] = row[lineIndex].trim();
+                if (rowIsEmpty && StringUtils.isNotEmpty(row[lineIndex])) {
+                    rowIsEmpty = !rowIsEmpty;
+                }
             }
-
+            // TODO: 2021/4/14 空行校验 
+            if (rowIsEmpty) {
+                continue;
+            }
             //校验参数；
             UnionStaffDepart unionStaffDepart=new UnionStaffDepart();
             UnionStaffPosition unionStaffPosition=new UnionStaffPosition();
@@ -702,6 +709,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //循环行
         for (int rowIndex = dataIndex; rowIndex < dataList.size();rowIndex++) {
             //这一行的数据
+            boolean rowIsEmpty = true;
             String[] row = dataList.get(rowIndex);
             for (int lineIndex = 0,lineLength = row.length; lineIndex<lineLength; lineIndex++){
                 if(row[lineIndex] == null || "".equals(row[lineIndex])){
@@ -709,8 +717,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
                 //去掉空格
                 row[lineIndex] = row[lineIndex].trim();
+                if (rowIsEmpty &&  StringUtils.isNotEmpty(row[lineIndex])) {
+                    rowIsEmpty = !rowIsEmpty;
+                }
             }
-
+            // TODO: 2021/4/14 空行校验 
+            if (rowIsEmpty) {
+                continue;
+            }
             //校验参数；
             UnionStaffDepart unionStaffDepart=new UnionStaffDepart();
             UnionStaffPosition unionStaffPosition=new UnionStaffPosition();
