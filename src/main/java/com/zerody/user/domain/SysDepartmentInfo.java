@@ -71,4 +71,8 @@ public class SysDepartmentInfo extends BaseModel {
      */
     @TableField(updateStrategy = FieldStrategy.IGNORED )
     private String adminAccount;
+
+
+    /** 是否修改部门名称(1.是，0.否) */
+    private Integer isUpdateName;
 }

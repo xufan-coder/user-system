@@ -15,9 +15,11 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
@@ -102,7 +104,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SysLoginInfoService sysLoginInfoService;
 
     @Autowired
-
     private SysLoginInfoMapper sysLoginInfoMapper;
 
     @Autowired
@@ -162,6 +163,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private CheckUtil checkUtil;
 
+    @Autowired
+    private RabbitMqService mqService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -193,7 +197,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setStatus(StatusEnum.activity.getValue());
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
+        // TODO: 2021/4/15 设置token删除状态 添加默认不删除token
         sysUserInfo.setIsDeleted(YesNo.NO);
+        // TODO: 2021/4/15 设置修改名称状态 添加默认 没有修改
+        sysUserInfo.setIsUpdateName(YesNo.NO);
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -328,6 +335,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
         sysUserInfo.setAvatar(null);
+        // TODO: 2021/4/15 如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
+        if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
+//            StaffInfoVo staffInfo = new StaffInfoVo();
+//            staffInfo.setUserId(setSysUserInfoDto.getId());
+//            staffInfo.setUserName(setSysUserInfoDto.getUserName());
+//            this.mqService.send(staffInfo, MQ.QUEUE_USER_NAME);
+            sysUserInfo.setIsUpdateName(YesNo.YES);
+        }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());

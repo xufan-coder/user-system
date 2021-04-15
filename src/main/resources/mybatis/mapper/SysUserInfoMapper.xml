@@ -55,6 +55,15 @@
             </foreach>
         </where>
     </update>
+    <update id="updateUserNameModilyState">
+        UPDATE sys_user_info
+        SET is_update_name = 0
+        WHERE
+            id IN
+            <foreach collection="users" item="user" open="(" separator="," close=")">
+                #{user.userId}
+            </foreach>
+    </update>
     <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from sys_user_info
@@ -239,5 +248,14 @@ WHERE
         <where>
             sui.status in (0, 3)
         </where>
+    </select>
+    <select id="getUserMobilyNameInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            id AS userId,
+            user_name AS userName
+        FROM
+            sys_user_info
+        WHERE
+            is_update_name = 1
     </select>
 </mapper>

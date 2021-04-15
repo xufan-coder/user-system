@@ -158,4 +158,15 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @return               java.lang.Integer
      */
     Integer getDepartType(String departId);
+
+    /**
+     *
+     *  修改冗余的部门名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/15 20:03
+     * @param
+     * @return               void
+     */
+    void updateRedundancyDepartName();
 }

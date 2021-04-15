@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.CheckLoginVo;
@@ -126,4 +127,26 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @return               void
      */
     void updateUserStatusAndIsDeleted(@Param("userIds") List<String> userIds);
+
+    /**
+     *
+     * 获取修改用户名称的用户
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/15 19:40
+     * @param
+     * @return               java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    List<StaffInfoVo> getUserMobilyNameInfo();
+
+    /**
+     *  修改修改名称状态为 未修改
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/15 19:54
+     * @param                staffInfos
+     * @return               void
+     */
+    void updateUserNameModilyState(@Param("users") List<StaffInfoVo> staffInfos);
 }
