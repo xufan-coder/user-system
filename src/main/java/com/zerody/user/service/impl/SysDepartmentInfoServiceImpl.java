@@ -431,8 +431,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         // TODO: 2021/4/15 把部门名称修改状态修改回 未修改状态
         this.sysDepartmentInfoMapper.updateDepartIsUpdateName(depts);
-        // TODO: 2021/4/15 发送修改部门名称通知
-        mqService.send(depts, MQ.QUEUE_DEPT_NAME);
+        depts.stream().forEach(dep -> {
+            // TODO: 2021/4/15 发送修改部门名称通知
+            mqService.send(dep, MQ.QUEUE_DEPT_NAME);
+        });
         log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));
     }
 
