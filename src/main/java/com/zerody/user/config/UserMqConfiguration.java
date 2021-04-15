@@ -31,6 +31,15 @@ public class UserMqConfiguration {
 		return new Queue(MQ.QUEUE_DEPT_NAME, true);
 	}
 
+	@Bean
+	public Queue userNameQueue() {
+//		Map<String, Object> arguments = new HashMap<>();
+//		arguments.put("x-dead-letter-exchange", MQ.TOPIC_ZERODY + MQ.DEAD_SUFFIX);
+//		arguments.put("x-dead-letter-routing-key", MQ.QUEUE_CARD_MOBILE + MQ.DEAD_SUFFIX);
+//		return new Queue(MQ.QUEUE_CARD_MOBILE, true, false, false, arguments);
+		return new Queue(MQ.QUEUE_USER_NAME, true);
+	}
+
 	// 交换机 起名：TestDirectExchange
 	@Bean
 	TopicExchange exchange() {
@@ -41,5 +50,10 @@ public class UserMqConfiguration {
 	@Bean
 	Binding bindingDirect() {
 		return BindingBuilder.bind(queue()).to(exchange()).with(MQ.QUEUE_DEPT_NAME);
+	}
+
+	@Bean
+	Binding bindingUserNameQueue() {
+		return BindingBuilder.bind(userNameQueue()).to(exchange()).with(MQ.QUEUE_USER_NAME);
 	}
 }
