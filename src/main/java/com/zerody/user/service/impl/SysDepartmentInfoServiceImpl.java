@@ -149,11 +149,6 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
             // TODO: 2021/4/15 设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
-//            DeptInfo deptInfo = new DeptInfo();
-//            deptInfo.setId(sysDepartmentInfo.getId());
-//            deptInfo.setName(sysDepartmentInfo.getDepartName());
-//            // TODO: 2021/4/15 发送消息通知
-//            this.mqService.send(deptInfo, MQ.QUEUE_DEPT_NAME);
         }
         log.info("B端修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);

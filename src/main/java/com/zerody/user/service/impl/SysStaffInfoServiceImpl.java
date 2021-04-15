@@ -337,10 +337,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setAvatar(null);
         // TODO: 2021/4/15 如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
         if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
-//            StaffInfoVo staffInfo = new StaffInfoVo();
-//            staffInfo.setUserId(setSysUserInfoDto.getId());
-//            staffInfo.setUserName(setSysUserInfoDto.getUserName());
-//            this.mqService.send(staffInfo, MQ.QUEUE_USER_NAME);
             sysUserInfo.setIsUpdateName(YesNo.YES);
         }
         sysUserInfoMapper.updateById(sysUserInfo);
