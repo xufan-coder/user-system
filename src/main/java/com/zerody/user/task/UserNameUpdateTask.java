@@ -34,7 +34,7 @@ public class UserNameUpdateTask {
      * @return
      */
     @XxlJob("update_redundancy_user_name")
-    public ReturnT<String> updateRedundancyUserName() {
+    public ReturnT<String> execute(String param) {
         userService.updateRedundancyUserName();
         return ReturnT.SUCCESS;
     }

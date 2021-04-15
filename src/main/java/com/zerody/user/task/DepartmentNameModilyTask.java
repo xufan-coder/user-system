@@ -20,9 +20,11 @@ public class DepartmentNameModilyTask {
     @Autowired
     private SysDepartmentInfoService departService;
 
-    @XxlJob("update_redundancy_depart_name")
-    public ReturnT<String> updateRedundancyDepartName() {
+    @XxlJob("modily_redundancy_depart_name")
+    public ReturnT<String> execute(String param) {
         departService.updateRedundancyDepartName();
-       return ReturnT.SUCCESS;
+        ReturnT r=ReturnT.SUCCESS;
+        r.setMsg("成功");
+       return r;
     }
 }
