@@ -1,10 +1,14 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.MQ;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
@@ -12,6 +16,7 @@ import com.zerody.common.utils.RedisUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.service.ClewRemoteService;
+import com.zerody.user.api.dto.DeptInfo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.*;
@@ -75,6 +80,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private RabbitMqService mqService;
+
     // todo 添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
 
@@ -119,13 +127,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             find = DataUtil.isNotEmpty(this.sysDepartmentInfoMapper.selectById(id));
         } while (find);
         sysDepartmentInfo.setId(id);
+        // TODO: 2021/4/15 添加部门修改状态为 没有修改名称
+        sysDepartmentInfo.setIsUpdateName(YesNo.NO);
         //名称不存在 保存添加
         this.save(sysDepartmentInfo);
     }
     @Override
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("B端添加部门入参-{}",sysDepartmentInfo);
-        //查看部门名称是否存在
+        // TODO 查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
@@ -133,6 +143,12 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
               throw new DefaultException("该部门名称已存在!");
+        }
+        SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
+        // TODO: 2021/4/15 查询部门名称是否有修改 有修改 mq发送消息修改冗余的部门名称
+        if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
+            // TODO: 2021/4/15 设置修改名称状态为已修改
+            sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
         log.info("B端修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);
@@ -403,4 +419,23 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 //        }
 //        return jobChilds;
 //    }
+
+
+    @Override
+    public void updateRedundancyDepartName() {
+        // TODO: 2021/4/15 获取到名称修改状态 为修改的部门 
+        List<DeptInfo> depts = this.sysDepartmentInfoMapper.getModilyDepartName();
+        // TODO: 2021/4/15 如果没有修改名称的部门 不做后面的操作
+        if (CollectionUtils.isEmpty(depts)) {
+            return;
+        }
+        // TODO: 2021/4/15 把部门名称修改状态修改回 未修改状态
+        this.sysDepartmentInfoMapper.updateDepartIsUpdateName(depts);
+        depts.stream().forEach(dep -> {
+            // TODO: 2021/4/15 发送修改部门名称通知
+            mqService.send(dep, MQ.QUEUE_DEPT_NAME);
+        });
+        log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));
+    }
+
 }

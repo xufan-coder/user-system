@@ -27,6 +27,15 @@
   <sql id="Blob_Column_List" >
     depart_desc
   </sql>
+    <update id="updateDepartIsUpdateName">
+        UPDATE sys_department_info
+        SET is_update_name = 0
+        WHERE
+            id IN
+            <foreach collection="depts" item="dept" open="(" separator="," close=")">
+                #{dept.id}
+            </foreach>
+    </update>
 
   <select id="getPageDepartment" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
     SELECT
@@ -150,5 +159,14 @@
                 AND sdi.parent_id IS NULL
             </if>
         </where>
+    </select>
+    <select id="getModilyDepartName" resultType="com.zerody.user.api.dto.DeptInfo">
+        SELECT
+            id,
+            depart_name AS name
+        FROM
+            sys_department_info
+        WHERE
+            is_update_name = 1
     </select>
 </mapper>

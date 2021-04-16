@@ -4,16 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetUpdateAvatarDto;
@@ -74,6 +77,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private RabbitMqService mqService;
 
     private static final String  INIT_PWD = "123456";//初始化密码
 
@@ -379,6 +385,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return userIds;
     }
 
+
+
     public  byte[] readInputStream(InputStream inStream) throws Exception{
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];
@@ -388,6 +396,21 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         }
 //        inStream.close();
         return outStream.toByteArray();
+    }
+
+    @Override
+    public void updateRedundancyUserName() {
+        List<StaffInfoVo> staffInfos = this.sysUserInfoMapper.getUserMobilyNameInfo();
+        // TODO: 2021/4/15 如果没有修改的就不做后面的操作
+        if (CollectionUtils.isEmpty(staffInfos)) {
+            return;
+        }
+        this.sysUserInfoMapper.updateUserNameModilyState(staffInfos);
+        // TODO: 2021/4/15 mq发送消息通知修改用户名称
+        staffInfos.stream().forEach(staff -> {
+            mqService.send(staff, MQ.QUEUE_USER_NAME);
+        });
+        log.info("发送用户修改名称通知:{}", JSON.toJSONString(staffInfos));
     }
 
 }
