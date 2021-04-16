@@ -91,4 +91,6 @@ public interface CardUserService extends IService<CardUserInfo> {
      * @date 2021/4/6  13:29
      */
     CardUserInfoVo getCardUserById(String id);
+
+    void updateCardUserBind();
 }
