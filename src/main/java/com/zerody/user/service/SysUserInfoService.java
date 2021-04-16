@@ -230,4 +230,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     UserTypeInfoVo getUserTypeInfo(UserVo user);
 
     List<String> doUserIsDeleted();
+
+    void updateRedundancyUserName();
 }

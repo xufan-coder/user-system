@@ -3,6 +3,7 @@ package com.zerody.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.dto.DeptInfo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -113,4 +114,25 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      * @return               com.zerody.user.vo.UserStructureVo
      */
     List<UserStructureVo> getDepartNameByCompanyIdOrParentId(@Param("companyId")String companyId,@Param("departId") String departId);
+
+    /**
+     *
+     * 获取部门名称状态为修改状态的 部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/15 20:07
+     * @return               java.util.List<com.zerody.user.api.dto.DeptInfo>
+     */
+    List<DeptInfo> getModilyDepartName();
+
+    /**
+     *
+     * 部门名称修改状态修改回 未修改状态
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/15 20:28
+     * @param                depts
+     * @return               void
+     */
+    void updateDepartIsUpdateName(@Param("depts") List<DeptInfo> depts);
 }
