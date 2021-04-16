@@ -39,4 +39,6 @@ public class CardUserInfo {
 
     private String regOpenId;
 
+    private Integer isUpdatePhone;
+
 }

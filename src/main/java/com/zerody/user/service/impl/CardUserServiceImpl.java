@@ -1,10 +1,14 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.MQ;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.dto.CardUserDto;
@@ -20,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author  DaBai
@@ -29,7 +34,8 @@ import java.util.Date;
 @Slf4j
 @Service
 public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInfo> implements CardUserService {
-
+    @Autowired
+    private RabbitMqService mqService;
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
@@ -74,6 +80,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             newUser.setId(UUIDutils.getUUID32());
             newUser.setOpenId(idUser.getRegOpenId());
             newUser.setPhoneNumber(data.getPhoneNumber());
+            newUser.setIsUpdatePhone(YesNo.YES);
             newUser.setCreateTime(new Date());
             this.save(newUser);
             BeanUtils.copyProperties(newUser,vo);
@@ -94,9 +101,13 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         //检查是否是内部员工
         QueryWrapper<CardUserUnionUser> uQw=new QueryWrapper<>();
         uQw.lambda().eq(CardUserUnionUser::getCardId,vo.getId());
-        CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(uQw);
-        vo.setIsInternal(DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
-
+        List<CardUserUnionUser> cardUserUnionUsers = cardUserUnionCrmUserMapper.selectList(uQw);
+        if(DataUtil.isNotEmpty(cardUserUnionUsers)){
+            CardUserUnionUser cardUserUnionUser = cardUserUnionUsers.get(0);
+            vo.setIsInternal(DataUtil.isNotEmpty(cardUserUnionUser)?true:false);
+        }else {
+            vo.setIsInternal(false);
+        }
         return vo;
     }
 
@@ -218,5 +229,24 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
             return null;
         }
 
+    }
+
+    @Override
+    public void updateCardUserBind() {
+        QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
+        userQw.lambda().eq(CardUserInfo::getIsUpdatePhone,YesNo.YES);
+        List<CardUserInfo> list = this.list(userQw);
+        if(DataUtil.isNotEmpty(list)){
+
+            list.stream().forEach(c -> {
+                CardUserInfoVo sendbody=new CardUserInfoVo();
+                BeanUtils.copyProperties(c,sendbody);
+                c.setIsUpdatePhone(YesNo.NO);
+                mqService.send(sendbody, MQ.QUEUE_CARD_MOBILE);
+            });
+            //恢复状态
+            this.saveOrUpdateBatch(list);
+            log.info("发送名片用户手机号通知:{}", JSON.toJSONString(list));
+        }
     }
 }
