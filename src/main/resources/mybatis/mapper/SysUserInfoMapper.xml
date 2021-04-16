@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zerody.user.mapper.SysUserInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.pojo.SysUserInfo" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysUserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="user_name" property="userName" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="TINYINT" />
     <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
-    <result column="wei_xin" property="weiXin" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="birthday" property="birthday" jdbcType="DATE" />
-    <result column="certificate_type" property="certificateType" jdbcType="VARCHAR" />
     <result column="certificate_card" property="certificateCard" jdbcType="VARCHAR" />
-    <result column="certificate_card_front_uri" property="certificateCardFrontUri" jdbcType="VARCHAR" />
-    <result column="certificate_card_back_uri" property="certificateCardBackUri" jdbcType="VARCHAR" />
     <result column="certificate_card_address" property="certificateCardAddress" jdbcType="VARCHAR" />
     <result column="prov_city_district" property="provCityDistrict" jdbcType="VARCHAR" />
     <result column="contact_address" property="contactAddress" jdbcType="VARCHAR" />
-    <result column="postal_code" property="postalCode" jdbcType="VARCHAR" />
-    <result column="user_from" property="userFrom" jdbcType="VARCHAR" />
     <result column="register_time" property="registerTime" jdbcType="TIMESTAMP" />
+    <result column="highest_education" property="highestEducation" jdbcType="TIMESTAMP" />
+    <result column="graduated_from" property="graduatedFrom" jdbcType="TIMESTAMP" />
+    <result column="major" property="major" jdbcType="TIMESTAMP" />
+    <result column="marital_status" property="maritalStatus" jdbcType="TINYINT" />
     <result column="create_id" property="createId" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -31,387 +29,233 @@
     <result column="nation" property="nation" jdbcType="VARCHAR" />
     <result column="ancestral" property="ancestral" jdbcType="VARCHAR" />
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.pojo.SysUserInfo" extends="BaseResultMap" >
+  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysUserInfo" extends="BaseResultMap" >
     <result column="description" property="description" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_name, gender, phone_number, email, wei_xin, nickname, avatar, birthday, 
-    certificate_type, certificate_card, certificate_card_front_uri, certificate_card_back_uri, 
-    certificate_card_address, prov_city_district, contact_address, postal_code, user_from, 
-    register_time, create_id, create_user, create_time, update_id, update_user, update_time, 
-    status, nation, ancestral
+    id, user_name, gender, phone_number, email, nickname, avatar, birthday,
+     certificate_card,
+    certificate_card_address, prov_city_district, contact_address, highest_education, graduated_from, major,
+    marital_status,
+    register_time, create_id, create_user, create_time, update_id, update_user, update_time,
+    status, nation, ancestral,description
   </sql>
   <sql id="Blob_Column_List" >
-    description
+
   </sql>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
+    <update id="updateUserStatusAndIsDeleted">
+        UPDATE sys_user_info
+        <set>
+            is_deleted = 0, status = -1
+        </set>
+        <where>
+            id IN
+            <foreach collection="userIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </update>
+    <update id="updateUserNameModilyState">
+        UPDATE sys_user_info
+        SET is_update_name = 0
+        WHERE
+            id IN
+            <foreach collection="users" item="user" open="(" separator="," close=")">
+                #{user.userId}
+            </foreach>
+    </update>
+    <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
     from sys_user_info
-    where id = #{id,jdbcType=VARCHAR}
+    <where>
+      status in (0, 3)
+      <if test="userInfo.id != null and userInfo.id != ''">
+        and id != #{userInfo.id}
+      </if>
+      <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
+          and phone_number = #{userInfo.phoneNumber}
+      </if>
+    </where>
+
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from sys_user_info
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.zerody.user.pojo.SysUserInfo" >
-    insert into sys_user_info (id, user_name, gender, 
-      phone_number, email, wei_xin, 
-      nickname, avatar, birthday, 
-      certificate_type, certificate_card, certificate_card_front_uri, 
-      certificate_card_back_uri, certificate_card_address, 
-      prov_city_district, contact_address, postal_code, 
-      user_from, register_time, create_id, 
-      create_user, create_time, update_id, 
-      update_user, update_time, status, 
-      nation, ancestral, description
-      )
-    values (#{id,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT}, 
-      #{phoneNumber,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{weiXin,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{birthday,jdbcType=DATE}, 
-      #{certificateType,jdbcType=VARCHAR}, #{certificateCard,jdbcType=VARCHAR}, #{certificateCardFrontUri,jdbcType=VARCHAR}, 
-      #{certificateCardBackUri,jdbcType=VARCHAR}, #{certificateCardAddress,jdbcType=VARCHAR}, 
-      #{provCityDistrict,jdbcType=VARCHAR}, #{contactAddress,jdbcType=VARCHAR}, #{postalCode,jdbcType=VARCHAR}, 
-      #{userFrom,jdbcType=VARCHAR}, #{registerTime,jdbcType=TIMESTAMP}, #{createId,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateId,jdbcType=VARCHAR}, 
-      #{updateUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
-      #{nation,jdbcType=VARCHAR}, #{ancestral,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.zerody.user.pojo.SysUserInfo" >
-    insert into sys_user_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="userName != null" >
-        user_name,
-      </if>
-      <if test="gender != null" >
-        gender,
-      </if>
-      <if test="phoneNumber != null" >
-        phone_number,
-      </if>
-      <if test="email != null" >
-        email,
-      </if>
-      <if test="weiXin != null" >
-        wei_xin,
-      </if>
-      <if test="nickname != null" >
-        nickname,
-      </if>
-      <if test="avatar != null" >
-        avatar,
-      </if>
-      <if test="birthday != null" >
-        birthday,
-      </if>
-      <if test="certificateType != null" >
-        certificate_type,
-      </if>
-      <if test="certificateCard != null" >
-        certificate_card,
-      </if>
-      <if test="certificateCardFrontUri != null" >
-        certificate_card_front_uri,
-      </if>
-      <if test="certificateCardBackUri != null" >
-        certificate_card_back_uri,
-      </if>
-      <if test="certificateCardAddress != null" >
-        certificate_card_address,
-      </if>
-      <if test="provCityDistrict != null" >
-        prov_city_district,
-      </if>
-      <if test="contactAddress != null" >
-        contact_address,
-      </if>
-      <if test="postalCode != null" >
-        postal_code,
-      </if>
-      <if test="userFrom != null" >
-        user_from,
-      </if>
-      <if test="registerTime != null" >
-        register_time,
-      </if>
-      <if test="createId != null" >
-        create_id,
-      </if>
-      <if test="createUser != null" >
-        create_user,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateId != null" >
-        update_id,
-      </if>
-      <if test="updateUser != null" >
-        update_user,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="nation != null" >
-        nation,
-      </if>
-      <if test="ancestral != null" >
-        ancestral,
-      </if>
-      <if test="description != null" >
-        description,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="gender != null" >
-        #{gender,jdbcType=TINYINT},
-      </if>
-      <if test="phoneNumber != null" >
-        #{phoneNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null" >
-        #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="weiXin != null" >
-        #{weiXin,jdbcType=VARCHAR},
-      </if>
-      <if test="nickname != null" >
-        #{nickname,jdbcType=VARCHAR},
-      </if>
-      <if test="avatar != null" >
-        #{avatar,jdbcType=VARCHAR},
-      </if>
-      <if test="birthday != null" >
-        #{birthday,jdbcType=DATE},
-      </if>
-      <if test="certificateType != null" >
-        #{certificateType,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCard != null" >
-        #{certificateCard,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardFrontUri != null" >
-        #{certificateCardFrontUri,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardBackUri != null" >
-        #{certificateCardBackUri,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardAddress != null" >
-        #{certificateCardAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="provCityDistrict != null" >
-        #{provCityDistrict,jdbcType=VARCHAR},
-      </if>
-      <if test="contactAddress != null" >
-        #{contactAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="postalCode != null" >
-        #{postalCode,jdbcType=VARCHAR},
-      </if>
-      <if test="userFrom != null" >
-        #{userFrom,jdbcType=VARCHAR},
-      </if>
-      <if test="registerTime != null" >
-        #{registerTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createId != null" >
-        #{createId,jdbcType=VARCHAR},
-      </if>
-      <if test="createUser != null" >
-        #{createUser,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateId != null" >
-        #{updateId,jdbcType=VARCHAR},
-      </if>
-      <if test="updateUser != null" >
-        #{updateUser,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="nation != null" >
-        #{nation,jdbcType=VARCHAR},
-      </if>
-      <if test="ancestral != null" >
-        #{ancestral,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null" >
-        #{description,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zerody.user.pojo.SysUserInfo" >
-    update sys_user_info
-    <set >
-      <if test="userName != null" >
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="gender != null" >
-        gender = #{gender,jdbcType=TINYINT},
-      </if>
-      <if test="phoneNumber != null" >
-        phone_number = #{phoneNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null" >
-        email = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="weiXin != null" >
-        wei_xin = #{weiXin,jdbcType=VARCHAR},
-      </if>
-      <if test="nickname != null" >
-        nickname = #{nickname,jdbcType=VARCHAR},
-      </if>
-      <if test="avatar != null" >
-        avatar = #{avatar,jdbcType=VARCHAR},
-      </if>
-      <if test="birthday != null" >
-        birthday = #{birthday,jdbcType=DATE},
-      </if>
-      <if test="certificateType != null" >
-        certificate_type = #{certificateType,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCard != null" >
-        certificate_card = #{certificateCard,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardFrontUri != null" >
-        certificate_card_front_uri = #{certificateCardFrontUri,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardBackUri != null" >
-        certificate_card_back_uri = #{certificateCardBackUri,jdbcType=VARCHAR},
-      </if>
-      <if test="certificateCardAddress != null" >
-        certificate_card_address = #{certificateCardAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="provCityDistrict != null" >
-        prov_city_district = #{provCityDistrict,jdbcType=VARCHAR},
-      </if>
-      <if test="contactAddress != null" >
-        contact_address = #{contactAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="postalCode != null" >
-        postal_code = #{postalCode,jdbcType=VARCHAR},
-      </if>
-      <if test="userFrom != null" >
-        user_from = #{userFrom,jdbcType=VARCHAR},
-      </if>
-      <if test="registerTime != null" >
-        register_time = #{registerTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createId != null" >
-        create_id = #{createId,jdbcType=VARCHAR},
-      </if>
-      <if test="createUser != null" >
-        create_user = #{createUser,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateId != null" >
-        update_id = #{updateId,jdbcType=VARCHAR},
-      </if>
-      <if test="updateUser != null" >
-        update_user = #{updateUser,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="nation != null" >
-        nation = #{nation,jdbcType=VARCHAR},
-      </if>
-      <if test="ancestral != null" >
-        ancestral = #{ancestral,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null" >
-        description = #{description,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zerody.user.pojo.SysUserInfo" >
-    update sys_user_info
-    set user_name = #{userName,jdbcType=VARCHAR},
-      gender = #{gender,jdbcType=TINYINT},
-      phone_number = #{phoneNumber,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      wei_xin = #{weiXin,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      avatar = #{avatar,jdbcType=VARCHAR},
-      birthday = #{birthday,jdbcType=DATE},
-      certificate_type = #{certificateType,jdbcType=VARCHAR},
-      certificate_card = #{certificateCard,jdbcType=VARCHAR},
-      certificate_card_front_uri = #{certificateCardFrontUri,jdbcType=VARCHAR},
-      certificate_card_back_uri = #{certificateCardBackUri,jdbcType=VARCHAR},
-      certificate_card_address = #{certificateCardAddress,jdbcType=VARCHAR},
-      prov_city_district = #{provCityDistrict,jdbcType=VARCHAR},
-      contact_address = #{contactAddress,jdbcType=VARCHAR},
-      postal_code = #{postalCode,jdbcType=VARCHAR},
-      user_from = #{userFrom,jdbcType=VARCHAR},
-      register_time = #{registerTime,jdbcType=TIMESTAMP},
-      create_id = #{createId,jdbcType=VARCHAR},
-      create_user = #{createUser,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_id = #{updateId,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT},
-      nation = #{nation,jdbcType=VARCHAR},
-      ancestral = #{ancestral,jdbcType=VARCHAR},
-      description = #{description,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.zerody.user.pojo.SysUserInfo" >
-    update sys_user_info
-    set user_name = #{userName,jdbcType=VARCHAR},
-      gender = #{gender,jdbcType=TINYINT},
-      phone_number = #{phoneNumber,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      wei_xin = #{weiXin,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      avatar = #{avatar,jdbcType=VARCHAR},
-      birthday = #{birthday,jdbcType=DATE},
-      certificate_type = #{certificateType,jdbcType=VARCHAR},
-      certificate_card = #{certificateCard,jdbcType=VARCHAR},
-      certificate_card_front_uri = #{certificateCardFrontUri,jdbcType=VARCHAR},
-      certificate_card_back_uri = #{certificateCardBackUri,jdbcType=VARCHAR},
-      certificate_card_address = #{certificateCardAddress,jdbcType=VARCHAR},
-      prov_city_district = #{provCityDistrict,jdbcType=VARCHAR},
-      contact_address = #{contactAddress,jdbcType=VARCHAR},
-      postal_code = #{postalCode,jdbcType=VARCHAR},
-      user_from = #{userFrom,jdbcType=VARCHAR},
-      register_time = #{registerTime,jdbcType=TIMESTAMP},
-      create_id = #{createId,jdbcType=VARCHAR},
-      create_user = #{createUser,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_id = #{updateId,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT},
-      nation = #{nation,jdbcType=VARCHAR},
-      ancestral = #{ancestral,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
+
+  <select id="selectUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
+SELECT
+	ui.id,
+	ui.user_name AS userName,
+	ui.gender,
+	li.mobile_number AS phoneNumber,
+	ui.email,
+	ui.avatar,
+	ui.nickname,
+	ui.crm_open_id AS crmOpenId,
+	ui.scrm_open_id AS scrmOpenId,
+	li.last_check_sms AS lastCheckSms,
+	ssi.comp_id AS companyId,
+	ssi.id AS staffId,
+	urs.role_id AS roleId,
+	usd.department_id AS deptId,
+	sdi.depart_name AS deptName
+FROM
+	sys_user_info ui
+JOIN (
+	SELECT
+		user_id,
+		user_pwd,
+		last_check_sms,
+		mobile_number
+	FROM
+		sys_login_info
+	WHERE
+		login_name = #{userName}
+		and status=0
+	UNION
+		SELECT
+			user_id,
+			user_pwd,
+			last_check_sms,
+			mobile_number
+		FROM
+			sys_login_info
+		WHERE
+			mobile_number = #{userName}
+			and status=0
+) li ON ui.id = li.user_id
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status` in (0, 3)
+LEFT JOIN union_staff_depart usd ON usd.staff_id=ssi.id
+LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+LEFT JOIN sys_department_info sdi ON usd.department_id=sdi.id
+WHERE
+	ui. STATUS in (0,3)
+	limit 1
+  </select>
+
+    <select id="selectByUserNameOrPhone" resultType="com.zerody.user.vo.CheckLoginVo">
+SELECT
+    li.user_pwd AS userPwd,
+    ssi.id AS staffId
+FROM
+	sys_user_info ui
+JOIN (
+	SELECT
+		user_pwd,
+		user_id
+	FROM
+		sys_login_info
+	WHERE
+		login_name = #{userName}
+		and status=0
+	UNION
+		SELECT
+			user_pwd,
+			user_id
+		FROM
+			sys_login_info
+		WHERE
+			mobile_number = #{userName}
+			and status=0
+) li ON ui.id = li.user_id
+LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id
+WHERE
+	ui. STATUS in (0, 3)
+	limit 1
+  </select>
+
+    <select id="selectUserByPhone" resultType="Boolean">
+    SELECT
+        count(1)>0
+    FROM
+        sys_user_info
+        WHERE
+			phone_number = #{phoneNumber}
+			and `status` in (0,3)
+  </select>
+
+    <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
+    SELECT
+    sci.company_name AS companyName,
+    ssi.id AS staffId,
+    ssi.STATUS AS status,
+    sui.user_name AS userName,
+    sui.phone_number AS phoneNumber,
+    sui.email AS email,
+    sui.avatar AS avatar,
+    sdi.depart_name AS departName,
+    sjp.position_name AS positionName
+    FROM sys_user_info sui
+    LEFT JOIN sys_staff_info ssi ON sui.id=ssi.user_id
+    LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
+    LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+    LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+    LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+    LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+    WHERE
+	sui.`status` in (0, 3)
+	AND sui.id=#{id}
+  </select>
+    <select id="getUserSubordinates" resultType="java.lang.String">
+        SELECT
+            ssi.user_id
+        FROM
+            sys_staff_info AS ssi
+        JOIN union_staff_depart AS usd ON ssi.id = usd.staff_id
+        JOIN union_staff_position AS usp ON ssi.id = usp.staff_id
+        JOIN sys_jop_position AS sjp ON sjp.id = usp.position_id and sjp.status = 1
+        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            <if test="deps != null and deps.size >0 ">
+                sdi.id IN
+                    <foreach collection="deps" item="dep" open="(" separator="," close=")">
+                        #{dep.id}
+                    </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="checkUserAdmin" resultType="Boolean">
+        SELECT
+        count(1)>0
+        FROM
+        sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id=sui.id
+        JOIN company_admin AS ca ON ca.staff_id=ssi.id
+        <where>
+            ssi.deleted = 0
+            and sui.status in (0,3)
+            and sui.id=#{userId}
+        </where>
+    </select>
+
+    <select id="checkBackAdminUser" resultType="Boolean">
+        SELECT
+        count(1)>0
+        FROM
+        admin_user_info AS aui
+        <where>
+        aui.deleted=0
+        and  aui.id=#{userId}
+        and  aui.user_name='admin'
+        </where>
+    </select>
+
+    <select id="selectAllUserId" resultType="map">
+        SELECT
+        sui.id,
+        ssi.comp_id AS companyId
+        FROM
+        sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        <where>
+            sui.status in (0, 3)
+        </where>
+    </select>
+    <select id="getUserMobilyNameInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            id AS userId,
+            user_name AS userName
+        FROM
+            sys_user_info
+        WHERE
+            is_update_name = 1
+    </select>
 </mapper>

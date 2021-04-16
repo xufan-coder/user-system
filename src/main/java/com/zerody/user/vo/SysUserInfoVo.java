@@ -1,0 +1,149 @@
+package com.zerody.user.vo;
+
+import lombok.Data;
+
+import java.util.Date;
+
+/**
+ * @author PengQiang
+ * @ClassName SysUserInfoVo
+ * @DateTime 2020/12/18_15:19
+ * @Deacription TODO
+ */
+@Data
+public class SysUserInfoVo {
+
+    /**
+     *   userID
+     */
+    private String id;
+    /**
+    *   企业名称
+    */
+    private String companyName;
+    /**
+    *   企业ID
+    */
+    private String companyId;
+
+    //员工id
+    private String staffId;
+
+    //用户姓名
+    private String userName;
+
+    //性别
+    private Integer gender;
+
+    //手机号
+    private String phoneNumber;
+
+    //邮箱
+    private String email;
+
+
+    //昵称
+    private String nickname;
+
+    //头像(相对路径)
+    private String avatar;
+
+    //出生日期
+    private Date birthday;
+
+
+    //证件号码
+    private String certificateCard;
+
+    //身份证地址
+    private String certificateCardAddress;
+
+    //省市区
+    private String provCityDistrict;
+
+    //联系地址
+    private String contactAddress;
+
+
+    //注册时间
+    private Date registerTime;
+
+    //名族
+    private String nation;
+
+    //籍贯
+    private String ancestral;
+
+    //备注
+    private String description;
+
+    //状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+    private Integer status;
+
+
+    //最高学历
+    private String highestEducation;
+
+    //毕业院校
+    private String graduatedFrom;
+
+    //所学专业
+    private String major;
+
+    //婚姻状态
+    private Integer maritalStatus;
+
+    /** crmOpenId **/
+    private String crmOpenId;
+
+    /** scrmOpenId **/
+    private String scrmOpenId;
+
+    //角色名
+    private String roleName;
+
+    //部门名称
+    private String departName;
+
+    //岗位名称
+    private String positionName;
+
+    /**
+    *   角色ID
+    */
+    private String roleId;
+
+    /**
+    *   部门ID
+    */
+    private String departId;
+
+    /**
+    *   岗位ID
+    */
+    private String positionId;
+
+    /** 紧急联系姓名 */
+    private String urgentName;
+
+    /** 紧急联系人关系 */
+    private String urgentRelation;
+
+    /** 紧急联系人电话 */
+    private String urgentPhone;
+
+    /** 家庭成员姓名 */
+    private String familyName;
+
+    /** 家庭成员关系 */
+    private String familyRelation;
+
+    /** 家庭成员电话 */
+    private String familyPhone;
+
+    /** 家庭成员职业 */
+    private String familyJob;
+
+    /** 家庭成员地址 */
+    private String familyAddr;
+}

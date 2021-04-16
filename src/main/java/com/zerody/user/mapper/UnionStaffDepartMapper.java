@@ -1,17 +1,20 @@
 package com.zerody.user.mapper;
 
-import com.zerody.user.pojo.UnionStaffDepart;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zerody.user.domain.UnionStaffDepart;
 
-public interface UnionStaffDepartMapper {
-    int deleteByPrimaryKey(String id);
+import java.util.List;
 
-    int insert(UnionStaffDepart record);
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:59
+ * @param
+ * @return
+ */
+public interface UnionStaffDepartMapper extends BaseMapper<UnionStaffDepart> {
 
-    int insertSelective(UnionStaffDepart record);
-
-    UnionStaffDepart selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(UnionStaffDepart record);
-
-    int updateByPrimaryKey(UnionStaffDepart record);
+    List<UnionStaffDepart> getStaffByRole(String roleId);
 }

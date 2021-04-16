@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.pojo.base.BaseStringModel;
+import com.zerody.user.domain.base.BaseStringModel;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -44,6 +44,7 @@ public abstract class BaseStringService<M extends BaseMapper<T>, T extends BaseS
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public boolean saveOrUpdate(T entity) {
+		//此处少了企业条件
 		if(entity.getId() != null && entity.getId().length()>0){
 			entity.setUpdateTime(new Date());
 			entity.setCreateId(UserUtils.getUserId());

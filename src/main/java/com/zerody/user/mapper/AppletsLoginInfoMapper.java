@@ -1,19 +1,14 @@
 package com.zerody.user.mapper;
 
-import com.zerody.user.pojo.AppletsLoginInfo;
-
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:48
+ * @param
+ * @return
+ */
 public interface AppletsLoginInfoMapper {
-    int deleteByPrimaryKey(String id);
 
-    int insert(AppletsLoginInfo record);
-
-    int insertSelective(AppletsLoginInfo record);
-
-    AppletsLoginInfo selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(AppletsLoginInfo record);
-
-    int updateByPrimaryKeyWithBLOBs(AppletsLoginInfo record);
-
-    int updateByPrimaryKey(AppletsLoginInfo record);
 }

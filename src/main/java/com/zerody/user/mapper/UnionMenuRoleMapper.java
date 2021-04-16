@@ -1,17 +1,17 @@
 package com.zerody.user.mapper;
 
-import com.zerody.user.pojo.UnionMenuRole;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zerody.user.domain.UnionMenuRole;
 
-public interface UnionMenuRoleMapper {
-    int deleteByPrimaryKey(String id);
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:57
+ * @param
+ * @return
+ */
+public interface UnionMenuRoleMapper extends BaseMapper<UnionMenuRole> {
 
-    int insert(UnionMenuRole record);
-
-    int insertSelective(UnionMenuRole record);
-
-    UnionMenuRole selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(UnionMenuRole record);
-
-    int updateByPrimaryKey(UnionMenuRole record);
 }

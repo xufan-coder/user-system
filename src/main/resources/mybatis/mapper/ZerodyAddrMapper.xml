@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.ZerodyAddrMapper" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.ZerodyAddr" >
+      <id column="id" jdbcType="VARCHAR" property="id" />
+      <result column="code" jdbcType="INTEGER" property="code" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="p_addr_code" jdbcType="INTEGER" property="pAddrCode" />
+      <result column="addr_level" jdbcType="TINYINT" property="addrLevel" />
+      <result column="is_enabled" jdbcType="TINYINT" property="isEnabled" />
+  </resultMap>
+    <sql id="Base_Column_List">
+        id, code, address, p_addr_code, addr_level
+  </sql>
+
+    <select id="selectAddr" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        <include refid="Base_Column_List" />
+        from zerody_addr
+        <where>
+            is_enabled = 0 and p_addr_code = #{parentCode}
+        </where>
+    </select>
+    <select id="getAddrName" resultType="java.lang.String">
+        select
+            address
+        from zerody_addr
+        where
+         code = #{code}
+    </select>
+
+    <select id="getAllCity" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        <include refid="Base_Column_List" />
+        from zerody_addr
+        <where>
+            is_enabled = 0 and addr_level = 2
+        </where>
+    </select>
+
+    <select id="getAddrCode" resultType="java.lang.String">
+        select
+            code
+        from zerody_addr
+        where
+         address = #{name}
+    </select>
+
+    <select id="getAddrTreeByLevel" resultType="com.zerody.user.vo.ZerodyAddrVo">
+        select
+        <include refid="Base_Column_List" />
+        from zerody_addr
+        <where>
+            is_enabled = 0 and addr_level &lt;=  #{level}
+        </where>
+    </select>
+    <select id="getCodeByLikeName" resultType="java.lang.String" >
+         select
+            code
+        from zerody_addr
+        where
+         addr_level = #{level}
+        <if test="name != null and name != ''">
+            and  address like concat('%',#{name},'%')
+        </if>
+           limit 1
+    </select>
+</mapper>

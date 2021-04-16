@@ -1,19 +1,104 @@
 package com.zerody.user.mapper;
 
-import com.zerody.user.pojo.SysCompanyInfo;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.user.api.vo.CompanyInfoVo;
+import com.zerody.user.dto.SysCompanyInfoDto;
+import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.UserStructureVo;
+import org.apache.ibatis.annotations.Param;
 
-public interface SysCompanyInfoMapper {
-    int deleteByPrimaryKey(String id);
+import java.util.List;
 
-    int insert(SysCompanyInfo record);
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:52
+ * @param
+ * @return
+ */
+public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
 
-    int insertSelective(SysCompanyInfo record);
+    /**
+     *
+     *  分页查询企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/5 10:49
+     * @param                companyInfoDto
+     * @param                 page
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    IPage<SysComapnyInfoVo> getPageCompany(@Param("company") SysCompanyInfoDto companyInfoDto, IPage<SysComapnyInfoVo> page);
 
-    SysCompanyInfo selectByPrimaryKey(String id);
+    /**
+     *
+     *  查询所有企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/5 10:50
+     * @param
+     * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    List<SysComapnyInfoVo> getAllCompnay();
 
-    int updateByPrimaryKeySelective(SysCompanyInfo record);
+    /**
+     *
+     *  查询企业详情
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/5 10:50
+     * @param                 id
+     * @return               com.zerody.user.vo.SysComapnyInfoVo
+     */
+    SysComapnyInfoVo selectCompanyInfoById(String id);
 
-    int updateByPrimaryKeyWithBLOBs(SysCompanyInfo record);
+    /**
+     *
+     *  查询当前用户的企业
+     * @author               PengQiang
+     * @description
+     * @date                 2021/1/5 10:50
+     * @param                userId
+     * @return               com.zerody.user.vo.SysComapnyInfoVo
+     */
+    SysComapnyInfoVo getCompanyByUserId(String userId);
 
-    int updateByPrimaryKey(SysCompanyInfo record);
+    /**
+     *
+     * 通过地址获取企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/2/24 19:17
+     * @param                cityCodes
+     * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
+     */
+    List<SysComapnyInfoVo> getCompanyInfoByAddr(@Param("cityCodes") List<String> cityCodes);
+
+    /**
+     *
+     *  根据多个id查询企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/9 11:36
+     * @param                ids
+     * @return               java.util.List<com.zerody.user.api.vo.CompanyInfoVo>
+     */
+    List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
+
+    List<SysComapnyInfoVo> getCompanyAll();
+
+    /**
+     *
+     * 获取企业名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/3/31 19:12
+     * @param                companyId
+     * @return               com.zerody.user.vo.UserStructureVo
+     */
+    UserStructureVo getCompanyNameById(@Param("companyId") String companyId);
 }

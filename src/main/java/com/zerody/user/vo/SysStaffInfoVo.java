@@ -13,32 +13,38 @@ import java.util.Date;
 @Data
 public class SysStaffInfoVo {
 
+    /** id */
     private String id;
 
-    //企业id
+    /** 企业id */
     private String compId;
 
-    //用户id
+    /** 用户id */
     private String userId;
 
-    //用户姓名
+    /** 用户姓名 */
     private String userName;
 
-    //工作地点
+    /** 工作地点 */
     private String workPlace;
 
-    //工号
+    /** 工号 */
     private String jobNumber;
 
-    //转正时间
+    /**
+     *
+     *角色名称
+     */
+    private String roleName;
+    /** 转正时间 */
     private Date dateJoin;
 
-    //入职时间
+    /** 入职时间 */
     private Date conversionDate;
 
-    //离职时间
+    /** 离职时间 */
     private Date dateLeft;
 
-    //状态：0.生效、1.离职、2.删除
+    /** 状态：0.生效、1.离职、2.删除、3.合作 */
     private Integer status;
 }

@@ -1,17 +1,17 @@
 package com.zerody.user.mapper;
 
-import com.zerody.user.pojo.SysLoginInfo;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zerody.user.domain.SysLoginInfo;
 
-public interface SysLoginInfoMapper {
-    int deleteByPrimaryKey(String id);
+/**
+ *
+ *
+ * @author
+ * @description          DELL
+ * @date                 2021/1/19 14:55
+ * @param
+ * @return
+ */
+public interface SysLoginInfoMapper extends BaseMapper<SysLoginInfo> {
 
-    int insert(SysLoginInfo record);
-
-    int insertSelective(SysLoginInfo record);
-
-    SysLoginInfo selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(SysLoginInfo record);
-
-    int updateByPrimaryKey(SysLoginInfo record);
 }
