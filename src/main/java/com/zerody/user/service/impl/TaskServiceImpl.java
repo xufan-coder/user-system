@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.zerody.user.feign.OauthFeignService;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,6 @@ public class TaskServiceImpl implements TaskService {
                     dtos.add(buildNotice(user.get("id"), c.getMsg(), String.valueOf(c.getDays()).concat("天未联系提醒"), c.getDays(), "CUSTOMER_NOT_CONTACT"));
                 }
             });
-
         log.info("客户未跟进消息:"+JSONObject.toJSONString(dtos));
 		this.msgService.deleteExpiredMessage(user.get("id"));
         msgService.saveBatch(dtos);
@@ -78,6 +78,7 @@ public class TaskServiceImpl implements TaskService {
            return 0;
         }
         this.oauthFeignService.removeToken(userIds);
+        log.info("异步删除token ———> userIds-{}", JSON.toJSONString(userIds));
         return userIds.size();
     }
 
