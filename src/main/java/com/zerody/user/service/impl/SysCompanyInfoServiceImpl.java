@@ -106,6 +106,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("添加企业  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         log.info("B端添加企业入参--{}",sysCompanyInfo);
         //构造查询条件
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
@@ -201,6 +202,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("修改企业信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
             throw new DefaultException("企业联系人号码格式错误");
         }
@@ -225,6 +227,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     */
     @Override
     public void deleteCompanyById(String companyId) {
+        log.info("删除企业  ——> 入参：companyId-{}, 操作者信息：{}", companyId, JSON.toJSONString(UserUtils.getUser()));
         if (StringUtils.isEmpty(companyId)){
             throw new DefaultException("企业id为空");
         }
@@ -275,6 +278,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
+        log.info("设置企业管理员  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(dto), JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(dto.getId())){
             throw new DefaultException("企业id为空");
         }

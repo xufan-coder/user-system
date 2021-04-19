@@ -91,7 +91,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
-        log.info("B端添加部门入参-{}",sysDepartmentInfo);
+        log.info("添加部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
         if(!StringUtils.isEmpty(sysDepartmentInfo.getParentId())){
             String compId = this.sysDepartmentInfoMapper.selectById(sysDepartmentInfo.getParentId()).getCompId();
             sysDepartmentInfo.setCompId(compId);
@@ -109,7 +109,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             throw new DefaultException("该部门名称已存在!");
         }
         sysDepartmentInfo.setStatus(StatusEnum.activity.getValue());
-        log.info("B端添加部门入库-{}",sysDepartmentInfo);
+
         SimpleDateFormat simdf = new SimpleDateFormat("yyMMdd");
         String id  = simdf.format(new Date());
         boolean find = true;
@@ -131,10 +131,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         sysDepartmentInfo.setIsUpdateName(YesNo.NO);
         //名称不存在 保存添加
         this.save(sysDepartmentInfo);
+        log.info("添加部门入库-{}",sysDepartmentInfo);
     }
     @Override
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
-        log.info("B端添加部门入参-{}",sysDepartmentInfo);
+        log.info("修改部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
         // TODO 查看部门名称是否存在
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
@@ -150,12 +151,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             // TODO: 2021/4/15 设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
-        log.info("B端修改部门入库-{}",sysDepartmentInfo);
+        log.info("修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);
     }
 
     @Override
     public void deleteDepartmentById(String depId) {
+        log.info("删除部门  ——> 入参：deptId-{}, 操作者信息：{}", depId, JSON.toJSONString(UserUtils.getUser()));
         QueryWrapper<UnionStaffDepart> unQw = new QueryWrapper<>();
         unQw.lambda().eq(UnionStaffDepart::getDepartmentId, depId);
         Integer count = unionStaffDepartMapper.selectCount(unQw);
@@ -212,6 +214,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
+        log.info("设置部门管理员  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(dto), JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(dto.getId())){
             throw new DefaultException("部门id为空");
         }

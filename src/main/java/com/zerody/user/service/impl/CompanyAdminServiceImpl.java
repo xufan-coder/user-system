@@ -1,8 +1,10 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.CompanyAdmin;
 import com.zerody.user.domain.SysStaffInfo;
@@ -27,6 +29,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 	private SysStaffInfoMapper sysStaffInfoMapper;
 	@Override
 	public CompanyAdmin addCompanyAdmin(CompanyAdmin data) throws Exception {
+		log.info("添加权限  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(data), JSON.toJSONString(UserUtils.getUser()));
 		SysStaffInfo sysStaffInfo = sysStaffInfoMapper.selectById(data.getStaffId());
 		if (DataUtil.isEmpty(sysStaffInfo)){
 			throw new DefaultException("员工不存在！");
@@ -37,6 +40,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 	}
 	@Override
 	public void updateCompanyAdmin(CompanyAdmin data) throws Exception {
+		log.info("编辑权限  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(data), JSON.toJSONString(UserUtils.getUser()));
 		this.updateById(data);
 	}
 
