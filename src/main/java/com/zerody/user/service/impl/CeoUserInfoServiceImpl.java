@@ -78,6 +78,9 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         if(DataUtil.isNotEmpty(logInfo.getLoginTime())){
             uw.lambda().set(CeoUserInfo::getLoginTime,logInfo.getLoginTime());
         }
+        if(DataUtil.isNotEmpty(logInfo.getUserPwd())){
+            uw.lambda().set(CeoUserInfo::getUserPwd,logInfo.getUserPwd());
+        }
         uw.lambda().set(BaseModel::getUpdateTime,new Date())
                 .eq(CeoUserInfo::getId,logInfo.getId());
 
