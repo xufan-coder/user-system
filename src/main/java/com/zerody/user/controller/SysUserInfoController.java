@@ -157,23 +157,32 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/check-user/inner",method = POST, produces = "application/json")
     public DataResult checkLoginUser(@RequestBody LoginCheckParamDto params){
         //查询账户信息,返回个密码来校验密码
-        CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
-        if(DataUtil.isEmpty(checkLoginVo)){
-            return R.error("当前账号未开通，请联系管理员开通！");
-        }
-        String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
-        SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
-        if(DataUtil.isEmpty(company)){
-            return R.error("数据异常！");
-        }
-        if(StatusEnum.stop.getValue().equals(company.getStatus())){
-            return R.error("账号被停用！");
-        }
-        if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
-            return R.error("当前账号未开通，请联系管理员开通！");
+        //优先判断总裁账户
+        CeoUserInfo one = ceoUserInfoService.getByPhone(params.getUserName());
+        String userPwd="";
+        if(DataUtil.isNotEmpty(one)){
+            // 校验密码
+            userPwd=one.getUserPwd();
+        }else{
+            CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
+            if(DataUtil.isEmpty(checkLoginVo)){
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+            if(DataUtil.isEmpty(company)){
+                return R.error("数据异常！");
+            }
+            if(StatusEnum.stop.getValue().equals(company.getStatus())){
+                return R.error("账号被停用！");
+            }
+            if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            userPwd=checkLoginVo.getUserPwd();
         }
         //校验密码
-        boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
+        boolean success = sysUserInfoService.checkPassword(userPwd, params.getPwd());
         if(!success){
             return R.error("密码错误！");
         }
@@ -943,5 +952,20 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("用户不存在！");
         }
         return R.success(cardUserById);
+    }
+
+    /**
+     *   根据CEO用户id获取用户信息；
+     */
+    @Override
+    @RequestMapping(value = "/get-ceo/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.CeoUserInfo> getCeoUserById(@PathVariable String id){
+        CeoUserInfo userById = ceoUserInfoService.getUserById(id);
+        if(DataUtil.isEmpty(userById)){
+            return R.error("用户不存在！");
+        }
+        com.zerody.user.api.vo.CeoUserInfo ceo=new com.zerody.user.api.vo.CeoUserInfo();
+        BeanUtils.copyProperties(userById,ceo);
+        return R.success(ceo);
     }
 }

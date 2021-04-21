@@ -29,4 +29,6 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     CeoUserInfo getByPhone(String userName);
 
     void updateCeoById(CeoUserInfoVo ceoUserInfoVo);
+
+    CeoUserInfo getUserById(String id);
 }
