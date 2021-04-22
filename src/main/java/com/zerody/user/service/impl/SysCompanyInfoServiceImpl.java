@@ -14,6 +14,7 @@ import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.CompanyInfoVo;
@@ -333,6 +334,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<SysComapnyInfoVo> getCompanyAll() {
         return this.sysCompanyInfoMapper.getCompanyAll();
+    }
+
+    @Override
+    public String geNameById(String id) {
+        // TODO: 2021/4/22 获取企业名称 
+        QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
+        comQw.lambda().select(SysCompanyInfo::getCompanyName);
+        comQw.lambda().eq(SysCompanyInfo::getId, id);
+        SysCompanyInfo company =  this.getOne(comQw);
+        if (DataUtil.isEmpty(company)) {
+            return null;
+        }
+        return company.getCompanyName();
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
