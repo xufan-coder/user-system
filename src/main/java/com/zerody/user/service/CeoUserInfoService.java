@@ -1,12 +1,14 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zerody.common.bean.DataResult;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.CeoUserInfoVo;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.vo.CheckLoginVo;
@@ -31,4 +33,12 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     void updateCeoById(CeoUserInfoVo ceoUserInfoVo);
 
     CeoUserInfo getUserById(String id);
+
+    void addCeoUser(CeoUserInfo ceoUserInfo);
+
+    void updateCeoUser(CeoUserInfo ceoUserInfo);
+
+    void deleteCeoUserById(String id);
+
+    IPage<CeoUserInfo> selectCeoUserPage(CeoUserInfoPageDto ceoUserInfoPageDto);
 }
