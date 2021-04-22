@@ -318,6 +318,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+        log.info("修改用户信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
         SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(setSysUserInfoDto.getId());
         SysUserInfo sysUserInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
@@ -330,6 +331,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("手机号或用户名被占用");
         }
         //效验通过保存用户信息
+        log.info("修改员工信息入参-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
         sysUserInfo.setUpdateId(UserUtils.getUserId());
@@ -390,6 +392,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
         if (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+            log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
             SysStaffInfo staffInfo = this.getById(staff.getId());
@@ -495,6 +498,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
        if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
        }
+        log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
 
     @Override
@@ -508,6 +512,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteStaffById(String staffId) {
+        log.info("删除员工  ——> 入参：staffId-{}, 操作者信息：{}", staffId, JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(staffId)){
             throw new DefaultException( "员工id为空");
         }

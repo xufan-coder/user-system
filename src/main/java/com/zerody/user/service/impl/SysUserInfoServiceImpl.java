@@ -12,6 +12,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
@@ -156,6 +157,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public DataResult deleteUserById(String userId) {
+        log.info("删除用户  ——> 入参：userId-{}, 操作者信息：{}", userId, JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(userId)){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "用户id不能为空", null);
         }
@@ -168,6 +170,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public DataResult deleteUserBatchByIds(List<String> ids) {
+        log.info("批量删除用户  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(ids), JSON.toJSONString(UserUtils.getUser()));
         for (String id : ids){
             SysUserInfo userInfo = new SysUserInfo();
             userInfo.setStatus(StatusEnum.deleted.getValue());

@@ -475,7 +475,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             CardUserInfoVo vo= cardUserService.bindOpenId(openId,userId);
             return R.success(vo);
         } catch (Exception e) {
-            log.error("修改名片用户出错:{}", e, e);
+            log.error("修改名片用户出错:{}", userId, e);
             return R.error("修改名片用户出错:"+e.getMessage());
         }
     }

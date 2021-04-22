@@ -14,6 +14,7 @@ import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.CompanyInfoVo;
@@ -106,6 +107,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("添加企业  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         log.info("B端添加企业入参--{}",sysCompanyInfo);
         //构造查询条件
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
@@ -201,6 +203,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("修改企业信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
             throw new DefaultException("企业联系人号码格式错误");
         }
@@ -225,6 +228,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     */
     @Override
     public void deleteCompanyById(String companyId) {
+        log.info("删除企业  ——> 入参：companyId-{}, 操作者信息：{}", companyId, JSON.toJSONString(UserUtils.getUser()));
         if (StringUtils.isEmpty(companyId)){
             throw new DefaultException("企业id为空");
         }
@@ -275,6 +279,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
+        log.info("设置企业管理员  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(dto), JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(dto.getId())){
             throw new DefaultException("企业id为空");
         }
@@ -329,6 +334,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<SysComapnyInfoVo> getCompanyAll() {
         return this.sysCompanyInfoMapper.getCompanyAll();
+    }
+
+    @Override
+    public String geNameById(String id) {
+        // TODO: 2021/4/22 获取企业名称 
+        QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
+        comQw.lambda().select(SysCompanyInfo::getCompanyName);
+        comQw.lambda().eq(SysCompanyInfo::getId, id);
+        SysCompanyInfo company =  this.getOne(comQw);
+        if (DataUtil.isEmpty(company)) {
+            return null;
+        }
+        return company.getCompanyName();
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

@@ -29,7 +29,6 @@ public class BuildVisitNoticeTask {
 
     @XxlJob("follow_up_message")
     public ReturnT<String> execute(String param){
-        log.info("进入客户跟进消息提醒任务;");
 		// 获取所有用户ID
 		List<Map<String, String>> list = sysUserInfoService.selectAllUserId();
 		// 统计客户跟进提醒三种类型的，客户数

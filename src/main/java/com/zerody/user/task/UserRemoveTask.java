@@ -23,17 +23,13 @@ public class UserRemoveTask {
 
     @XxlJob("remove_user")
     public ReturnT<String> execute(String param){
-        log.info("异步删除用户开始");
         ReturnT r=ReturnT.SUCCESS;
         try {
             int updateCount = taskService.removeUser();
-            r.setMsg("删除数:"+updateCount);
-            log.info("删除用户token数量:{}", updateCount);
         } catch (Exception e) {
             log.error("删除失败:{}",e.getMessage(),e);
             r.setMsg(e.getMessage());
         }
-        log.info("结束删除用户");
         return r;
     }
 }

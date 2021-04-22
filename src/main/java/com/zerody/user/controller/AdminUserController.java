@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.util.UserUtils;
@@ -37,7 +38,7 @@ public class AdminUserController {
 			this.service.addAdminUser(data);
 			return R.success();
 		} catch (Exception e) {
-			log.error("新增管理员出错:{}", e, e);
+			log.error("新增管理员出错:{}", JSON.toJSONString(data), e);
 			return R.error("新增管理员出错:"+e.getMessage());
 		}
 	}
@@ -50,7 +51,7 @@ public class AdminUserController {
 			this.service.updateAdminUser(data);
 			return R.success(data);
 		} catch (Exception e) {
-			log.error("修改管理员出错:{}", e, e);
+			log.error("修改管理员出错:{}", JSON.toJSONString(data), e);
 			return R.error("修改管理员出错:"+e.getMessage());
 		}
 	}
@@ -63,7 +64,7 @@ public class AdminUserController {
 			this.service.removeAdminUser(id);
 			return R.success();
 		} catch (Exception e) {
-			log.error("删除管理员出错:{}", e, e);
+			log.error("删除管理员出错:{}", id, e);
 			return R.error("删除管理员出错:"+e.getMessage());
 		}
 	}
@@ -77,7 +78,7 @@ public class AdminUserController {
 			this.service.updateRole(dto.getId(),dto.getRoleId());
 			return R.success();
 		} catch (Exception e) {
-			log.error("修改管理员权限出错:{}", e, e);
+			log.error("修改管理员权限出错:{}", JSON.toJSONString(dto), e);
 			return R.error("修改管理员权限出错:"+e.getMessage());
 		}
 	}

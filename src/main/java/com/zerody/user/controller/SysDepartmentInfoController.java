@@ -1,6 +1,7 @@
 package com.zerody.user.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -67,10 +68,10 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             sysDepartmentInfoService.addDepartment(sysDepartmentInfo);
             return R.success();
         } catch (DefaultException e) {
-            log.error("添加部门登录状态错误:{}", e.getMessage());
+            log.error("添加部门登录状态错误:{}", JSON.toJSONString(sysDepartmentInfo), e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("添加部门登录状态错误:{}", e.getMessage());
+            log.error("添加部门登录状态错误:{}", JSON.toJSONString(sysDepartmentInfo), e);
             return R.error("添加失败,请求异常");
         }
     }

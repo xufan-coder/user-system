@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
@@ -58,7 +59,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public AdminUserInfo addAdminUser(AdminUserDto data) {
-
+        log.info("添加后台用户  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(data), JSON.toJSONString(UserUtils.getUser()));
         CopyStaffInfoVo vo=sysStaffInfoService.selectStaffInfo(data.getStaffId());
         if(DataUtil.isEmpty(vo)){
             throw new DefaultException("选中的员工不存在！");
@@ -111,6 +112,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public void removeAdminUser(String id) {
+        log.info("删除后台用户  ——> 入参：id-{}, 操作者信息：{}", id, JSON.toJSONString(UserUtils.getUser()));
         AdminUserInfo byId = this.getById(id);
         byId.setDeleted(1);
         this.updateById(byId);
@@ -122,6 +124,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public void updateRole(String id,String roleId) {
+        log.info("编辑管理员权限  ——> 入参：id-{} role-{}, 操作者信息：{}", id, roleId, JSON.toJSONString(UserUtils.getUser()));
         QueryWrapper<UnionPlatformRoleStaff> qw =new QueryWrapper<>();
         qw.lambda().eq(UnionPlatformRoleStaff::getAdminUserId,id);
         UnionPlatformRoleStaff roleStaff = roleStaffMapper.selectOne(qw);
