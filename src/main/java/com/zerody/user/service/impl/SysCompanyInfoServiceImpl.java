@@ -337,7 +337,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public String geNameById(String id) {
+    public String getNameById(String id) {
         // TODO: 2021/4/22 获取企业名称 
         QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
         comQw.lambda().select(SysCompanyInfo::getCompanyName);

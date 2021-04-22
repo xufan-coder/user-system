@@ -269,14 +269,14 @@ public class SysCompanyInfoController implements CompanyRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
      */
     @GetMapping("/get/com-name")
-    public DataResult<String> geNameById(@RequestParam("id") String id) {
+    public DataResult<String> getNameById(@RequestParam("id") String id) {
         try {
-            return R.success(this.sysCompanyInfoService.geNameById(id));
+            return R.success(this.sysCompanyInfoService.getNameById(id));
         } catch (DefaultException e){
-            log.error("通过地址获取企业错误!", e , e);
+            log.error("通过企业名称错误!", e , e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("通过地址获取企业错误!", e , e);
+            log.error("通过企业名称错误!", e , e);
             return R.error(e.getMessage());
         }
     }
