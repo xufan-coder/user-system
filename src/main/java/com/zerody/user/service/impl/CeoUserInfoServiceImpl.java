@@ -1,5 +1,7 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,6 +15,7 @@ import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.oauth.api.vo.SysAuthRoleInfoVo;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.domain.CardUserInfo;
@@ -21,6 +24,7 @@ import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserInfoMapper;
 import com.zerody.user.mapper.CardUserUnionCrmUserMapper;
 import com.zerody.user.mapper.CeoUserInfoMapper;
@@ -62,6 +66,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     private CardFeignService cardFeignService;
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     @Override
     public CeoUserInfo getByPhone(String phone) {
@@ -103,6 +109,18 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         String initPwd = SysStaffInfoService.getInitPwd();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         ceoUserInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
+        //初始化角色
+        SysAuthRoleInfoVo vo=new SysAuthRoleInfoVo();
+        vo.setRoleName("总裁");
+        DataResult result = oauthFeignService.addRole(vo);
+        if(!result.isSuccess()){
+            throw new DefaultException("服务异常！");
+        }
+        JSONObject obj=(JSONObject) JSON.toJSON(result.getData());
+        if(DataUtil.isNotEmpty(obj)) {
+            ceoUserInfo.setRoleId(obj.get("id").toString());
+            ceoUserInfo.setRoleName(obj.get("roleName").toString());
+        }
         this.save(ceoUserInfo);
         SmsDto smsDto=new SmsDto();
         smsDto.setMobile(ceoUserInfo.getPhoneNumber());
