@@ -32,7 +32,7 @@ public class CeoUserInfoController {
     /**
      *    分页查询ceo用户
      */
-    @RequestMapping("/select-page")
+    @GetMapping("/select-page")
     public DataResult selectCeoUserPage(CeoUserInfoPageDto ceoUserInfoPageDto){
         IPage<CeoUserInfo> ceoUserInfoIPage = ceoUserInfoService.selectCeoUserPage(ceoUserInfoPageDto);
         return R.success(ceoUserInfoIPage);
