@@ -268,6 +268,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
      * @param                [name]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
      */
+    @Override
     @GetMapping("/get/com-name")
     public DataResult<String> getNameById(@RequestParam("id") String id) {
         try {
