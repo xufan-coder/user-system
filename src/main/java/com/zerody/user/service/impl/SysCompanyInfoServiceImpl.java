@@ -384,8 +384,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("服务异常！");
         }
     }
-
-
-    @RequestMapping("/get/com-performance-ranking")
-    public DataResult<>
+//
+//
+//    @RequestMapping("/get/com-performance-ranking")
+//    public DataResult<>
 }
