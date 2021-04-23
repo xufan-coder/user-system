@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.card.api.dto.UserCardDto;
+import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -148,7 +149,13 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
             if(DataUtil.isEmpty(data)){
                 //生成基础名片信息
                 saveCard(ceoUserInfo,cardUserInfo);
-            }
+            }else {
+                    //把名片账户的名片绑定该新用户
+                    UserCardReplaceDto userReplace = new UserCardReplaceDto();
+                    userReplace.setNewUserId(ceoUserInfo.getId());
+                    userReplace.setCardUserId(cardUserInfo.getId());
+                    this.cardFeignService.updateUserBycardUser(userReplace);
+                }
         }else {
             cardUserInfo=new CardUserInfo();
             cardUserInfo.setUserName(ceoUserInfo.getUserName());

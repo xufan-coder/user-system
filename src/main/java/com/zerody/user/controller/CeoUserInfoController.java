@@ -38,6 +38,14 @@ public class CeoUserInfoController {
         return R.success(ceoUserInfoIPage);
     }
 
+    /**
+     *    id查询ceo用户
+     */
+    @GetMapping("/get/{id}")
+    public DataResult getById(@PathVariable(value = "id") String id){
+        CeoUserInfo byId = ceoUserInfoService.getById(id);
+        return R.success(byId);
+    }
 
 
 
