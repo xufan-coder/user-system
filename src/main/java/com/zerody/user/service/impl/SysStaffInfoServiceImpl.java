@@ -611,7 +611,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验 
+            // TODO: 2021/4/14 空行校验
             if (rowIsEmpty) {
                 continue;
             }
@@ -737,7 +737,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验 
+            // TODO: 2021/4/14 空行校验
             if (rowIsEmpty) {
                 continue;
             }
@@ -1149,6 +1149,36 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(cardUserInfos)){
             //如果内部员工先注册的名片，则不生成基础信息
              cardUserInfo = cardUserInfos.get(0);
+            //如果没创建名片，则帮该员工创建一个名片
+            DataResult<UserCardDto> cardByUserId = cardFeignService.getCardByUserId(cardUserInfo.getId());
+            if(!cardByUserId.isSuccess()){
+                throw new DefaultException("名片服务异常！");
+            }
+            UserCardDto data = cardByUserId.getData();
+            if(DataUtil.isEmpty(data)){
+                //生成基础名片信息
+                UserCardDto cardDto=new UserCardDto();
+                cardDto.setMobile(cardUserInfo.getPhoneNumber());
+                cardDto.setUserName(cardUserInfo.getUserName());
+                //crm用户ID
+                cardDto.setUserId(userInfo.getId());
+                //名片用户ID
+                cardDto.setCustomerUserId(cardUserInfo.getId());
+                cardDto.setAvatar(userInfo.getAvatar());
+                cardDto.setEmail(userInfo.getEmail());
+                cardDto.setCustomerUserId(cardUserInfo.getId());
+                cardDto.setCreateBy(UserUtils.getUserId());
+                cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
+                cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
+                cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
+                cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+                cardDto.setPosition(positionName);
+                cardDto.setCompany(sysCompanyInfo.getCompanyName());
+                DataResult<String> card = cardFeignService.createCard(cardDto);
+                if(!card.isSuccess()){
+                    throw new DefaultException("服务异常！");
+                }
+            }
         }else {
             cardUserInfo=new CardUserInfo();
             cardUserInfo.setUserName(userInfo.getUserName());
@@ -1169,7 +1199,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setAvatar(userInfo.getAvatar());
             cardDto.setEmail(userInfo.getEmail());
-            cardDto.setUserId(userInfo.getId());
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setCreateBy(UserUtils.getUserId());
             cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());

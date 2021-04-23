@@ -40,6 +40,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -337,7 +338,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public String geNameById(String id) {
+    public String getNameById(String id) {
         // TODO: 2021/4/22 获取企业名称 
         QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
         comQw.lambda().select(SysCompanyInfo::getCompanyName);
@@ -383,4 +384,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("服务异常！");
         }
     }
+//
+//
+//    @RequestMapping("/get/com-performance-ranking")
+//    public DataResult<>
 }

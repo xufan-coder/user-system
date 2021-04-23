@@ -38,5 +38,5 @@ public interface SysCompanyInfoService {
 
     List<SysComapnyInfoVo> getCompanyAll();
 
-    String geNameById(String id);
+    String getNameById(String id);
 }
