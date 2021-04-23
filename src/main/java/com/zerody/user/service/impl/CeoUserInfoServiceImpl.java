@@ -103,6 +103,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         String initPwd = SysStaffInfoService.getInitPwd();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         ceoUserInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
+
+
         this.save(ceoUserInfo);
         SmsDto smsDto=new SmsDto();
         smsDto.setMobile(ceoUserInfo.getPhoneNumber());

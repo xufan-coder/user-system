@@ -13,9 +13,17 @@ public class CeoUserInfo extends BaseModel {
 
     private String cardUserId;
 
+    private String roleId;
+
+    private String roleName;
+
     private String userName;
 
     private String avatar;
+
+    private Date birthday;
+
+    private String email;
 
     private String phoneNumber;
 
