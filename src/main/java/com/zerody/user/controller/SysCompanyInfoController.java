@@ -274,10 +274,10 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         try {
             return R.success(this.sysCompanyInfoService.getNameById(id));
         } catch (DefaultException e){
-            log.error("通过企业名称错误!", e , e);
+            log.error("查询企业名称错误!", e , e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("通过企业名称错误!", e , e);
+            log.error("查询企业名称错误!", e , e);
             return R.error(e.getMessage());
         }
     }
