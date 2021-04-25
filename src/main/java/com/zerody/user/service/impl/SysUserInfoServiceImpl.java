@@ -8,6 +8,7 @@ import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.MD5Utils;
@@ -354,20 +355,28 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public UserTypeInfoVo getUserTypeInfo(UserVo user) {
         UserTypeInfoVo userTypeInfoVo = new UserTypeInfoVo();
         AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
-        if(admin.getIsCompanyAdmin()) {
+        if (user.getUserType().equals(UserTypeEnum.CRM_CEO.getValue())) {
+            // TODO: 2021/4/25 总裁类型 
+            userTypeInfoVo.setUserType(UserTypeInfo.CRM_CEO);
+        } else if(admin.getIsCompanyAdmin()) {
+            // TODO: 2021/4/25 企业管理员 (总经理)
             userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
             return userTypeInfoVo;
         } else if (admin.getIsDepartAdmin()){
+            // TODO: 2021/4/25  
             QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
             departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
             Integer count = this.sysDepartmentInfoMapper.selectCount(departQw);
             if (count > 0) {
+                // TODO: 2021/4/25 副总类型(是部门负责人且有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.DEPUTY_GENERAL_MANAGERv);
             } else {
+                // TODO: 2021/4/25  团队长类型(是部门负责人 没有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
             }
         } else {
+            // TODO: 2021/4/25 伙伴类型(不是任何的负责人) 
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
         }
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());

@@ -30,6 +30,7 @@ import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +92,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
@@ -319,6 +323,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateTime(new Date());
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
+        // TODO: 2021/4/25 设置企业负责人 清除该员工token 
+        this.checkUtil.removeUserToken(user.getId());
     }
 
     @Override
@@ -384,8 +390,5 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("服务异常！");
         }
     }
-//
-//
-//    @RequestMapping("/get/com-performance-ranking")
-//    public DataResult<>
+
 }
