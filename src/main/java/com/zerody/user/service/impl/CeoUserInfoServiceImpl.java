@@ -73,7 +73,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     @Override
     public CeoUserInfo getByPhone(String phone) {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
-        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO);
+        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO)
+        .eq(BaseModel::getStatus,YesNo.NO);
         return this.getOne(qw);
     }
 
