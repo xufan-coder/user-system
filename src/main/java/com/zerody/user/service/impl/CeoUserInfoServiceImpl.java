@@ -104,6 +104,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     public void addCeoUser(CeoUserInfo ceoUserInfo) {
         ceoUserInfo.setCreateTime(new Date());
         ceoUserInfo.setCreateId(UserUtils.getUserId());
+        ceoUserInfo.setDeleted(YesNo.NO);
         //是否停用状态
         ceoUserInfo.setStatus(YesNo.NO);
         //初始化密码加密
