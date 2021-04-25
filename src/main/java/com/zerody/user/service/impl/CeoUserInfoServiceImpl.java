@@ -217,6 +217,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         UserCardDto cardDto=new UserCardDto();
         cardDto.setMobile(cardUserInfo.getPhoneNumber());
         cardDto.setUserName(cardUserInfo.getUserName());
+        cardDto.setCompany(ceoUserInfo.getCompany());
+        cardDto.setPosition(ceoUserInfo.getPosition());
         //crm用户ID
         cardDto.setUserId(ceoUserInfo.getId());
         //名片用户ID

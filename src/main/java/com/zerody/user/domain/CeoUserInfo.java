@@ -21,6 +21,12 @@ public class CeoUserInfo extends BaseModel {
 
     private String avatar;
 
+    private String photo;
+
+    private String position;
+
+    private String company;
+
     private Date birthday;
 
     private String email;
