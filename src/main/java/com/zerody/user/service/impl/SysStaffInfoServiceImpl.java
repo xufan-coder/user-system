@@ -471,6 +471,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
 
+            //解除名片限制
+            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+            userReplace.setNewUserId(null);
+            userReplace.setOldUserId(sysUserInfo.getId());
+            this.cardFeignService.updateCardUser(userReplace);
+
             //生成基础名片信息
             UserCardDto cardDto=new UserCardDto();
             cardDto.setMobile(cardUserInfo.getPhoneNumber());
@@ -483,6 +489,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setEmail(sysUserInfo.getEmail());
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setCreateBy(UserUtils.getUserId());
+            log.info("新增名片信息{}", JSON.toJSON(cardDto));
             DataResult<String> card = cardFeignService.createCard(cardDto);
             if(!card.isSuccess()){
                 throw new DefaultException("服务异常！");
@@ -1178,6 +1185,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 if(!card.isSuccess()){
                     throw new DefaultException("服务异常！");
                 }
+            }else {
+                //把名片账户的名片绑定该新用户
+                UserCardReplaceDto userReplace = new UserCardReplaceDto();
+                userReplace.setNewUserId(userInfo.getId());
+                userReplace.setCardUserId(cardUserInfo.getId());
+                this.cardFeignService.updateUserBycardUser(userReplace);
             }
         }else {
             cardUserInfo=new CardUserInfo();
@@ -1188,6 +1201,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setCreateTime(new Date());
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
+            //解除名片限制
+            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+            userReplace.setNewUserId(null);
+            userReplace.setOldUserId(userInfo.getId());
+            this.cardFeignService.updateCardUser(userReplace);
 
             //生成基础名片信息
             UserCardDto cardDto=new UserCardDto();

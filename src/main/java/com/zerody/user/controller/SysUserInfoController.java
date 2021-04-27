@@ -210,6 +210,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             }
             BeanUtils.copyProperties(one, info);
             info.setUserType(UserTypeEnum.CRM_CEO.name());
+            info.setIsAdmin(false);
         }else {
             CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
             if (DataUtil.isEmpty(checkLoginVo)) {

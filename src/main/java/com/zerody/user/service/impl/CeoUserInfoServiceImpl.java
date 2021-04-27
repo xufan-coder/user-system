@@ -1,10 +1,13 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.card.api.dto.UserCardDto;
+import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -13,6 +16,7 @@ import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.oauth.api.vo.SysAuthRoleInfoVo;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.domain.CardUserInfo;
@@ -21,6 +25,7 @@ import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserInfoMapper;
 import com.zerody.user.mapper.CardUserUnionCrmUserMapper;
 import com.zerody.user.mapper.CeoUserInfoMapper;
@@ -62,11 +67,14 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     private CardFeignService cardFeignService;
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     @Override
     public CeoUserInfo getByPhone(String phone) {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
-        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO);
+        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO)
+        .eq(BaseModel::getStatus,YesNo.NO);
         return this.getOne(qw);
     }
 
@@ -97,12 +105,25 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     public void addCeoUser(CeoUserInfo ceoUserInfo) {
         ceoUserInfo.setCreateTime(new Date());
         ceoUserInfo.setCreateId(UserUtils.getUserId());
+        ceoUserInfo.setDeleted(YesNo.NO);
         //是否停用状态
         ceoUserInfo.setStatus(YesNo.NO);
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         ceoUserInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
+        //初始化角色
+        SysAuthRoleInfoVo vo=new SysAuthRoleInfoVo();
+        vo.setRoleName("总裁");
+        DataResult result = oauthFeignService.addRole(vo);
+        if(!result.isSuccess()){
+            throw new DefaultException("服务异常！");
+        }
+        JSONObject obj=(JSONObject) JSON.toJSON(result.getData());
+        if(DataUtil.isNotEmpty(obj)) {
+            ceoUserInfo.setRoleId(obj.get("id").toString());
+            ceoUserInfo.setRoleName(obj.get("roleName").toString());
+        }
         this.save(ceoUserInfo);
         SmsDto smsDto=new SmsDto();
         smsDto.setMobile(ceoUserInfo.getPhoneNumber());
@@ -130,7 +151,13 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
             if(DataUtil.isEmpty(data)){
                 //生成基础名片信息
                 saveCard(ceoUserInfo,cardUserInfo);
-            }
+            }else {
+                    //把名片账户的名片绑定该新用户
+                    UserCardReplaceDto userReplace = new UserCardReplaceDto();
+                    userReplace.setNewUserId(ceoUserInfo.getId());
+                    userReplace.setCardUserId(cardUserInfo.getId());
+                    this.cardFeignService.updateUserBycardUser(userReplace);
+                }
         }else {
             cardUserInfo=new CardUserInfo();
             cardUserInfo.setUserName(ceoUserInfo.getUserName());
@@ -175,6 +202,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         IPage<CeoUserInfo> infoVoIPage = new Page<>(ceoUserInfoPageDto.getCurrent(),ceoUserInfoPageDto.getPageSize());
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
         qw.lambda().orderByDesc(BaseModel::getCreateTime);
+        qw.lambda().eq(CeoUserInfo::getDeleted,YesNo.NO);
         if(DataUtil.isNotEmpty(ceoUserInfoPageDto.getPhone())){
             qw.lambda().eq(CeoUserInfo::getPhoneNumber,ceoUserInfoPageDto.getPhone());
         }
@@ -192,6 +220,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         UserCardDto cardDto=new UserCardDto();
         cardDto.setMobile(cardUserInfo.getPhoneNumber());
         cardDto.setUserName(cardUserInfo.getUserName());
+        cardDto.setCompany(ceoUserInfo.getCompany());
+        cardDto.setPosition(ceoUserInfo.getPosition());
         //crm用户ID
         cardDto.setUserId(ceoUserInfo.getId());
         //名片用户ID
