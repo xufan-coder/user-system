@@ -3,7 +3,6 @@ package com.zerody.user.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.sun.xml.internal.bind.v2.TODO;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
