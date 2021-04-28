@@ -21,9 +21,11 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.mapper.*;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
@@ -82,6 +84,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
 
     @Autowired
     private RabbitMqService mqService;
@@ -432,12 +437,27 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public StaffInfoVo getUserByCardUserId(String id) {
+
         QueryWrapper<CardUserUnionUser> qw =new QueryWrapper<>();
         qw.lambda().eq(CardUserUnionUser::getCardId,id);
         List<CardUserUnionUser> cardUserUnionUsers = cardUserUnionCrmUserMapper.selectList(qw);
         if(DataUtil.isNotEmpty(cardUserUnionUsers)){
             String userId = cardUserUnionUsers.get(0).getUserId();
-           return sysStaffInfoService.getStaffInfo(userId);
+            //检查是否是boss账户
+            QueryWrapper<CeoUserInfo> ceoQw =new QueryWrapper<>();
+            ceoQw.lambda().eq(BaseModel::getId,userId);
+            CeoUserInfo one = ceoUserInfoService.getOne(ceoQw);
+            if(DataUtil.isNotEmpty(one)){
+                StaffInfoVo staffInfoVo=new StaffInfoVo();
+                staffInfoVo.setUserId(one.getId());
+                staffInfoVo.setMobile(one.getPhoneNumber());
+                staffInfoVo.setUserName(one.getUserName());
+                staffInfoVo.setStaffAvatar(one.getAvatar());
+                staffInfoVo.setUserType(UserTypeEnum.CRM_CEO.getValue());
+                return staffInfoVo;
+            }else {
+                return sysStaffInfoService.getStaffInfo(userId);
+            }
         }
         return null;
     }
