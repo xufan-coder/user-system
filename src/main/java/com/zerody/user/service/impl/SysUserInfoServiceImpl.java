@@ -78,6 +78,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     @Autowired
+    private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+
+    @Autowired
     private SysStaffInfoService sysStaffInfoService;
 
     @Autowired
@@ -365,7 +368,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
             return userTypeInfoVo;
         } else if (admin.getIsDepartAdmin()){
-            // TODO: 2021/4/25  
+            // TODO: 2021/4/25
             QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
             departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
@@ -378,7 +381,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
                 userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
             }
         } else {
-            // TODO: 2021/4/25 伙伴类型(不是任何的负责人) 
+            // TODO: 2021/4/25 伙伴类型(不是任何的负责人)
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
         }
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
@@ -425,6 +428,18 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             mqService.send(staff, MQ.QUEUE_USER_NAME);
         });
         log.info("发送用户修改名称通知:{}", JSON.toJSONString(staffInfos));
+    }
+
+    @Override
+    public StaffInfoVo getUserByCardUserId(String id) {
+        QueryWrapper<CardUserUnionUser> qw =new QueryWrapper<>();
+        qw.lambda().eq(CardUserUnionUser::getCardId,id);
+        List<CardUserUnionUser> cardUserUnionUsers = cardUserUnionCrmUserMapper.selectList(qw);
+        if(DataUtil.isNotEmpty(cardUserUnionUsers)){
+            String userId = cardUserUnionUsers.get(0).getUserId();
+           return sysStaffInfoService.getStaffInfo(userId);
+        }
+        return null;
     }
 
 }
