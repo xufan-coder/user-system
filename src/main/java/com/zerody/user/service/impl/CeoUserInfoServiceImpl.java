@@ -32,6 +32,7 @@ import com.zerody.user.mapper.CeoUserInfoMapper;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +70,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
     @Autowired
     private OauthFeignService oauthFeignService;
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Override
     public CeoUserInfo getByPhone(String phone) {
@@ -195,6 +198,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
                 .set(BaseModel::getUpdateTime,new Date())
                 .eq(BaseModel::getId,id);
         this.update(uw);
+        //删除后清除token
+        this.checkUtil.removeUserToken(id);
     }
 
     @Override
