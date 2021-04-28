@@ -922,6 +922,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
+            user.setUserType(-1);
             if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId)) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
