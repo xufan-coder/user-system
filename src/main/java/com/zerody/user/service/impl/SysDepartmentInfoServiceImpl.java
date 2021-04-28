@@ -28,6 +28,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import com.zerody.user.vo.UserStructureVo;
@@ -155,6 +156,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
             // TODO: 2021/4/15 设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
+        }
+        // TODO: 2021/4/28 如果当前部门设置不显示
+        if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("_"));
+            departUw.lambda().set(SysDepartmentInfo::getIsShowBusiness, YesNo.NO);
+            this.update(departUw);
+        } else {
+            // TODO: 2021/4/28 获取所有上级部门id
+            List<String> ids = SetSuperiorIdUtil.getSuperiorIds(sysDepartmentInfo.getId());
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().set(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getIsShowBusiness, YesNo.YES);
+            departUw.lambda().in(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getId, ids);
+            this.update(departUw);
         }
         log.info("修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);

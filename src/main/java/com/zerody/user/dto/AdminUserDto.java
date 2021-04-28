@@ -31,4 +31,7 @@ public class AdminUserDto{
      */
     private String id;
 
+    /** 是否能查看完整的手机号 */
+    private Integer isShowMobile;
+
 }

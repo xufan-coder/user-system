@@ -186,4 +186,8 @@ public class SysCompanyInfo extends BaseModel {
     @TableField("remark_")
     private String remark;
 
+
+    /** 企业logo */
+    private String companyLogo;
+
 }

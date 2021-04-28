@@ -75,7 +75,7 @@ public class AdminUserController {
 	@PutMapping("/update-role")
 	public DataResult updateRole(@RequestBody AdminUserDto dto) {
 		try {
-			this.service.updateRole(dto.getId(),dto.getRoleId());
+			this.service.updateRole(dto);
 			return R.success();
 		} catch (Exception e) {
 			log.error("修改管理员权限出错:{}", JSON.toJSONString(dto), e);

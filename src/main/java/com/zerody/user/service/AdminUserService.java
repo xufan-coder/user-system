@@ -69,7 +69,7 @@ public interface AdminUserService extends IService<AdminUserInfo> {
      * @param                 roleId
      * @return               void
      */
-    void updateRole(String id, String roleId);
+    void updateRole(AdminUserDto dto);
 
     /**************************************************************************************************
      **
