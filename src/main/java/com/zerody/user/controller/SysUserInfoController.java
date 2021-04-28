@@ -969,4 +969,17 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         BeanUtils.copyProperties(userById,ceo);
         return R.success(ceo);
     }
+
+    /**
+    *   根据名片用户id获取用户信息
+    */
+    @Override
+    @RequestMapping(value = "/get-by-card/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<StaffInfoVo> getUserByCardUserId(@PathVariable(value = "id") String id){
+        StaffInfoVo userByCardUserId = sysUserInfoService.getUserByCardUserId(id);
+        if(DataUtil.isEmpty(userByCardUserId)){
+            return R.error("用户无关联信息！");
+        }
+        return R.success(userByCardUserId);
+    }
 }
