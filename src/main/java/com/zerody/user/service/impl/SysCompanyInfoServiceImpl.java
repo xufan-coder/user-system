@@ -257,7 +257,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SysComapnyInfoVo> getAllCompany(String companyId) {
-
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         //如果是crm系统就只查当前登录企业
         if(!StringUtils.isEmpty(companyId)){
