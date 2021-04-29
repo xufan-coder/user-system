@@ -11,6 +11,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.oauth.api.vo.PlatformRoleVo;
+import com.zerody.user.api.vo.AdminUserJurisdictionInfo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.UnionPlatformRoleStaff;
 import com.zerody.user.dto.AdminUserDto;
@@ -175,5 +176,17 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
         BeanUtils.copyProperties(one,userInfo);
         return userInfo;
+    }
+
+    @Override
+    public AdminUserJurisdictionInfo getAdminUserJurisdictionInfo(String userId) {
+        AdminUserInfo admin = this.getById(userId);
+        AdminUserJurisdictionInfo jurisdiction = new AdminUserJurisdictionInfo();
+        if (!DataUtil.isEmpty(admin)) {
+            if (DataUtil.isNotEmpty(admin.getIsShowMobile()) && admin.getIsShowMobile().equals(1)) {
+                jurisdiction.setIsFullMobile(!jurisdiction.getIsFullMobile());
+            }
+        }
+        return jurisdiction;
     }
 }
