@@ -112,7 +112,8 @@
         sci.contact_phone,
         ssi.id adminAccount,
         ssi.user_name AS adminName,
-        sci.status
+        sci.status,
+        sci.company_logo
       FROM
             sys_company_info AS sci
       LEFT JOIN  company_admin AS ca ON ca.company_id = sci.id
