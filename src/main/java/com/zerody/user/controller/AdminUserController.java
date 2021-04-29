@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.api.service.AdminUserRemoteService;
 import com.zerody.user.api.vo.AdminUserJurisdictionInfo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.CompanyAdmin;
@@ -27,7 +28,7 @@ import java.util.Date;
 @Slf4j
 @RestController
 @RequestMapping("/admin-user")
-public class AdminUserController {
+public class AdminUserController implements AdminUserRemoteService {
 	@Autowired
 	private AdminUserService service;
 
