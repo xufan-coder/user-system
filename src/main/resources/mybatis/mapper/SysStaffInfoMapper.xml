@@ -438,7 +438,7 @@
         </where>
         order by ssi.create_time desc
     </select>
-    <select id="getUserByDepartOrRole" resultType="com.zerody.user.vo.SysUserInfoVo">
+    <select id="getUserByDepartOrRole" resultType="com.zerody.user.api.vo.SysUserInfoVo">
         SELECT
             sui.id,
             sui.user_name,
@@ -462,7 +462,7 @@
             </if>
         </where>
     </select>
-    <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
+    <select id="getStaffByIds" resultType="com.zerody.user.api.vo.SysUserInfoVo">
         SELECT 
             sui.id,
             sui.user_name,

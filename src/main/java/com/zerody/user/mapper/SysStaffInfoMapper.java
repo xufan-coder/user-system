@@ -212,7 +212,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param                companyId
      * @return               com.zerody.user.vo.SysUserInfoVo
      */
-    List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(@Param("departId") String departId,
+    List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRole(@Param("departId") String departId,
                                                                  @Param("roleId") String roleId,
 
                                                                  @Param("companyId") String companyId);
@@ -226,7 +226,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param                staffIds
      * @return               com.zerody.user.vo.SysUserInfoVo
      */
-    List<com.zerody.user.vo.SysUserInfoVo> getStaffByIds(@Param("staffIds") List<String> staffIds);
+    List<com.zerody.user.api.vo.SysUserInfoVo> getStaffByIds(@Param("staffIds") List<String> staffIds);
 
     /**
      *

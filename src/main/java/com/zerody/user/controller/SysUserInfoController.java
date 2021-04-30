@@ -604,7 +604,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     @RequestMapping(value = "/get/user", method = RequestMethod.GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
                                                                               @RequestParam(value = "roleId", required = false) String roleId,
                                                                                     @RequestParam(value = "companyId", required = false) String companyId){
         try {
@@ -632,7 +632,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
      */
 	@RequestMapping(value = "/superior", method = GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
                                                                                      @RequestParam("roleId")String roleId){
         try {
             return R.success(sysStaffInfoService.getSuperiorUesrByUserAndRole(userId, roleId));
@@ -982,5 +982,10 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("用户无关联信息！");
         }
         return R.success(userByCardUserId);
+    }
+
+    @Override
+    public DataResult<List<StaffInfoVo>> getUserByPositionId(String s) {
+        return null;
     }
 }

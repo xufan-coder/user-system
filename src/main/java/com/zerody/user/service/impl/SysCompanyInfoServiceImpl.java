@@ -7,13 +7,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
@@ -93,6 +96,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
+
+    @Autowired
+    private RabbitMqService mqService;
+
     @Autowired
     private CheckUtil checkUtil;
 
@@ -137,6 +144,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
+        sysCompanyInfo.setIsUpdateName(YesNo.NO);
         this.saveOrUpdate(sysCompanyInfo);
         SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
         userInfoDto.setCompanyId(sysCompanyInfo.getId());
@@ -220,6 +228,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         Integer count = sysCompanyInfoMapper.selectCount(comQW);
         if(count > 0 ){
             throw new DefaultException("企业名称已被占用");
+        }
+        SysCompanyInfo company = this.getById(sysCompanyInfo.getId());
+        if (!company.getCompanyName().equals(sysCompanyInfo.getCompanyName())) {
+            sysCompanyInfo.setIsUpdateName(YesNo.YES);
         }
         this.saveOrUpdate(sysCompanyInfo);
     }
@@ -353,6 +365,23 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             return null;
         }
         return company.getCompanyName();
+    }
+
+    @Override
+    public void updateRedundancyCompanyName() {
+        // TODO: 2021/4/30 获取修改名称的企业 
+        List<CompanyInfoVo> companyInfos = this.sysCompanyInfoMapper.getHaveUpdateCompanyName();
+        if (CollectionUtils.isEmpty(companyInfos)) {
+            return;
+        }
+        // TODO: 2021/4/30 修改回原来的状态 
+        this.sysCompanyInfoMapper.updateIsUpdateName(companyInfos);
+        // TODO: 2021/4/30 发送消息修改冗余的企业名称 
+        companyInfos.stream().forEach(c -> {
+            this.mqService.send(c, MQ.QUEUE_COMPANY_NAME);
+        });
+
+        log.info("发送企业名称修改通知:{}", JSON.toJSONString(companyInfos));
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

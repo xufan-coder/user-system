@@ -39,4 +39,6 @@ public interface SysCompanyInfoService {
     List<SysComapnyInfoVo> getCompanyAll();
 
     String getNameById(String id);
+
+    void updateRedundancyCompanyName();
 }

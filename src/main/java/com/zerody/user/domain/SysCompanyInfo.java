@@ -190,4 +190,12 @@ public class SysCompanyInfo extends BaseModel {
     /** 企业logo */
     private String companyLogo;
 
+    private Integer isUpdateName;
+
+    /** 经度 */
+    private Float lon;
+
+    /** 纬度 */
+    private Float lat;
+
 }

@@ -53,7 +53,16 @@
   <sql id="Blob_Column_List" >
     company_introduction
   </sql>
-  <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+    <update id="updateIsUpdateName">
+        UPDATE sys_company_info
+        SET is_update_name = 0
+        WHERE
+            id IN
+                <foreach collection="param"  item="company" open="(" separator="," close=")" >
+                    #{company.companyId}
+                </foreach>
+    </update>
+    <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
       id,
       company_name,
@@ -191,5 +200,14 @@
             sys_company_info
         WHERE
             id = #{companyId}
+    </select>
+    <select id="getHaveUpdateCompanyName" resultType="com.zerody.user.api.vo.CompanyInfoVo">
+        SELECT
+            id AS company_id,
+            company_name
+        FROM
+            sys_company_info
+        WHERE
+            is_update_name = 1
     </select>
 </mapper>
