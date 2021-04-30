@@ -8,6 +8,7 @@ import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.MD5Utils;
@@ -20,9 +21,11 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.mapper.*;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
@@ -77,7 +80,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
 
     @Autowired
+    private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
+
+    @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
 
     @Autowired
     private RabbitMqService mqService;
@@ -353,21 +362,31 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public UserTypeInfoVo getUserTypeInfo(UserVo user) {
         UserTypeInfoVo userTypeInfoVo = new UserTypeInfoVo();
+        if (user.getUserType().equals(UserTypeEnum.CRM_CEO.getValue())) {
+            // TODO: 2021/4/25 总裁类型
+            userTypeInfoVo.setUserType(UserTypeInfo.CRM_CEO);
+            return userTypeInfoVo;
+        }
         AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
         if(admin.getIsCompanyAdmin()) {
+            // TODO: 2021/4/25 企业管理员 (总经理)
             userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
             return userTypeInfoVo;
         } else if (admin.getIsDepartAdmin()){
+            // TODO: 2021/4/25
             QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
             departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
             Integer count = this.sysDepartmentInfoMapper.selectCount(departQw);
             if (count > 0) {
+                // TODO: 2021/4/25 副总类型(是部门负责人且有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.DEPUTY_GENERAL_MANAGERv);
             } else {
+                // TODO: 2021/4/25  团队长类型(是部门负责人 没有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
             }
         } else {
+            // TODO: 2021/4/25 伙伴类型(不是任何的负责人)
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
         }
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
@@ -414,6 +433,33 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             mqService.send(staff, MQ.QUEUE_USER_NAME);
         });
         log.info("发送用户修改名称通知:{}", JSON.toJSONString(staffInfos));
+    }
+
+    @Override
+    public StaffInfoVo getUserByCardUserId(String id) {
+
+        QueryWrapper<CardUserUnionUser> qw =new QueryWrapper<>();
+        qw.lambda().eq(CardUserUnionUser::getCardId,id);
+        List<CardUserUnionUser> cardUserUnionUsers = cardUserUnionCrmUserMapper.selectList(qw);
+        if(DataUtil.isNotEmpty(cardUserUnionUsers)){
+            String userId = cardUserUnionUsers.get(0).getUserId();
+            //检查是否是boss账户
+            QueryWrapper<CeoUserInfo> ceoQw =new QueryWrapper<>();
+            ceoQw.lambda().eq(BaseModel::getId,userId);
+            CeoUserInfo one = ceoUserInfoService.getOne(ceoQw);
+            if(DataUtil.isNotEmpty(one)){
+                StaffInfoVo staffInfoVo=new StaffInfoVo();
+                staffInfoVo.setUserId(one.getId());
+                staffInfoVo.setMobile(one.getPhoneNumber());
+                staffInfoVo.setUserName(one.getUserName());
+                staffInfoVo.setStaffAvatar(one.getAvatar());
+                staffInfoVo.setUserType(UserTypeEnum.CRM_CEO.getValue());
+                return staffInfoVo;
+            }else {
+                return sysStaffInfoService.getStaffInfo(userId);
+            }
+        }
+        return null;
     }
 
 }

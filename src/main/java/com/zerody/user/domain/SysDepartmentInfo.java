@@ -75,4 +75,7 @@ public class SysDepartmentInfo extends BaseModel {
 
     /** 是否修改部门名称(1.是，0.否) */
     private Integer isUpdateName;
+
+    /** 是否显示业务 */
+    private Integer isShowBusiness;
 }

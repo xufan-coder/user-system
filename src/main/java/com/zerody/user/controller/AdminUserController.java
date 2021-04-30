@@ -3,7 +3,10 @@ package com.zerody.user.controller;
 import com.alibaba.fastjson.JSON;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.api.service.AdminUserRemoteService;
+import com.zerody.user.api.vo.AdminUserJurisdictionInfo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.CompanyAdmin;
 import com.zerody.user.dto.AdminUserDto;
@@ -25,7 +28,7 @@ import java.util.Date;
 @Slf4j
 @RestController
 @RequestMapping("/admin-user")
-public class AdminUserController {
+public class AdminUserController implements AdminUserRemoteService {
 	@Autowired
 	private AdminUserService service;
 
@@ -75,7 +78,7 @@ public class AdminUserController {
 	@PutMapping("/update-role")
 	public DataResult updateRole(@RequestBody AdminUserDto dto) {
 		try {
-			this.service.updateRole(dto.getId(),dto.getRoleId());
+			this.service.updateRole(dto);
 			return R.success();
 		} catch (Exception e) {
 			log.error("修改管理员权限出错:{}", JSON.toJSONString(dto), e);
@@ -84,6 +87,29 @@ public class AdminUserController {
 	}
 
 
+	/**
+	 *
+	 *	获取后台管理权限
+	 * @author               PengQiang
+	 * @description          DELL
+	 * @date                 2021/4/29 12:04
+	 * @param                userId
+	 * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.AdminUserJurisdictionInfo>
+	 */
+	@Override
+	@RequestMapping(value = "/get/amdin-user-jurisdiction/inner", method = RequestMethod.GET)
+	public DataResult<AdminUserJurisdictionInfo> getAdminUserJurisdictionInfo(@RequestParam("userId") String userId){
+		try {
+			AdminUserJurisdictionInfo jurisdiction = this.service.getAdminUserJurisdictionInfo(userId);
+			return R.success(jurisdiction);
+		} catch (DefaultException e){
+			log.error("添加员工错误:{} Id:" + userId, e);
+			return R.error(e.getMessage());
+		}  catch (Exception e) {
+			log.error("添加员工错误:{} id:"+ userId, e);
+			return R.error("添加员工失败,请求异常");
+		}
+	}
 
 
 }

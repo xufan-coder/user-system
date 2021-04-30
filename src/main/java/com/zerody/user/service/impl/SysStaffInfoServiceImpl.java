@@ -1518,13 +1518,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId) {
+    public List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId) {
 
         return this.sysStaffInfoMapper.getUserByDepartOrRole(departId, roleId, companyId);
     }
 
     @Override
-    public List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {
+    public List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {
 	    String staffId = this.getStaffIdByUserId(userId);
 	    QueryWrapper<UnionStaffDepart> usdQw = new QueryWrapper<>();
 	    usdQw.lambda().eq(UnionStaffDepart::getStaffId, staffId);

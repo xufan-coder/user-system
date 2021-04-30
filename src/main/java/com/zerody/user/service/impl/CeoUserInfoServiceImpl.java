@@ -32,6 +32,7 @@ import com.zerody.user.mapper.CeoUserInfoMapper;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,11 +70,14 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
     @Autowired
     private OauthFeignService oauthFeignService;
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Override
     public CeoUserInfo getByPhone(String phone) {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
-        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO);
+        qw.lambda().eq(CeoUserInfo::getPhoneNumber,phone).eq(CeoUserInfo::getDeleted, YesNo.NO)
+        .eq(BaseModel::getStatus,YesNo.NO);
         return this.getOne(qw);
     }
 
@@ -104,6 +108,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     public void addCeoUser(CeoUserInfo ceoUserInfo) {
         ceoUserInfo.setCreateTime(new Date());
         ceoUserInfo.setCreateId(UserUtils.getUserId());
+        ceoUserInfo.setDeleted(YesNo.NO);
         //是否停用状态
         ceoUserInfo.setStatus(YesNo.NO);
         //初始化密码加密
@@ -193,6 +198,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
                 .set(BaseModel::getUpdateTime,new Date())
                 .eq(BaseModel::getId,id);
         this.update(uw);
+        //删除后清除token
+        this.checkUtil.removeUserToken(id);
     }
 
     @Override
@@ -200,6 +207,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         IPage<CeoUserInfo> infoVoIPage = new Page<>(ceoUserInfoPageDto.getCurrent(),ceoUserInfoPageDto.getPageSize());
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
         qw.lambda().orderByDesc(BaseModel::getCreateTime);
+        qw.lambda().eq(CeoUserInfo::getDeleted,YesNo.NO);
         if(DataUtil.isNotEmpty(ceoUserInfoPageDto.getPhone())){
             qw.lambda().eq(CeoUserInfo::getPhoneNumber,ceoUserInfoPageDto.getPhone());
         }
@@ -217,6 +225,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         UserCardDto cardDto=new UserCardDto();
         cardDto.setMobile(cardUserInfo.getPhoneNumber());
         cardDto.setUserName(cardUserInfo.getUserName());
+        cardDto.setCompany(ceoUserInfo.getCompany());
+        cardDto.setPosition(ceoUserInfo.getPosition());
         //crm用户ID
         cardDto.setUserId(ceoUserInfo.getId());
         //名片用户ID

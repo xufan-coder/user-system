@@ -27,6 +27,8 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import com.zerody.user.vo.UserStructureVo;
@@ -82,13 +84,17 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private RabbitMqService mqService;
+    
+    @Autowired
+    private CheckUtil checkUtil;
 
     // todo 添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
 
     // todo 添加部门redis 自动增长 过期时间 单位天
     private final static Long ADD_DEPART_REDIS_OUTTIME = 2L;
-
+    
+    
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("添加部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
@@ -150,6 +156,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
             // TODO: 2021/4/15 设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
+        }
+        // TODO: 2021/4/28 如果当前部门设置不显示
+        if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("_"));
+            departUw.lambda().set(SysDepartmentInfo::getIsShowBusiness, YesNo.NO);
+            this.update(departUw);
+        } else {
+            // TODO: 2021/4/28 获取所有上级部门id
+            List<String> ids = SetSuperiorIdUtil.getSuperiorIds(sysDepartmentInfo.getId());
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().set(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getIsShowBusiness, YesNo.YES);
+            departUw.lambda().in(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getId, ids);
+            this.update(departUw);
         }
         log.info("修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);
@@ -245,6 +265,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unSd.setDepartmentId(dto.getId());
         unSd.setStaffId(dto.getStaffId());
         unionStaffDepartMapper.insert(unSd);
+        // TODO: 2021/4/23 设置部门负责人 清除改员工token 让改员工重新登录 
+        SysStaffInfo staffInfo = this.staffInfoService.getById(dto.getStaffId());
+        this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
 
     @Override

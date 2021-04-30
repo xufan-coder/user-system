@@ -210,6 +210,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             }
             BeanUtils.copyProperties(one, info);
             info.setUserType(UserTypeEnum.CRM_CEO.name());
+            info.setIsAdmin(false);
         }else {
             CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
             if (DataUtil.isEmpty(checkLoginVo)) {
@@ -603,7 +604,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     @RequestMapping(value = "/get/user", method = RequestMethod.GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
                                                                               @RequestParam(value = "roleId", required = false) String roleId,
                                                                                     @RequestParam(value = "companyId", required = false) String companyId){
         try {
@@ -631,7 +632,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
      */
 	@RequestMapping(value = "/superior", method = GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
                                                                                      @RequestParam("roleId")String roleId){
         try {
             return R.success(sysStaffInfoService.getSuperiorUesrByUserAndRole(userId, roleId));
@@ -921,6 +922,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
+            user.setUserType(-1);
             if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId)) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
@@ -967,5 +969,23 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         com.zerody.user.api.vo.CeoUserInfo ceo=new com.zerody.user.api.vo.CeoUserInfo();
         BeanUtils.copyProperties(userById,ceo);
         return R.success(ceo);
+    }
+
+    /**
+    *   根据名片用户id获取用户信息
+    */
+    @Override
+    @RequestMapping(value = "/get-by-card/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<StaffInfoVo> getUserByCardUserId(@PathVariable(value = "id") String id){
+        StaffInfoVo userByCardUserId = sysUserInfoService.getUserByCardUserId(id);
+        if(DataUtil.isEmpty(userByCardUserId)){
+            return R.error("用户无关联信息！");
+        }
+        return R.success(userByCardUserId);
+    }
+
+    @Override
+    public DataResult<List<StaffInfoVo>> getUserByPositionId(String s) {
+        return null;
     }
 }
