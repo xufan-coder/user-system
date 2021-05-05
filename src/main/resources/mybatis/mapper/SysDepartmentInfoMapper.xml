@@ -149,7 +149,7 @@
         FROM
          sys_department_info AS sdi
         <where>
-            sdi.status = 0
+            sdi.status = 0 AND sdi.is_show_business = 1
              <if test="companyId neq null and companyId neq ''">
                  AND sdi.comp_id = #{companyId}
              </if>
