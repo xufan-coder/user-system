@@ -303,6 +303,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             } else if (admin.getIsDepartAdmin()) {
                 //如果企业id并且 部门id为空 并且 是部门管理员 则返回部门名称跟id 类型为2
                 UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+                if (DataUtil.isEmpty(departInfo)) {
+                    return null;
+                }
                 userStructureVos.add(departInfo);
             } else {
                 return null;
