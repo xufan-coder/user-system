@@ -244,6 +244,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public LoginUserInfoVo getUserInfoById(String id) {
+        CeoUserInfo ceo = this.ceoUserInfoService.getById(id);
+        if (DataUtil.isNotEmpty(ceo)) {
+            LoginUserInfoVo user = new LoginUserInfoVo();
+            user.setPhoneNumber(ceo.getPhoneNumber());
+            user.setUserName(ceo.getUserName());
+            return user;
+        }
         return sysUserInfoMapper.selectLoginUserInfo(id);
     }
 
