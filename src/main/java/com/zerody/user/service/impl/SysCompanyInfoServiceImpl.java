@@ -262,7 +262,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setIsDeleted(YesNo.YES);
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().in(SysUserInfo::getStatus, StatusEnum.deleted.getValue(), StatusEnum.stop.getValue());
         userUw.lambda().in(SysUserInfo::getId, userIds);
         this.sysUserInfoMapper.update(userInfo,userUw);
     }
