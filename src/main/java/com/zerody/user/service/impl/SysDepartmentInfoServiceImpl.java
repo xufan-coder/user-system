@@ -143,15 +143,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("修改部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
         // TODO 查看部门名称是否存在
+        SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().ne(SysDepartmentInfo::getId, sysDepartmentInfo.getId());
+        depQW.lambda().eq(SysDepartmentInfo::getCompId, departInfo.getCompId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
               throw new DefaultException("该部门名称已存在!");
         }
-        SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
         // TODO: 2021/4/15 查询部门名称是否有修改 有修改 mq发送消息修改冗余的部门名称
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
             // TODO: 2021/4/15 设置修改名称状态为已修改
