@@ -374,7 +374,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userTypeInfoVo.setUserType(UserTypeInfo.CRM_CEO);
             return userTypeInfoVo;
         }
-        AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
+        AdminVo admin = new AdminVo();
+        if (StringUtils.isNotEmpty(user.getUserId())) {
+            admin = this.sysStaffInfoService.getIsAdmin(user);
+        } else {
+            admin.setIsCompanyAdmin(StringUtils.isNotEmpty(user.getCompanyId()));
+            admin.setIsDepartAdmin(StringUtils.isNotEmpty(user.getDeptId()));
+        }
         if(admin.getIsCompanyAdmin()) {
             // TODO: 2021/4/25 企业管理员 (总经理)
             userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
