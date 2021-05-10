@@ -916,14 +916,14 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      */
     @Override
     @RequestMapping(value = "/get/user-type/inner", method = GET)
-    public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam("userId")String userId,
+    public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam(value = "userId", required = false)String userId,
                                                                          @RequestParam(value = "companyId",required = false)String companyId,
                                                                          @RequestParam(value = "departId", required = false) String departId) {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
             user.setUserType(-1);
-            if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId)) {
+            if (StringUtils.isNotEmpty(userId) && (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId))) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
                 user.setDeptId(staff.getDepartId());
