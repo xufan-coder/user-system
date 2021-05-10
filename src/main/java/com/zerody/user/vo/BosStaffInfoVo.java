@@ -31,7 +31,7 @@ public class BosStaffInfoVo {
     private String roleId;
 
     /**
-    *   企业ID 
+    *   企业ID
     */
     private String compId;
 
@@ -39,9 +39,9 @@ public class BosStaffInfoVo {
     *   企业名称
     */
     private String companyName;
-    
+
     /**
-    *   员工姓名 
+    *   员工姓名
     */
     private String userName;
 
@@ -68,6 +68,9 @@ public class BosStaffInfoVo {
     /** 员工状态 */
     private Integer staffStatus;
 
+    private Integer isShowMobile;
+
+
     public String getStaffStatusString(){
          if (DataUtil.isEmpty(this.staffStatus)) {
              return "";
@@ -78,4 +81,6 @@ public class BosStaffInfoVo {
          }
          return statusEnum.getDesc();
     }
+
+    /** 员工状态 */
 }
