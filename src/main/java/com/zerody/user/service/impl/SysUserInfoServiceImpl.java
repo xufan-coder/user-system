@@ -328,11 +328,21 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public void updateUserAvatar(SetUpdateAvatarDto param) {
-        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().set(SysUserInfo::getAvatar, param.getAvatar());
-        userUw.lambda().eq(SysUserInfo::getId, param.getUserId());
-        userUw.lambda().set(SysUserInfo::getAvatarUpdateTime, new Date());
-        this.update(userUw);
+
+        //检查是否是总裁用户，如果是总裁则修改总裁表头像
+        QueryWrapper<CeoUserInfo> ceoQw =new QueryWrapper<>();
+        ceoQw.lambda().eq(BaseModel::getId,param.getUserId());
+        CeoUserInfo one = ceoUserInfoService.getOne(ceoQw);
+        if(DataUtil.isNotEmpty(one)){
+            one.setAvatar(param.getAvatar());
+            ceoUserInfoService.updateById(one);
+        }else {
+            UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+            userUw.lambda().set(SysUserInfo::getAvatar, param.getAvatar());
+            userUw.lambda().eq(SysUserInfo::getId, param.getUserId());
+            userUw.lambda().set(SysUserInfo::getAvatarUpdateTime, new Date());
+            this.update(userUw);
+        }
     }
 
     @Override
