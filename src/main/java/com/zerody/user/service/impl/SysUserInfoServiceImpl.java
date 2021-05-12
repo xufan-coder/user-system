@@ -249,6 +249,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             LoginUserInfoVo user = new LoginUserInfoVo();
             user.setPhoneNumber(ceo.getPhoneNumber());
             user.setUserName(ceo.getUserName());
+            user.setAvatar(ceo.getAvatar());
             return user;
         }
         return sysUserInfoMapper.selectLoginUserInfo(id);
