@@ -524,7 +524,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("获取客户信息失败");
         }
         if (result.getData() > 0 ) {
-            throw new DefaultException("该员工拥有客户无法删除");
+            throw new DefaultException("该员工名下拥有客户无法删除，请将该员工的客户变更给其他员工再重新操作！");
         }
         // TODO: 2021/5/12 检查改员工下是否有客户
         DataResult<Integer> resultContract = this.contractService.getSignOrderCountInner(staff.getUserId(), null, null);
