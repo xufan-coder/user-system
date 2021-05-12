@@ -96,6 +96,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
+    @Autowired
+    private SysDepartmentInfoService departService;
 
     @Autowired
     private RabbitMqService mqService;
@@ -248,6 +250,13 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         log.info("删除企业  ——> 入参：companyId-{}, 操作者信息：{}", companyId, JSON.toJSONString(UserUtils.getUser()));
         if (StringUtils.isEmpty(companyId)){
             throw new DefaultException("企业id为空");
+        }
+        QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+        departQw.lambda().eq(SysDepartmentInfo::getCompId, companyId);
+        departQw.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
+        int count = this.departmentInfoService.count(departQw);
+        if (count > 0){
+            throw new DefaultException("企业下有部门无法删除该企业");
         }
         SysCompanyInfo company = new SysCompanyInfo();
         company.setStatus(StatusEnum.deleted.getValue());

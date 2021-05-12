@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -15,7 +14,6 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
@@ -35,10 +33,7 @@ import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.enums.StaffGenderEnum;
-import com.zerody.user.feign.CardFeignService;
-import com.zerody.user.feign.ContractFeignService;
-import com.zerody.user.feign.CustomerFeignService;
-import com.zerody.user.feign.OauthFeignService;
+import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
@@ -74,10 +69,6 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.smartcardio.Card;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author PengQiang
@@ -146,7 +137,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
     @Autowired
-    private CustomerFeignService customerFeignService;
+    private ClewFeignService clewFeignService;
 
     @Autowired
     private CardFeignService cardFeignService;
@@ -165,6 +156,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private RabbitMqService mqService;
+
+    @Autowired
+    private CustomerFeignService customerService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -524,6 +518,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException( "员工id为空");
         }
         SysStaffInfo staff = this.getById(staffId);
+        // TODO: 2021/5/12 检查改员工下是否有客户
+        DataResult<Integer> result = this.customerService.getCustomerCountInner(staff.getUserId(), null, null);
+        if (!result.isSuccess()) {
+            throw new DefaultException("获取客户信息失败");
+        }
+        if (result.getData() > 0 ) {
+            throw new DefaultException("该员工拥有客户无法删除");
+        }
+        // TODO: 2021/5/12 检查改员工下是否有客户
+        DataResult<Integer> resultContract = this.contractService.getSignOrderCountInner(staff.getUserId(), null, null);
+        if (!resultContract.isSuccess()) {
+            throw new DefaultException("获取签单信息失败");
+        }
+        if (resultContract.getData() > 0 ) {
+            throw new DefaultException("该员工拥有签单数据无法删除");
+        }
         SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
         userInfo.setStatus(StatusEnum.deleted.getValue());
         this.sysUserInfoMapper.updateById(userInfo);
@@ -1374,7 +1384,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 iPage.getRecords().add(userInfo);
                 iPage.setTotal(1);
                 userIds.add(iPage.getRecords().get(0).getUserId());
-                clews = this.customerFeignService.getClews(userIds).getData();
+                clews = this.clewFeignService.getClews(userIds).getData();
                 if(CollectionUtils.isEmpty(clews)){
                     return iPage;
                 }
@@ -1398,7 +1408,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             iPage.setRecords(new ArrayList<>());
         }
         userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
-        clews = this.customerFeignService.getClews(userIds).getData();
+        clews = this.clewFeignService.getClews(userIds).getData();
         if(CollectionUtils.isEmpty(clews)){
             return iPage;
         }
@@ -1461,7 +1471,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
-                 this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+                 this.clewFeignService.doEmpatySubordinateUserClew(userIds);
                 return;
             }
             //获取全部的部门
@@ -1476,7 +1486,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
         }
         userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
-        this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+        this.clewFeignService.doEmpatySubordinateUserClew(userIds);
     }
 
     @Override
