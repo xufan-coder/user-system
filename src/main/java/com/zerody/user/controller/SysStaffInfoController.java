@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
@@ -80,10 +81,10 @@ public class SysStaffInfoController {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
-            log.error("添加员工错误:{}",e.getMessage());
+            log.error("添加员工错误:{}" + JSON.toJSONString(setSysUserInfoDto), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("添加员工错误:{}",e.getMessage());
+            log.error("添加员工错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("添加员工失败,请求异常");
         }
     }
@@ -112,10 +113,10 @@ public class SysStaffInfoController {
             sysStaffInfoService.updateStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
-            log.error("修改员工信息错误:{}",e.getMessage(), e);
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("修改员工信息错误:{}",e.getMessage(), e);
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("修改员工信息失败,请求异常");
         }
     }

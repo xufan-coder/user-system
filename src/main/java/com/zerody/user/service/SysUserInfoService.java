@@ -232,4 +232,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     List<String> doUserIsDeleted();
 
     void updateRedundancyUserName();
+
+    StaffInfoVo getUserByCardUserId(String id);
 }

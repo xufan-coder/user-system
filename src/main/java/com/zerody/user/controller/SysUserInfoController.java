@@ -10,6 +10,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zerody.common.constant.YesNo;
+import com.zerody.common.enums.UserTypeEnum;
+import com.zerody.user.domain.CeoUserInfo;
+import com.zerody.user.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,12 +52,6 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
-import com.zerody.user.service.AdminUserService;
-import com.zerody.user.service.CardUserService;
-import com.zerody.user.service.CompanyAdminService;
-import com.zerody.user.service.SysCompanyInfoService;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
@@ -87,6 +86,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Autowired
     private CompanyAdminService amdinService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
 
     @Autowired
     private CardUserService cardUserService;
@@ -155,23 +157,32 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/check-user/inner",method = POST, produces = "application/json")
     public DataResult checkLoginUser(@RequestBody LoginCheckParamDto params){
         //查询账户信息,返回个密码来校验密码
-        CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
-        if(DataUtil.isEmpty(checkLoginVo)){
-            return R.error("当前账号未开通，请联系管理员开通！");
-        }
-        String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
-        SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
-        if(DataUtil.isEmpty(company)){
-            return R.error("数据异常！");
-        }
-        if(StatusEnum.stop.getValue().equals(company.getStatus())){
-            return R.error("账号被停用！");
-        }
-        if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
-            return R.error("当前账号未开通，请联系管理员开通！");
+        //优先判断总裁账户
+        CeoUserInfo one = ceoUserInfoService.getByPhone(params.getUserName());
+        String userPwd="";
+        if(DataUtil.isNotEmpty(one)){
+            // 校验密码
+            userPwd=one.getUserPwd();
+        }else{
+            CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
+            if(DataUtil.isEmpty(checkLoginVo)){
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+            if(DataUtil.isEmpty(company)){
+                return R.error("数据异常！");
+            }
+            if(StatusEnum.stop.getValue().equals(company.getStatus())){
+                return R.error("账号被停用！");
+            }
+            if(   StatusEnum.deleted.getValue().equals(company.getStatus())){
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            userPwd=checkLoginVo.getUserPwd();
         }
         //校验密码
-        boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
+        boolean success = sysUserInfoService.checkPassword(userPwd, params.getPwd());
         if(!success){
             return R.error("密码错误！");
         }
@@ -180,7 +191,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
 	/**
 	 * 通过用户名和密码获取用户数据
-	 * 
+	 *
 	 * @param params
 	 * @return
 	 */
@@ -188,33 +199,46 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 	@RequestMapping(value = "/login-user/inner", method = POST, produces = "application/json")
 	public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getLoginUser(@RequestBody LoginCheckParamDto params) {
 		// 查询账户信息,返回个密码来校验密码
-		CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
-		if (DataUtil.isEmpty(checkLoginVo)) {
-			return R.error("当前账号未开通，请联系管理员开通！");
-		}
-		String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
-		SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
-		if (DataUtil.isEmpty(company)) {
-			return R.error("数据异常！");
-		}
-		if (StatusEnum.stop.getValue().equals(company.getStatus())) {
-			return R.error("账号被停用！");
-		}
-		if (StatusEnum.deleted.getValue().equals(company.getStatus())) {
-			return R.error("当前账号未开通，请联系管理员开通！");
-		}
-		// 校验密码
-		boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
-		if (!success) {
-			return R.error("密码错误！");
-		}
-		SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(params.getUserName());
-		if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
-			return R.error("当前账号未开通，请联系管理员开通！");
-		}
-		com.zerody.user.api.vo.SysLoginUserInfoVo info = new com.zerody.user.api.vo.SysLoginUserInfoVo();
-		BeanUtils.copyProperties(sysLoginUserInfoVo, info);
-		info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
+        //4-20增加总裁用户表，优先判断总裁表的用户返回
+        CeoUserInfo one = ceoUserInfoService.getByPhone(params.getUserName());
+        com.zerody.user.api.vo.SysLoginUserInfoVo info = new com.zerody.user.api.vo.SysLoginUserInfoVo();
+        if(DataUtil.isNotEmpty(one)){
+            // 校验密码
+            boolean success = sysUserInfoService.checkPassword(one.getUserPwd(), params.getPwd());
+            if (!success) {
+                return R.error("密码错误！");
+            }
+            BeanUtils.copyProperties(one, info);
+            info.setUserType(UserTypeEnum.CRM_CEO.name());
+            info.setIsAdmin(false);
+        }else {
+            CheckLoginVo checkLoginVo = sysUserInfoService.checkLoginUser(params.getUserName());
+            if (DataUtil.isEmpty(checkLoginVo)) {
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+            if (DataUtil.isEmpty(company)) {
+                return R.error("数据异常！");
+            }
+            if (StatusEnum.stop.getValue().equals(company.getStatus())) {
+                return R.error("账号被停用！");
+            }
+            if (StatusEnum.deleted.getValue().equals(company.getStatus())) {
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            // 校验密码
+            boolean success = sysUserInfoService.checkPassword(checkLoginVo.getUserPwd(), params.getPwd());
+            if (!success) {
+                return R.error("密码错误！");
+            }
+            SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(params.getUserName());
+            if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            BeanUtils.copyProperties(sysLoginUserInfoVo, info);
+            info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
+        }
 		return R.success(info);
 	}
 
@@ -248,12 +272,19 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @Override
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
     public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
-        SysLoginUserInfoVo sysLoginUserInfoVo=sysUserInfoService.getUserInfo(userName);
-        if(DataUtil.isEmpty(sysLoginUserInfoVo)){
-            return R.error("当前账号未开通，请联系管理员开通！");
+        //4-20增加总裁用户表，优先判断总裁表的用户返回
+        CeoUserInfo one = ceoUserInfoService.getByPhone(userName);
+        com.zerody.user.api.vo.SysLoginUserInfoVo info = new com.zerody.user.api.vo.SysLoginUserInfoVo();
+        if(DataUtil.isNotEmpty(one)){
+            BeanUtils.copyProperties(one, info);
+            info.setUserType(UserTypeEnum.CRM_CEO.name());
+        }else {
+            SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(userName);
+            if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            BeanUtils.copyProperties(sysLoginUserInfoVo, info);
         }
-        com.zerody.user.api.vo.SysLoginUserInfoVo info =new com.zerody.user.api.vo.SysLoginUserInfoVo();
-        BeanUtils.copyProperties(sysLoginUserInfoVo,info);
         return R.success(info);
     }
 
@@ -475,7 +506,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             CardUserInfoVo vo= cardUserService.bindOpenId(openId,userId);
             return R.success(vo);
         } catch (Exception e) {
-            log.error("修改名片用户出错:{}", e, e);
+            log.error("修改名片用户出错:{}", userId, e);
             return R.error("修改名片用户出错:"+e.getMessage());
         }
     }
@@ -573,7 +604,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     @RequestMapping(value = "/get/user", method = RequestMethod.GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
                                                                               @RequestParam(value = "roleId", required = false) String roleId,
                                                                                     @RequestParam(value = "companyId", required = false) String companyId){
         try {
@@ -601,7 +632,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
      */
 	@RequestMapping(value = "/superior", method = GET)
-    public DataResult<List<com.zerody.user.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
                                                                                      @RequestParam("roleId")String roleId){
         try {
             return R.success(sysStaffInfoService.getSuperiorUesrByUserAndRole(userId, roleId));
@@ -885,13 +916,14 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      */
     @Override
     @RequestMapping(value = "/get/user-type/inner", method = GET)
-    public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam("userId")String userId,
+    public DataResult<UserTypeInfoInnerVo> getUsertypeInfoInner(@RequestParam(value = "userId", required = false)String userId,
                                                                          @RequestParam(value = "companyId",required = false)String companyId,
                                                                          @RequestParam(value = "departId", required = false) String departId) {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
-            if (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId)) {
+            user.setUserType(-1);
+            if (StringUtils.isNotEmpty(userId) && (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId))) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
                 user.setDeptId(staff.getDepartId());
@@ -922,5 +954,38 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("用户不存在！");
         }
         return R.success(cardUserById);
+    }
+
+    /**
+     *   根据CEO用户id获取用户信息；
+     */
+    @Override
+    @RequestMapping(value = "/get-ceo/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.CeoUserInfo> getCeoUserById(@PathVariable String id){
+        CeoUserInfo userById = ceoUserInfoService.getUserById(id);
+        if(DataUtil.isEmpty(userById)){
+            return R.error("用户不存在！");
+        }
+        com.zerody.user.api.vo.CeoUserInfo ceo=new com.zerody.user.api.vo.CeoUserInfo();
+        BeanUtils.copyProperties(userById,ceo);
+        return R.success(ceo);
+    }
+
+    /**
+    *   根据名片用户id获取用户信息
+    */
+    @Override
+    @RequestMapping(value = "/get-by-card/inner/{id}",method = GET, produces = "application/json")
+    public DataResult<StaffInfoVo> getUserByCardUserId(@PathVariable(value = "id") String id){
+        StaffInfoVo userByCardUserId = sysUserInfoService.getUserByCardUserId(id);
+        if(DataUtil.isEmpty(userByCardUserId)){
+            return R.error("用户无关联信息！");
+        }
+        return R.success(userByCardUserId);
+    }
+
+    @Override
+    public DataResult<List<StaffInfoVo>> getUserByPositionId(String s) {
+        return null;
     }
 }

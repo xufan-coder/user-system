@@ -101,4 +101,26 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               com.zerody.user.vo.UserStructureVo
      */
     UserStructureVo getCompanyNameById(@Param("companyId") String companyId);
+
+    /**
+     *
+     *  获取修改名称的企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/30 10:40
+     * @param
+     * @return               java.util.List<com.zerody.user.domain.SysCompanyInfo>
+     */
+    List<CompanyInfoVo> getHaveUpdateCompanyName();
+
+    /**
+     *
+     *  修改状态
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/30 10:59
+     * @param                companyInfos
+     * @return               void
+     */
+    void updateIsUpdateName(@Param("param") List<CompanyInfoVo> companyInfos);
 }

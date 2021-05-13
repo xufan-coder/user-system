@@ -1,6 +1,8 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
@@ -9,6 +11,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.oauth.api.vo.PlatformRoleVo;
+import com.zerody.user.api.vo.AdminUserJurisdictionInfo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.UnionPlatformRoleStaff;
 import com.zerody.user.dto.AdminUserDto;
@@ -58,7 +61,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public AdminUserInfo addAdminUser(AdminUserDto data) {
-
+        log.info("添加后台用户  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(data), JSON.toJSONString(UserUtils.getUser()));
         CopyStaffInfoVo vo=sysStaffInfoService.selectStaffInfo(data.getStaffId());
         if(DataUtil.isEmpty(vo)){
             throw new DefaultException("选中的员工不存在！");
@@ -111,6 +114,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Override
     public void removeAdminUser(String id) {
+        log.info("删除后台用户  ——> 入参：id-{}, 操作者信息：{}", id, JSON.toJSONString(UserUtils.getUser()));
         AdminUserInfo byId = this.getById(id);
         byId.setDeleted(1);
         this.updateById(byId);
@@ -121,20 +125,25 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
 
     @Override
-    public void updateRole(String id,String roleId) {
+    public void updateRole( AdminUserDto dto) {
+        log.info("编辑管理员权限  ——> 入参：{}, 操作者信息：{}", dto.toString(), JSON.toJSONString(UserUtils.getUser()));
         QueryWrapper<UnionPlatformRoleStaff> qw =new QueryWrapper<>();
-        qw.lambda().eq(UnionPlatformRoleStaff::getAdminUserId,id);
+        qw.lambda().eq(UnionPlatformRoleStaff::getAdminUserId,dto.getId());
         UnionPlatformRoleStaff roleStaff = roleStaffMapper.selectOne(qw);
-        DataResult<PlatformRoleVo> platformRole = oauthFeignService.getPlatformRoleById(roleId);
+        DataResult<PlatformRoleVo> platformRole = oauthFeignService.getPlatformRoleById(dto.getRoleId());
         if(!platformRole.isSuccess()){
             throw new DefaultException("服务异常！");
         }
         if(DataUtil.isEmpty(platformRole.getData())){
             throw new DefaultException("角色不存在或已被删除！");
         }
-        roleStaff.setRoleId(roleId);
+        roleStaff.setRoleId(dto.getRoleId());
         roleStaff.setRoleName(platformRole.getData().getRoleName());
         roleStaffMapper.updateById(roleStaff);
+        AdminUserInfo adminUser = new AdminUserInfo();
+        adminUser.setId(dto.getId());
+        adminUser.setIsShowMobile(dto.getIsShowMobile());
+        this.updateById(adminUser);
     }
 
     @Override
@@ -167,5 +176,17 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         com.zerody.user.api.vo.AdminUserInfo userInfo=new com.zerody.user.api.vo.AdminUserInfo();
         BeanUtils.copyProperties(one,userInfo);
         return userInfo;
+    }
+
+    @Override
+    public AdminUserJurisdictionInfo getAdminUserJurisdictionInfo(String userId) {
+        AdminUserInfo admin = this.getById(userId);
+        AdminUserJurisdictionInfo jurisdiction = new AdminUserJurisdictionInfo();
+        if (!DataUtil.isEmpty(admin)) {
+            if (DataUtil.isNotEmpty(admin.getIsShowMobile()) && admin.getIsShowMobile().equals(1)) {
+                jurisdiction.setIsFullMobile(!jurisdiction.getIsFullMobile());
+            }
+        }
+        return jurisdiction;
     }
 }

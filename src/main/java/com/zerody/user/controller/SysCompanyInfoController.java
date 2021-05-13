@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
@@ -50,10 +51,10 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             sysCompanyInfoService.addCompany(sysCompanyInfo);
             return R.success();
         } catch (DefaultException e){
-            log.error("企业添加错误:{}",e.getMessage());
+            log.error("企业添加错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("企业修改错误:{}",e.getMessage());
+            log.error("企业添加错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error("添加企业失败,请求异常");
         }
     }
@@ -96,10 +97,10 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             sysCompanyInfoService.updateCompany(sysCompanyInfo);
             return R.success();
         } catch (DefaultException e){
-            log.error("企业修改错误:{}",e.getMessage());
+            log.error("企业修改错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("企业修改错误:{}",e.getMessage());
+            log.error("企业修改错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error("修改企业失败,请求异常");
         }
     }
@@ -186,10 +187,10 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             this.sysCompanyInfoService.updateAdminAccout(dto);
             return R.success();
         } catch (DefaultException e){
-            log.error("设置企业管理员错误:{}",e.getMessage());
+            log.error("设置企业管理员错误:{}", JSON.toJSONString(dto), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("设置企业管理员错误:{}",e.getMessage());
+            log.error("设置企业管理员错误:{}", JSON.toJSONString(dto), e);
             return R.error("设置企业管理员错误,请求异常");
         }
     }
@@ -254,6 +255,29 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.error(e.getMessage());
         } catch (Exception e){
             log.error("通过地址获取企业错误!", e , e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          通过id获取企业名称
+     * @date                 2021/4/22 14:08
+     * @param                [name]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @GetMapping("/get/com-name")
+    public DataResult<String> getNameById(@RequestParam("id") String id) {
+        try {
+            return R.success(this.sysCompanyInfoService.getNameById(id));
+        } catch (DefaultException e){
+            log.error("查询企业名称错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("查询企业名称错误!", e , e);
             return R.error(e.getMessage());
         }
     }

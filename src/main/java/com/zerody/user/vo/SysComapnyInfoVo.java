@@ -90,4 +90,6 @@ public class SysComapnyInfoVo {
      */
     private List<SysDepartmentInfoVo> departs;
 
+    private String companyLogo;
+
 }

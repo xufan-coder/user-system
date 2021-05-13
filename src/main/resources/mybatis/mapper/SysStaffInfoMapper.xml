@@ -20,8 +20,8 @@
     <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, comp_id, user_id, user_name, work_place, job_number, date_join, conversion_date, 
-    date_left, create_id, create_user, create_time, update_id, update_user, update_time, 
+    id, comp_id, user_id, user_name, work_place, job_number, date_join, conversion_date,
+    date_left, create_id, create_user, create_time, update_id, update_user, update_time,
     status
   </sql>
   <select id="selectByUserIdAndCompId" resultType="com.zerody.user.vo.SysStaffInfoVo" >
@@ -267,6 +267,7 @@
         sjp.position_name AS positionName,
         sdi.depart_name AS departName,
         ssi.id AS staffId,
+        aui.is_show_mobile AS isShowMobile,
         urs.role_id AS roleId
         FROM
         admin_user_info aui
@@ -286,7 +287,7 @@
         </if>
         </where>
     </select>
-    
+
      <select id="selectUserDeptInfoById" resultType="com.zerody.user.api.vo.UserDeptVo">
         SELECT
         ssi.id as staffId,
@@ -294,7 +295,7 @@
         ssi.id com_id as companyId,
         usd.department_id as deptId,
         usp.position_id as postId,
-        FROM sys_staff_info ssi 
+        FROM sys_staff_info ssi
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         <where>
@@ -438,7 +439,7 @@
         </where>
         order by ssi.create_time desc
     </select>
-    <select id="getUserByDepartOrRole" resultType="com.zerody.user.vo.SysUserInfoVo">
+    <select id="getUserByDepartOrRole" resultType="com.zerody.user.api.vo.SysUserInfoVo">
         SELECT
             sui.id,
             sui.user_name,
@@ -455,20 +456,20 @@
                 AND usd.department_id LIKE CONCAT('',#{departId},'%')
             </if>
             <if test="roleId neq null and roleId neq ''">
-                AND urs.role_id = #{roleId} 
+                AND urs.role_id = #{roleId}
             </if>
             <if test="companyId neq null and companyId neq ''">
                 AND ssi.comp_id = #{companyId}
             </if>
         </where>
     </select>
-    <select id="getStaffByIds" resultType="com.zerody.user.vo.SysUserInfoVo">
-        SELECT 
+    <select id="getStaffByIds" resultType="com.zerody.user.api.vo.SysUserInfoVo">
+        SELECT
             sui.id,
             sui.user_name,
             urs.role_name
-        FROM 
-            sys_staff_info AS ssi 
+        FROM
+            sys_staff_info AS ssi
         JOIN sys_user_info AS sui ON  ssi.user_id = sui.id
         JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>

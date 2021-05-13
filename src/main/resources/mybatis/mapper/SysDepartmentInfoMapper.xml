@@ -86,7 +86,8 @@
         sdi.telephone,
         sdi.depart_code,
         sdi.admin_account,
-        ssi.user_name AS adminName
+        ssi.user_name AS adminName,
+        sdi.is_show_business
     FROM
         sys_department_info AS sdi
     LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
@@ -137,7 +138,7 @@
         FROM
          sys_department_info AS sdi
         WHERE
-             sdi.status = 0 AND
+             sdi.status = 0 AND is_show_business = 1 AND
              sdi.id = #{departId}
     </select>
     <select id="getDepartNameByCompanyIdOrParentId" resultType="com.zerody.user.vo.UserStructureVo">
@@ -148,7 +149,7 @@
         FROM
          sys_department_info AS sdi
         <where>
-            sdi.status = 0
+            sdi.status = 0 AND sdi.is_show_business = 1
              <if test="companyId neq null and companyId neq ''">
                  AND sdi.comp_id = #{companyId}
              </if>

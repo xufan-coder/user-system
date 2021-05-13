@@ -89,4 +89,6 @@ public class SysDepartmentInfoVo {
      * 部门管理员 手机号
      */
     private String adminName;
+
+    private Integer isShowBusiness;
 }
