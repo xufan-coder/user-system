@@ -160,6 +160,11 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
                     userReplace.setNewUserId(ceoUserInfo.getId());
                     userReplace.setCardUserId(cardUserInfo.getId());
                     this.cardFeignService.updateUserBycardUser(userReplace);
+                    //并且把关联改了
+                    UpdateWrapper<CardUserUnionUser> uw=new UpdateWrapper<>();
+                    uw.lambda().eq(CardUserUnionUser::getCardId,cardUserInfo.getId());
+                    uw.lambda().set(CardUserUnionUser::getUserId,ceoUserInfo.getId());
+                    cardUserUnionCrmUserMapper.update(null,uw);
                 }
         }else {
             cardUserInfo=new CardUserInfo();
