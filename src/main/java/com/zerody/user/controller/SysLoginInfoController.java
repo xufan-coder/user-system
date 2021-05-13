@@ -8,6 +8,7 @@ import com.zerody.user.api.service.UserLoginInfoRemoteService;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.CardUserService;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,19 @@ public class SysLoginInfoController implements UserLoginInfoRemoteService {
 
     @Autowired
     private AdminUserService adminUserService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
+
+    /**
+     *   修改总裁登录表信息
+     */
+    @Override
+    @RequestMapping(value = {"/update-ceo/inner"},method = {RequestMethod.PUT},produces = {"application/json"})
+    public DataResult updateById(com.zerody.user.api.vo.CeoUserInfoVo ceoUserInfoVo) {
+        ceoUserInfoService.updateCeoById(ceoUserInfoVo);
+        return R.success();
+    }
 
     /**
     *   修改登录表信息

@@ -7,13 +7,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.CheckParamUtils;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.CompanyInfoVo;
@@ -29,6 +33,7 @@ import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +44,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -90,6 +96,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
+    @Autowired
+    private SysDepartmentInfoService departService;
+
+    @Autowired
+    private RabbitMqService mqService;
+
+    @Autowired
+    private CheckUtil checkUtil;
+
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
 
@@ -106,6 +121,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("添加企业  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         log.info("B端添加企业入参--{}",sysCompanyInfo);
         //构造查询条件
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
@@ -130,6 +146,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
+        sysCompanyInfo.setIsUpdateName(YesNo.NO);
         this.saveOrUpdate(sysCompanyInfo);
         SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
         userInfoDto.setCompanyId(sysCompanyInfo.getId());
@@ -201,6 +218,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateCompany(SysCompanyInfo sysCompanyInfo) {
+        log.info("修改企业信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysCompanyInfo), JSON.toJSONString(UserUtils.getUser()));
         if(!CheckParamUtils.chkMobile(sysCompanyInfo.getContactPhone())){
             throw new DefaultException("企业联系人号码格式错误");
         }
@@ -212,6 +230,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         Integer count = sysCompanyInfoMapper.selectCount(comQW);
         if(count > 0 ){
             throw new DefaultException("企业名称已被占用");
+        }
+        SysCompanyInfo company = this.getById(sysCompanyInfo.getId());
+        if (!company.getCompanyName().equals(sysCompanyInfo.getCompanyName())) {
+            sysCompanyInfo.setIsUpdateName(YesNo.YES);
         }
         this.saveOrUpdate(sysCompanyInfo);
     }
@@ -225,8 +247,16 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     */
     @Override
     public void deleteCompanyById(String companyId) {
+        log.info("删除企业  ——> 入参：companyId-{}, 操作者信息：{}", companyId, JSON.toJSONString(UserUtils.getUser()));
         if (StringUtils.isEmpty(companyId)){
             throw new DefaultException("企业id为空");
+        }
+        QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+        departQw.lambda().eq(SysDepartmentInfo::getCompId, companyId);
+        departQw.lambda().ne(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
+        int count = this.departmentInfoService.count(departQw);
+        if (count > 0){
+            throw new DefaultException("企业下有部门无法删除该企业");
         }
         SysCompanyInfo company = new SysCompanyInfo();
         company.setStatus(StatusEnum.deleted.getValue());
@@ -241,14 +271,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setIsDeleted(YesNo.YES);
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().in(SysUserInfo::getStatus, StatusEnum.deleted.getValue(), StatusEnum.stop.getValue());
         userUw.lambda().in(SysUserInfo::getId, userIds);
         this.sysUserInfoMapper.update(userInfo,userUw);
     }
 
     @Override
     public List<SysComapnyInfoVo> getAllCompany(String companyId) {
-
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         //如果是crm系统就只查当前登录企业
         if(!StringUtils.isEmpty(companyId)){
@@ -275,6 +303,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
+        log.info("设置企业管理员  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(dto), JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(dto.getId())){
             throw new DefaultException("企业id为空");
         }
@@ -313,6 +342,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateTime(new Date());
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
+        // TODO: 2021/4/25 设置企业负责人 清除该员工token 
+        this.checkUtil.removeUserToken(user.getId());
     }
 
     @Override
@@ -329,6 +360,36 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<SysComapnyInfoVo> getCompanyAll() {
         return this.sysCompanyInfoMapper.getCompanyAll();
+    }
+
+    @Override
+    public String getNameById(String id) {
+        // TODO: 2021/4/22 获取企业名称 
+        QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
+        comQw.lambda().select(SysCompanyInfo::getCompanyName);
+        comQw.lambda().eq(SysCompanyInfo::getId, id);
+        SysCompanyInfo company =  this.getOne(comQw);
+        if (DataUtil.isEmpty(company)) {
+            return null;
+        }
+        return company.getCompanyName();
+    }
+
+    @Override
+    public void updateRedundancyCompanyName() {
+        // TODO: 2021/4/30 获取修改名称的企业 
+        List<CompanyInfoVo> companyInfos = this.sysCompanyInfoMapper.getHaveUpdateCompanyName();
+        if (CollectionUtils.isEmpty(companyInfos)) {
+            return;
+        }
+        // TODO: 2021/4/30 修改回原来的状态 
+        this.sysCompanyInfoMapper.updateIsUpdateName(companyInfos);
+        // TODO: 2021/4/30 发送消息修改冗余的企业名称 
+        companyInfos.stream().forEach(c -> {
+            this.mqService.send(c, MQ.QUEUE_COMPANY_NAME);
+        });
+
+        log.info("发送企业名称修改通知:{}", JSON.toJSONString(companyInfos));
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
@@ -365,4 +426,5 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("服务异常！");
         }
     }
+
 }

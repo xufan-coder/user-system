@@ -27,6 +27,8 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import com.zerody.user.vo.UserStructureVo;
@@ -82,16 +84,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private RabbitMqService mqService;
+    
+    @Autowired
+    private CheckUtil checkUtil;
 
     // todo 添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
 
     // todo 添加部门redis 自动增长 过期时间 单位天
     private final static Long ADD_DEPART_REDIS_OUTTIME = 2L;
-
+    
+    
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
-        log.info("B端添加部门入参-{}",sysDepartmentInfo);
+        log.info("添加部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
         if(!StringUtils.isEmpty(sysDepartmentInfo.getParentId())){
             String compId = this.sysDepartmentInfoMapper.selectById(sysDepartmentInfo.getParentId()).getCompId();
             sysDepartmentInfo.setCompId(compId);
@@ -109,7 +115,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             throw new DefaultException("该部门名称已存在!");
         }
         sysDepartmentInfo.setStatus(StatusEnum.activity.getValue());
-        log.info("B端添加部门入库-{}",sysDepartmentInfo);
+
         SimpleDateFormat simdf = new SimpleDateFormat("yyMMdd");
         String id  = simdf.format(new Date());
         boolean find = true;
@@ -131,31 +137,48 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         sysDepartmentInfo.setIsUpdateName(YesNo.NO);
         //名称不存在 保存添加
         this.save(sysDepartmentInfo);
+        log.info("添加部门入库-{}",sysDepartmentInfo);
     }
     @Override
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
-        log.info("B端添加部门入参-{}",sysDepartmentInfo);
+        log.info("修改部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
         // TODO 查看部门名称是否存在
+        SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
         depQW.lambda().eq(SysDepartmentInfo::getDepartName, sysDepartmentInfo.getDepartName());
         depQW.lambda().ne(SysDepartmentInfo::getId, sysDepartmentInfo.getId());
+        depQW.lambda().eq(SysDepartmentInfo::getCompId, departInfo.getCompId());
         Integer count = sysDepartmentInfoMapper.selectCount(depQW);
         if(count > 0){
               throw new DefaultException("该部门名称已存在!");
         }
-        SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
         // TODO: 2021/4/15 查询部门名称是否有修改 有修改 mq发送消息修改冗余的部门名称
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
             // TODO: 2021/4/15 设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
-        log.info("B端修改部门入库-{}",sysDepartmentInfo);
+        // TODO: 2021/4/28 如果当前部门设置不显示
+        if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("_"));
+            departUw.lambda().set(SysDepartmentInfo::getIsShowBusiness, YesNo.NO);
+            this.update(departUw);
+        } else {
+            // TODO: 2021/4/28 获取所有上级部门id
+            List<String> ids = SetSuperiorIdUtil.getSuperiorIds(sysDepartmentInfo.getId());
+            UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+            departUw.lambda().set(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getIsShowBusiness, YesNo.YES);
+            departUw.lambda().in(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getId, ids);
+            this.update(departUw);
+        }
+        log.info("修改部门入库-{}",sysDepartmentInfo);
         this.saveOrUpdate(sysDepartmentInfo);
     }
 
     @Override
     public void deleteDepartmentById(String depId) {
+        log.info("删除部门  ——> 入参：deptId-{}, 操作者信息：{}", depId, JSON.toJSONString(UserUtils.getUser()));
         QueryWrapper<UnionStaffDepart> unQw = new QueryWrapper<>();
         unQw.lambda().eq(UnionStaffDepart::getDepartmentId, depId);
         Integer count = unionStaffDepartMapper.selectCount(unQw);
@@ -212,6 +235,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public void updateAdminAccout(SetAdminAccountDto dto) {
+        log.info("设置部门管理员  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(dto), JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(dto.getId())){
             throw new DefaultException("部门id为空");
         }
@@ -242,6 +266,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unSd.setDepartmentId(dto.getId());
         unSd.setStaffId(dto.getStaffId());
         unionStaffDepartMapper.insert(unSd);
+        // TODO: 2021/4/23 设置部门负责人 清除改员工token 让改员工重新登录 
+        SysStaffInfo staffInfo = this.staffInfoService.getById(dto.getStaffId());
+        this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
 
     @Override
@@ -277,6 +304,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             } else if (admin.getIsDepartAdmin()) {
                 //如果企业id并且 部门id为空 并且 是部门管理员 则返回部门名称跟id 类型为2
                 UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+                if (DataUtil.isEmpty(departInfo)) {
+                    return null;
+                }
                 userStructureVos.add(departInfo);
             } else {
                 return null;

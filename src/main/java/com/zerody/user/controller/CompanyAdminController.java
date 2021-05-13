@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -57,7 +58,7 @@ public class CompanyAdminController {
 			this.service.addCompanyAdmin(data);
 			return R.success(data);
 		} catch (Exception e) {
-			log.error("新增企业管理员出错:{}", e, e);
+			log.error("新增企业管理员出错:{}", JSON.toJSONString(data), e);
 			return R.error("新增企业管理员出错:"+e.getMessage());
 		}
 	}
@@ -71,7 +72,7 @@ public class CompanyAdminController {
 			this.service.updateCompanyAdmin(data);
 			return R.success(data);
 		} catch (Exception e) {
-			log.error("修改企业管理员出错:{}", e, e);
+			log.error("修改企业管理员出错:{}", JSON.toJSONString(data), e);
 			return R.error("修改企业管理员出错:"+e.getMessage());
 		}
 	}

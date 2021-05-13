@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.user.api.vo.AdminUserJurisdictionInfo;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.dto.AdminUserDto;
 /**
@@ -69,7 +70,7 @@ public interface AdminUserService extends IService<AdminUserInfo> {
      * @param                 roleId
      * @return               void
      */
-    void updateRole(String id, String roleId);
+    void updateRole(AdminUserDto dto);
 
     /**************************************************************************************************
      **
@@ -103,4 +104,15 @@ public interface AdminUserService extends IService<AdminUserInfo> {
      * @date 2021/1/29  15:11
      */
     com.zerody.user.api.vo.AdminUserInfo getUserById(String userId);
+
+    /**
+     *
+     *  获取后台管理员用户权限
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/29 11:11
+     * @param                userId
+     * @return               com.zerody.user.api.vo.AdminUserJurisdictionInfo
+     */
+    AdminUserJurisdictionInfo getAdminUserJurisdictionInfo(String userId);
 }

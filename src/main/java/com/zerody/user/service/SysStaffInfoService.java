@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
@@ -29,7 +30,7 @@ import java.util.Random;
  * @DateTime 2020/12/17_17:30
  * @Deacription TODO
  */
-public interface SysStaffInfoService {
+public interface SysStaffInfoService extends IService<SysStaffInfo> {
     static String getInitPwd() {
         StringBuffer sb = new StringBuffer();
         sb.append((char)(Math.random()*26+'A'));
@@ -111,9 +112,9 @@ public interface SysStaffInfoService {
 
     StaffInfoVo getStaffInfo(String userId);
 
-    List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
+    List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
 
-    List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
+    List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
 

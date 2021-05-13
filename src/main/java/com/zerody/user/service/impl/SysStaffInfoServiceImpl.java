@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -15,7 +14,6 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
@@ -35,10 +33,7 @@ import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.enums.StaffGenderEnum;
-import com.zerody.user.feign.CardFeignService;
-import com.zerody.user.feign.ContractFeignService;
-import com.zerody.user.feign.CustomerFeignService;
-import com.zerody.user.feign.OauthFeignService;
+import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
@@ -74,10 +69,6 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.smartcardio.Card;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author PengQiang
@@ -146,7 +137,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private CardUserUnionCrmUserMapper cardUserUnionCrmUserMapper;
 
     @Autowired
-    private CustomerFeignService customerFeignService;
+    private ClewFeignService clewFeignService;
 
     @Autowired
     private CardFeignService cardFeignService;
@@ -165,6 +156,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private RabbitMqService mqService;
+
+    @Autowired
+    private CustomerFeignService customerService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -318,6 +312,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+        log.info("修改用户信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
         SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(setSysUserInfoDto.getId());
         SysUserInfo sysUserInfo=new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo,setSysUserInfoDto);
@@ -330,6 +325,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("手机号或用户名被占用");
         }
         //效验通过保存用户信息
+        log.info("修改员工信息入参-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
         sysUserInfo.setUpdateId(UserUtils.getUserId());
@@ -390,6 +386,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
         if (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
+            log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
             SysStaffInfo staffInfo = this.getById(staff.getId());
@@ -468,6 +465,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
 
+            //解除名片限制
+            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+            userReplace.setNewUserId(null);
+            userReplace.setOldUserId(sysUserInfo.getId());
+            this.cardFeignService.updateCardUser(userReplace);
+
             //生成基础名片信息
             UserCardDto cardDto=new UserCardDto();
             cardDto.setMobile(cardUserInfo.getPhoneNumber());
@@ -480,6 +483,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setEmail(sysUserInfo.getEmail());
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setCreateBy(UserUtils.getUserId());
+            log.info("新增名片信息{}", JSON.toJSON(cardDto));
             DataResult<String> card = cardFeignService.createCard(cardDto);
             if(!card.isSuccess()){
                 throw new DefaultException("服务异常！");
@@ -495,6 +499,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
        if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
        }
+        log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
 
     @Override
@@ -508,10 +513,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteStaffById(String staffId) {
+        log.info("删除员工  ——> 入参：staffId-{}, 操作者信息：{}", staffId, JSON.toJSONString(UserUtils.getUser()));
         if(StringUtils.isEmpty(staffId)){
             throw new DefaultException( "员工id为空");
         }
         SysStaffInfo staff = this.getById(staffId);
+        // TODO: 2021/5/12 检查改员工下是否有客户
+        DataResult<Integer> result = this.customerService.getCustomerCountInner(staff.getUserId(), null, null);
+        if (!result.isSuccess()) {
+            throw new DefaultException("获取客户信息失败");
+        }
+        if (result.getData() > 0 ) {
+            throw new DefaultException("该员工名下拥有客户无法删除，请将该员工的客户变更给其他员工再重新操作！");
+        }
+        // TODO: 2021/5/12 检查改员工下是否有客户
+        DataResult<Integer> resultContract = this.contractService.getSignOrderCountInner(staff.getUserId(), null, null);
+        if (!resultContract.isSuccess()) {
+            throw new DefaultException("获取签单信息失败");
+        }
+        if (resultContract.getData() > 0 ) {
+            throw new DefaultException("该员工拥有签单数据无法删除");
+        }
         SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
         userInfo.setStatus(StatusEnum.deleted.getValue());
         this.sysUserInfoMapper.updateById(userInfo);
@@ -606,7 +628,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验 
+            // TODO: 2021/4/14 空行校验
             if (rowIsEmpty) {
                 continue;
             }
@@ -732,7 +754,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验 
+            // TODO: 2021/4/14 空行校验
             if (rowIsEmpty) {
                 continue;
             }
@@ -1144,6 +1166,42 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(cardUserInfos)){
             //如果内部员工先注册的名片，则不生成基础信息
              cardUserInfo = cardUserInfos.get(0);
+            //如果没创建名片，则帮该员工创建一个名片
+            DataResult<UserCardDto> cardByUserId = cardFeignService.getCardByUserId(cardUserInfo.getId());
+            if(!cardByUserId.isSuccess()){
+                throw new DefaultException("名片服务异常！");
+            }
+            UserCardDto data = cardByUserId.getData();
+            if(DataUtil.isEmpty(data)){
+                //生成基础名片信息
+                UserCardDto cardDto=new UserCardDto();
+                cardDto.setMobile(cardUserInfo.getPhoneNumber());
+                cardDto.setUserName(cardUserInfo.getUserName());
+                //crm用户ID
+                cardDto.setUserId(userInfo.getId());
+                //名片用户ID
+                cardDto.setCustomerUserId(cardUserInfo.getId());
+                cardDto.setAvatar(userInfo.getAvatar());
+                cardDto.setEmail(userInfo.getEmail());
+                cardDto.setCustomerUserId(cardUserInfo.getId());
+                cardDto.setCreateBy(UserUtils.getUserId());
+                cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
+                cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
+                cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
+                cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+                cardDto.setPosition(positionName);
+                cardDto.setCompany(sysCompanyInfo.getCompanyName());
+                DataResult<String> card = cardFeignService.createCard(cardDto);
+                if(!card.isSuccess()){
+                    throw new DefaultException("服务异常！");
+                }
+            }else {
+                //把名片账户的名片绑定该新用户
+                UserCardReplaceDto userReplace = new UserCardReplaceDto();
+                userReplace.setNewUserId(userInfo.getId());
+                userReplace.setCardUserId(cardUserInfo.getId());
+                this.cardFeignService.updateUserBycardUser(userReplace);
+            }
         }else {
             cardUserInfo=new CardUserInfo();
             cardUserInfo.setUserName(userInfo.getUserName());
@@ -1153,6 +1211,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setCreateTime(new Date());
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
+            //解除名片限制
+            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+            userReplace.setNewUserId(null);
+            userReplace.setOldUserId(userInfo.getId());
+            this.cardFeignService.updateCardUser(userReplace);
 
             //生成基础名片信息
             UserCardDto cardDto=new UserCardDto();
@@ -1164,7 +1227,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setAvatar(userInfo.getAvatar());
             cardDto.setEmail(userInfo.getEmail());
-            cardDto.setUserId(userInfo.getId());
             cardDto.setCustomerUserId(cardUserInfo.getId());
             cardDto.setCreateBy(UserUtils.getUserId());
             cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
@@ -1322,7 +1384,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 iPage.getRecords().add(userInfo);
                 iPage.setTotal(1);
                 userIds.add(iPage.getRecords().get(0).getUserId());
-                clews = this.customerFeignService.getClews(userIds).getData();
+                clews = this.clewFeignService.getClews(userIds).getData();
                 if(CollectionUtils.isEmpty(clews)){
                     return iPage;
                 }
@@ -1346,7 +1408,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             iPage.setRecords(new ArrayList<>());
         }
         userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
-        clews = this.customerFeignService.getClews(userIds).getData();
+        clews = this.clewFeignService.getClews(userIds).getData();
         if(CollectionUtils.isEmpty(clews)){
             return iPage;
         }
@@ -1409,7 +1471,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
-                 this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+                 this.clewFeignService.doEmpatySubordinateUserClew(userIds);
                 return;
             }
             //获取全部的部门
@@ -1424,7 +1486,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
         }
         userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
-        this.customerFeignService.doEmpatySubordinateUserClew(userIds);
+        this.clewFeignService.doEmpatySubordinateUserClew(userIds);
     }
 
     @Override
@@ -1466,13 +1528,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<com.zerody.user.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId) {
+    public List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId) {
 
         return this.sysStaffInfoMapper.getUserByDepartOrRole(departId, roleId, companyId);
     }
 
     @Override
-    public List<com.zerody.user.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {
+    public List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {
 	    String staffId = this.getStaffIdByUserId(userId);
 	    QueryWrapper<UnionStaffDepart> usdQw = new QueryWrapper<>();
 	    usdQw.lambda().eq(UnionStaffDepart::getStaffId, staffId);
