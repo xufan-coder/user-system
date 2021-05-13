@@ -156,15 +156,27 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
                 saveCard(ceoUserInfo,cardUserInfo);
             }else {
                     //把名片账户的名片绑定该新用户
-                    UserCardReplaceDto userReplace = new UserCardReplaceDto();
-                    userReplace.setNewUserId(ceoUserInfo.getId());
-                    userReplace.setCardUserId(cardUserInfo.getId());
-                    this.cardFeignService.updateUserBycardUser(userReplace);
-                    //并且把关联改了
+                UserCardReplaceDto userReplace = new UserCardReplaceDto();
+                userReplace.setNewUserId(ceoUserInfo.getId());
+                userReplace.setCardUserId(cardUserInfo.getId());
+                this.cardFeignService.updateUserBycardUser(userReplace);
+                //并且把关联改了
+                QueryWrapper<CardUserUnionUser> quW=new QueryWrapper<>();
+                quW.lambda().eq(CardUserUnionUser::getCardId,cardUserInfo.getId());
+                CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(quW);
+                if(DataUtil.isNotEmpty(cardUserUnionUser)){
                     UpdateWrapper<CardUserUnionUser> uw=new UpdateWrapper<>();
-                    uw.lambda().eq(CardUserUnionUser::getCardId,cardUserInfo.getId());
+                    uw.lambda().eq(CardUserUnionUser::getId,cardUserUnionUser.getId());
                     uw.lambda().set(CardUserUnionUser::getUserId,ceoUserInfo.getId());
                     cardUserUnionCrmUserMapper.update(null,uw);
+                }else {
+                    //关联内部员工信息
+                    CardUserUnionUser cuu=new CardUserUnionUser();
+                    cuu.setId(UUIDutils.getUUID32());
+                    cuu.setCardId(cardUserInfo.getId());
+                    cuu.setUserId(ceoUserInfo.getId());
+                    cardUserUnionCrmUserMapper.insert(cuu);
+                }
                 }
         }else {
             cardUserInfo=new CardUserInfo();
@@ -177,14 +189,13 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
             cardUserInfoMapper.insert(cardUserInfo);
             //生成基础名片信息
             saveCard(ceoUserInfo,cardUserInfo);
+            //关联内部员工信息
+            CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
+            cardUserUnionUser.setId(UUIDutils.getUUID32());
+            cardUserUnionUser.setCardId(cardUserInfo.getId());
+            cardUserUnionUser.setUserId(ceoUserInfo.getId());
+            cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
         }
-
-        //关联内部员工信息
-        CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
-        cardUserUnionUser.setId(UUIDutils.getUUID32());
-        cardUserUnionUser.setCardId(cardUserInfo.getId());
-        cardUserUnionUser.setUserId(ceoUserInfo.getId());
-        cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
         //最后发送短信
         smsFeignService.sendSms(smsDto);
     }
