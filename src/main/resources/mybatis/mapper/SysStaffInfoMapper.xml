@@ -505,6 +505,7 @@
             <if test="param.userId neq null and param.userId neq ''">
                 AND sui.id = #{param.userId}
             </if>
+            ORDER BY sui.create_time DESC
         </where>
     </select>
     <select id="getStaffInfoInner" resultType="com.zerody.user.api.vo.StaffInfoVo">
@@ -548,6 +549,7 @@
                 #{id}
             </foreach>
         </where>
+        ORDER BY sui.create_time DESC
     </select>
     <select id="getDepartDirectStaffInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
         SELECT
