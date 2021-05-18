@@ -283,6 +283,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getCompanyId())) {
+            // TODO: 2021/5/18 如果企业id不为空 则查询该企业的负责人 
+            QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+            adminQw.lambda().eq(CompanyAdmin::getCompanyId, sysStaffInfoPageDto.getCompanyId());
+            CompanyAdmin admin  = this.companyAdminMapper.selectOne(adminQw);
+            // TODO: 2021/5/18 获取该企业负责人
+            sysStaffInfoPageDto.setStaffId(DataUtil.isEmpty(admin) ? null : admin.getStaffId());
+        } 
+        if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getDepartId())) {
+            // TODO: 2021/5/18 获取得到部门负责人
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(sysStaffInfoPageDto.getDepartId());
+            sysStaffInfoPageDto.setStaffId(departInfo.getAdminAccount());
+        }
         IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
         return sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto,infoVoIPage);
     }

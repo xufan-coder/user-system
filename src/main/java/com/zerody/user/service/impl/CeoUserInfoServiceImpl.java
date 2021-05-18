@@ -225,10 +225,10 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         qw.lambda().orderByDesc(BaseModel::getCreateTime);
         qw.lambda().eq(CeoUserInfo::getDeleted,YesNo.NO);
         if(DataUtil.isNotEmpty(ceoUserInfoPageDto.getPhone())){
-            qw.lambda().eq(CeoUserInfo::getPhoneNumber,ceoUserInfoPageDto.getPhone());
+            qw.lambda().like(CeoUserInfo::getPhoneNumber,ceoUserInfoPageDto.getPhone());
         }
         if(DataUtil.isNotEmpty(ceoUserInfoPageDto.getUserName())){
-            qw.lambda().eq(CeoUserInfo::getUserName,ceoUserInfoPageDto.getUserName());
+            qw.lambda().like(CeoUserInfo::getUserName,ceoUserInfoPageDto.getUserName());
         }
         IPage<CeoUserInfo> ceoUserInfoIPage = ceoUserInfoMapper.selectPage(infoVoIPage, qw);
         return  ceoUserInfoIPage;
