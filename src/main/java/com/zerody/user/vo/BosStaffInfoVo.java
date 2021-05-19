@@ -70,6 +70,9 @@ public class BosStaffInfoVo {
 
     private Integer isShowMobile;
 
+    private Boolean isAdmin;
+
+
 
     public String getStaffStatusString(){
          if (DataUtil.isEmpty(this.staffStatus)) {

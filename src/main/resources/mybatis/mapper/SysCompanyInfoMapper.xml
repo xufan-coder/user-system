@@ -126,7 +126,7 @@
       FROM
             sys_company_info AS sci
       LEFT JOIN  company_admin AS ca ON ca.company_id = sci.id
-      LEFT JOIN sys_staff_info AS ssi ON ca.staff_id = ssi.id and ssi.status = 0
+      LEFT JOIN sys_staff_info AS ssi ON ca.staff_id = ssi.id and ssi.status != -1
       <where>
           sci.id = #{ids}
       </where>

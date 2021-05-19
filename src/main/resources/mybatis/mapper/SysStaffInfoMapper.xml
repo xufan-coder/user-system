@@ -57,7 +57,8 @@
       sui.status AS staffStatus,
       sui.status = 0 AS activity,
       sui.status = 3 AS teamwork,
-      sui.status = 1 AS stops
+      sui.status = 1 AS stops,
+      ssi.id = #{staff.staffId} AS isAdmin
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -88,7 +89,7 @@
               and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
           </if>
       </where>
-      order by stops,teamwork,activity,ssi.create_time desc
+      order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
   </select>
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
@@ -505,6 +506,7 @@
             <if test="param.userId neq null and param.userId neq ''">
                 AND sui.id = #{param.userId}
             </if>
+            AND sci.status != -1
             ORDER BY sui.create_time DESC
         </where>
     </select>
