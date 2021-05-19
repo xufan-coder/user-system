@@ -564,6 +564,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         unionStaffPositionMapper.delete(qw2);
         List<String> userIds = new ArrayList<>();
         userIds.add(userInfo.getId());
+        // TODO: 2021/5/19 删除员工号 去掉企业管理 
+        QueryWrapper<CompanyAdmin> companyAdminUw = new QueryWrapper<>();
+        companyAdminUw.lambda().eq(CompanyAdmin::getStaffId, staffId);
+        // TODO: 2021/5/19 不管是不是企业负责人 删除就完事了 
+        companyAdminMapper.delete(companyAdminUw);
+
+        // TODO: 2021/5/19 删除员工时去掉他身上的负责人 
+        UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
+        departUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+        departUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
+        this.sysDepartmentInfoService.update(departUw);
+        
         this.oauthFeignService.removeToken(userIds);
     }
 
