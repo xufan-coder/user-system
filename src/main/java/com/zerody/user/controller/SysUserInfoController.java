@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.user.domain.CeoUserInfo;
+import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,6 +282,13 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }else {
             SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(userName);
             if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
+                return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            SysComapnyInfoVo companyInfo = this.sysCompanyInfoService.getCompanyInfoById(sysLoginUserInfoVo.getCompanyId());
+            if (StatusEnum.stop.getValue().equals(companyInfo.getStatus())) {
+                return R.error("账号被停用！");
+            }
+            if (DataUtil.isEmpty(companyInfo) ||  StatusEnum.deleted.getValue().equals(companyInfo.getStatus())) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
