@@ -285,11 +285,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
             SysComapnyInfoVo companyInfo = this.sysCompanyInfoService.getCompanyInfoById(sysLoginUserInfoVo.getCompanyId());
-            if (StatusEnum.stop.getValue().equals(companyInfo.getStatus())) {
-                return R.error("账号被停用！");
-            }
             if (DataUtil.isEmpty(companyInfo) ||  StatusEnum.deleted.getValue().equals(companyInfo.getStatus())) {
                 return R.error("当前账号未开通，请联系管理员开通！");
+            }
+            if (StatusEnum.stop.getValue().equals(companyInfo.getStatus())) {
+                return R.error("账号被停用！");
             }
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
         }
