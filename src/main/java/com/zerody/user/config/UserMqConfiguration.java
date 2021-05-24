@@ -46,6 +46,21 @@ public class UserMqConfiguration {
 		return new Queue(MQ.QUEUE_COMPANY_NAME, true);
 	}
 
+	@Bean
+	public Queue companyEdit() {
+		return new Queue(MQ.QUEUE_COMPANY_EDIT, true);
+	}
+
+	@Bean
+	public Queue deptEdit() {
+		return new Queue(MQ.QUEUE_DEPT_EDIT, true);
+	}
+
+	@Bean
+	public Queue userEdit() {
+		return new Queue(MQ.QUEUE_USER_EDIT, true);
+	}
+
 	// 交换机 起名：TestDirectExchange
 	@Bean
 	TopicExchange exchange() {
@@ -72,5 +87,16 @@ public class UserMqConfiguration {
 	@Bean
 	Binding bindingUserMobileQueue() {
 		return BindingBuilder.bind(userNameMobile()).to(exchange()).with(MQ.QUEUE_CARD_MOBILE);
+	}
+
+	@Bean
+	Binding bindingUserEditQueue() {
+		return BindingBuilder.bind(userEdit()).to(exchange()).with(MQ.QUEUE_USER_EDIT);
+	}	@Bean
+	Binding bindingCompanyEditQueue() {
+		return BindingBuilder.bind(companyEdit()).to(exchange()).with(MQ.QUEUE_COMPANY_EDIT);
+	}	@Bean
+	Binding bindingDeptQueue() {
+		return BindingBuilder.bind(deptEdit()).to(exchange()).with(MQ.QUEUE_DEPT_EDIT);
 	}
 }

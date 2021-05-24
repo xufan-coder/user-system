@@ -149,4 +149,8 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @return               void
      */
     void updateUserNameModilyState(@Param("users") List<StaffInfoVo> staffInfos);
+
+    List<Map<String, String>> getDepartmentEditInfo();
+
+    void updateDepartEditInfo(@Param("users") List<Map<String, String>> userMap);
 }

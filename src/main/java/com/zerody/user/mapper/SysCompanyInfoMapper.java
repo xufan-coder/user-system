@@ -10,6 +10,7 @@ import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -123,4 +124,8 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               void
      */
     void updateIsUpdateName(@Param("param") List<CompanyInfoVo> companyInfos);
+
+    List<Map<String, String>> getCompangEditInfo();
+
+    void updateCompanyEdit(@Param("param") List<Map<String, String>> companyInfoMap);
 }

@@ -468,4 +468,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));
     }
 
+    @Override
+    public void doDepartmentEditInfo() {
+        List<Map<String, String>> departMap = this.sysDepartmentInfoMapper.getDepartmentEditInfo();
+        if (CollectionUtils.isEmpty(departMap)) {
+            return;
+        }
+        this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
+        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT);
+        log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
+    }
+
 }

@@ -169,4 +169,6 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @return               void
      */
     void updateRedundancyDepartName();
+
+    void doDepartmentEditInfo();
 }
