@@ -146,6 +146,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
+        sysCompanyInfo.setIsEdit(YesNo.YES);
         sysCompanyInfo.setIsUpdateName(YesNo.NO);
         this.saveOrUpdate(sysCompanyInfo);
         SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
@@ -235,6 +236,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if (!company.getCompanyName().equals(sysCompanyInfo.getCompanyName())) {
             sysCompanyInfo.setIsUpdateName(YesNo.YES);
         }
+        sysCompanyInfo.setIsEdit(YesNo.YES);
         this.saveOrUpdate(sysCompanyInfo);
     }
 
@@ -261,6 +263,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         SysCompanyInfo company = new SysCompanyInfo();
         company.setStatus(StatusEnum.deleted.getValue());
         company.setId(companyId);
+        company.setIsEdit(YesNo.YES);
         this.saveOrUpdate(company);
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
@@ -318,7 +321,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
         UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
         comUw.lambda().set(SysCompanyInfo::getContactName, user.getUserName())
-                        .set(SysCompanyInfo::getContactPhone, user.getPhoneNumber());
+                        .set(SysCompanyInfo::getContactPhone, user.getPhoneNumber())
+                        .set(SysCompanyInfo::getIsEdit, YesNo.YES);
         comUw.lambda().eq(SysCompanyInfo::getId, dto.getId());
         this.update(comUw);
         QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
@@ -390,6 +394,17 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         });
 
         log.info("发送企业名称修改通知:{}", JSON.toJSONString(companyInfos));
+    }
+
+    @Override
+    public void doCompangEditInfo() {
+        List<Map<String, String>> companyInfoMap = this.sysCompanyInfoMapper.getCompangEditInfo();
+        if (CollectionUtils.isEmpty(companyInfoMap)) {
+            return;
+        }
+        this.sysCompanyInfoMapper.updateCompanyEdit(companyInfoMap);
+        mqService.send(companyInfoMap, MQ.QUEUE_COMPANY_EDIT);
+        log.info("同步企业表 ————> {}", JSON.toJSONString(companyInfoMap));
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

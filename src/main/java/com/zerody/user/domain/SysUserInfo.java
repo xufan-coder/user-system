@@ -153,4 +153,6 @@ public class  SysUserInfo extends BaseModel {
 
     /** 是否修改用户名称名称(1.是，0.否) */
     private Integer isUpdateName;
+
+    private Integer isEdit;
 }
