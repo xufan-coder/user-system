@@ -78,4 +78,6 @@ public class SysDepartmentInfo extends BaseModel {
 
     /** 是否显示业务 */
     private Integer isShowBusiness;
+
+    private Integer isEdit;
 }

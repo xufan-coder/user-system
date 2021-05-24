@@ -191,6 +191,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setStatus(StatusEnum.activity.getValue());
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
+        sysUserInfo.setIsEdit(YesNo.YES);
         // TODO: 2021/4/15 设置token删除状态 添加默认不删除token
         sysUserInfo.setIsDeleted(YesNo.NO);
         // TODO: 2021/4/15 设置修改名称状态 添加默认 没有修改
@@ -341,6 +342,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("修改员工信息入参-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         sysUserInfo.setUpdateTime(new Date());
         sysUserInfo.setUpdateUser(UserUtils.getUserName());
+        sysUserInfo.setIsEdit(YesNo.YES);
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
         sysUserInfo.setAvatar(null);
@@ -549,6 +551,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
         userInfo.setStatus(StatusEnum.deleted.getValue());
+        userInfo.setIsEdit(YesNo.YES);
         this.sysUserInfoMapper.updateById(userInfo);
         //删除部门
         QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
