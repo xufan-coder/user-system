@@ -62,6 +62,16 @@
                     #{company.companyId}
                 </foreach>
     </update>
+    <update id="updateCompanyEdit">
+        UPDATE  sys_company_info
+        SET is_edit= 0
+        <where>
+            id in
+                <foreach collection="param" item="company" open="(" separator="," close=")">
+                    #{company.id}
+                </foreach>
+        </where>
+    </update>
     <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
       id,
@@ -128,7 +138,7 @@
       LEFT JOIN  company_admin AS ca ON ca.company_id = sci.id
       LEFT JOIN sys_staff_info AS ssi ON ca.staff_id = ssi.id and ssi.status != -1
       <where>
-          sci.id = #{ids}
+         sci.id = #{ids}
       </where>
 
     </select>
@@ -209,5 +219,20 @@
             sys_company_info
         WHERE
             is_update_name = 1
+    </select>
+    <select id="getCompangEditInfo" resultType="java.util.Map">
+        SELECT
+            sci.id,
+            sci.status,
+            sci.create_time,
+            ssi.user_id AS admin_id,
+            sci.company_name AS `name`
+        FROM
+            sys_company_info AS sci
+        LEFT JOIN company_admin AS ca ON ca.company_id = sci.id
+        LEFT JOIN sys_staff_info AS ssi ON ca.staff_id  = ssi.id
+        <where>
+            sci.is_edit = 1
+        </where>
     </select>
 </mapper>

@@ -24,7 +24,7 @@ public interface SysCompanyInfoService {
 
     void updateCompany(SysCompanyInfo sysCompanyInfo);
 
-    void deleteCompanyById(String companyId);
+    void  deleteCompanyById(String companyId);
 
     List<SysComapnyInfoVo> getAllCompany(String companyId);
 
@@ -41,4 +41,6 @@ public interface SysCompanyInfoService {
     String getNameById(String id);
 
     void updateRedundancyCompanyName();
+
+    void doCompangEditInfo();
 }

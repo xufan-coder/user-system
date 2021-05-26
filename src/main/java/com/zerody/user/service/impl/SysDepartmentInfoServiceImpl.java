@@ -135,6 +135,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         sysDepartmentInfo.setId(id);
         // TODO: 2021/4/15 添加部门修改状态为 没有修改名称
         sysDepartmentInfo.setIsUpdateName(YesNo.NO);
+        sysDepartmentInfo.setIsEdit(YesNo.YES);
         //名称不存在 保存添加
         this.save(sysDepartmentInfo);
         log.info("添加部门入库-{}",sysDepartmentInfo);
@@ -173,6 +174,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             this.update(departUw);
         }
         log.info("修改部门入库-{}",sysDepartmentInfo);
+        sysDepartmentInfo.setIsEdit(YesNo.YES);
         this.saveOrUpdate(sysDepartmentInfo);
     }
 
@@ -198,6 +200,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         //删除当前部门以及子级部门
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
+        depUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
         depUw.lambda().like(SysDepartmentInfo::getId, depId);
         this.update(depUw);
         //删除部门下的岗位
@@ -258,6 +261,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
         depUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
+        depUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
         this.update(depUw);
         QueryWrapper<UnionStaffDepart> staffDepQw = new QueryWrapper<>();
         staffDepQw.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
@@ -466,6 +470,17 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             mqService.send(dep, MQ.QUEUE_DEPT_NAME);
         });
         log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));
+    }
+
+    @Override
+    public void doDepartmentEditInfo() {
+        List<Map<String, String>> departMap = this.sysDepartmentInfoMapper.getDepartmentEditInfo();
+        if (CollectionUtils.isEmpty(departMap)) {
+            return;
+        }
+        this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
+        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT);
+        log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
     }
 
 }

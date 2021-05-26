@@ -198,4 +198,6 @@ public class SysCompanyInfo extends BaseModel {
     /** 纬度 */
     private Float lat;
 
+    private Integer isEdit;
+
 }
