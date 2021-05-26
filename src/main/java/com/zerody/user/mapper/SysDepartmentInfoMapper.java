@@ -13,6 +13,7 @@ import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -135,4 +136,8 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      * @return               void
      */
     void updateDepartIsUpdateName(@Param("depts") List<DeptInfo> depts);
+
+    List<Map<String, String>> getDepartmentEditInfo();
+
+    void updateDepartEditInfo(@Param("departs") List<Map<String, String>> departMap);
 }

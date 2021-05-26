@@ -36,8 +36,18 @@
                 #{dept.id}
             </foreach>
     </update>
+    <update id="updateDepartEditInfo">
+        UPDATE sys_department_info
+        SET is_edit = 0
+        <where>
+            id IN
+                <foreach collection="departs" item="dept" open="(" separator="," close=")">
+                    #{dept.id}
+                </foreach>
+        </where>
+    </update>
 
-  <select id="getPageDepartment" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+    <select id="getPageDepartment" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
     SELECT
         sdi.id,
         sdi.depart_name,
@@ -169,5 +179,22 @@
             sys_department_info
         WHERE
             is_update_name = 1
+    </select>
+    <select id="getDepartmentEditInfo" resultType="java.util.Map">
+        SELECT
+            sdi.id,
+            sdi.parent_id,
+            sdi.create_time,
+            sdi.is_show_business AS is_show,
+            sdi.status,
+            ssi.user_id AS admin_id,
+            sdi.comp_id AS company_id,
+            sdi.depart_name AS `name`
+        FROM
+            sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account
+        <where>
+            is_edit = 1
+        </where>
     </select>
 </mapper>

@@ -64,6 +64,16 @@
                 #{user.userId}
             </foreach>
     </update>
+    <update id="updateDepartEditInfo">
+        UPDATE sys_user_info
+        SET is_edit = 0
+        <where>
+            id IN
+            <foreach collection="users" item="user" open="(" separator="," close=")">
+                #{user.id}
+            </foreach>
+        </where>
+    </update>
     <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from sys_user_info
@@ -257,5 +267,22 @@ WHERE
             sys_user_info
         WHERE
             is_update_name = 1
+    </select>
+    <select id="getDepartmentEditInfo" resultType="java.util.Map">
+        SELECT
+            sui.id,
+            sui.phone_number AS mobile,
+            sui.status,
+            ssi.comp_id AS company_id,
+            sui.create_time,
+            usd.department_id AS depart_id,
+            sui.user_name AS `name`
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            sui.is_edit = 1
+        </where>
     </select>
 </mapper>
