@@ -573,6 +573,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // TODO: 2021/5/19 不管是不是企业负责人 删除就完事了 
         companyAdminMapper.delete(companyAdminUw);
 
+        UpdateWrapper<SysCompanyInfo> companyUw = new UpdateWrapper<>();
+        companyUw.lambda().set(SysCompanyInfo::getContactPhone, null);
+        companyUw.lambda().set(SysCompanyInfo::getContactName, null);
+        companyUw.lambda().eq(SysCompanyInfo::getId, staff.getCompId());
+        this.sysCompanyInfoMapper.update(null, companyUw);
+
+
         // TODO: 2021/5/19 删除员工时去掉他身上的负责人 
         UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
         departUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
@@ -1524,7 +1531,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
 	    comAdminQw.lambda().eq(CompanyAdmin::getCompanyId, user.getCompanyId());
         CompanyAdmin comAdmin = this.companyAdminMapper.selectOne(comAdminQw);
-        admin.setIsCompanyAdmin(comAdmin.getStaffId().equals(staffId));
+        admin.setIsCompanyAdmin(DataUtil.isNotEmpty(comAdmin) ? staffId.equals(comAdmin.getStaffId()) : false);
         if(!admin.getIsCompanyAdmin()){
             QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
             depAdminQw.lambda().select(SysDepartmentInfo::getId)
