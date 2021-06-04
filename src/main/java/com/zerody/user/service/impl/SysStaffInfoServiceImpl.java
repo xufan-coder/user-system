@@ -1399,7 +1399,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<UserClewDto> clews;
         SysUserClewCollectVo userInfo = this.sysStaffInfoMapper.selectUserInfo(staff.getId());
         //查看当前员工是否是企业管理员
-        if(!staff.getId().equals(com.getStaffId())){
+        if(!DataUtil.isNotEmpty(com) || !staff.getId().equals(com.getStaffId())){
             //不是企业管理员 查看是否是部门管理员
             QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
             depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
@@ -1524,7 +1524,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
 	    comAdminQw.lambda().eq(CompanyAdmin::getCompanyId, user.getCompanyId());
         CompanyAdmin comAdmin = this.companyAdminMapper.selectOne(comAdminQw);
-        admin.setIsCompanyAdmin(comAdmin.getStaffId().equals(staffId));
+        admin.setIsCompanyAdmin(DataUtil.isNotEmpty(comAdmin) && comAdmin.getStaffId().equals(staffId));
         if(!admin.getIsCompanyAdmin()){
             QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
             depAdminQw.lambda().select(SysDepartmentInfo::getId)
