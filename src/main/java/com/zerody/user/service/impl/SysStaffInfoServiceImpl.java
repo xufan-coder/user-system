@@ -192,9 +192,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
         sysUserInfo.setIsEdit(YesNo.YES);
-        // TODO: 2021/4/15 设置token删除状态 添加默认不删除token
+        //  设置token删除状态 添加默认不删除token
         sysUserInfo.setIsDeleted(YesNo.NO);
-        // TODO: 2021/4/15 设置修改名称状态 添加默认 没有修改
+        //  设置修改名称状态 添加默认 没有修改
         sysUserInfo.setIsUpdateName(YesNo.NO);
         sysUserInfoMapper.insert(sysUserInfo);
         //用户信息保存添加登录信息
@@ -285,15 +285,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
         if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getCompanyId())) {
-            // TODO: 2021/5/18 如果企业id不为空 则查询该企业的负责人 
+            //  如果企业id不为空 则查询该企业的负责人
             QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
             adminQw.lambda().eq(CompanyAdmin::getCompanyId, sysStaffInfoPageDto.getCompanyId());
             CompanyAdmin admin  = this.companyAdminMapper.selectOne(adminQw);
-            // TODO: 2021/5/18 获取该企业负责人
+            //  获取该企业负责人
             sysStaffInfoPageDto.setStaffId(DataUtil.isEmpty(admin) ? null : admin.getStaffId());
         } 
         if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getDepartId())) {
-            // TODO: 2021/5/18 获取得到部门负责人
+            //  获取得到部门负责人
             SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(sysStaffInfoPageDto.getDepartId());
             sysStaffInfoPageDto.setStaffId(departInfo.getAdminAccount());
         }
@@ -346,7 +346,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
         sysUserInfo.setAvatar(null);
-        // TODO: 2021/4/15 如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
+        //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
         if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
             sysUserInfo.setIsUpdateName(YesNo.YES);
         }
@@ -422,7 +422,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
             } else if (!dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())){
-                // todo 如果修改了部门并且是上个部门的负责人 则把该员工的负责人删除
+                //  如果修改了部门并且是上个部门的负责人 则把该员工的负责人删除
                 SysDepartmentInfo depInfo = this.sysDepartmentInfoMapper.selectById(dep.getDepartmentId());
                 if (staff.getId().equals(depInfo.getAdminAccount())) {
                     UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
@@ -434,7 +434,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
-        // todo 员工为离职状态时 清除token
+        //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
@@ -533,7 +533,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException( "员工id为空");
         }
         SysStaffInfo staff = this.getById(staffId);
-        // TODO: 2021/5/12 检查改员工下是否有客户
+        //  检查改员工下是否有客户
         DataResult<Integer> result = this.customerService.getCustomerCountInner(staff.getUserId(), null, null);
         if (!result.isSuccess()) {
             throw new DefaultException("获取客户信息失败");
@@ -541,7 +541,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (result.getData() > 0 ) {
             throw new DefaultException("该员工名下拥有客户无法删除，请将该员工的客户变更给其他员工再重新操作！");
         }
-        // TODO: 2021/5/12 检查改员工下是否有客户
+        //  检查改员工下是否有客户
         DataResult<Integer> resultContract = this.contractService.getSignOrderCountInner(staff.getUserId(), null, null);
         if (!resultContract.isSuccess()) {
             throw new DefaultException("获取签单信息失败");
@@ -567,10 +567,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         unionStaffPositionMapper.delete(qw2);
         List<String> userIds = new ArrayList<>();
         userIds.add(userInfo.getId());
-        // TODO: 2021/5/19 删除员工号 去掉企业管理 
+        // 删除员工号 去掉企业管理
         QueryWrapper<CompanyAdmin> companyAdminUw = new QueryWrapper<>();
         companyAdminUw.lambda().eq(CompanyAdmin::getStaffId, staffId);
-        // TODO: 2021/5/19 不管是不是企业负责人 删除就完事了 
+        // 不管是不是企业负责人 删除就完事了
         companyAdminMapper.delete(companyAdminUw);
 
         UpdateWrapper<SysCompanyInfo> companyUw = new UpdateWrapper<>();
@@ -580,7 +580,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.sysCompanyInfoMapper.update(null, companyUw);
 
 
-        // TODO: 2021/5/19 删除员工时去掉他身上的负责人
+        // 删除员工时去掉他身上的负责人
         UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
         departUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
         departUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
@@ -663,7 +663,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验
+            //  空行校验
             if (rowIsEmpty) {
                 continue;
             }
@@ -789,7 +789,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     rowIsEmpty = !rowIsEmpty;
                 }
             }
-            // TODO: 2021/4/14 空行校验
+            //  空行校验
             if (rowIsEmpty) {
                 continue;
             }
