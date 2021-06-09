@@ -1532,7 +1532,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    comAdminQw.lambda().eq(CompanyAdmin::getCompanyId, user.getCompanyId());
         CompanyAdmin comAdmin = this.companyAdminMapper.selectOne(comAdminQw);
         admin.setIsCompanyAdmin(DataUtil.isNotEmpty(comAdmin) && comAdmin.getStaffId().equals(staffId));
-        admin.setIsCompanyAdmin(DataUtil.isNotEmpty(comAdmin) ? staffId.equals(comAdmin.getStaffId()) : false);
         if(!admin.getIsCompanyAdmin()){
             QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
             depAdminQw.lambda().select(SysDepartmentInfo::getId)
