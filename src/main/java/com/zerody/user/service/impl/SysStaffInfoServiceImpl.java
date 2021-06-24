@@ -1721,6 +1721,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 	    return this.getSuperiorStaff(parent.substring(0, parent.lastIndexOf("_")), usds);
     }
     private void setPerformanceReviews(UserPerformanceReviewsPageDto param, List<UserPerformanceReviewsVo> list){
+	    param.setName(null);
         String time = null;
         //限制放款日期条件查询不能超过当前月
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
@@ -1728,7 +1729,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             param.setTime(sdf.format(new Date()));
         }
         List<String> userId  = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
-        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getCustomerName(), param.getTime());
+        DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getName(), param.getTime());
         if (!prResult.isSuccess()){
             throw new DefaultException("获取业绩总结报表出错");
         }
