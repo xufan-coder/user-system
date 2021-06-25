@@ -210,6 +210,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         SysComapnyInfoVo companyInfo = sysCompanyInfoService.getCompanyInfoById(id);
         CompanyInfoVo companyInfoInner = new CompanyInfoVo();
         BeanUtils.copyProperties(companyInfo, companyInfoInner);
+        companyInfoInner.setAdminUserName(companyInfo.getAdminName());
         return R.success(companyInfoInner);
     }
 
