@@ -506,6 +506,9 @@
             <if test="param.userId neq null and param.userId neq ''">
                 AND sui.id = #{param.userId}
             </if>
+            <if test="param.name neq null and param.name neq ''">
+                AND sui.user_name LIKE CONCAT('%', #{param.name}, '%')
+            </if>
             AND sci.status != -1
             ORDER BY sui.create_time DESC
         </where>

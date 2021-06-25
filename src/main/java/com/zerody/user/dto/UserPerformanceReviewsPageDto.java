@@ -21,7 +21,7 @@ public class UserPerformanceReviewsPageDto extends UserPositionPageParam {
 
 
     /** 客户名称 */
-    private String customerName;
+    private String name;
     private String time;
 
     /** 用户id集合 */

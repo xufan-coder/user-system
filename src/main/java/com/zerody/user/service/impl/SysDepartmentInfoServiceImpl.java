@@ -88,10 +88,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Autowired
     private CheckUtil checkUtil;
 
-    // todo 添加部门redis 自动增长key
+    //  添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
 
-    // todo 添加部门redis 自动增长 过期时间 单位天
+    //  添加部门redis 自动增长 过期时间 单位天
     private final static Long ADD_DEPART_REDIS_OUTTIME = 2L;
     
     
@@ -121,19 +121,19 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         boolean find = true;
         do {
             if (find) {
-                // todo 获取redis 自增长
+                //  获取redis 自增长
                 long departDayCount = redisUtils.increase(ADD_DEPART_REIDS_KEY, 0, ADD_DEPART_REDIS_OUTTIME, TimeUnit.DAYS);
                 id = id.concat(String.valueOf(departDayCount));
-                // todo 如果是子部门 把改部门的父级部门id拼在前面
+                //  如果是子部门 把改部门的父级部门id拼在前面
                 if (StringUtils.isNotEmpty(sysDepartmentInfo.getParentId())){
                     id = sysDepartmentInfo.getParentId().concat("_").concat(id);
                 }
             }
-            // todo 判断改id数据库是否存在
+            // 判断改id数据库是否存在
             find = DataUtil.isNotEmpty(this.sysDepartmentInfoMapper.selectById(id));
         } while (find);
         sysDepartmentInfo.setId(id);
-        // TODO: 2021/4/15 添加部门修改状态为 没有修改名称
+        //  添加部门修改状态为 没有修改名称
         sysDepartmentInfo.setIsUpdateName(YesNo.NO);
         sysDepartmentInfo.setIsEdit(YesNo.YES);
         //名称不存在 保存添加
@@ -143,7 +143,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public void updateDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("修改部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
-        // TODO 查看部门名称是否存在
+        //  查看部门名称是否存在
         SysDepartmentInfo departInfo = this.getById(sysDepartmentInfo.getId());
         QueryWrapper<SysDepartmentInfo> depQW =  new QueryWrapper<>();
         depQW.lambda().ne(SysDepartmentInfo::getStatus,StatusEnum.deleted.getValue());
@@ -154,19 +154,19 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if(count > 0){
               throw new DefaultException("该部门名称已存在!");
         }
-        // TODO: 2021/4/15 查询部门名称是否有修改 有修改 mq发送消息修改冗余的部门名称
+        //  查询部门名称是否有修改 有修改 mq发送消息修改冗余的部门名称
         if (!departInfo.getDepartName().equals(sysDepartmentInfo.getDepartName())) {
-            // TODO: 2021/4/15 设置修改名称状态为已修改
+            //  设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
-        // TODO: 2021/4/28 如果当前部门设置不显示
+        //  如果当前部门设置不显示
         if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
             UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
             departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("_"));
             departUw.lambda().set(SysDepartmentInfo::getIsShowBusiness, YesNo.NO);
             this.update(departUw);
         } else {
-            // TODO: 2021/4/28 获取所有上级部门id
+            //  获取所有上级部门id
             List<String> ids = SetSuperiorIdUtil.getSuperiorIds(sysDepartmentInfo.getId());
             UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
             departUw.lambda().set(CollectionUtils.isNotEmpty(ids), SysDepartmentInfo::getIsShowBusiness, YesNo.YES);
@@ -270,7 +270,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unSd.setDepartmentId(dto.getId());
         unSd.setStaffId(dto.getStaffId());
         unionStaffDepartMapper.insert(unSd);
-        // TODO: 2021/4/23 设置部门负责人 清除改员工token 让改员工重新登录 
+        //  设置部门负责人 清除改员工token 让改员工重新登录
         SysStaffInfo staffInfo = this.staffInfoService.getById(dto.getStaffId());
         this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
@@ -368,13 +368,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public Integer getDepartType(String departId) {
-        // todo 默认为部门
+        //  默认为部门
         Integer deaprtType = 1;
         QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
         departQw.lambda().eq(SysDepartmentInfo::getParentId, departId);
         departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
         Integer count = this.count(departQw);
-        // todo 如果没有下级部门 则为团队部门
+        //  如果没有下级部门 则为团队部门
         if (count.equals(0)) {
             deaprtType = 0;
         }
@@ -457,16 +457,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public void updateRedundancyDepartName() {
-        // TODO: 2021/4/15 获取到名称修改状态 为修改的部门 
+        //  获取到名称修改状态 为修改的部门
         List<DeptInfo> depts = this.sysDepartmentInfoMapper.getModilyDepartName();
-        // TODO: 2021/4/15 如果没有修改名称的部门 不做后面的操作
+        //  如果没有修改名称的部门 不做后面的操作
         if (CollectionUtils.isEmpty(depts)) {
             return;
         }
-        // TODO: 2021/4/15 把部门名称修改状态修改回 未修改状态
+        //  把部门名称修改状态修改回 未修改状态
         this.sysDepartmentInfoMapper.updateDepartIsUpdateName(depts);
         depts.stream().forEach(dep -> {
-            // TODO: 2021/4/15 发送修改部门名称通知
+            //  发送修改部门名称通知
             mqService.send(dep, MQ.QUEUE_DEPT_NAME);
         });
         log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));

@@ -132,6 +132,7 @@
         sci.contact_phone,
         ssi.id adminAccount,
         ssi.user_name AS adminName,
+        ssi.user_id AS admin_user_id,
         sci.status,
         sci.company_logo
       FROM
