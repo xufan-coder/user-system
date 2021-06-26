@@ -346,7 +346,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         admin.setUpdateTime(new Date());
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
-        // TODO: 2021/4/25 设置企业负责人 清除该员工token 
+        //  设置企业负责人 清除该员工token
         this.checkUtil.removeUserToken(user.getId());
     }
 
@@ -368,7 +368,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public String getNameById(String id) {
-        // TODO: 2021/4/22 获取企业名称 
+        //  获取企业名称
         QueryWrapper<SysCompanyInfo> comQw = new QueryWrapper<>();
         comQw.lambda().select(SysCompanyInfo::getCompanyName);
         comQw.lambda().eq(SysCompanyInfo::getId, id);
@@ -381,14 +381,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public void updateRedundancyCompanyName() {
-        // TODO: 2021/4/30 获取修改名称的企业 
+        //  获取修改名称的企业
         List<CompanyInfoVo> companyInfos = this.sysCompanyInfoMapper.getHaveUpdateCompanyName();
         if (CollectionUtils.isEmpty(companyInfos)) {
             return;
         }
-        // TODO: 2021/4/30 修改回原来的状态 
+        //  修改回原来的状态
         this.sysCompanyInfoMapper.updateIsUpdateName(companyInfos);
-        // TODO: 2021/4/30 发送消息修改冗余的企业名称 
+        //  发送消息修改冗余的企业名称
         companyInfos.stream().forEach(c -> {
             this.mqService.send(c, MQ.QUEUE_COMPANY_NAME);
         });

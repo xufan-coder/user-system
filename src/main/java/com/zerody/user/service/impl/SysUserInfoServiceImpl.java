@@ -384,7 +384,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public UserTypeInfoVo getUserTypeInfo(UserVo user) {
         UserTypeInfoVo userTypeInfoVo = new UserTypeInfoVo();
         if (user.getUserType().equals(UserTypeEnum.CRM_CEO.getValue())) {
-            // TODO: 2021/4/25 总裁类型
+            //  总裁类型
             userTypeInfoVo.setUserType(UserTypeInfo.CRM_CEO);
             return userTypeInfoVo;
         }
@@ -396,24 +396,23 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             admin.setIsDepartAdmin(StringUtils.isNotEmpty(user.getDeptId()));
         }
         if(admin.getIsCompanyAdmin()) {
-            // TODO: 2021/4/25 企业管理员 (总经理)
+            //  企业管理员 (总经理)
             userTypeInfoVo.setUserType(UserTypeInfo.COMPANY_ADMIN);
             return userTypeInfoVo;
         } else if (admin.getIsDepartAdmin()){
-            // TODO: 2021/4/25
             QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
             departQw.lambda().eq(SysDepartmentInfo::getStatus, StatusEnum.activity.getValue());
             departQw.lambda().eq(SysDepartmentInfo::getParentId, user.getDeptId());
             Integer count = this.sysDepartmentInfoMapper.selectCount(departQw);
             if (count > 0) {
-                // TODO: 2021/4/25 副总类型(是部门负责人且有下级部门)
+                //  副总类型(是部门负责人且有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.DEPUTY_GENERAL_MANAGERv);
             } else {
-                // TODO: 2021/4/25  团队长类型(是部门负责人 没有下级部门)
+                //   团队长类型(是部门负责人 没有下级部门)
                 userTypeInfoVo.setUserType(UserTypeInfo.LONG_TEAM);
             }
         } else {
-            // TODO: 2021/4/25 伙伴类型(不是任何的负责人)
+            //  伙伴类型(不是任何的负责人)
             userTypeInfoVo.setUserType(UserTypeInfo.PARTNER);
         }
         UserStructureVo departVo =  this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
@@ -450,12 +449,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public void updateRedundancyUserName() {
         List<StaffInfoVo> staffInfos = this.sysUserInfoMapper.getUserMobilyNameInfo();
-        // TODO: 2021/4/15 如果没有修改的就不做后面的操作
+        //  如果没有修改的就不做后面的操作
         if (CollectionUtils.isEmpty(staffInfos)) {
             return;
         }
         this.sysUserInfoMapper.updateUserNameModilyState(staffInfos);
-        // TODO: 2021/4/15 mq发送消息通知修改用户名称
+        //  mq发送消息通知修改用户名称
         staffInfos.stream().forEach(staff -> {
             mqService.send(staff, MQ.QUEUE_USER_NAME);
         });

@@ -84,6 +84,8 @@ public class SysComapnyInfoVo {
      * 管理员名称
      */
     private String adminName;
+
+    private String adminUserId;
     /**
      *
      *部门集合(树形结构)
