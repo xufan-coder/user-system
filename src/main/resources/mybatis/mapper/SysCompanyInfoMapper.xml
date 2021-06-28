@@ -74,8 +74,8 @@
     </update>
     <select id="getPageCompanyInner" resultType="com.zerody.user.api.vo.CompanyInfoVo">
       SELECT
-      id,
-      company_name
+      id AS companyId,
+      company_name AS companyName
       FROM
       sys_company_info
      order by create_time desc
