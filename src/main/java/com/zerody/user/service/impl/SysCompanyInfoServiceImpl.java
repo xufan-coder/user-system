@@ -409,10 +409,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public IPage<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto) {
+    public Page<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto) {
         //设置分页参数
         IPage<SysComapnyInfoVo> iPage = new Page<>(pageQueryDto.getCurrent(),pageQueryDto.getPageSize());
-        return sysCompanyInfoMapper.getPageCompanyInner(iPage);
+        Page<CompanyInfoVo> pageCompanyInner = sysCompanyInfoMapper.getPageCompanyInner(iPage);
+        return pageCompanyInner;
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

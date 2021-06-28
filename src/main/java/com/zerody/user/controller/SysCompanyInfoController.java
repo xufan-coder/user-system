@@ -2,6 +2,7 @@ package com.zerody.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
@@ -286,8 +287,8 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Override
     @PostMapping("/get/page/inner")
-    public DataResult<IPage<CompanyInfoVo>> getPageInner(@RequestBody PageQueryDto pageQueryDto) {
-        IPage<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
+    public DataResult<Page<CompanyInfoVo>> getPageInner(@RequestBody PageQueryDto pageQueryDto) {
+        Page<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
         return R.success(companyInfos);
     }
 }
