@@ -45,5 +45,5 @@ public interface SysCompanyInfoService {
 
     void doCompangEditInfo();
 
-    List<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto);
+    IPage<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto);
 }

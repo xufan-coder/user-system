@@ -409,7 +409,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto) {
+    public IPage<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto) {
         //设置分页参数
         IPage<SysComapnyInfoVo> iPage = new Page<>(pageQueryDto.getCurrent(),pageQueryDto.getPageSize());
         return sysCompanyInfoMapper.getPageCompanyInner(iPage);

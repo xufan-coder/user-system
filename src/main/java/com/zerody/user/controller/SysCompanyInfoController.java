@@ -286,8 +286,8 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Override
     @RequestMapping(value = "/get/page/inner", method = RequestMethod.GET)
-    public DataResult<List<CompanyInfoVo>> getPageInner(PageQueryDto pageQueryDto) {
-        List<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
+    public DataResult<IPage<CompanyInfoVo>> getPageInner(PageQueryDto pageQueryDto) {
+        IPage<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
         return R.success(companyInfos);
     }
 }
