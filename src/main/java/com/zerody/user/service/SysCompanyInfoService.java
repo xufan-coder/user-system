@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -43,4 +44,6 @@ public interface SysCompanyInfoService {
     void updateRedundancyCompanyName();
 
     void doCompangEditInfo();
+
+    List<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto);
 }

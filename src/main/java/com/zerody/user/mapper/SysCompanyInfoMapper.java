@@ -128,4 +128,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<Map<String, String>> getCompangEditInfo();
 
     void updateCompanyEdit(@Param("param") List<Map<String, String>> companyInfoMap);
+
+    List<CompanyInfoVo> getPageCompanyInner(IPage<SysComapnyInfoVo> iPage);
 }
