@@ -21,6 +21,7 @@ import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -409,10 +410,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public Page<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto) {
+    public Page<CompanyInfoVo> getPageInner(RatioPageDto pageQueryDto) {
         //设置分页参数
         IPage<SysComapnyInfoVo> iPage = new Page<>(pageQueryDto.getCurrent(),pageQueryDto.getPageSize());
-        Page<CompanyInfoVo> pageCompanyInner = sysCompanyInfoMapper.getPageCompanyInner(iPage);
+        Page<CompanyInfoVo> pageCompanyInner = sysCompanyInfoMapper.getPageCompanyInner(pageQueryDto,iPage);
         return pageCompanyInner;
     }
 

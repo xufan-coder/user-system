@@ -8,6 +8,7 @@ import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -287,7 +288,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Override
     @PostMapping("/get/page/inner")
-    public DataResult<Page<CompanyInfoVo>> getPageInner(@RequestBody PageQueryDto pageQueryDto) {
+    public DataResult<Page<CompanyInfoVo>> getPageInner(@RequestBody RatioPageDto pageQueryDto) {
         Page<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
         return R.success(companyInfos);
     }

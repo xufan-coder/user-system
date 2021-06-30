@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -46,5 +47,5 @@ public interface SysCompanyInfoService {
 
     void doCompangEditInfo();
 
-    Page<CompanyInfoVo> getPageInner(PageQueryDto pageQueryDto);
+    Page<CompanyInfoVo> getPageInner(RatioPageDto pageQueryDto);
 }

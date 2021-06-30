@@ -78,6 +78,12 @@
       company_name AS companyName
       FROM
       sys_company_info
+      <where>
+      1=1
+      <if test="param.companyName != null and param.companyName != ''">
+          and company_name like  concat('%',#{param.companyName},'%')
+      </if>
+      </where>
      order by create_time desc
   </select>
     <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
