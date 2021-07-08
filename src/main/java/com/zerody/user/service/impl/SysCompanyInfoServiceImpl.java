@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -20,6 +21,7 @@ import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -405,6 +407,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.sysCompanyInfoMapper.updateCompanyEdit(companyInfoMap);
         mqService.send(companyInfoMap, MQ.QUEUE_COMPANY_EDIT);
         log.info("同步企业表 ————> {}", JSON.toJSONString(companyInfoMap));
+    }
+
+    @Override
+    public Page<CompanyInfoVo> getPageInner(RatioPageDto pageQueryDto) {
+        //设置分页参数
+        IPage<SysComapnyInfoVo> iPage = new Page<>(pageQueryDto.getCurrent(),pageQueryDto.getPageSize());
+        Page<CompanyInfoVo> pageCompanyInner = sysCompanyInfoMapper.getPageCompanyInner(pageQueryDto,iPage);
+        return pageCompanyInner;
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

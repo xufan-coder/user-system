@@ -2,6 +2,8 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -128,4 +130,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<Map<String, String>> getCompangEditInfo();
 
     void updateCompanyEdit(@Param("param") List<Map<String, String>> companyInfoMap);
+
+    Page<CompanyInfoVo> getPageCompanyInner(@Param("param")RatioPageDto param, IPage<SysComapnyInfoVo> iPage);
 }
