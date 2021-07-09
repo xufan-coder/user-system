@@ -153,4 +153,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<Map<String, String>> getDepartmentEditInfo();
 
     void updateDepartEditInfo(@Param("users") List<Map<String, String>> userMap);
+
+
+    SysLoginUserInfoVo selectTransUserInfo(@Param("userId")String userId);
 }

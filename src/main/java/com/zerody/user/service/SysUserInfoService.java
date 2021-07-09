@@ -236,4 +236,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     StaffInfoVo getUserByCardUserId(String id);
 
     void doUserEditInfo();
+
+    SysLoginUserInfoVo selectTransUserInfo(String userId);
 }

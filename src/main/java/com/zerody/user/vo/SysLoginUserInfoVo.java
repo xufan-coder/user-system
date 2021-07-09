@@ -86,4 +86,9 @@ public class SysLoginUserInfoVo {
 	 *    部门名称
 	 */
 	private String deptName;
+
+	/**
+	 *    企业名称
+	 */
+	private String companyName;
 }

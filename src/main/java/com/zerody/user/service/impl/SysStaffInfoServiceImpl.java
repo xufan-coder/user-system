@@ -160,6 +160,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private CustomerFeignService customerService;
 
+    @Autowired
+    private AppUserPushService appUserPushService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -278,6 +281,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         saveCardUser(sysUserInfo,logInfo,sysCompanyInfo,positionName);
         //最后发送短信
         smsFeignService.sendSms(smsDto);
+        //推送app账户
+        appUserPushService.doPushAppUser(sysUserInfo.getId(),setSysUserInfoDto.getCompanyId());
         return staff;
     }
 
@@ -291,7 +296,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             CompanyAdmin admin  = this.companyAdminMapper.selectOne(adminQw);
             //  获取该企业负责人
             sysStaffInfoPageDto.setStaffId(DataUtil.isEmpty(admin) ? null : admin.getStaffId());
-        } 
+        }
         if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getDepartId())) {
             //  获取得到部门负责人
             SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(sysStaffInfoPageDto.getDepartId());
@@ -585,7 +590,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         departUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
         departUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
         this.sysDepartmentInfoService.update(departUw);
-        
+
         this.oauthFeignService.removeToken(userIds);
     }
 
@@ -918,6 +923,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
         saveCardUser(userInfo,loginInfo,sysCompanyInfo,row[4]);
+        //推送app账户
+        appUserPushService.doPushAppUser(userInfo.getId(),sysCompanyInfo.getId());
         return staff.getId();
     }
 
@@ -1079,6 +1086,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
         saveCardUser(userInfo,loginInfo,sysCompanyInfo,row[3]);
+
+        //推送app账户
+        appUserPushService.doPushAppUser(userInfo.getId(),sysCompanyInfo.getId());
 
         return staff.getId();
     }
