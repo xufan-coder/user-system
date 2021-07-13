@@ -7,12 +7,10 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.dto.SetUpdateAvatarDto;
+import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.LoginUserInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import com.zerody.user.vo.UserTypeInfoVo;
+import com.zerody.user.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -238,4 +236,7 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     void doUserEditInfo();
 
     SysLoginUserInfoVo selectTransUserInfo(String userId);
+
+
+    List<SubordinateUserQueryVo> getSubordinateUser(SubordinateUserQueryDto param);
 }

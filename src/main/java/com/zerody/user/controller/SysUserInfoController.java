@@ -15,7 +15,9 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.service.*;
+import com.zerody.user.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,13 +56,6 @@ import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysDepartmentInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
-import com.zerody.user.vo.UserPerformanceReviewsVo;
-import com.zerody.user.vo.UserTypeInfoVo;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -995,5 +990,32 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @Override
     public DataResult<List<StaffInfoVo>> getUserByPositionId(String s) {
         return null;
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询下级用户
+     * @date                 2021/7/13 11:13
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
+     */
+    @GetMapping("/subordinate/all")
+    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser() {
+        try {
+            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+            param.setUserId(UserUtils.getUser().getUserId());
+            param.setDepartId(UserUtils.getUser().getDeptId());
+            param.setCompanyId(UserUtils.getUser().getCompanyId());
+            List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取下级用户出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取下级用户出错:{}",e,e);
+            return R.error("获取下级用户出错"+ e);
+        }
     }
 }
