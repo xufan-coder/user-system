@@ -501,6 +501,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
+    public SysLoginUserInfoVo selectTransUserInfo(String userId) {
+        return  this.sysUserInfoMapper.selectTransUserInfo(userId);
+    }
+
+    @Override
     public List<SubordinateUserQueryVo> getSubordinateUser(SubordinateUserQueryDto param) {
         UserVo userVo = new UserVo();
         userVo.setUserId(param.getUserId());
