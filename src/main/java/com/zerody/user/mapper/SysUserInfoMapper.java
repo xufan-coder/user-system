@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.vo.CheckLoginVo;
 import com.zerody.user.vo.LoginUserInfoVo;
+import com.zerody.user.vo.SubordinateUserQueryVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -156,4 +158,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
 
     SysLoginUserInfoVo selectTransUserInfo(@Param("userId")String userId);
+
+    List<SubordinateUserQueryVo> getSubordinateUser(@Param("param") SubordinateUserQueryDto param);
 }

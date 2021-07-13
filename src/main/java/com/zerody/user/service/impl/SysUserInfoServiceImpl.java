@@ -23,6 +23,7 @@ import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetUpdateAvatarDto;
+import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.CeoUserInfoService;
@@ -502,5 +503,17 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public SysLoginUserInfoVo selectTransUserInfo(String userId) {
         return  this.sysUserInfoMapper.selectTransUserInfo(userId);
+    }
+
+    @Override
+    public List<SubordinateUserQueryVo> getSubordinateUser(SubordinateUserQueryDto param) {
+        UserVo userVo = new UserVo();
+        userVo.setUserId(param.getUserId());
+        userVo.setDeptId(param.getDepartId());
+        userVo.setCompanyId(param.getCompanyId());
+        AdminVo admin = this.sysStaffInfoService.getIsAdmin(userVo);
+        param.setIsCompanyAdmin(admin.getIsCompanyAdmin());
+        List<SubordinateUserQueryVo> result = this.sysUserInfoMapper.getSubordinateUser(param);
+        return result;
     }
 }

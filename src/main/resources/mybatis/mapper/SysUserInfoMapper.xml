@@ -286,7 +286,29 @@ WHERE
         </where>
     </select>
 
-
+    <select id="getSubordinateUser" resultType="com.zerody.user.vo.SubordinateUserQueryVo">
+        SELECT
+        sui.id AS user_id,
+        sui.user_name,
+        sui.phone_number AS mobile,
+        sdi.depart_name,
+        ssi.avatar
+        FROM
+        sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            sui.status IN (0, 3)
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND sdi.comp_id = #{param.companyId}
+            </if>
+            <if test="!param.isCompanyAdmin">
+                AND usd.department_id LIKE CONCAT(#{param.departId},'%')
+            </if>
+            AND sui.id != #{param.userId}
+        </where>
+    </select>
 
     <select id="selectTransUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
 SELECT
