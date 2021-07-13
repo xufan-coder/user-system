@@ -15,4 +15,9 @@ public class SubordinateUserQueryVo {
 
     private  String userName;
 
+    private String mobile;
+
+    private String departName;
+
+    private String avatar;
 }
