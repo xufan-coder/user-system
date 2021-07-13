@@ -499,4 +499,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(userMap));
     }
 
+    @Override
+    public SysLoginUserInfoVo selectTransUserInfo(String userId) {
+        return  this.sysUserInfoMapper.selectTransUserInfo(userId);
+    }
 }
