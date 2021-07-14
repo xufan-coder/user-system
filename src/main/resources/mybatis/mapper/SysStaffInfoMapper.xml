@@ -577,8 +577,10 @@
         3 AS type
         FROM
         sys_staff_info AS ssi
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
+            (sui.status = 0 OR sui.status = 3) AND
             usd.department_id = #{departId} AND ssi.user_id != #{userId}
         </where>
     </select>
