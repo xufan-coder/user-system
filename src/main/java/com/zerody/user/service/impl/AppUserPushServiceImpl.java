@@ -57,12 +57,14 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 		}
 		//推送用户信息到APP
 		PartRegisterDto dto=new PartRegisterDto();
+		dto.setName(sysLoginUserInfoVo.getUserName());
 		dto.setMobile(sysLoginUserInfoVo.getPhoneNumber());
 		dto.setPassword(sysLoginUserInfoVo.getUserPwd());
 		dto.setCrmCompanyId(sysLoginUserInfoVo.getCompanyId());
 		dto.setCrmUserId(sysLoginUserInfoVo.getId());
 		dto.setAvatar(sysLoginUserInfoVo.getAvatar());
-		dto.setCompanyName(sysLoginUserInfoVo.getCompanyName());
+		dto.setCrmCompanyName(sysLoginUserInfoVo.getCompanyName());
+		dto.setCrmDeptName(sysLoginUserInfoVo.getDeptName());
 		DataResult<Void> voidDataResult = partnerFeignService.partRegisters(dto);
 		if(!voidDataResult.isSuccess()){
 			log.error("推送失败："+user.getUserId()+"------"+voidDataResult.getMessage());
