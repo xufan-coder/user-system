@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
@@ -70,16 +71,19 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 			log.error("推送失败："+user.getUserId()+"------"+voidDataResult.getMessage());
 		}
 		//并修改推送状态
-		user.setState(YesNo.YES);
-		user.setSendTime(new Date());
-		this.updateById(user);
+
+		UpdateWrapper<AppUserPush> uw=new UpdateWrapper<>();
+		uw.lambda().eq(AppUserPush::getId,user.getId());
+		uw.lambda().set(AppUserPush::getState,YesNo.YES)
+				.set(AppUserPush::getSendTime,new Date());
+		this.update(uw);
 	}
 
 	@Override
 	public List<AppUserPush> selectAll() {
 		QueryWrapper<AppUserPush> qw =new QueryWrapper<>();
 		qw.lambda().eq(AppUserPush::getState,YesNo.NO)
-				.eq(AppUserPush::getDeleted,YesNo.YES);
+				.eq(AppUserPush::getDeleted,YesNo.NO);
 		return this.list(qw);
 	}
 }
