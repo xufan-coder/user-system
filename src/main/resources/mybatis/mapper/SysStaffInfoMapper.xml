@@ -348,7 +348,7 @@
                 </foreach>
             </if>
         </where>
-        order by admin desc
+        order by admin DESC,sui.create_time desc
     </select>
 
 
