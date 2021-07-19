@@ -1542,7 +1542,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
         }
         userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
-        this.clewFeignService.doEmpatySubordinateUserClew(userIds);
+        DataResult<Object> reslut = this.clewFeignService.doEmpatySubordinateUserClew(userIds);
+        if (!reslut.isSuccess()) {
+            throw new DefaultException(reslut.getMessage());
+        }
     }
 
     @Override
