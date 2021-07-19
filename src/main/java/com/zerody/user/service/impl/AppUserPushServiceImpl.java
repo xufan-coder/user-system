@@ -86,4 +86,21 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 				.eq(AppUserPush::getDeleted,YesNo.NO);
 		return this.list(qw);
 	}
+
+	@Override
+	public AppUserPush getByUserId(String id) {
+		QueryWrapper<AppUserPush> qw =new QueryWrapper<>();
+		qw.lambda().eq(AppUserPush::getUserId,id)
+				.eq(AppUserPush::getDeleted,YesNo.NO);
+		return this.getOne(qw);
+	}
+
+	@Override
+	public List<AppUserPush> getLeaveUsers() {
+		QueryWrapper<AppUserPush> qw =new QueryWrapper<>();
+		qw.lambda().eq(AppUserPush::getResignedState,YesNo.NO)
+				.eq(AppUserPush::getResigned,YesNo.YES)
+				.eq(AppUserPush::getDeleted,YesNo.NO);
+		return this.list(qw);
+	}
 }
