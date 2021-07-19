@@ -1527,7 +1527,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
-                 this.clewFeignService.doEmpatySubordinateUserClew(userIds);
+                DataResult<Object> reslut = this.clewFeignService.doEmpatySubordinateUserClew(userIds);
+                if (!reslut.isSuccess()) {
+                    throw new DefaultException(reslut.getMessage());
+                }
                 return;
             }
             //获取全部的部门
