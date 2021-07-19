@@ -439,6 +439,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
+        //  员工为离职状态时 增加app推送
+        if (StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
+            AppUserPush  appUserPush=appUserPushService.getByUserId(sysUserInfo.getId());
+            if(DataUtil.isNotEmpty(appUserPush)){
+                appUserPush.setResigned(YesNo.YES);
+                appUserPush.setUpdateTime(new Date());
+                appUserPushService.updateById(appUserPush);
+            }
+        }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());

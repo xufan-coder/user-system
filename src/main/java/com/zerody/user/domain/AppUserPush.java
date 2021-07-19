@@ -35,5 +35,12 @@ public class AppUserPush implements java.io.Serializable {
 		private Integer state;
 		/**是否删除**/
 		private Integer deleted;
+		/** 是否已离职 */
+		private Integer resigned;
+		/**离职状态是否推送(1已推送，0未推送）**/
+		private Integer resignedState;
+		/**修改时间**/
+		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+		private Date updateTime;
 
 }

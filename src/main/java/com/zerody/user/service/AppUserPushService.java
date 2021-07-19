@@ -19,4 +19,8 @@ public interface AppUserPushService extends IService<AppUserPush>{
 	void sendAppUserInfo(AppUserPush user);
 
 	List<AppUserPush> selectAll();
+
+	AppUserPush getByUserId(String id);
+
+	List<AppUserPush> getLeaveUsers();
 }
