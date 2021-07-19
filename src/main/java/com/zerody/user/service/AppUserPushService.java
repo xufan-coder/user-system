@@ -16,7 +16,7 @@ public interface AppUserPushService extends IService<AppUserPush>{
 
 	void doPushAppUser(String userId,String companyId);
 
-	void sendAppUserInfo(AppUserPush user);
+	void doSendAppUserInfo(AppUserPush user);
 
 	List<AppUserPush> selectAll();
 
