@@ -31,7 +31,7 @@ public class AppUserPushTask {
             // 获取所有用户ID
             List<AppUserPush> list = appUserPushService.selectAll();
             for (AppUserPush user : list) {
-                appUserPushService.sendAppUserInfo(user);
+                appUserPushService.doSendAppUserInfo(user);
             }
         } catch (Exception e) {
             r.setMsg(e.getMessage());

@@ -49,7 +49,7 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 	}
 
 	@Override
-	public void sendAppUserInfo(AppUserPush user) {
+	public void doSendAppUserInfo(AppUserPush user) {
 		//查询Crm用户信息
 		SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.selectTransUserInfo(user.getUserId());
 		if(DataUtil.isEmpty(sysLoginUserInfoVo)){
