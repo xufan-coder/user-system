@@ -1442,7 +1442,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userIds.add(dep.getId());
             getChilden(userIds, deps, dep.getId() );
             iPage = this.sysStaffInfoMapper.getStaffByDepIds(userIds, iPage , staff.getCompId(), userInfo.getUserId());
-            iPage.getRecords().get(0).setDepartAdmin(true);
+            if (iPage.getRecords().size() > 0 ) {
+                iPage.getRecords().get(0).setDepartAdmin(true);
+            }
             userIds.removeAll(userIds);
         } else {
             //企业管理员不需要获取下级部门
