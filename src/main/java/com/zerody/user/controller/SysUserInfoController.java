@@ -473,11 +473,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             this.sysStaffInfoService.doEmptySubordinatesUserClew(id);
             return R.success();
         } catch (DefaultException e) {
-            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            log.error("删除员工下级线索出错:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取员工下级线索汇总信息出错:{}", e, e);
-            return R.error("获取员工下级线索汇总信息出错！请求异常");
+            log.error("删除员工下级线索出错:{}", e, e);
+            return R.error("删除员工下级线索出错！请求异常");
         }
     }
 
