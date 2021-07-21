@@ -638,4 +638,28 @@
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
+    <select id="getStaffInfoByIds" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+        sui.avatar AS user_avatar,
+        ssi.avatar AS staff_avatar,
+        sui.user_name,
+        sui.id AS userId,
+        sci.company_name,
+        sdi.id AS departId,
+        sci.id AS companyId,
+        sdi.depart_name AS departmentName,
+        sui.phone_number AS mobile
+
+        FROM
+        sys_staff_info AS ssi
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
+        <where>
+            <foreach collection="ids" item="id" open="sui.id IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
 </mapper>

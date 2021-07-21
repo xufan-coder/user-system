@@ -308,4 +308,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>
      */
     IPage<BosStaffInfoVo> getPageAllActiveDutyStaff(@Param("staff") SysStaffInfoPageDto sysStaffInfoPageDto, IPage<BosStaffInfoVo> infoVoIPage);
+
+    /**
+     *
+     *  查询员工信息
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/7/21 14:36
+     * @param                userId
+     * @return               java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    List<StaffInfoVo> getStaffInfoByIds(@Param("ids") List<String> userId);
 }
