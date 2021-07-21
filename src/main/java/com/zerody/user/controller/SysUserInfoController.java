@@ -1030,7 +1030,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      */
     @Override
     @RequestMapping(value = "/get/batch-staff-info/inner", method = RequestMethod.GET)
-    DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+    public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam("userIds") List<String> userId){
         try {
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
         } catch (DefaultException e){
