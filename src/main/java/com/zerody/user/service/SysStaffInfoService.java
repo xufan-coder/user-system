@@ -125,4 +125,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     List<SysDepartmentInfoVo> getUserSubordinateStructure(String userId);
 
     List<StaffInfoVo> getDepartDirectStaffInfo(String departId);
+
+    IPage<BosStaffInfoVo> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 }

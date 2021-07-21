@@ -296,4 +296,16 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               java.lang.String
      */
     String getCompanyIdByUserId(@Param("userId") String userId);
+
+    /**
+     *
+     *  查询在职员工
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/7/21 9:44
+     * @param                sysStaffInfoPageDto
+     * @param                infoVoIPage
+     * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>
+     */
+    IPage<BosStaffInfoVo> getPageAllActiveDutyStaff(@Param("staff") SysStaffInfoPageDto sysStaffInfoPageDto, IPage<BosStaffInfoVo> infoVoIPage);
 }

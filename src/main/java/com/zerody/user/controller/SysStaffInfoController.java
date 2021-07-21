@@ -59,6 +59,22 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
 
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询在职员工
+     * @date                 2021/7/21 9:41
+     * @param                sysStaffInfoPageDto
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
+     */
+    @RequestMapping(value = "/page/get/active-duty ", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
+    }
+
+
     /**
      *
      *
