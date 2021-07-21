@@ -69,7 +69,7 @@ public class SysStaffInfoController {
      * @param                sysStaffInfoPageDto
      * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
      */
-    @RequestMapping(value = "/page/get/active-duty ", method = RequestMethod.GET)
+    @RequestMapping(value = "/page/get/active-duty", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
     }
