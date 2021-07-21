@@ -1707,6 +1707,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return staffs;
     }
 
+    @Override
+    public IPage<BosStaffInfoVo> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto) {
+        if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getCompanyId())) {
+            //  如果企业id不为空 则查询该企业的负责人
+            QueryWrapper<CompanyAdmin> adminQw = new QueryWrapper<>();
+            adminQw.lambda().eq(CompanyAdmin::getCompanyId, sysStaffInfoPageDto.getCompanyId());
+            CompanyAdmin admin  = this.companyAdminMapper.selectOne(adminQw);
+            //  获取该企业负责人
+            sysStaffInfoPageDto.setStaffId(DataUtil.isEmpty(admin) ? null : admin.getStaffId());
+        }
+        if (StringUtils.isNotEmpty(sysStaffInfoPageDto.getDepartId())) {
+            //  获取得到部门负责人
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(sysStaffInfoPageDto.getDepartId());
+            sysStaffInfoPageDto.setStaffId(departInfo.getAdminAccount());
+        }
+        IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(),sysStaffInfoPageDto.getPageSize());
+        return sysStaffInfoMapper.getPageAllActiveDutyStaff(sysStaffInfoPageDto,infoVoIPage);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

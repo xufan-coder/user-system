@@ -590,4 +590,52 @@
         where
             user_id = #{userId}
     </select>
+    <select id="getPageAllActiveDutyStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT
+        sui.id AS id,
+        ssi.comp_id AS compId,
+        ssi.user_name AS userName,
+        sci.company_name AS companyName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        sdi.depart_name AS departName,
+        ssi.id AS staffId,
+        urs.role_name AS roleName,
+        sui.status AS staffStatus,
+        sui.status = 0 AS activity,
+        sui.status = 3 AS teamwork,
+        sui.status = 1 AS stops,
+        ssi.id = #{staff.staffId} AS isAdmin
+        FROM
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        <where>
+            ssi.deleted = 0 and (sui.status = 0 OR sui.status = 3)
+            <if test="staff.companyId != null and staff.companyId != ''">
+                and sci.id = #{staff.companyId}
+            </if>
+            <if test="staff.departId != null and staff.departId != ''">
+                and sdi.id like concat('', #{staff.departId}, '%')
+            </if>
+            <if test="staff.jobId != null and staff.jobId != ''">
+                and sjp.id = #{staff.jobId}
+            </if>
+            <if test="staff.roleId != null and staff.roleId != ''">
+                and urs.role_id = #{staff.roleId}
+            </if>
+            <if test="staff.staffName != null and staff.staffName != ''">
+                and ssi.user_name like concat('%', #{staff.staffName}, '%')
+            </if>
+            <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
+                and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
+            </if>
+        </where>
+        order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
+    </select>
 </mapper>
