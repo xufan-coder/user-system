@@ -156,7 +156,8 @@
         sui.family_relation,
         sui.family_phone,
         sui.family_job,
-        sui.family_addr
+        sui.family_addr,
+        sui.create_time
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -205,7 +206,8 @@
         sui.family_relation,
         sui.family_phone,
         sui.family_job,
-        sui.family_addr
+        sui.family_addr,
+        sui.create_time
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
