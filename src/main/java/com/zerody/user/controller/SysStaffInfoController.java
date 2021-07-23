@@ -142,7 +142,13 @@ public class SysStaffInfoController {
     */
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
-        return R.success(sysStaffInfoService.selectStaffById(staffId));
+        try {
+            return R.success(sysStaffInfoService.selectStaffById(staffId));
+        } catch (DefaultException e){
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            return R.error("根据员工id查询员工信息,请求异常");
+        }
     }
 
     /**
