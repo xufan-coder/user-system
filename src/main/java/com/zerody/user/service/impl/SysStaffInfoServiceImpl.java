@@ -536,7 +536,43 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(StringUtils.isEmpty(id)){
             throw new DefaultException("id不能为空");
         }
-        return sysStaffInfoMapper.selectStaffById(id);
+        SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
+
+        UserVo user = new UserVo();
+        user.setUserId(userInfo.getId());
+        user.setCompanyId(userInfo.getCompanyId());
+        AdminVo admin = this.getIsAdmin(user);
+        if (admin.getIsCompanyAdmin()) {
+            userInfo.setSuperiorName(userInfo.getUserName());
+            return userInfo;
+        }
+        if (StringUtils.isEmpty(userInfo.getDepartId())) {
+            return userInfo;
+        }
+        if (admin.getIsDepartAdmin()) {
+            String departId = userInfo.getDepartId();
+            if (departId.indexOf("_") == -1) {
+                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                staffQw.lambda().inSql(SysStaffInfo::getId, "select staff_id from company_admin where company_id = '".concat(userInfo.getCompanyId()).concat("'"));
+                SysStaffInfo sysStaffInfo = this.getOne(staffQw);
+                userInfo.setSuperiorName(DataUtil.isEmpty(sysStaffInfo) ? null : sysStaffInfo.getUserName());
+                return userInfo;
+            }
+            departId = departId.substring(0, departId.lastIndexOf("_"));
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(departId);
+            if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+//                userInfo.setSuperiorName("暂无上级");
+                return userInfo;
+            }
+        }
+
+        SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(userInfo.getDepartId());
+        if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+            return userInfo;
+        }
+        SysStaffInfo  staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount()) ;
+        userInfo.setSuperiorName(staffInfo.getUserName());
+        return userInfo;
     }
 
     @Override

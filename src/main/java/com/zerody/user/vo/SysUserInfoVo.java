@@ -146,4 +146,7 @@ public class SysUserInfoVo {
 
     /** 家庭成员地址 */
     private String familyAddr;
+
+    /** 上级名称 */
+    private String superiorName;
 }
