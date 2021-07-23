@@ -152,4 +152,8 @@ public class SysUserInfoVo {
 
     /** 上级名称 */
     private String superiorName;
+
+    /** 创建时间 */
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }
