@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -49,6 +50,7 @@ public class SysUserInfoVo {
     private String avatar;
 
     //出生日期
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
 
 
@@ -66,6 +68,7 @@ public class SysUserInfoVo {
 
 
     //注册时间
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date registerTime;
 
     //名族
