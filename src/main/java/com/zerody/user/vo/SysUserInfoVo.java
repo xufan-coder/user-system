@@ -158,7 +158,7 @@ public class SysUserInfoVo {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    public String getHighestEducation() {
+    public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
 }
