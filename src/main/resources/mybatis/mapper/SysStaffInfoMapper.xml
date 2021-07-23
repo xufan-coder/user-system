@@ -131,28 +131,16 @@
         sui.phone_number,
         sui.email,
         sui.nickname,
-        ssi.avatar,
+        sui.avatar,
         sui.birthday,
         sui.certificate_card,
         sui.certificate_card_address,
-        sui.highest_education,
-        sui.graduated_from,
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.major,
-        sui.STATUS,
+        ssi.STATUS,
         sui.nation,
         sui.ancestral,
-        sui.marital_status,
-        sui.urgent_name,
-        sui.urgent_relation,
-        sui.urgent_phone,
-        sui.family_name,
-        sui.family_relation,
-        sui.family_phone,
-        sui.family_job,
-        sui.family_addr,
         urs.role_name,
         sdi.depart_name,
         sjp.position_name,
@@ -160,7 +148,15 @@
         sdi.id AS departId,
         sjp.id AS positionId,
         sci.id AS companyId,
-        sui.id AS id
+        sui.id AS id,
+        sui.highest_education,
+        sui.graduated_from,
+        sui.major,
+        sui.family_name,
+        sui.family_relation,
+        sui.family_phone,
+        sui.family_job,
+        sui.family_addr
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -201,7 +197,15 @@
         sdi.id AS departId,
         sjp.id AS positionId,
         sci.id AS companyId,
-        sui.id AS id
+        sui.id AS id,
+        sui.highest_education,
+        sui.graduated_from,
+        sui.major,
+        sui.family_name,
+        sui.family_relation,
+        sui.family_phone,
+        sui.family_job,
+        sui.family_addr
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
