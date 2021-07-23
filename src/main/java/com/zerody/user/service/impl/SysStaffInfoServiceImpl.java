@@ -1726,6 +1726,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return sysStaffInfoMapper.getPageAllActiveDutyStaff(sysStaffInfoPageDto,infoVoIPage);
     }
 
+    @Override
+    public List<StaffInfoVo> getStaffInfoByIds(List<String> userId) {
+
+        return this.sysStaffInfoMapper.getStaffInfoByIds(userId);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
