@@ -258,6 +258,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
                 throw new DefaultException("修改线索负责人失败");
             }
         }
+        UpdateWrapper<SysDepartmentInfo> depAdminRmoveUw = new UpdateWrapper<>();
+        depAdminRmoveUw.lambda().eq(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
+        depAdminRmoveUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+        this.update(depAdminRmoveUw);
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
         depUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());

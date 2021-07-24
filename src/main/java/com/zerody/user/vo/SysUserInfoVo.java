@@ -1,5 +1,7 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.common.enums.customer.EducationBackgroundEnum;
 import lombok.Data;
 
 import java.util.Date;
@@ -49,6 +51,7 @@ public class SysUserInfoVo {
     private String avatar;
 
     //出生日期
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
 
 
@@ -66,6 +69,7 @@ public class SysUserInfoVo {
 
 
     //注册时间
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date registerTime;
 
     //名族
@@ -146,4 +150,15 @@ public class SysUserInfoVo {
 
     /** 家庭成员地址 */
     private String familyAddr;
+
+    /** 上级名称 */
+    private String superiorName;
+
+    /** 创建时间 */
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    public String getHighestEducationString() {
+        return EducationBackgroundEnum.getTextByCode(this.highestEducation);
+    }
 }

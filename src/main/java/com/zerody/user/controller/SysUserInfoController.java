@@ -15,7 +15,9 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.service.*;
+import com.zerody.user.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,13 +56,6 @@ import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysDepartmentInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
-import com.zerody.user.vo.UserPerformanceReviewsVo;
-import com.zerody.user.vo.UserTypeInfoVo;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -478,11 +473,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             this.sysStaffInfoService.doEmptySubordinatesUserClew(id);
             return R.success();
         } catch (DefaultException e) {
-            log.error("获取员工下级线索汇总信息出错:{}", e, e);
+            log.error("删除员工下级线索出错:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取员工下级线索汇总信息出错:{}", e, e);
-            return R.error("获取员工下级线索汇总信息出错！请求异常");
+            log.error("删除员工下级线索出错:{}", e, e);
+            return R.error("删除员工下级线索出错！请求异常");
         }
     }
 
@@ -716,7 +711,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<Object> doPerformanceReviewsExport(@RequestBody UserPerformanceReviewsPageDto param, HttpServletResponse res){
         try {
 //            checkUtil.SetUserPositionInfo(param);
-            if (!UserUtils.getUser().isBackAdmin()) {
+            if (UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             param.setCurrent(1);
@@ -995,5 +990,78 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @Override
     public DataResult<List<StaffInfoVo>> getUserByPositionId(String s) {
         return null;
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询下级用户
+     * @date                 2021/7/13 11:13
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
+     */
+    @GetMapping("/subordinate/all")
+    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser() {
+        try {
+            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+            param.setUserId(UserUtils.getUser().getUserId());
+            param.setDepartId(UserUtils.getUser().getDeptId());
+            param.setCompanyId(UserUtils.getUser().getCompanyId());
+            List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取下级用户出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取下级用户出错:{}",e,e);
+            return R.error("获取下级用户出错"+ e);
+        }
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/get/batch-staff-info/inner", method = RequestMethod.GET)
+    public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+        try {
+            return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
+        } catch (DefaultException e){
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error("获取员工信息失败"+ e);
+        }
+
+    }
+    /**
+     * 查询用户信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @RequestMapping(value = "/get/subordinate-user-id/inner", method = RequestMethod.GET)
+    public DataResult<List<String>> getSubordinateUserByUserId(@RequestParam("userId") String userId){
+        try {
+            return R.success(this.sysStaffInfoService.getSubordinateUserByUserId(userId));
+        } catch (DefaultException e){
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error("获取员工信息失败"+ e);
+        }
     }
 }

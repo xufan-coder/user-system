@@ -131,28 +131,16 @@
         sui.phone_number,
         sui.email,
         sui.nickname,
-        ssi.avatar,
+        sui.avatar,
         sui.birthday,
         sui.certificate_card,
         sui.certificate_card_address,
-        sui.highest_education,
-        sui.graduated_from,
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.major,
-        sui.STATUS,
+        ssi.STATUS,
         sui.nation,
         sui.ancestral,
-        sui.marital_status,
-        sui.urgent_name,
-        sui.urgent_relation,
-        sui.urgent_phone,
-        sui.family_name,
-        sui.family_relation,
-        sui.family_phone,
-        sui.family_job,
-        sui.family_addr,
         urs.role_name,
         sdi.depart_name,
         sjp.position_name,
@@ -160,7 +148,19 @@
         sdi.id AS departId,
         sjp.id AS positionId,
         sci.id AS companyId,
-        sui.id AS id
+        sui.id AS id,
+        sui.highest_education,
+        sui.graduated_from,
+        sui.major,
+        sui.family_name,
+        sui.family_relation,
+        sui.family_phone,
+        sui.family_job,
+        sui.family_addr,
+        sui.create_time,
+        sui.urgent_name,
+        sui.urgent_relation,
+        sui.urgent_phone
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -201,7 +201,19 @@
         sdi.id AS departId,
         sjp.id AS positionId,
         sci.id AS companyId,
-        sui.id AS id
+        sui.id AS id,
+        sui.highest_education,
+        sui.graduated_from,
+        sui.major,
+        sui.family_name,
+        sui.family_relation,
+        sui.family_phone,
+        sui.family_job,
+        sui.family_addr,
+        sui.create_time,
+        sui.urgent_name,
+        sui.urgent_relation,
+        sui.urgent_phone
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -348,7 +360,7 @@
                 </foreach>
             </if>
         </where>
-        order by admin desc
+        order by admin DESC,sui.create_time desc
     </select>
 
 
@@ -577,8 +589,10 @@
         3 AS type
         FROM
         sys_staff_info AS ssi
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
+            (sui.status = 0 OR sui.status = 3) AND
             usd.department_id = #{departId} AND ssi.user_id != #{userId}
         </where>
     </select>
@@ -589,5 +603,92 @@
             sys_staff_info
         where
             user_id = #{userId}
+    </select>
+    <select id="getPageAllActiveDutyStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT
+        sui.id AS id,
+        ssi.comp_id AS compId,
+        ssi.user_name AS userName,
+        sci.company_name AS companyName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        sdi.depart_name AS departName,
+        ssi.id AS staffId,
+        urs.role_name AS roleName,
+        sui.status AS staffStatus,
+        sui.status = 0 AS activity,
+        sui.status = 3 AS teamwork,
+        sui.status = 1 AS stops,
+        ssi.id = #{staff.staffId} AS isAdmin
+        FROM
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        <where>
+            ssi.deleted = 0 and (sui.status = 0 OR sui.status = 3)
+            <if test="staff.companyId != null and staff.companyId != ''">
+                and sci.id = #{staff.companyId}
+            </if>
+            <if test="staff.departId != null and staff.departId != ''">
+                and sdi.id like concat('', #{staff.departId}, '%')
+            </if>
+            <if test="staff.jobId != null and staff.jobId != ''">
+                and sjp.id = #{staff.jobId}
+            </if>
+            <if test="staff.roleId != null and staff.roleId != ''">
+                and urs.role_id = #{staff.roleId}
+            </if>
+            <if test="staff.staffName != null and staff.staffName != ''">
+                and ssi.user_name like concat('%', #{staff.staffName}, '%')
+            </if>
+            <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
+                and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
+            </if>
+        </where>
+        order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
+    </select>
+    <select id="getStaffInfoByIds" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+        sui.avatar AS user_avatar,
+        ssi.avatar AS staff_avatar,
+        sui.user_name,
+        sui.id AS userId,
+        sci.company_name,
+        sdi.id AS departId,
+        sci.id AS companyId,
+        sdi.depart_name AS departmentName,
+        sui.phone_number AS mobile
+
+        FROM
+        sys_staff_info AS ssi
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
+        <where>
+            <foreach collection="ids" item="id" open="sui.id IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getUserIdByCompIdOrDeptId" resultType="java.lang.String">
+        SELECT
+            ssi.user_id
+        FROM
+            sys_staff_info AS ssi
+        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            <if test="compId neq null and compId neq ''">
+                AND ssi.comp_id = #{compId}
+             </if>
+             <if test="departId neq null and departId neq ''">
+                 AND usd.department_id LIKE CONCAT(#{departId}, '%')
+             </if>
+        </where>
     </select>
 </mapper>

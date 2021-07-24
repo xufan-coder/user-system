@@ -2,10 +2,13 @@ package com.zerody.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -104,7 +107,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.error("修改企业失败,请求异常");
         }
     }
-    
+
     /**
      *
      *
@@ -281,5 +284,12 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             log.error("查询企业名称错误!", e , e);
             return R.error(e.getMessage());
         }
+    }
+
+    @Override
+    @PostMapping("/get/page/inner")
+    public DataResult<Page<CompanyInfoVo>> getPageInner(@RequestBody RatioPageDto pageQueryDto) {
+        Page<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
+        return R.success(companyInfos);
     }
 }
