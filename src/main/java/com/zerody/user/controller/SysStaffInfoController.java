@@ -8,12 +8,15 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -58,6 +61,22 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询在职员工
+     * @date                 2021/7/21 9:41
+     * @param                sysStaffInfoPageDto
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
+     */
+    @RequestMapping(value = "/page/get/active-duty", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
+    }
+
 
     /**
      *
@@ -126,7 +145,13 @@ public class SysStaffInfoController {
     */
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
-        return R.success(sysStaffInfoService.selectStaffById(staffId));
+        try {
+            return R.success(sysStaffInfoService.selectStaffById(staffId));
+        } catch (DefaultException e){
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            return R.error("根据员工id查询员工信息,请求异常");
+        }
     }
 
     /**
@@ -292,6 +317,24 @@ public class SysStaffInfoController {
     public DataResult<AdminVo> getIsAdmin(){
         try {
             UserVo user = UserUtils.getUser();
+            AdminVo admin = sysStaffInfoService.getIsAdmin(user);
+            return R.success(admin);
+        } catch (DefaultException e){
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error("获取管理员信息,请求异常");
+        }
+    }
+
+    @RequestMapping(value = "/get-is-admin/by-user-id/{id}", method = RequestMethod.GET)
+    public DataResult<AdminVo> getIsAdminByUserId(@PathVariable("id") String id){
+        try {
+            UserVo user = new UserVo();
+            StaffInfoVo staff = this.sysStaffInfoService.getStaffInfo(id);
+            user.setUserId(id);
+            user.setCompanyId(staff.getCompanyId());
             AdminVo admin = sysStaffInfoService.getIsAdmin(user);
             return R.success(admin);
         } catch (DefaultException e){

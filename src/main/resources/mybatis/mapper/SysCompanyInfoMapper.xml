@@ -42,12 +42,12 @@
     <result column="company_introduction" property="companyIntroduction" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, bloc_id, company_name, company_code, company_short_name, registered_capital, 
-    enterprise_nature, is_tax_payer, company_addr_province_code, company_address_city_code, 
-    company_address_area_code, company_address, enterprise_email, business_landline_number, 
-    contact_name, contact_phone, contact_mail, taxpayer_identification_number, business_license_address, 
-    business_license_code, business_license_url, business_license_valid, legal_representative, 
-    legal_personcert_no, company_type, parent_company_info_id, admin_account, create_id, 
+    id, bloc_id, company_name, company_code, company_short_name, registered_capital,
+    enterprise_nature, is_tax_payer, company_addr_province_code, company_address_city_code,
+    company_address_area_code, company_address, enterprise_email, business_landline_number,
+    contact_name, contact_phone, contact_mail, taxpayer_identification_number, business_license_address,
+    business_license_code, business_license_url, business_license_valid, legal_representative,
+    legal_personcert_no, company_type, parent_company_info_id, admin_account, create_id,
     create_user, create_time, update_id, update_user, update_time, status, remark_
   </sql>
   <sql id="Blob_Column_List" >
@@ -72,31 +72,48 @@
                 </foreach>
         </where>
     </update>
-    <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+    <select id="getPageCompanyInner" resultType="com.zerody.user.api.vo.CompanyInfoVo">
       SELECT
-      id,
-      company_name,
-      company_code,
-      contact_name,
-      contact_phone,
-      status
+      id AS companyId,
+      company_name AS companyName
       FROM
       sys_company_info
-     <where>
-        <choose>
-            <when test="company.status != null and company.status != -1">
-                status = #{company.status}
-            </when>
-            <otherwise>
-                status != -1
-            </otherwise>
-        </choose>
-       <if test="company.companyName != null and company.companyName != ''">
-         and company_name like  concat('%',#{company.companyName},'%')
-       </if>
-     </where>
+      <where>
+      1=1
+      <if test="param.companyName != null and param.companyName != ''">
+          and company_name like  concat('%',#{param.companyName},'%')
+      </if>
+      </where>
      order by create_time desc
   </select>
+    <select id="getPageCompany" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+        id,
+        company_name,
+        company_code,
+        contact_name,
+        contact_phone,
+        status
+        FROM
+        sys_company_info
+        <where>
+            <choose>
+                <when test="company.status != null and company.status != -1">
+                    status = #{company.status}
+                </when>
+                <otherwise>
+                    status != -1
+                </otherwise>
+            </choose>
+            <if test="company.companyName != null and company.companyName != ''">
+                and company_name like  concat('%',#{company.companyName},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+
+
   <select id="getAllCompnay"  resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
         sci.id,

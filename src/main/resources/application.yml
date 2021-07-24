@@ -59,7 +59,7 @@ logging:
     root: info
   file: '@project.log@zerody-user.log'
   pattern:
-    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}][%X{spanId}] [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'
     console: '%d{yyyy-MM-dd HH:mm:ss} [%thread]%-5level%X{req.remoteHost}%X{req.requestURI} %logger{35}- %msg%n'
 
   #文件上传路径
