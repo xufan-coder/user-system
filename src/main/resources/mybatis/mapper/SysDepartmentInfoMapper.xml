@@ -168,7 +168,7 @@
                  AND sdi.parent_id = #{departId}
              </if>
             <if test="departId eq null or departId eq ''">
-                AND sdi.parent_id IS NULL
+                AND (sdi.parent_id IS NULL OR sdi.parent_id = '')
             </if>
         </where>
     </select>
