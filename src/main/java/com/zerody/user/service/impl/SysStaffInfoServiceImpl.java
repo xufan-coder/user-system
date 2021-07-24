@@ -1769,6 +1769,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.getStaffInfoByIds(userId);
     }
 
+    @Override
+    public List<String> getSubordinateUserByUserId(String userId) {
+	    StaffInfoVo staff =  this.getStaffInfo(userId);
+	    UserVo user = new UserVo();
+	    AdminVo admin = this.getIsAdmin(user);
+	    if (admin.getIsCompanyAdmin()) {
+	        List<String> userIds = this.sysStaffInfoMapper.getUserIdByCompIdOrDeptId(staff.getCompanyId(), null);
+	        return userIds;
+        }
+	    if (admin.getIsDepartAdmin()) {
+            List<String> userIds = this.sysStaffInfoMapper.getUserIdByCompIdOrDeptId(staff.getCompanyId(), staff.getDepartId());
+            return userIds;
+        }
+        return null;
+    }
+
 
     private String getStaffIdByUserId(String userId) {
 		return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
