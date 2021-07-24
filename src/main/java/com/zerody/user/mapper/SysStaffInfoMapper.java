@@ -319,4 +319,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               java.util.List<com.zerody.user.api.vo.StaffInfoVo>
      */
     List<StaffInfoVo> getStaffInfoByIds(@Param("ids") List<String> userId);
+
+    List<String> getUserIdByCompIdOrDeptId(@Param("compId") String companyId, @Param("departId") String departId);
 }
