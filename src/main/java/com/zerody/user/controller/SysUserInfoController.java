@@ -1052,7 +1052,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
      */
     @Override
-    @RequestMapping(value = "/get/subordinate-user_ID/inner", method = RequestMethod.GET)
+    @RequestMapping(value = "/get/subordinate-user_id/inner", method = RequestMethod.GET)
     public DataResult<List<String>> getSubordinateUserByUserId(@RequestParam("userId") String userId){
         try {
             return R.success(this.sysStaffInfoService.getSubordinateUserByUserId(userId));
