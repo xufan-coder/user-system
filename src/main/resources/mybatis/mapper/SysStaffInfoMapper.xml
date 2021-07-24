@@ -679,7 +679,7 @@
             ssi.user_id
         FROM
             sys_staff_info AS ssi
-        JOIN union_staff_depart AS usd ON sud.staff_id = ssi.id
+        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
             <if test="compId neq null and compId neq ''">
                 AND ssi.comp_id = #{compId}
