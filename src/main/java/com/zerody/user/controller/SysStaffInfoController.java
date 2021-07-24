@@ -8,12 +8,15 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -314,6 +317,24 @@ public class SysStaffInfoController {
     public DataResult<AdminVo> getIsAdmin(){
         try {
             UserVo user = UserUtils.getUser();
+            AdminVo admin = sysStaffInfoService.getIsAdmin(user);
+            return R.success(admin);
+        } catch (DefaultException e){
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取管理员信息:{}",e.getMessage());
+            return R.error("获取管理员信息,请求异常");
+        }
+    }
+
+    @RequestMapping(value = "/get-is-admin/by-user-id/{id}", method = RequestMethod.GET)
+    public DataResult<AdminVo> getIsAdminByUserId(@PathVariable("id") String id){
+        try {
+            UserVo user = new UserVo();
+            StaffInfoVo staff = this.sysStaffInfoService.getStaffInfo(id);
+            user.setUserId(id);
+            user.setCompanyId(staff.getCompanyId());
             AdminVo admin = sysStaffInfoService.getIsAdmin(user);
             return R.success(admin);
         } catch (DefaultException e){
