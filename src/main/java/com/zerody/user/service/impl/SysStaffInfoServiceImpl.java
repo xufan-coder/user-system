@@ -1457,11 +1457,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             userIds.removeAll(userIds);
         } else {
+            //企业管理员不需要获取下级部门
+            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId(),userInfo.getUserId());
             if (CollectionUtils.isEmpty(iPage.getRecords())) {
                 return iPage;
             }
-            //企业管理员不需要获取下级部门
-            iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId(),userInfo.getUserId());
             iPage.getRecords().get(0).setCompanyAdmin(true);
         }
         if(CollectionUtils.isEmpty(iPage.getRecords())){
