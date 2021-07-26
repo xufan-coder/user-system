@@ -192,7 +192,7 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        ssi.STATUS,
+        sui.status,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -226,7 +226,7 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         <where>
-            ssi.status in (0, 3) and sui.id = #{userId}
+            sui.id = #{userId}
         </where>
     </select>
 
