@@ -226,7 +226,7 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         <where>
-            ssi.status in (0, 3) and sui.id = #{userId}
+            sui.id = #{userId}
         </where>
     </select>
 
