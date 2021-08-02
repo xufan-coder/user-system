@@ -29,6 +29,7 @@ import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
+import com.zerody.user.vo.DepartSubordinateVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.SysJobPositionVo;
 import com.zerody.user.vo.UserStructureVo;
@@ -485,6 +486,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
         this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT);
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
+    }
+
+    @Override
+    public List<DepartSubordinateVo> getDepartByParentId(String id, String companyId) {
+        return this.sysDepartmentInfoMapper.getDepartByParentId(id, companyId);
     }
 
 }
