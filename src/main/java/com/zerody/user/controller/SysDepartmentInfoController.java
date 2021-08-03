@@ -337,7 +337,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      *
      *
      * @author               PengQiang
-     * @description          根据id查询下级部门
+     * @description          根据id查询直属下级部门
      * @date                 2021/4/7 19:14
      * @param                departId
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Integer>

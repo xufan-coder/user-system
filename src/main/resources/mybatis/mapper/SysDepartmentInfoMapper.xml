@@ -201,7 +201,7 @@
     <select id="getDepartByParentId" resultType="com.zerody.user.vo.DepartSubordinateVo">
         SELECT
             sdi.id,
-            sdi.depart_name,
+            sdi.depart_name AS name,
             count(sdi2.id) &gt; 0 AS is_subordinate
         FROM
             sys_department_info AS sdi
@@ -217,6 +217,7 @@
             <if test="companyId neq null and companyId neq ''">
                 AND sdi.comp_id = #{companyId}
             </if>
+            AND sdi.is_show_business = 1
         </where>
         GROUP BY sdi.id
     </select>

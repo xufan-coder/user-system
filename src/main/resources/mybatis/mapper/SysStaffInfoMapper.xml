@@ -651,6 +651,13 @@
             <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
                 and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
             </if>
+            <if test="staff.key neq null and staff.key neq ''">
+                AND (
+                    sui.user_name LIKE CONCAT('%', #{staff.key}, '%')
+                    OR
+                    sui.phone_number LIKE CONCAT('%', #{staff.key}, '%')
+                )
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
