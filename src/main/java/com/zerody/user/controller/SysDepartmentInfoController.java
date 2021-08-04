@@ -10,6 +10,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
 import com.zerody.user.api.vo.AdminVo;
@@ -354,6 +355,33 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         } catch (Exception e){
             log.error("获取部门出错:{}", e.getMessage(),e);
             return R.error("获取部门出错,请求异常");
+        }
+    }
+
+
+    /**
+     *
+     *  根据部门iD查询是否是最后一级
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/4/2 13:03
+     * @param                departId
+     * @param                isShow 是否排除 不显示的部门
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>>
+     */
+    @Override
+    @GetMapping(value = "/get/is-finally/inner")
+    public DataResult<Boolean> getDepartIsFinally(@RequestParam("departId") String departId, @RequestParam(value = "isShow", required = false) Boolean isShow) {
+        try {
+            isShow = DataUtil.isEmpty(isShow) ? false : isShow;
+            Boolean result = this.sysDepartmentInfoService.getDepartIsFinally(departId, isShow);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("判断部门是否最后一级出错:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("判断部门是否最后一级出错:{}", e.getMessage(),e);
+            return R.error("判断部门是否最后一级出错,请求异常");
         }
     }
 }

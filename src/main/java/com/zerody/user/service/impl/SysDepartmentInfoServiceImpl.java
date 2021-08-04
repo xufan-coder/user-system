@@ -493,4 +493,14 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return this.sysDepartmentInfoMapper.getDepartByParentId(id, companyId);
     }
 
+    @Override
+    public Boolean getDepartIsFinally(String departId, Boolean isShow) {
+        QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+        departQw.lambda().eq(SysDepartmentInfo::getParentId, departId);
+        departQw.lambda().eq(SysDepartmentInfo::getStatus, 0);
+        departQw.lambda().eq(isShow, SysDepartmentInfo::getIsShowBusiness, YesNo.YES);
+        int count = this.count(departQw);
+        return count == 0;
+    }
+
 }

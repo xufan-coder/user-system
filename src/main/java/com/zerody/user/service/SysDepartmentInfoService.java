@@ -184,4 +184,16 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @return               java.util.List<com.zerody.user.vo.DepartSubordinateVo>
      */
     List<DepartSubordinateVo> getDepartByParentId(String id, String companyId);
+
+    /**
+     *
+     *  判断部门是否最后一级
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/8/4 17:40
+     * @param               departId
+     * @param                isShow
+     * @return               java.lang.Boolean
+     */
+    Boolean getDepartIsFinally(String departId, Boolean isShow);
 }
