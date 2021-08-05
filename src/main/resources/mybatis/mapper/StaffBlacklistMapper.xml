@@ -63,4 +63,15 @@
       </if>
     </where>
   </select>
+    <select id="getBlacklistByMobile" resultType="java.lang.String">
+        SELECT
+            sci.company_name
+        FROM
+            staff_blacklist AS sb
+        JOIN sys_staff_info AS ssi ON ssi.id = sb.staff_id
+        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        <where>
+            sb.mobile = #{mobile}
+        </where>
+    </select>
 </mapper>

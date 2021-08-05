@@ -6,6 +6,7 @@ import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.MobileBlacklistQueryVo;
 
 /**
  * @author PengQiang
@@ -47,4 +48,15 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @return               void
      */
     void doRelieveByStaffId(String staffId);
+
+    /**
+     *
+     *  根据手机号码查询是否离职
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/8/5 15:53
+     * @param                mobile
+     * @return               com.zerody.user.vo.MobileBlacklistQueryVo
+     */
+    MobileBlacklistQueryVo getBlacklistByMobile(String mobile);
 }
