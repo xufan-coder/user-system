@@ -32,7 +32,7 @@ public class ResignationApplicationController {
 	@Autowired
 	private ResignationApplicationService service;
 	/**
-	 *    分页查询列表
+	 *    分页离职申请查询列表
 	 */
 	@GetMapping("/page")
 	public DataResult<IPage<ResignationApplication>> page(ResignationPageDto dto) {
