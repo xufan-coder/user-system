@@ -163,6 +163,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private AppUserPushService appUserPushService;
 
+    @Autowired
+    private StaffBlacklistService staffBlacklistService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -374,6 +377,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setAvatar(setSysUserInfoDto.getAvatar());
         staff.setUserName(setSysUserInfoDto.getUserName());
         this.saveOrUpdate(staff);
+
+        //当状态为在职时判断是否在其他公司入职
+        if (oldUserInfo.getStatus().intValue() == StatusEnum.stop.getValue() &&
+                (StatusEnum.activity.getValue() == setSysUserInfoDto.getStatus().intValue()
+                        || StatusEnum.teamwork.getValue()  == setSysUserInfoDto.getStatus().intValue() )) {
+//            QueryWrapper<SysStaffInfo> activityQw = new QueryWrapper<>();
+//            activityQw.lambda().inSql(true, SysStaffInfo::getUserId,
+//                    "SELECT id FROM sys_user_info WHERE status IN (0, 3) AND phone_number ='"
+//                            .concat(sysUserInfo.getPhoneNumber()).concat("'")
+//            );
+//            activityQw.lambda().ne(SysStaffInfo::getCompId, staff.getCompId());
+//            activityQw.lambda().groupBy(SysStaffInfo::getCompId);
+//            int activityCompanyCount = this.count(activityQw);
+//            if (activityCompanyCount > 0) {
+//                throw new DefaultException("该员工已在其他公司入职！");
+//            }
+            this.staffBlacklistService.doRelieveByStaffId(staff.getId());
+        }
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());

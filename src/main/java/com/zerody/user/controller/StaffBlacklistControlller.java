@@ -11,6 +11,7 @@ import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.MobileBlacklistQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -130,6 +131,30 @@ public class StaffBlacklistControlller {
         } catch (Exception e) {
             log.error("解除黑名单出错：{}", e, e);
             return R.error("解除黑名单出错" + e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          根据手机号码查询是否被拉黑
+     * @date                 2021/8/4 16:01
+     * @param                [staffId]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @GetMapping("/get-by-mobile")
+    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(@RequestParam("mobile") String mobile){
+        try {
+
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(mobile);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
+            return R.error("根据手机号码查询是否被拉黑出错" + e.getMessage());
         }
     }
 

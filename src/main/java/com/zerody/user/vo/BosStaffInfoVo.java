@@ -72,6 +72,7 @@ public class BosStaffInfoVo {
 
     private Boolean isAdmin;
 
+    private Boolean isBlock;
 
 
     public String getStaffStatusString(){
