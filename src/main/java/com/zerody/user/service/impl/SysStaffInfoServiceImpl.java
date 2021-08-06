@@ -317,17 +317,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String staffId, Integer status) {
-        if(StringUtils.isEmpty(staffId)){
-            throw new DefaultException( "员工id不能为空");
+    public void updateStaffStatus(String userId, Integer status) {
+        if(StringUtils.isEmpty(userId)){
+            throw new DefaultException( "用户idid不能为空");
         }
         if (status == null){
             throw new DefaultException( "状态不能为空");
         }
-        SysStaffInfo staff = new SysStaffInfo();
-        staff.setId(staffId);
-        staff.setStatus(status);
-        this.saveOrUpdate(staff);
+
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setId(userId);
+        userInfo.setStatus(status);
+        this.sysUserInfoMapper.updateById(userInfo);
+        UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
+        staffUw.lambda().set(SysStaffInfo::getStatus, status);
+        staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
+        this.update(staffUw);
+        if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
+            this.checkUtil.removeUserToken(userId);
+        }
     }
 
 
