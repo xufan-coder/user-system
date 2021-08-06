@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface ResignationApplicationService extends IService<ResignationApplication> {
 
-    void addOrUpdateResignationApplication(ResignationApplication data);
+    ResignationApplication addOrUpdateResignationApplication(ResignationApplication data);
 
     IPage<ResignationApplication> selectPage(ResignationPageDto dto);
 }

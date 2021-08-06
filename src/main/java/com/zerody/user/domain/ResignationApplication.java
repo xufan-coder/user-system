@@ -22,6 +22,7 @@ public class ResignationApplication implements java.io.Serializable {
 		private String id;
   		/**user_id**/
 		private String userId;
+		private String name;
 
 		private String staffId;
 		/** 审批状态*/
@@ -29,6 +30,9 @@ public class ResignationApplication implements java.io.Serializable {
 		/**创建时间**/
 		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 		private Date approvalTime;
+		/**离职时间**/
+		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+		private Date resignationTime;
 
 		private String companyId;
 		private String companyName;

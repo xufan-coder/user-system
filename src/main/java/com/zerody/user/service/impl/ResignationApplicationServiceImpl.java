@@ -32,16 +32,14 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     private SysStaffInfoService sysStaffInfoService;
 
     @Override
-    public void addOrUpdateResignationApplication(ResignationApplication data) {
+    public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
         if(DataUtil.isNotEmpty(data.getId())){
-            if(ApproveStatusEnum.SUCCESS.name().equals(data.getApprovalState())){
-                sysStaffInfoService.updateStaffStatus(data.getUserId(), StatusEnum.stop.getValue());
-            }
             this.updateById(data);
         }else {
             data.setCreateTime(new Date());
             this.save(data);
         }
+        return data;
     }
 
     @Override
