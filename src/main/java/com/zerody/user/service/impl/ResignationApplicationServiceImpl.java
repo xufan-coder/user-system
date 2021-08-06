@@ -34,6 +34,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
         if(DataUtil.isNotEmpty(data.getId())){
+            data.setApprovalTime(new Date());
             this.updateById(data);
         }else {
             data.setCreateTime(new Date());
