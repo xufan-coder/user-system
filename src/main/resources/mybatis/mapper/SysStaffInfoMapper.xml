@@ -623,7 +623,9 @@
         sui.status = 0 AS activity,
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
-        ssi.id = #{staff.staffId} AS isAdmin
+        ssi.id = #{staff.staffId} AS isAdmin,
+        ssi.avatar AS staff_avatar,
+        sui.avatar AS user_avatar
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
