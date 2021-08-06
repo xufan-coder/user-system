@@ -53,8 +53,8 @@ public class ResignationApplicationController {
 	@PostMapping("/add")
 	public DataResult<ResignationApplication> saveOrUpdate(@RequestBody ResignationApplication data) {
 		try {
-			this.service.addOrUpdateResignationApplication(data);
-			return R.success();
+			ResignationApplication resignationApplication = this.service.addOrUpdateResignationApplication(data);
+			return R.success(resignationApplication);
 		} catch (Exception e) {
 			log.error("新增离职申请出错:{}", JSON.toJSONString(data), e);
 			return R.error("新增离职申请出错:"+e.getMessage());
