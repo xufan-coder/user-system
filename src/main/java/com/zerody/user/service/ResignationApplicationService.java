@@ -19,4 +19,6 @@ public interface ResignationApplicationService extends IService<ResignationAppli
     ResignationApplication addOrUpdateResignationApplication(ResignationApplication data);
 
     IPage<ResignationApplication> selectPage(ResignationPageDto dto);
+
+    List<ResignationApplication> getLeaveUsers();
 }

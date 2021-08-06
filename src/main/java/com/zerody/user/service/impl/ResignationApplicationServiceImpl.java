@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.ResignationApplication;
 import com.zerody.user.dto.ResignationPageDto;
 import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.mapper.ResignationApplicationMapper;
 import com.zerody.user.service.ResignationApplicationService;
 import com.zerody.user.service.SysStaffInfoService;
@@ -18,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author  DaBai
@@ -28,8 +32,6 @@ import java.util.Date;
 @Slf4j
 @Service
 public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationApplicationMapper, ResignationApplication> implements ResignationApplicationService {
-    @Autowired
-    private SysStaffInfoService sysStaffInfoService;
 
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
@@ -55,5 +57,16 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                 .eq(DataUtil.isNotEmpty(dto.getUserId()),ResignationApplication::getUserId,dto.getUserId());
         IPage<ResignationApplication> pageResult = this.page(page,qw);
         return pageResult;
+    }
+
+    @Override
+    public List<ResignationApplication> getLeaveUsers() {
+        //当天已批准离职的
+        QueryWrapper<ResignationApplication> qw = new QueryWrapper<>();
+        qw.lambda().eq(ResignationApplication::getApprovalState,ApproveStatusEnum.SUCCESS);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String nowDateFormat = format.format(new Date());
+        qw.lambda().between(ResignationApplication::getApprovalTime,nowDateFormat+" 00:00:00",nowDateFormat+" 23:59:59");
+        return this.list(qw);
     }
 }
