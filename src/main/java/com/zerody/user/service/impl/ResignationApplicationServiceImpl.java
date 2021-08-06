@@ -30,8 +30,7 @@ import java.util.Date;
 public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationApplicationMapper, ResignationApplication> implements ResignationApplicationService {
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
-    @Autowired
-    private CheckUtil checkUtil;
+
     @Override
     public void addOrUpdateResignationApplication(ResignationApplication data) {
         if(DataUtil.isNotEmpty(data.getId())){
