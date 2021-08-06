@@ -37,8 +37,6 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
         if(DataUtil.isNotEmpty(data.getId())){
             if(ApproveStatusEnum.SUCCESS.name().equals(data.getApprovalState())){
                 sysStaffInfoService.updateStaffStatus(data.getUserId(), StatusEnum.stop.getValue());
-                //离职后清除token
-                this.checkUtil.removeUserToken(data.getUserId());
             }
             this.updateById(data);
         }else {
