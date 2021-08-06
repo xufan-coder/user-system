@@ -30,11 +30,15 @@ import java.util.Date;
 public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationApplicationMapper, ResignationApplication> implements ResignationApplicationService {
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+    @Autowired
+    private CheckUtil checkUtil;
     @Override
     public void addOrUpdateResignationApplication(ResignationApplication data) {
         if(DataUtil.isNotEmpty(data.getId())){
             if(ApproveStatusEnum.SUCCESS.name().equals(data.getApprovalState())){
                 sysStaffInfoService.updateStaffStatus(data.getUserId(), StatusEnum.stop.getValue());
+                //离职后清除token
+                this.checkUtil.removeUserToken(data.getUserId());
             }
             this.updateById(data);
         }else {
