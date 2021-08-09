@@ -16,6 +16,7 @@ import com.zerody.user.mapper.ResignationApplicationMapper;
 import com.zerody.user.service.ResignationApplicationService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,28 @@ import java.util.List;
 @Service
 public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationApplicationMapper, ResignationApplication> implements ResignationApplicationService {
 
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
         if(DataUtil.isNotEmpty(data.getId())){
             data.setApprovalTime(new Date());
             this.updateById(data);
         }else {
+            if(DataUtil.isNotEmpty(data.getUserId())){
+                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
+                if(DataUtil.isNotEmpty(sysUserInfoVo)){
+                    data.setCompanyId(sysUserInfoVo.getCompanyId());
+                    data.setCompanyName(sysUserInfoVo.getCompanyName());
+                    data.setDepartId(sysUserInfoVo.getDepartId());
+                    data.setDepartName(sysUserInfoVo.getDepartName());
+                    data.setPositionId(sysUserInfoVo.getPositionId());
+                    data.setPositionName(sysUserInfoVo.getPositionName());
+                }
+            }
+
             data.setCreateTime(new Date());
             this.save(data);
         }
