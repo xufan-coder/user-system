@@ -25,7 +25,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @param                param
      * @return               void
      */
-    void addStaffBlaklist(StaffBlacklistAddDto param);
+    StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param);
 
     /**
      *

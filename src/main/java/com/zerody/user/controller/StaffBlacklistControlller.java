@@ -44,11 +44,11 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @PostMapping("")
-    public DataResult<Object> addStaffBlaklist(@RequestBody StaffBlacklistAddDto param){
+    public DataResult<StaffBlacklistAddDto> addStaffBlaklist(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
-            this.service.addStaffBlaklist(param);
-            return R.success();
+            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
+            return R.success(result);
         } catch (DefaultException e) {
             log.error("添加员工黑名单错误：{}", e, e);
             return R.error(e.getMessage());

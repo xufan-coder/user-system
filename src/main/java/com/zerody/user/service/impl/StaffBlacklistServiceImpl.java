@@ -62,7 +62,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     private CheckUtil checkUtil;
 
     @Override
-    public void addStaffBlaklist(StaffBlacklistAddDto param) {
+    public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
@@ -102,7 +102,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             this.checkUtil.removeUserToken(staff.getUserId());
         }
         if (CollectionUtils.isEmpty(param.getImages())) {
-            return;
+            return param;
         }
         List<String> images = param.getImages();
         List<Image> imageAdds = new ArrayList<>();
@@ -120,6 +120,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         imageRemoveQw.lambda().eq(Image::getConnectId, blac.getId());
         imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
         this.imageService.addImages(imageRemoveQw, imageAdds);
+        return param;
     }
 
     @Override
