@@ -43,7 +43,7 @@ public class StaffBlacklistControlller {
      * @param                [param]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
-    @PostMapping("")
+    @PostMapping("/add")
     public DataResult<StaffBlacklistAddDto> addStaffBlaklist(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
