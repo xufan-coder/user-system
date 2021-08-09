@@ -72,6 +72,7 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getFrameworkPage(FrameworkBlacListQueryPageDto param){
         try {
             this.checkUtil.SetUserPositionInfo(param);
+            param.setState(StaffBlacklistApproveState.BLOCK.name());
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
@@ -98,7 +99,7 @@ public class StaffBlacklistControlller {
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
-            param.setState(StaffBlacklistApproveState.PASS.name());
+            param.setState(StaffBlacklistApproveState.BLOCK.name());
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
@@ -120,10 +121,10 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @DeleteMapping("/relieve/{id}")
-    public DataResult<Object> doRelieveByStaffId(@PathVariable("id") String staffId){
+    public DataResult<Object> doRelieveByStaffId(@PathVariable("id") String userId){
         try {
 
-            this.service.doRelieveByStaffId(staffId);
+            this.service.doRelieveByStaffId(userId);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);

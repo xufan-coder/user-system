@@ -12,6 +12,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.StaffBlacklist;
@@ -70,37 +71,32 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blacQw.lambda().eq(StaffBlacklist::getCompanyId, blac.getCompanyId());
             StaffBlacklist oldBlac = this.getOne(blacQw);
             if (DataUtil.isNotEmpty(oldBlac)) {
-                if (StaffBlacklistApproveState.APPROVE.name().equals(oldBlac.getState())) {
-                    throw new DefaultException("该员工已被拉黑正在审批中！无法重复发起");
-                }
-                if (StaffBlacklistApproveState.PASS.name().equals(oldBlac.getState())) {
-                    throw new DefaultException("该员工已被拉黑无法！无法重复发起");
-                }
+                throw new DefaultException("该员工已被拉黑无法！无法重复发起");
             }
-            this.remove(blacQw);
-            SysStaffInfo staff = this.staffInfoService.getById(blac.getApplicantStaffId());
+//            this.remove(blacQw);
+            StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
             blac.setCreateTime(new Date());
-            blac.setCompanyId(staff.getCompId());
-            blac.setState(StaffBlacklistApproveState.APPROVE.name());
+            blac.setApprovalTime(new Date());
+            blac.setCompanyId(staff.getCompanyId());
+            blac.setState(StaffBlacklistApproveState.BLOCK.name());
+            blac.setMobile(staff.getMobile());
             blac.setId(UUIDutils.getUUID32());
             this.save(blac);
         } else {
             this.updateById(blac);
         }
-        //把员工设为离职
-        if (StaffBlacklistApproveState.PASS.name().equals(blac.getState())) {
-            QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-            staffQw.lambda().inSql(true, SysStaffInfo::getId,  "SELECT sb.staff_id FROM staff_blacklist AS sb WHERE sb.id = '".concat(blac.getId()).concat("'"));
-            SysStaffInfo  staff = this.staffInfoService.getOne(staffQw);
-            UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-            userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
-            userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
-            userUw.lambda().eq(true, SysUserInfo::getId, staff.getUserId());
-            this.userInfoService.update(userUw);
-            staff.setStatus(StatusEnum.stop.getValue());
-            this.staffInfoService.updateById(staff);
-            this.checkUtil.removeUserToken(staff.getUserId());
-        }
+    //把员工设为离职
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getUserId, blac.getUserId());
+        SysStaffInfo  staff = this.staffInfoService.getOne(staffQw);
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+        userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
+        userUw.lambda().eq(true, SysUserInfo::getId, blac.getUserId());
+        this.userInfoService.update(userUw);
+        staff.setStatus(StatusEnum.stop.getValue());
+        this.staffInfoService.updateById(staff);
+        this.checkUtil.removeUserToken(staff.getUserId());
         if (CollectionUtils.isEmpty(param.getImages())) {
             return param;
         }
@@ -131,10 +127,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public void doRelieveByStaffId(String staffId) {
-        QueryWrapper<StaffBlacklist> removeQw = new QueryWrapper<>();
-        removeQw.lambda().eq(StaffBlacklist::getStaffId, staffId);
-        this.remove(removeQw);
+    public void doRelieveByStaffId(String userId) {
+        UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
+        relieveUw.lambda().eq(StaffBlacklist::getUserId, userId);
+        relieveUw.lambda().set(StaffBlacklist::getState, StaffBlacklistApproveState.RELIEVE.name());
+        relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
+        this.update(relieveUw);
 //        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
 //        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
 //        userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());

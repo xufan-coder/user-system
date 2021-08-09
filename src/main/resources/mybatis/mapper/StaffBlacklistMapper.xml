@@ -28,10 +28,12 @@
         sdi.depart_name,
         sb.create_time,
         sb.approval_time,
-        sb.state
+        sb.state,
+        sb.process_id,
+        sb.process_key
     FROM
         staff_blacklist AS sb
-    LEFT JOIN sys_staff_info AS ssi ON ssi.id = sb.staff_id
+    LEFT JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
     LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
     LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
     LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
@@ -39,7 +41,7 @@
     LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
     LEFT JOIN union_staff_position AS usp ON usp.staff_id = ssi.id
     LEFT JOIN sys_job_position AS sjp ON sjp.id = usp.position_id
-    LEFT JOIN sys_staff_info AS ssi2 ON ssi2.id = sb.applicant_staff_id
+    LEFT JOIN sys_staff_info AS ssi2 ON ssi2.user_id = sb.submit_user_id
     LEFT JOIN union_role_staff AS urs2 ON urs2.staff_id = ssi2.id
     LEFT JOIN union_staff_depart AS usd2 ON usd2.staff_id = ssi2.id
     <where>

@@ -62,6 +62,12 @@ public class FrameworkBlacListQueryPageVo {
     /** 状态 */
     private String state;
 
+    /** 流程id */
+    private String processId;
+
+    /** 流程key */
+    private String processKey;
+
     public String getStateSting() {
         if (StringUtils.isEmpty(this.state)) {
             return null;

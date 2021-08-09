@@ -17,7 +17,7 @@ public class StaffBlacklist {
     /** 黑名单id */
     private String id;
 
-    /** 员工id */
+    /** 员工手机号 */
     private String mobile;
 
     /** 状态 */
@@ -32,11 +32,20 @@ public class StaffBlacklist {
     /** 拉黑原因 */
     private String reason;
 
-    /**  */
-    private String staffId;
+    /** 被拉黑用户id */
+    private String userId;
 
-    /**  */
-    private String applicantStaffId;
+    /** 提交者userId */
+    private String  submitUserId;
+
     /** 企业id*/
     private String companyId;
+
+    /** 流程id */
+    private String processId;
+
+    /** 流程key */
+    private String processKey;
+
+    private Date updateTime;
 }
