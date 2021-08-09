@@ -47,5 +47,7 @@ public class SysStaffInfoPageDto extends PageQueryDto {
     /** 负责人id */
     private String staffId;
 
+    private String key;
+
 
 }

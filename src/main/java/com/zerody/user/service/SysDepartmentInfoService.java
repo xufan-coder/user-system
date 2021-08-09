@@ -9,6 +9,7 @@ import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
+import com.zerody.user.vo.DepartSubordinateVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 
@@ -171,4 +172,28 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
     void updateRedundancyDepartName();
 
     void doDepartmentEditInfo();
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/8/2 17:40
+     * @param                id
+     * @param                companyId
+     * @return               java.util.List<com.zerody.user.vo.DepartSubordinateVo>
+     */
+    List<DepartSubordinateVo> getDepartByParentId(String id, String companyId);
+
+    /**
+     *
+     *  判断部门是否最后一级
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/8/4 17:40
+     * @param               departId
+     * @param                isShow
+     * @return               java.lang.Boolean
+     */
+    Boolean getDepartIsFinally(String departId, Boolean isShow);
 }
