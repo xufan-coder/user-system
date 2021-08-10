@@ -31,7 +31,7 @@ public class ResignationApplication implements java.io.Serializable {
 		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 		private Date approvalTime;
 		/**离职时间**/
-		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
 		private Date resignationTime;
 
 		private String companyId;
