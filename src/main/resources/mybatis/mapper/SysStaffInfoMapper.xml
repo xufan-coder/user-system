@@ -69,7 +69,7 @@
       LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
       LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
       LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
-      LEFT JOIN staff_blacklist AS sb ON sb.staff_id = ssi.id
+      LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id
       <where>
           ssi.deleted = 0 and sui.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
@@ -581,9 +581,10 @@
         FROM
             sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            usd.department_id = #{departId} and ssi.id !=sdi.admin_account
+            usd.department_id = #{departId} and ssi.id !=sdi.admin_account AND sui.status IN (0,3)
         </where>
     </select>
     <select id="getUserNameByDepartId" resultType="com.zerody.user.vo.UserStructureVo">
