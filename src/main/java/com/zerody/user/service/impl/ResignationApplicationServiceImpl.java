@@ -47,6 +47,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
             if(DataUtil.isNotEmpty(data.getUserId())){
                 SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
                 if(DataUtil.isNotEmpty(sysUserInfoVo)){
+                    data.setStaffId(sysUserInfoVo.getStaffId());
+                    data.setName(sysUserInfoVo.getUserName());
                     data.setCompanyId(sysUserInfoVo.getCompanyId());
                     data.setCompanyName(sysUserInfoVo.getCompanyName());
                     data.setDepartId(sysUserInfoVo.getDepartId());
