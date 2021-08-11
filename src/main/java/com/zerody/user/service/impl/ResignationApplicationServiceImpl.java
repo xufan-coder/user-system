@@ -85,7 +85,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
         qw.lambda().eq(ResignationApplication::getApprovalState,ApproveStatusEnum.SUCCESS);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String nowDateFormat = format.format(new Date());
-        qw.lambda().between(ResignationApplication::getApprovalTime,nowDateFormat+" 00:00:00",nowDateFormat+" 23:59:59");
+        qw.lambda().between(ResignationApplication::getResignationTime,nowDateFormat+" 00:00:00",nowDateFormat+" 23:59:59");
         return this.list(qw);
     }
 }
