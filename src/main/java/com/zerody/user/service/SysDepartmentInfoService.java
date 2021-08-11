@@ -196,4 +196,6 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @return               java.lang.Boolean
      */
     Boolean getDepartIsFinally(String departId, Boolean isShow);
+
+    List<DepartSubordinateVo> getDepartSubordinateByParentId(String id, String companyId,UserVo user);
 }

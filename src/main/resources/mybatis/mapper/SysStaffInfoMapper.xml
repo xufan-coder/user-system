@@ -644,6 +644,9 @@
             <if test="staff.departId != null and staff.departId != ''">
                 and sdi.id like concat('', #{staff.departId}, '%')
             </if>
+            <if test="staff.userId != null and staff.userId != ''">
+                and sui.id = #{staff.userId}
+            </if>
             <if test="staff.jobId != null and staff.jobId != ''">
                 and sjp.id = #{staff.jobId}
             </if>

@@ -503,4 +503,26 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return count == 0;
     }
 
+    @Override
+    public List<DepartSubordinateVo> getDepartSubordinateByParentId(String id, String companyId, UserVo user) {
+        if (StringUtils.isNotEmpty(id)) {
+            return this.getDepartByParentId(id, companyId);
+        }
+        AdminVo adminVo = this.staffInfoService.getIsAdmin(user);
+        if (adminVo.getIsCompanyAdmin()) {
+            return this.getDepartByParentId(null, companyId);
+        }
+        if (adminVo.getIsDepartAdmin()) {
+            SysDepartmentInfo depart = this.getById(user.getDeptId());
+            List<DepartSubordinateVo> subs = new ArrayList<>();
+            DepartSubordinateVo sub = new DepartSubordinateVo();
+            sub.setId(depart.getId());
+            sub.setName(depart.getDepartName());
+            sub.setIsSubordinate(!this.getDepartIsFinally(user.getDeptId(), false));
+            subs.add(sub);
+            return subs;
+        }
+        return new ArrayList<>();
+    }
+
 }
