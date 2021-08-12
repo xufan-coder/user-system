@@ -48,19 +48,19 @@
       <if test="param.companyId neq null and param.companyId neq ''">
             AND ssi2.comp_id = #{param.companyId}
       </if>
-      <if test="param.departId neq null and param.departId neq '' AND param.queryDimensionality eq 'submitUser'">
+      <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'submitUser'">
             AND usd2.department_id LIKE CONCAT(#{param.departId}, '%')
       </if>
-      <if test="param.userId neq null and param.userId neq ''  AND param.queryDimensionality eq 'submitUser'">
+      <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'submitUser'">
             AND ssi2.user_id = #{param.userId}
       </if>
       <if test="param.userName neq null and param.userName neq '' ">
             AND sui.user_name LIKE CONCAT('%', #{param.userName}, '%')
       </if>
-    <if test="param.departId neq null and param.departId neq '' AND param.queryDimensionality eq 'blockUser'">
+    <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'blockUser'">
         AND usd.department_id LIKE CONCAT(#{param.departId}, '%')
     </if>
-    <if test="param.userId neq null and param.userId neq ''  AND param.queryDimensionality eq 'blockUser'">
+    <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'blockUser'">
         AND ssi.user_id = #{param.userId}
     </if>
       <if test="param.mobile neq null and param.mobile neq ''">
