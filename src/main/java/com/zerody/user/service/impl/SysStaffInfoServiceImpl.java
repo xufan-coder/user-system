@@ -1518,7 +1518,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public SysUserInfoVo selectStaffByUserId(String userId) {
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
-
+        if(DataUtil.isEmpty(userInfo)){
+            log.error("用户信息不存在！"+userId);
+            throw new DefaultException("用户信息不存在");
+        }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
