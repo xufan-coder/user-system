@@ -2,6 +2,7 @@ package com.zerody.user.dto;
 
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.PageInfo;
+import com.zerody.user.dto.bean.UserPositionPageParam;
 import lombok.Data;
 
 /**
@@ -11,7 +12,7 @@ import lombok.Data;
  * @Deacription TODO
  */
 @Data
-public class SysStaffInfoPageDto extends PageQueryDto {
+public class SysStaffInfoPageDto extends UserPositionPageParam {
 
     /**
      *    企业ID
@@ -47,5 +48,8 @@ public class SysStaffInfoPageDto extends PageQueryDto {
     /** 负责人id */
     private String staffId;
 
+    private String key;
+
+    private String queryType;
 
 }

@@ -51,7 +51,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    void updateStaffStatus(String staffId, Integer status);
+    void updateStaffStatus(String userId, Integer status);
 
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto);

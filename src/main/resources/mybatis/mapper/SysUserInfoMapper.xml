@@ -276,7 +276,9 @@ WHERE
             ssi.comp_id AS company_id,
             sui.create_time,
             usd.department_id AS depart_id,
-            sui.user_name AS `name`
+            sui.user_name AS `name`,
+            sui.avatar AS user_avatar,
+            ssi.avatar AS staff_avatar
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id

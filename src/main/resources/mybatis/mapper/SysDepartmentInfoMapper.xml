@@ -198,4 +198,27 @@
             is_edit = 1
         </where>
     </select>
+    <select id="getDepartByParentId" resultType="com.zerody.user.vo.DepartSubordinateVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name AS name,
+            count(sdi2.id) &gt; 0 AS is_subordinate
+        FROM
+            sys_department_info AS sdi
+        LEFT JOIN sys_department_info AS sdi2 ON sdi.id = sdi2.parent_id AND sdi2.status = 0
+        <where>
+            sdi.status = 0
+            <if test="id eq null or id eq ''">
+                AND (sdi.parent_id IS NULL OR sdi.parent_id = '')
+            </if>
+            <if test="id neq null and id neq ''">
+                AND sdi.parent_id = #{id}
+            </if>
+            <if test="companyId neq null and companyId neq ''">
+                AND sdi.comp_id = #{companyId}
+            </if>
+            AND sdi.is_show_business = 1
+        </where>
+        GROUP BY sdi.id
+    </select>
 </mapper>

@@ -58,7 +58,8 @@
       sui.status = 0 AS activity,
       sui.status = 3 AS teamwork,
       sui.status = 1 AS stops,
-      ssi.id = #{staff.staffId} AS isAdmin
+      ssi.id = #{staff.staffId} AS isAdmin,
+      sb.id is not null AS is_block
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -68,6 +69,7 @@
       LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
       LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
       LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+      LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id
       <where>
           ssi.deleted = 0 and sui.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
@@ -131,7 +133,7 @@
         sui.phone_number,
         sui.email,
         sui.nickname,
-        sui.avatar,
+        ssi.avatar,
         sui.birthday,
         sui.certificate_card,
         sui.certificate_card_address,
@@ -579,9 +581,10 @@
         FROM
             sys_staff_info AS ssi
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            usd.department_id = #{departId} and ssi.id !=sdi.admin_account
+            usd.department_id = #{departId} and ssi.id !=sdi.admin_account AND sui.status IN (0,3)
         </where>
     </select>
     <select id="getUserNameByDepartId" resultType="com.zerody.user.vo.UserStructureVo">
@@ -621,7 +624,9 @@
         sui.status = 0 AS activity,
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
-        ssi.id = #{staff.staffId} AS isAdmin
+        ssi.id = #{staff.staffId} AS isAdmin,
+        ssi.avatar AS staff_avatar,
+        sui.avatar AS user_avatar
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -639,6 +644,9 @@
             <if test="staff.departId != null and staff.departId != ''">
                 and sdi.id like concat('', #{staff.departId}, '%')
             </if>
+            <if test="staff.userId != null and staff.userId != ''">
+                and sui.id = #{staff.userId}
+            </if>
             <if test="staff.jobId != null and staff.jobId != ''">
                 and sjp.id = #{staff.jobId}
             </if>
@@ -650,6 +658,13 @@
             </if>
             <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
                 and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
+            </if>
+            <if test="staff.key neq null and staff.key neq ''">
+                AND (
+                    sui.user_name LIKE CONCAT('%', #{staff.key}, '%')
+                    OR
+                    sui.phone_number LIKE CONCAT('%', #{staff.key}, '%')
+                )
             </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc

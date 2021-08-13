@@ -347,6 +347,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userUw.lambda().set(SysUserInfo::getAvatar, param.getAvatar());
             userUw.lambda().eq(SysUserInfo::getId, param.getUserId());
             userUw.lambda().set(SysUserInfo::getAvatarUpdateTime, new Date());
+            userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
             this.update(userUw);
         }
     }

@@ -15,6 +15,7 @@ import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
@@ -52,6 +53,9 @@ public class SysStaffInfoController {
     private ResourceLoader resourceLoader;
 
     @Autowired
+    private CheckUtil checkUtil;
+
+    @Autowired
     private SysStaffInfoService sysStaffInfoService;
 
     /**
@@ -74,6 +78,9 @@ public class SysStaffInfoController {
      */
     @RequestMapping(value = "/page/get/active-duty", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        if ("lower".equals(sysStaffInfoPageDto.getQueryType())) {
+            this.checkUtil.SetUserPositionInfo(sysStaffInfoPageDto);
+        }
         return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
     }
 
@@ -110,9 +117,9 @@ public class SysStaffInfoController {
 
     //修改员工状态
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
-    public DataResult<Object> updateStaffStatus(@PathVariable(name = "id") String staffId, @PathVariable(name = "status") Integer status){
+    public DataResult<Object> updateStaffStatus(@PathVariable(name = "id") String userId, @PathVariable(name = "status") Integer status){
         try {
-            sysStaffInfoService.updateStaffStatus(staffId, status);
+            sysStaffInfoService.updateStaffStatus(userId, status);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工状态错误:{}",e.getMessage());
