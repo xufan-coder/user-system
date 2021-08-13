@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -67,6 +68,8 @@ public class FrameworkBlacListQueryPageVo {
 
     /** 流程key */
     private String processKey;
+
+    private List<String> images;
 
     public String getStateSting() {
         if (StringUtils.isEmpty(this.state)) {
