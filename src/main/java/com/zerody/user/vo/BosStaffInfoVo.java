@@ -72,7 +72,11 @@ public class BosStaffInfoVo {
 
     private Boolean isAdmin;
 
+    private Boolean isBlock;
 
+    private String staffAvatar;
+
+    private String userAvatar;
 
     public String getStaffStatusString(){
          if (DataUtil.isEmpty(this.staffStatus)) {

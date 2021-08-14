@@ -163,6 +163,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private AppUserPushService appUserPushService;
 
+    @Autowired
+    private StaffBlacklistService staffBlacklistService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -314,17 +317,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String staffId, Integer status) {
-        if(StringUtils.isEmpty(staffId)){
-            throw new DefaultException( "员工id不能为空");
+    public void updateStaffStatus(String userId, Integer status) {
+        if(StringUtils.isEmpty(userId)){
+            throw new DefaultException( "用户idid不能为空");
         }
         if (status == null){
             throw new DefaultException( "状态不能为空");
         }
-        SysStaffInfo staff = new SysStaffInfo();
-        staff.setId(staffId);
-        staff.setStatus(status);
-        this.saveOrUpdate(staff);
+
+        SysUserInfo userInfo = new SysUserInfo();
+        userInfo.setId(userId);
+        userInfo.setStatus(status);
+        this.sysUserInfoMapper.updateById(userInfo);
+        UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
+        staffUw.lambda().set(SysStaffInfo::getStatus, status);
+        staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
+        this.update(staffUw);
+        if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
+            this.checkUtil.removeUserToken(userId);
+        }
     }
 
 
@@ -374,6 +385,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setAvatar(setSysUserInfoDto.getAvatar());
         staff.setUserName(setSysUserInfoDto.getUserName());
         this.saveOrUpdate(staff);
+
+        //当状态为在职时判断是否在其他公司入职
+        if (oldUserInfo.getStatus().intValue() == StatusEnum.stop.getValue() &&
+                (StatusEnum.activity.getValue() == setSysUserInfoDto.getStatus().intValue()
+                        || StatusEnum.teamwork.getValue()  == setSysUserInfoDto.getStatus().intValue() )) {
+//            QueryWrapper<SysStaffInfo> activityQw = new QueryWrapper<>();
+//            activityQw.lambda().inSql(true, SysStaffInfo::getUserId,
+//                    "SELECT id FROM sys_user_info WHERE status IN (0, 3) AND phone_number ='"
+//                            .concat(sysUserInfo.getPhoneNumber()).concat("'")
+//            );
+//            activityQw.lambda().ne(SysStaffInfo::getCompId, staff.getCompId());
+//            activityQw.lambda().groupBy(SysStaffInfo::getCompId);
+//            int activityCompanyCount = this.count(activityQw);
+//            if (activityCompanyCount > 0) {
+//                throw new DefaultException("该员工已在其他公司入职！");
+//            }
+            this.staffBlacklistService.doRelieveByStaffId(staff.getId());
+        }
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
@@ -1459,6 +1488,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         } else {
             //企业管理员不需要获取下级部门
             iPage = this.sysStaffInfoMapper.getStaffByDepIds(null, iPage, staff.getCompId(),userInfo.getUserId());
+            if (CollectionUtils.isEmpty(iPage.getRecords())) {
+                return iPage;
+            }
             iPage.getRecords().get(0).setCompanyAdmin(true);
         }
         if(CollectionUtils.isEmpty(iPage.getRecords())){
@@ -1486,7 +1518,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public SysUserInfoVo selectStaffByUserId(String userId) {
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
-
+        if(DataUtil.isEmpty(userInfo)){
+            log.error("用户信息不存在！"+userId);
+            throw new DefaultException("用户信息不存在");
+        }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());

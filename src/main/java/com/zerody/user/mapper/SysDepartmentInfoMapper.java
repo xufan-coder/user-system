@@ -8,6 +8,7 @@ import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
+import com.zerody.user.vo.DepartSubordinateVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
@@ -140,4 +141,6 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<Map<String, String>> getDepartmentEditInfo();
 
     void updateDepartEditInfo(@Param("departs") List<Map<String, String>> departMap);
+
+    List<DepartSubordinateVo> getDepartByParentId(@Param("id") String id, @Param("companyId") String companyId);
 }

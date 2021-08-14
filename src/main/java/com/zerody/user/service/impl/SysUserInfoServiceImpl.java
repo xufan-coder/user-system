@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -346,6 +347,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userUw.lambda().set(SysUserInfo::getAvatar, param.getAvatar());
             userUw.lambda().eq(SysUserInfo::getId, param.getUserId());
             userUw.lambda().set(SysUserInfo::getAvatarUpdateTime, new Date());
+            userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
             this.update(userUw);
         }
     }
@@ -512,6 +514,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         userVo.setDeptId(param.getDepartId());
         userVo.setCompanyId(param.getCompanyId());
         AdminVo admin = this.sysStaffInfoService.getIsAdmin(userVo);
+        if (!admin.getIsCompanyAdmin() && !admin.getIsDepartAdmin()) {
+            return new ArrayList<>();
+        }
         param.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         List<SubordinateUserQueryVo> result = this.sysUserInfoMapper.getSubordinateUser(param);
         return result;
