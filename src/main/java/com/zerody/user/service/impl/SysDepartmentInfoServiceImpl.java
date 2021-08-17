@@ -26,6 +26,7 @@ import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.UnionStaffPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
@@ -88,6 +89,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     
     @Autowired
     private CheckUtil checkUtil;
+
+
+    @Autowired
+    private UnionStaffPositionService unionStaffPositionService;
 
     //  添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
@@ -277,6 +282,15 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unionStaffDepartMapper.insert(unSd);
         //  设置部门负责人 清除改员工token 让改员工重新登录
         SysStaffInfo staffInfo = this.staffInfoService.getById(dto.getStaffId());
+        QueryWrapper<UnionStaffPosition> uspQw = new QueryWrapper<>();
+        uspQw.lambda().eq(UnionStaffPosition::getStaffId, dto.getStaffId());
+        UnionStaffPosition usp = this.unionStaffPositionService.getOne(uspQw);
+        if (DataUtil.isNotEmpty(usp)) {
+            SysJobPosition job = this.sysJobPositionMapper.selectById(usp.getPositionId());
+            if (!org.apache.commons.lang3.StringUtils.equals(job.getDepartId(), dto.getId())) {
+                this.unionStaffPositionService.remove(uspQw);
+            }
+        }
         this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
 
