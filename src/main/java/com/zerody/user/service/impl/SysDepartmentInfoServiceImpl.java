@@ -165,6 +165,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             //  设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
+        SysDepartmentInfo dep = this.getById(sysDepartmentInfo.getId());
         //  如果当前部门设置不显示
         if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
             UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
@@ -181,6 +182,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         log.info("修改部门入库-{}",sysDepartmentInfo);
         sysDepartmentInfo.setIsEdit(YesNo.YES);
+        sysDepartmentInfo.setAdminAccount(dep.getAdminAccount());
         this.saveOrUpdate(sysDepartmentInfo);
     }
 
