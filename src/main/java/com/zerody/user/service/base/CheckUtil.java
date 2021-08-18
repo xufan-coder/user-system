@@ -85,7 +85,7 @@ public class CheckUtil {
             if (StringUtils.isEmpty(blac.getReason())) {
                 throw new DefaultException("原因不能为空");
             }
-            if (blac.getReason().length() >= 200) {
+            if (blac.getReason().length() > 200) {
                 throw new DefaultException("原因最多200个字符");
             }
         }

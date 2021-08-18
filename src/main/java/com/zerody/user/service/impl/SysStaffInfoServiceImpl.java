@@ -440,6 +440,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
             SysStaffInfo staffInfo = this.getById(staff.getId());
             userDepart.setUserId(staffInfo.getUserId());
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoService.getById(userDepart.getDepartId());
+            userDepart.setDepartName(departInfo.getDepartName());
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()){
                 throw new DefaultException("修改线索负责人名称失败!");

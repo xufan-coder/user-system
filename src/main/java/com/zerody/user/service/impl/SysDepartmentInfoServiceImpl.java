@@ -26,6 +26,7 @@ import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.UnionStaffPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
@@ -88,6 +89,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     
     @Autowired
     private CheckUtil checkUtil;
+
+
+    @Autowired
+    private UnionStaffPositionService unionStaffPositionService;
 
     //  添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
@@ -160,6 +165,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             //  设置修改名称状态为已修改
             sysDepartmentInfo.setIsUpdateName(YesNo.YES);
         }
+        SysDepartmentInfo dep = this.getById(sysDepartmentInfo.getId());
         //  如果当前部门设置不显示
         if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
             UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
@@ -176,6 +182,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         log.info("修改部门入库-{}",sysDepartmentInfo);
         sysDepartmentInfo.setIsEdit(YesNo.YES);
+        sysDepartmentInfo.setAdminAccount(dep.getAdminAccount());
         this.saveOrUpdate(sysDepartmentInfo);
     }
 
@@ -277,6 +284,19 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unionStaffDepartMapper.insert(unSd);
         //  设置部门负责人 清除改员工token 让改员工重新登录
         SysStaffInfo staffInfo = this.staffInfoService.getById(dto.getStaffId());
+        QueryWrapper<UnionStaffPosition> uspQw = new QueryWrapper<>();
+        uspQw.lambda().eq(UnionStaffPosition::getStaffId, dto.getStaffId());
+        UnionStaffPosition usp = this.unionStaffPositionService.getOne(uspQw);
+        if (DataUtil.isNotEmpty(usp)) {
+            SysJobPosition job = this.sysJobPositionMapper.selectById(usp.getPositionId());
+            if (!org.apache.commons.lang3.StringUtils.equals(job.getDepartId(), dto.getId())) {
+                this.unionStaffPositionService.remove(uspQw);
+            }
+        }
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, staffInfo.getUserId());
+        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+        this.sysUserInfoService.update(userUw);
         this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
 
