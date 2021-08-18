@@ -291,6 +291,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
                 this.unionStaffPositionService.remove(uspQw);
             }
         }
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, staffInfo.getUserId());
+        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+        this.sysUserInfoService.update(userUw);
         this.checkUtil.removeUserToken(staffInfo.getUserId());
     }
 
