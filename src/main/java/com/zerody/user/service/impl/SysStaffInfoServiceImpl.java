@@ -1465,7 +1465,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo dep  = this.sysDepartmentInfoMapper.selectOne(depQw);
             //不是部门管理员获取自己的线索总汇
             if(dep == null){
-                iPage = new Page<>(dto.getCurrent(), dto.getCurrent());
+                iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
                 iPage.setRecords(new ArrayList<>());
                 iPage.getRecords().add(userInfo);
                 iPage.setTotal(1);
