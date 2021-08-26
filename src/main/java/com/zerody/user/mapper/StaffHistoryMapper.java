@@ -10,6 +10,4 @@ import com.zerody.user.vo.StaffHistoryVo;
  */
 
 public interface StaffHistoryMapper extends BaseMapper<StaffHistory> {
-
-    StaffHistoryVo queryStaffHistory(String staffId);
 }
