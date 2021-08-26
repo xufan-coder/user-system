@@ -604,12 +604,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
         staffHonor.setStaffId(id);
         staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
-        userInfo.setStaffHonor(this.staffHistoryService.queryStaffHistory(staffHonor));
+        List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
+        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+            userInfo.setStaffHonor(staffHistoryVos);
+        }
         //惩罚记录
         StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
         staffPunishment.setStaffId(id);
         staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-        userInfo.setStaffPunishment(this.staffHistoryService.queryStaffHistory(staffPunishment));
+        List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
+        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+            userInfo.setStaffPunishment(staffHistoryVos1);
+        }
         return userInfo;
     }
 
