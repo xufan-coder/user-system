@@ -59,7 +59,7 @@
       sui.status = 3 AS teamwork,
       sui.status = 1 AS stops,
       ssi.id = #{staff.staffId} AS isAdmin,
-      sb.id is not null AS is_block
+      sb.id is not null AS is_block,
       ssi.evaluate,
       ssi.resume_url
       FROM
