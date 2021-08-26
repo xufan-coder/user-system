@@ -5,6 +5,7 @@ import com.zerody.common.enums.customer.EducationBackgroundEnum;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -16,16 +17,16 @@ import java.util.Date;
 public class SysUserInfoVo {
 
     /**
-     *   userID
+     * userID
      */
     private String id;
     /**
-    *   企业名称
-    */
+     * 企业名称
+     */
     private String companyName;
     /**
-    *   企业ID
-    */
+     * 企业ID
+     */
     private String companyId;
 
     //员工id
@@ -97,10 +98,14 @@ public class SysUserInfoVo {
     //婚姻状态
     private Integer maritalStatus;
 
-    /** crmOpenId **/
+    /**
+     * crmOpenId
+     **/
     private String crmOpenId;
 
-    /** scrmOpenId **/
+    /**
+     * scrmOpenId
+     **/
     private String scrmOpenId;
 
     //角色名
@@ -113,50 +118,86 @@ public class SysUserInfoVo {
     private String positionName;
 
     /**
-    *   角色ID
-    */
+     * 角色ID
+     */
     private String roleId;
 
     /**
-    *   部门ID
-    */
+     * 部门ID
+     */
     private String departId;
 
     /**
-    *   岗位ID
-    */
+     * 岗位ID
+     */
     private String positionId;
 
-    /** 紧急联系姓名 */
+    /**
+     * 紧急联系姓名
+     */
     private String urgentName;
 
-    /** 紧急联系人关系 */
+    /**
+     * 紧急联系人关系
+     */
     private String urgentRelation;
 
-    /** 紧急联系人电话 */
+    /**
+     * 紧急联系人电话
+     */
     private String urgentPhone;
 
-    /** 家庭成员姓名 */
+    /**
+     * 家庭成员姓名
+     */
     private String familyName;
 
-    /** 家庭成员关系 */
+    /**
+     * 家庭成员关系
+     */
     private String familyRelation;
 
-    /** 家庭成员电话 */
+    /**
+     * 家庭成员电话
+     */
     private String familyPhone;
 
-    /** 家庭成员职业 */
+    /**
+     * 家庭成员职业
+     */
     private String familyJob;
 
-    /** 家庭成员地址 */
+    /**
+     * 家庭成员地址
+     */
     private String familyAddr;
 
-    /** 上级名称 */
+    /**
+     * 上级名称
+     */
     private String superiorName;
 
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+    /**
+     * 员工评价
+     */
+    private String evaluate;
+    /**
+     * 员工简历url
+     */
+    private String resumeUrl;
+    /**
+     * 荣耀记录
+     */
+    private List<StaffHistoryVo> staffHonor;
+    /**
+     * 惩罚记录
+     */
+    private List<StaffHistoryVo> staffPunishment;
 
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);

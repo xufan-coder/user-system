@@ -33,20 +33,19 @@ import java.util.Random;
 public interface SysStaffInfoService extends IService<SysStaffInfo> {
     static String getInitPwd() {
         StringBuffer sb = new StringBuffer();
-        sb.append((char)(Math.random()*26+'A'));
+        sb.append((char) (Math.random() * 26 + 'A'));
         double num = Math.random() * 10;
-        if(num<1) {
+        if (num < 1) {
             num += 1;
         }
-        sb.append((int)(num*100000));
-        sb.append((char)(Math.random()*26+'a'));
+        sb.append((int) (num * 100000));
+        sb.append((char) (Math.random() * 26 + 'a'));
         return sb.toString();
     }
 
     SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
 
     IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
-
 
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
@@ -72,28 +71,30 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
      * 获取员工数据，包含公司，部门，岗位
+     *
      * @param userId
      * @return
      */
-	UserDeptVo getUserDeptVo(String userId);
+    UserDeptVo getUserDeptVo(String userId);
 
-	/**
-	 *  获取员工下属部门
-	 * @param userId
-	 * @return
-	 */
-	List<String> getUserSubordinates(String userId);
+    /**
+     * 获取员工下属部门
+     *
+     * @param userId
+     * @return
+     */
+    List<String> getUserSubordinates(String userId);
 
 
     /**
+     * 获取下级员工 线索汇总
      *
-     *  获取下级员工 线索汇总
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/9 12:52
-     * @param                userId 当前登录用户id
-     * @param                dto 分页参数
-     * @return               java.lang.Object
+     * @param userId 当前登录用户id
+     * @param dto    分页参数
+     * @return java.lang.Object
+     * @author PengQiang
+     * @description DELL
+     * @date 2021/1/9 12:52
      */
     IPage<SysUserClewCollectVo> getSubordinatesUserClewCollect(PageQueryDto dto, String userId);
 
@@ -118,7 +119,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
 
-    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param,  HttpServletResponse res) throws IOException, ParseException;
+    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res) throws IOException, ParseException;
 
     StaffInfoVo getStaffInfoByCardUserId(String cardUserId);
 
