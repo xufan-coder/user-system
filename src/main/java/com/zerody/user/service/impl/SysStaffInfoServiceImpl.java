@@ -408,20 +408,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         this.saveOrUpdate(staff);
         //荣耀记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())&&setSysUserInfoDto.getStaffHistoryHonor().size()>0) {
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.HONOR.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+        }else{
+            StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
+            staffHistoryDto.setType(StaffHistoryTypeEnum.HONOR.name());
+            staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
+            this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
         //惩罚记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())) {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())&&setSysUserInfoDto.getStaffHistoryPunishment().size()>0) {
             setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+        }else{
+            StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
+            staffHistoryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
+            this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
         //当状态为在职时判断是否在其他公司入职
         if (oldUserInfo.getStatus().intValue() == StatusEnum.stop.getValue() &&

@@ -35,10 +35,6 @@ public class StaffHistoryDto {
      */
     private String time;
     /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
      * 图片
      */
     private List<String> imageList;
