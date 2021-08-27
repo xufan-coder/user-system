@@ -686,6 +686,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //删除员工历史记录和图片
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setId(staffId);
+        staffHistoryQueryDto.setStaffId(staffId);
         this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
 
         this.oauthFeignService.removeToken(userIds);
