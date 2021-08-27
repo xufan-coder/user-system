@@ -66,7 +66,7 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
         imageQueryWrapper.lambda().eq(Image::getConnectId, staffHistoryQueryDto.getId());
         imageQueryWrapper.lambda().eq(Image::getImageType, staffHistoryQueryDto.getType());
-        this.imageService.removeById(imageQueryWrapper);
+        this.imageService.remove(imageQueryWrapper);
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
         queryWrapper.lambda().eq(StaffHistory::getType, staffHistoryQueryDto.getType());
@@ -86,7 +86,7 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
             staffHistoryDto.getImageList().forEach(item -> {
                 Image image = new Image();
                 image.setId(UUIDutils.getUUID32());
-                image.setConnectId(staffHistory.getId());
+                image.setConnectId(staffHistory.getStaffId());
                 image.setImageType(staffHistoryDto.getType());
                 image.setCreateTime(new Date());
                 image.setImageUrl(item);
