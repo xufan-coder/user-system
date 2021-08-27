@@ -59,7 +59,9 @@
       sui.status = 3 AS teamwork,
       sui.status = 1 AS stops,
       ssi.id = #{staff.staffId} AS isAdmin,
-      sb.id is not null AS is_block
+      sb.id is not null AS is_block,
+      ssi.evaluate,
+      ssi.resume_url
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -163,7 +165,9 @@
         sui.create_time,
         sui.urgent_name,
         sui.urgent_relation,
-        sui.urgent_phone
+        sui.urgent_phone,
+        ssi.evaluate,
+        ssi.resume_url
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
