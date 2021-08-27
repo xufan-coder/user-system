@@ -46,11 +46,13 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         staffHistory.setId(UUIDutils.getUUID32());
         if (Objects.nonNull(staffHistoryDto.getImageList())) {
             staffHistoryDto.getImageList().forEach(item -> {
-                item.setId(UUIDutils.getUUID32());
-                item.setConnectId(staffHistory.getId());
-                item.setImageType(staffHistoryDto.getType());
-                item.setCreateTime(new Date());
-                imageService.save(item);
+                Image image = new Image();
+                image.setId(UUIDutils.getUUID32());
+                image.setConnectId(staffHistory.getId());
+                image.setImageType(staffHistoryDto.getType());
+                image.setCreateTime(new Date());
+                image.setImageUrl(item);
+                imageService.save(image);
             });
         }
         this.save(staffHistory);
@@ -78,18 +80,20 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         }
         StaffHistory staffHistory = new StaffHistory();
         BeanUtils.copyProperties(staffHistoryDto, staffHistory);
-        StaffHistoryQueryDto staffHistoryQueryDto=new StaffHistoryQueryDto();
+        StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(staffHistoryDto.getStaffId());
         staffHistoryQueryDto.setId(staffHistoryDto.getStaffId());
         staffHistoryQueryDto.setType(staffHistoryDto.getType());
         this.removeStaffHistory(staffHistoryQueryDto);
         if (Objects.nonNull(staffHistoryDto.getImageList())) {
             staffHistoryDto.getImageList().forEach(item -> {
-                item.setId(UUIDutils.getUUID32());
-                item.setConnectId(staffHistory.getId());
-                item.setImageType(staffHistoryDto.getType());
-                item.setCreateTime(new Date());
-                imageService.save(item);
+                Image image = new Image();
+                image.setId(UUIDutils.getUUID32());
+                image.setConnectId(staffHistory.getId());
+                image.setImageType(staffHistoryDto.getType());
+                image.setCreateTime(new Date());
+                image.setImageUrl(item);
+                imageService.save(image);
             });
             this.save(staffHistory);
         }
@@ -102,7 +106,7 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getStaffId()), StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), StaffHistory::getType, staffHistoryQueryDto.getType());
-        queryWrapper.lambda().orderByDesc(StaffHistory::getTime,StaffHistory::getCreateTime);
+        queryWrapper.lambda().orderByDesc(StaffHistory::getTime, StaffHistory::getCreateTime);
         List<StaffHistory> list = this.list(queryWrapper);
         if (Objects.nonNull(list)) {
             for (StaffHistory staffHistory : list) {
