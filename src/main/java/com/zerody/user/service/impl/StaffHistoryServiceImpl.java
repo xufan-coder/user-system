@@ -65,11 +65,11 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         }
         QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
         imageQueryWrapper.lambda().eq(Image::getConnectId, staffHistoryQueryDto.getId());
-        imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()),Image::getImageType, staffHistoryQueryDto.getType());
+        imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), Image::getImageType, staffHistoryQueryDto.getType());
         this.imageService.remove(imageQueryWrapper);
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
-        queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()),StaffHistory::getType, staffHistoryQueryDto.getType());
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), StaffHistory::getType, staffHistoryQueryDto.getType());
         this.remove(queryWrapper);
     }
 
@@ -113,7 +113,12 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getId()), Image::getConnectId, staffHistory.getId());
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getType()), Image::getImageType, staffHistory.getType());
                 List<Image> imageList = this.imageService.list(imageQueryWrapper);
-                staffHistoryVo.setImageList(imageList);
+                if (Objects.nonNull(imageList)) {
+                    staffHistoryVo.setImageList(imageList);
+                } else {
+                    staffHistoryVo.setImageList(Lists.newArrayList());
+                }
+
                 staffHistoryVos.add(staffHistoryVo);
             }
         }
