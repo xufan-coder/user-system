@@ -244,7 +244,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.HONOR.name());
-                item.setStaffId(setSysUserInfoDto.getStaffId());
+                item.setStaffId(staff.getId());
                 staffHistoryService.addStaffHistory(item);
             });
         }
@@ -252,7 +252,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())) {
             setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-                item.setStaffId(setSysUserInfoDto.getStaffId());
+                item.setStaffId(staff.getId());
                 staffHistoryService.addStaffHistory(item);
             });
         }
