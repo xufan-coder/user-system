@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.google.common.collect.Lists;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
@@ -611,6 +612,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
         if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
             userInfo.setStaffHistoryHonor(staffHistoryVos);
+        } else {
+            userInfo.setStaffHistoryHonor(Lists.newArrayList());
         }
         //惩罚记录
         StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
@@ -619,6 +622,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
         if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
             userInfo.setStaffHistoryPunishment(staffHistoryVos1);
+        } else {
+            userInfo.setStaffHistoryPunishment(Lists.newArrayList());
         }
         return userInfo;
     }
