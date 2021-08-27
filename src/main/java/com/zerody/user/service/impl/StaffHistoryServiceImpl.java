@@ -75,9 +75,6 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
 
     @Override
     public void modifyStaffHistory(StaffHistoryDto staffHistoryDto) {
-        if (StringUtils.isEmpty(staffHistoryDto.getId())) {
-            throw new DefaultException("参数ID不能为空");
-        }
         StaffHistory staffHistory = new StaffHistory();
         BeanUtils.copyProperties(staffHistoryDto, staffHistory);
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
