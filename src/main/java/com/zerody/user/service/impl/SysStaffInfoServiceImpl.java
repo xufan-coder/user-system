@@ -683,6 +683,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         departUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
         departUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffId);
         this.sysDepartmentInfoService.update(departUw);
+        //删除员工历史记录和图片
+        StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
+        staffHistoryQueryDto.setId(staffId);
+        this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
 
         this.oauthFeignService.removeToken(userIds);
     }
