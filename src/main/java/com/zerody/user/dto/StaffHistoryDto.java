@@ -33,7 +33,7 @@ public class StaffHistoryDto {
     /**
      * 时间
      */
-    private Date time;
+    private String time;
     /**
      * 创建时间
      */

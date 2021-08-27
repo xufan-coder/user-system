@@ -41,7 +41,7 @@ public class StaffHistoryVo {
      * 时间
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy年MM月")
-    private Date time;
+    private String time;
     /**
      * 图片
      */
