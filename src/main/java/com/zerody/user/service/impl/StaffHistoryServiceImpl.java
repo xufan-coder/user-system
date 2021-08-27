@@ -92,9 +92,9 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
                 image.setImageUrl(item);
                 imageService.save(image);
             });
+            staffHistory.setCreateTime(new Date());
+            this.save(staffHistory);
         }
-        staffHistory.setCreateTime(new Date());
-        this.save(staffHistory);
     }
 
     @Override
