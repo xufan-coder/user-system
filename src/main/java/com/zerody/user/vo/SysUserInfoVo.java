@@ -193,11 +193,11 @@ public class SysUserInfoVo {
     /**
      * 荣耀记录
      */
-    private List<StaffHistoryVo> staffHonor;
+    private List<StaffHistoryVo> staffHistoryHonor;
     /**
      * 惩罚记录
      */
-    private List<StaffHistoryVo> staffPunishment;
+    private List<StaffHistoryVo> staffHistoryPunishment;
 
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);

@@ -610,7 +610,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
         List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
         if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
-            userInfo.setStaffHonor(staffHistoryVos);
+            userInfo.setStaffHistoryHonor(staffHistoryVos);
         }
         //惩罚记录
         StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
@@ -618,7 +618,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
         List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
         if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
-            userInfo.setStaffPunishment(staffHistoryVos1);
+            userInfo.setStaffHistoryPunishment(staffHistoryVos1);
         }
         return userInfo;
     }
