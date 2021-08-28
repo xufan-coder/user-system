@@ -642,7 +642,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffPunishment.setStaffId(id);
         staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
         List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
-        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+        if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
             userInfo.setStaffHistoryPunishment(staffHistoryVos1);
         } else {
             userInfo.setStaffHistoryPunishment(Lists.newArrayList());
