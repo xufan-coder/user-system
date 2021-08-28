@@ -110,10 +110,10 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
             for (StaffHistory staffHistory : list) {
                 BeanUtils.copyProperties(staffHistory, staffHistoryVo);
                 QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
-                imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getId()), Image::getConnectId, staffHistory.getId());
+                imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getStaffId()), Image::getConnectId, staffHistory.getStaffId());
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getType()), Image::getImageType, staffHistory.getType());
                 List<Image> imageList = this.imageService.list(imageQueryWrapper);
-                if (Objects.nonNull(imageList)) {
+                if (Objects.nonNull(imageList) && imageList.size() > 0) {
                     staffHistoryVo.setImageList(imageList);
                 } else {
                     staffHistoryVo.setImageList(Lists.newArrayList());
