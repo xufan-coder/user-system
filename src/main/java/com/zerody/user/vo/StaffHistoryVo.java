@@ -45,5 +45,5 @@ public class StaffHistoryVo {
     /**
      * 图片
      */
-    private List<Image> imageList;
+    private List<String> imageList;
 }

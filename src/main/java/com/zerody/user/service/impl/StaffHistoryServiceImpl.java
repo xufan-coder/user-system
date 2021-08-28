@@ -114,8 +114,12 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getStaffId()), Image::getConnectId, staffHistory.getStaffId());
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getType()), Image::getImageType, staffHistory.getType());
                 List<Image> imageList = this.imageService.list(imageQueryWrapper);
+                List<String> imageUrlList = Lists.newArrayList();
                 if (Objects.nonNull(imageList) && imageList.size() > 0) {
-                    staffHistoryVo.setImageList(imageList);
+                    for (Image image : imageList) {
+                        imageUrlList.add(image.getImageUrl());
+                    }
+                    staffHistoryVo.setImageList(imageUrlList);
                 } else {
                     staffHistoryVo.setImageList(Lists.newArrayList());
                 }
