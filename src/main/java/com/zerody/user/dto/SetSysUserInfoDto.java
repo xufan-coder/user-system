@@ -14,39 +14,61 @@ import java.util.List;
  * @Deacription TODO
  */
 @Data
-public class SetSysUserInfoDto extends SysUserInfo{
+public class SetSysUserInfoDto extends SysUserInfo {
 
     /**
-    *    企业ID
-    */
+     * 企业ID
+     */
     @NotEmpty(message = "请选择企业！")
     private String companyId;
 
     /**
-     *    员工id
+     * 员工id
      */
     private String staffId;
 
     /**
-    *    角色id
-    */
+     * 角色id
+     */
     private String roleId;
 
     /**
-    *    岗位id
-    */
+     * 岗位id
+     */
     private String positionId;
 
     /**
-    *    部门id
-    */
+     * 部门id
+     */
     private String departId;
 
     /**
-    *    员工状态
-    */
+     * 员工状态
+     */
     private Integer status;
 
-    /** 头像 */
+    /**
+     * 头像
+     */
     private String avatar;
+
+    /**
+     * 员工评价
+     */
+    private String evaluate;
+
+    /**
+     * 员工简历url
+     */
+    private String resumeUrl;
+    /**
+     * 荣耀
+     */
+    private List<StaffHistoryDto> staffHistoryHonor;
+    /**
+     * 惩罚
+     */
+    private List<StaffHistoryDto> staffHistoryPunishment;
+
+
 }

@@ -105,6 +105,8 @@
         JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
         JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         <where>
+            sb.state = 'BLOCK'
+            AND
             sb.mobile = #{mobile}
         </where>
     </select>

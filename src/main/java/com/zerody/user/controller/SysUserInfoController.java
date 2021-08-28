@@ -711,7 +711,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<Object> doPerformanceReviewsExport(@RequestBody UserPerformanceReviewsPageDto param, HttpServletResponse res){
         try {
 //            checkUtil.SetUserPositionInfo(param);
-            if (UserUtils.getUser().isBackAdmin()) {
+            if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             param.setCurrent(1);
