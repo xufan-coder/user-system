@@ -104,7 +104,8 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getStaffId()), StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), StaffHistory::getType, staffHistoryQueryDto.getType());
-        queryWrapper.lambda().orderByDesc(StaffHistory::getTime, StaffHistory::getCreateTime);
+        queryWrapper.lambda().orderByDesc(StaffHistory::getTime);
+        queryWrapper.lambda().orderByDesc(StaffHistory::getCreateTime);
         List<StaffHistory> list = this.list(queryWrapper);
         if (Objects.nonNull(list)) {
             for (StaffHistory staffHistory : list) {
