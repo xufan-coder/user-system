@@ -59,7 +59,9 @@
       sui.status = 3 AS teamwork,
       sui.status = 1 AS stops,
       ssi.id = #{staff.staffId} AS isAdmin,
-      sb.id is not null AS is_block
+      sb.id is not null AS is_block,
+      ssi.evaluate,
+      ssi.resume_url
       FROM
       sys_user_info sui
       JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -69,7 +71,7 @@
       LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
       LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
       LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
-      LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id
+      LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
       <where>
           ssi.deleted = 0 and sui.status != -1
           <if test="staff.companyId != null and staff.companyId != ''">
@@ -163,7 +165,9 @@
         sui.create_time,
         sui.urgent_name,
         sui.urgent_relation,
-        sui.urgent_phone
+        sui.urgent_phone,
+        ssi.evaluate,
+        ssi.resume_url
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
