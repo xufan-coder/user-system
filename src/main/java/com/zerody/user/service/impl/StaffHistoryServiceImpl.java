@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,16 +79,12 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
     public void modifyStaffHistory(StaffHistoryDto staffHistoryDto) {
         StaffHistory staffHistory = new StaffHistory();
         BeanUtils.copyProperties(staffHistoryDto, staffHistory);
-        StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
-        staffHistoryQueryDto.setStaffId(staffHistoryDto.getStaffId());
-        staffHistoryQueryDto.setId(staffHistoryDto.getStaffId());
-        staffHistoryQueryDto.setType(staffHistoryDto.getType());
-        this.removeStaffHistory(staffHistoryQueryDto);
+        staffHistory.setId(UUIDutils.getUUID32());
         if (Objects.nonNull(staffHistoryDto.getImageList())) {
             staffHistoryDto.getImageList().forEach(item -> {
                 Image image = new Image();
                 image.setId(UUIDutils.getUUID32());
-                image.setConnectId(staffHistory.getStaffId());
+                image.setConnectId(staffHistory.getId());
                 image.setImageType(staffHistoryDto.getType());
                 image.setCreateTime(new Date());
                 image.setImageUrl(item);
@@ -100,7 +98,6 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
     @Override
     public List<StaffHistoryVo> queryStaffHistory(StaffHistoryQueryDto staffHistoryQueryDto) {
         List<StaffHistoryVo> staffHistoryVos = Lists.newArrayList();
-        StaffHistoryVo staffHistoryVo = new StaffHistoryVo();
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getStaffId()), StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), StaffHistory::getType, staffHistoryQueryDto.getType());
@@ -109,9 +106,10 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         List<StaffHistory> list = this.list(queryWrapper);
         if (Objects.nonNull(list)) {
             for (StaffHistory staffHistory : list) {
+                StaffHistoryVo staffHistoryVo = new StaffHistoryVo();
                 BeanUtils.copyProperties(staffHistory, staffHistoryVo);
                 QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
-                imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getStaffId()), Image::getConnectId, staffHistory.getStaffId());
+                imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getId()), Image::getConnectId, staffHistory.getId());
                 imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistory.getType()), Image::getImageType, staffHistory.getType());
                 List<Image> imageList = this.imageService.list(imageQueryWrapper);
                 List<String> imageUrlList = Lists.newArrayList();
@@ -120,11 +118,12 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
                         imageUrlList.add(image.getImageUrl());
                     }
                     staffHistoryVo.setImageList(imageUrlList);
+                    staffHistoryVos.add(staffHistoryVo);
                 } else {
                     staffHistoryVo.setImageList(Lists.newArrayList());
+                    staffHistoryVos.add(staffHistoryVo);
                 }
 
-                staffHistoryVos.add(staffHistoryVo);
             }
         }
         return staffHistoryVos;
