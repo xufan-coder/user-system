@@ -65,13 +65,17 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         if (StringUtils.isEmpty(staffHistoryQueryDto.getId())) {
             throw new DefaultException("参数ID不能为空");
         }
-        QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
-        imageQueryWrapper.lambda().eq(Image::getConnectId, staffHistoryQueryDto.getId());
-        imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), Image::getImageType, staffHistoryQueryDto.getType());
-        this.imageService.remove(imageQueryWrapper);
+
         QueryWrapper<StaffHistory> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StaffHistory::getStaffId, staffHistoryQueryDto.getStaffId());
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(staffHistoryQueryDto.getType()), StaffHistory::getType, staffHistoryQueryDto.getType());
+        List<StaffHistory> staffHistories=this.list(queryWrapper);
+        staffHistories.forEach(item->{
+            QueryWrapper<Image> imageQueryWrapper = new QueryWrapper<>();
+            imageQueryWrapper.lambda().eq(Image::getConnectId, item.getId());
+            imageQueryWrapper.lambda().eq(StringUtils.isNotEmpty(item.getType()), Image::getImageType, item.getType());
+            this.imageService.remove(imageQueryWrapper);
+        });
         this.remove(queryWrapper);
     }
 
