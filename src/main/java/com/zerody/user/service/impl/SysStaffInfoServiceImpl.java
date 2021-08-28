@@ -407,14 +407,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         this.saveOrUpdate(staff);
+        //删除
+        StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
+        staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
+        staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())&&setSysUserInfoDto.getStaffHistoryHonor().size()>0) {
+            staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
+            this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.HONOR.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
         }else{
+            staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
+            this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
@@ -422,12 +430,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         //惩罚记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())&&setSysUserInfoDto.getStaffHistoryPunishment().size()>0) {
+            staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
         }else{
+            staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
