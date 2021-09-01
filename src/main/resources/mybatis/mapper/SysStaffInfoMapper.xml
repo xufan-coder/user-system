@@ -167,7 +167,8 @@
         sui.urgent_relation,
         sui.urgent_phone,
         ssi.evaluate,
-        ssi.resume_url
+        ssi.resume_url,
+        ssi.leave_reason
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -595,14 +596,33 @@
         SELECT
         ssi.user_id AS userId,
         ssi.user_name AS userName,
+        #{departId} AS depart_id,
         3 AS type
         FROM
         sys_staff_info AS ssi
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
-        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <if test="departId neq null and departId neq ''">
+            JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        </if>
         <where>
-            (sui.status = 0 OR sui.status = 3) AND
-            usd.department_id = #{departId} AND ssi.user_id != #{userId}
+            (sui.status = 0 OR sui.status = 3)
+            <if test="departId neq null and departId neq ''">
+                AND usd.department_id = #{departId}
+            </if>
+            <if test="companyId neq null and companyId neq ''">
+                AND NOT EXISTS (
+                    SELECT
+                        *
+                    FROM
+                        union_staff_depart AS usd
+                    JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+                    WHERE
+                        usd.staff_id = ssi.id
+                     AND sdi.comp_id = #{companyId}
+                )
+                AND ssi.comp_id = #{companyId}
+            </if>
+            AND ssi.user_id != #{userId}
         </where>
     </select>
     <select id="getCompanyIdByUserId" resultType="java.lang.String">

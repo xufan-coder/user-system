@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName UserStructureVo
@@ -31,4 +33,6 @@ public class UserStructureVo {
 
     /** 用户名称 */
     private String userName;
+
+    private List<UserStructureVo> childrens;
 }

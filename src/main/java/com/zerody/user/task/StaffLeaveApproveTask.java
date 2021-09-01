@@ -38,7 +38,7 @@ public class StaffLeaveApproveTask {
             // 获取今天离职用户
             List<ResignationApplication> list = resignationApplicationService.getLeaveUsers();
             for (ResignationApplication user : list) {
-                sysStaffInfoService.updateStaffStatus(user.getUserId(), StatusEnum.stop.getValue());
+                sysStaffInfoService.updateStaffStatus(user.getUserId(), StatusEnum.stop.getValue(), user.getReason());
             }
         } catch (Exception e) {
             r.setMsg(e.getMessage());
