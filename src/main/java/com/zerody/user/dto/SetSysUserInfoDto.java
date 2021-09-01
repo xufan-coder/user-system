@@ -61,6 +61,11 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 员工简历url
      */
     private String resumeUrl;
+
+    /** 离职原因 */
+    private String leaveReason;
+
+
     /**
      * 荣耀
      */

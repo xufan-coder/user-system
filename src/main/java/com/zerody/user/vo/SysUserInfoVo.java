@@ -199,6 +199,9 @@ public class SysUserInfoVo {
      */
     private List<StaffHistoryVo> staffHistoryPunishment;
 
+    /** 离职原因 */
+    private String leaveReason;
+
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
