@@ -21,6 +21,7 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.dto.DirectLyDepartOrUserQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
@@ -322,31 +323,45 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     @Override
-    public List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId,  UserVo user) {
+    public List<UserStructureVo> getDirectLyDepartOrUser(DirectLyDepartOrUserQueryDto param) {
         List<UserStructureVo> userStructureVos = userStructureVos = new ArrayList<>();
-        if (!DataUtil.isEmpty(user)) {
-            AdminVo admin =  this.staffInfoService.getIsAdmin(UserUtils.getUser());
-            if (admin.getIsCompanyAdmin()) {
-                //如果企业id并且 部门id为空 并且 是企业管理员 则返回企业名称跟id 类型为1
-                UserStructureVo companyInfo =  this.companyMapper.getCompanyNameById(user.getCompanyId());
-                userStructureVos.add(companyInfo);
-            } else if (admin.getIsDepartAdmin()) {
-                //如果企业id并且 部门id为空 并且 是部门管理员 则返回部门名称跟id 类型为2
-                UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
-                if (DataUtil.isEmpty(departInfo)) {
-                    return null;
-                }
-                userStructureVos.add(departInfo);
-            } else {
+        if (StringUtils.isNotEmpty(param.getUserId())) {
+            return null;
+        }
+        if (StringUtils.isNotEmpty(param.getDepartId())) {
+            UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(param.getDepartId());
+            if (DataUtil.isEmpty(departInfo)) {
                 return null;
             }
-            return userStructureVos;
+            userStructureVos.add(departInfo);
+        } else {
+            UserStructureVo companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId());
+            userStructureVos.add(companyInfo);
         }
-        if (StringUtils.isNotEmpty(departId)) {
-            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId, UserUtils.getUser().getUserId());
-        }
-        List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
-        userStructureVos.addAll(departInfos);
+        this.getStructureChildrens(userStructureVos);
+//        if (!DataUtil.isEmpty(user)) {
+//            AdminVo admin =  this.staffInfoService.getIsAdmin(UserUtils.getUser());
+//            if (admin.getIsCompanyAdmin()) {
+//                //如果企业id并且 部门id为空 并且 是企业管理员 则返回企业名称跟id 类型为1
+//                UserStructureVo companyInfo =  this.companyMapper.getCompanyNameById(user.getCompanyId());
+//                userStructureVos.add(companyInfo);
+//            } else if (admin.getIsDepartAdmin()) {
+//                //如果企业id并且 部门id为空 并且 是部门管理员 则返回部门名称跟id 类型为2
+//                UserStructureVo departInfo = this.sysDepartmentInfoMapper.getDepartNameById(user.getDeptId());
+//                if (DataUtil.isEmpty(departInfo)) {
+//                    return null;
+//                }
+//                userStructureVos.add(departInfo);
+//            } else {
+//                return null;
+//            }
+//            return userStructureVos;
+//        }
+//        if (StringUtils.isNotEmpty(departId)) {
+//            userStructureVos = this.stafffMapper.getUserNameByDepartId(departId, UserUtils.getUser().getUserId());
+//        }
+//        List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(companyId, departId);
+//        userStructureVos.addAll(departInfos);
         return userStructureVos;
     }
 
@@ -543,6 +558,23 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return subs;
         }
         return new ArrayList<>();
+    }
+
+    private void getStructureChildrens(List<UserStructureVo> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        for (UserStructureVo info : list) {
+
+            List<UserStructureVo> users = this.stafffMapper.getUserNameByDepartId(info.getCompanyId(),info.getDepartId(), UserUtils.getUser().getUserId());
+            info.setChildrens(users);
+            List<UserStructureVo> departInfos = this.sysDepartmentInfoMapper.getDepartNameByCompanyIdOrParentId(info.getCompanyId(), info.getDepartId());
+            if (CollectionUtils.isEmpty(info.getChildrens())) {
+                info.setChildrens(new ArrayList<>());
+            }
+            info.getChildrens().addAll(departInfos);
+            this.getStructureChildrens(departInfos);
+        }
     }
 
 }

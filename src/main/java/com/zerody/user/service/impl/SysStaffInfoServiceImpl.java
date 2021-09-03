@@ -337,7 +337,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason) {
         if (StringUtils.isEmpty(userId)) {
             throw new DefaultException("用户idid不能为空");
         }
@@ -352,6 +352,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
         staffUw.lambda().set(SysStaffInfo::getStatus, status);
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
+        staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
         this.update(staffUw);
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
@@ -362,6 +363,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+        if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
+            throw new DefaultException("离职原因不能为空");
+        }
         log.info("修改用户信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
         SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(setSysUserInfoDto.getId());
         SysUserInfo sysUserInfo = new SysUserInfo();
@@ -406,6 +410,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setUserName(setSysUserInfoDto.getUserName());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
+        staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         this.saveOrUpdate(staff);
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();

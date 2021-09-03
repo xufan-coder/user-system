@@ -70,4 +70,7 @@ public class SysStaffInfo extends BaseModel {
      * 是否删除
      */
     private Integer deleted;
+
+    /** 离职原因 */
+    private String leaveReason;
 }
