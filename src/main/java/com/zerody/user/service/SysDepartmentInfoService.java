@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.DirectLyDepartOrUserQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -134,7 +135,7 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
      * @param                user
      * @return               java.util.List<com.zerody.user.api.vo.UserDepartInfoVo>
      */
-    List<UserStructureVo> getDirectLyDepartOrUser(String companyId, String departId, UserVo user);
+    List<UserStructureVo> getDirectLyDepartOrUser(DirectLyDepartOrUserQueryDto param);
 
     com.zerody.user.api.vo.SysUserInfo getChargeUser(String departId);
 

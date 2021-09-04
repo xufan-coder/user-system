@@ -17,12 +17,14 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.DepartmentInfoVo;
 import com.zerody.user.api.vo.SysUserInfo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
+import com.zerody.user.dto.DirectLyDepartOrUserQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.DepartSubordinateVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
@@ -52,6 +54,9 @@ public class SysDepartmentInfoController implements DepartRemoteService {
 
     @Autowired
     private SysStaffInfoService staffService;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     /**
     *    根据企业获取部门
@@ -238,15 +243,14 @@ public class SysDepartmentInfoController implements DepartRemoteService {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
      */
     @RequestMapping(value = "/get/directly-depart-user", method = RequestMethod.GET)
-    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUser(@RequestParam(value = "companyId", required = false) String companyId,
-                                                  @RequestParam(value = "departId", required = false) String departId){
+    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUser(DirectLyDepartOrUserQueryDto param){
 
         try {
-            UserVo user = null;
-            if (StringUtils.isEmpty(companyId) && StringUtils.isEmpty(departId)) {
-                user = UserUtils.getUser();
-            }
-            List<UserStructureVo> departs = this.sysDepartmentInfoService.getDirectLyDepartOrUser(companyId, departId, user);
+            param.setCompanyId(null);
+            param.setDepartId(null);
+            param.setUserId(null);
+            this.checkUtil.SetUserPositionInfo(param);
+            List<UserStructureVo> departs = this.sysDepartmentInfoService.getDirectLyDepartOrUser(param);
             return R.success(departs);
         } catch (DefaultException e) {
             log.error("获取下级直属部门错误:{}", e.getMessage(),e);

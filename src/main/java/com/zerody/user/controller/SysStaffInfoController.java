@@ -119,7 +119,7 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
     public DataResult<Object> updateStaffStatus(@PathVariable(name = "id") String userId, @PathVariable(name = "status") Integer status){
         try {
-            sysStaffInfoService.updateStaffStatus(userId, status);
+            sysStaffInfoService.updateStaffStatus(userId, status, null);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工状态错误:{}",e.getMessage());

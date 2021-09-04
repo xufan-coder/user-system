@@ -95,6 +95,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         userUw.lambda().eq(true, SysUserInfo::getId, blac.getUserId());
         this.userInfoService.update(userUw);
         staff.setStatus(StatusEnum.stop.getValue());
+        staff.setLeaveReason(param.getBlacklist().getReason());
         this.staffInfoService.updateById(staff);
         this.checkUtil.removeUserToken(staff.getUserId());
         if (CollectionUtils.isEmpty(param.getImages())) {
