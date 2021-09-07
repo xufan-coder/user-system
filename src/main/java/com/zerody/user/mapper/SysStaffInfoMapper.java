@@ -114,6 +114,17 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      */
     List<BosStaffInfoVo> getStaff(@Param("companyId")String companyId, @Param("departId")String departId, @Param("positionId")String positionId);
 
+    /**************************************************************************************************
+     **
+     *  通过 企业查询员工
+     *
+     * @param companyId
+     * @return {@link List<BosStaffInfoVo> }
+     * @author DaBai
+     * @date 2021/9/7  14:56
+     */
+    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("companyId")String companyId);
+
     /**
      *
      *  分页查询

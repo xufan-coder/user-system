@@ -17,6 +17,7 @@ import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
@@ -286,6 +287,15 @@ public class SysStaffInfoController {
                                                      @RequestParam(value = "positionId",required = false) String positionId){
         return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId));
     }
+
+    /**
+     *   按企业获取员工
+     */
+    @RequestMapping(value = "/get/by-company", method = RequestMethod.GET)
+    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(@RequestParam(value = "companyId",required = true)String companyId){
+        return R.success(sysStaffInfoService.getStaffByCompany(companyId));
+    }
+
 
 
     /**
