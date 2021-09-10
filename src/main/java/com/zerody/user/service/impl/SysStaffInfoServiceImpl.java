@@ -1937,23 +1937,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
             CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
             dimeVo.setId(CustomerQueryType.POST);
-            dimeVo.setId("本企业客户");
+            dimeVo.setName("本企业客户");
             result.add(0, dimeVo);
         } else if (userType.getUserType().intValue() == UserTypeInfo.DEPUTY_GENERAL_MANAGERv) {
             result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
             CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
             dimeVo.setId(CustomerQueryType.SUBORDINATE);
-            dimeVo.setId("本部门及下级部门负责的");
+            dimeVo.setName("本部门及下级部门负责的");
             result.add(0, dimeVo);
             dimeVo = new CustomerQueryDimensionalityVo();
             dimeVo.setId(CustomerQueryType.SUBORDINATE);
-            dimeVo.setId("本部门的");
+            dimeVo.setName("本部门的");
             result.add(0, dimeVo);
         } else if (userType.getUserType().intValue() == UserTypeInfo.LONG_TEAM) {
             result = this.sysStaffInfoMapper.getCustomerQuerydimensionality(user);
             CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
             dimeVo.setId(CustomerQueryType.SUBORDINATE);
-            dimeVo.setId("本人及下属的");
+            dimeVo.setName("本人及下属的");
             result.add(0, dimeVo);
         }
         if (CollectionUtils.isEmpty(result)) {
@@ -1961,7 +1961,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
         dimeVo.setId(CustomerQueryType.CHARGE);
-        dimeVo.setId("我的客户");
+        dimeVo.setName("我的客户");
         result.add(0, dimeVo);
         return result;
     }
