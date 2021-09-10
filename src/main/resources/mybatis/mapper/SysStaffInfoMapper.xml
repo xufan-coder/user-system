@@ -284,10 +284,19 @@
         sui.id AS id,
         sui.avatar AS avatar,
         ssi.user_name AS userName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        urs.role_name AS roleName,
+        sdi.depart_name AS departName,
         ssi.id AS staffId
         FROM
         sys_staff_info ssi
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
             ssi.deleted = 0
             and sui.status in (0,3)
