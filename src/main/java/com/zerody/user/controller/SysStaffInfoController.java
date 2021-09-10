@@ -16,6 +16,7 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysStaffInfoVo;
@@ -360,6 +361,32 @@ public class SysStaffInfoController {
         }  catch (Exception e) {
             log.error("获取管理员信息:{}",e.getMessage());
             return R.error("获取管理员信息,请求异常");
+        }
+    }
+
+
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取客户查询维度
+     * @date                 2021/3/10 10:40
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @GetMapping("/get/customer-query-dimensionality")
+    public DataResult<List<CustomerQueryDimensionalityVo>> getCustomerQuerydimensionality(){
+        try {
+            List<CustomerQueryDimensionalityVo> result = this.sysStaffInfoService.getCustomerQuerydimensionality(UserUtils.getUser());
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取客户查询维度错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取客户查询维度错误!", e , e);
+            return R.error(e.getMessage());
         }
     }
 

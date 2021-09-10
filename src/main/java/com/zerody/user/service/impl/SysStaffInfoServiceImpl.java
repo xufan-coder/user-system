@@ -15,6 +15,8 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.constant.CustomerQueryType;
+import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
@@ -167,6 +169,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private StaffBlacklistService staffBlacklistService;
     @Autowired
     private StaffHistoryService staffHistoryService;
+
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1914,6 +1919,51 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return userIds;
         }
         return null;
+    }
+
+    @Override
+    public List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(UserVo user) {
+        List<CustomerQueryDimensionalityVo> result = null;
+        //总裁获取全部企业的
+        if (user.isCEO()) {
+            result = this.sysCompanyInfoMapper.getCustomerQuerydimensionality();
+            return result;
+        }
+        UserTypeInfoVo userType = this.sysUserInfoService.getUserTypeInfo(user);
+        // 企业管理获取 一级部门的
+        if (userType.getUserType().intValue() == UserTypeInfo.COMPANY_ADMIN) {
+            //企业管理员不管他的部门
+            user.setDeptId(null);
+            result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.POST);
+            dimeVo.setId("本企业客户");
+            result.add(0, dimeVo);
+        } else if (userType.getUserType().intValue() == UserTypeInfo.DEPUTY_GENERAL_MANAGERv) {
+            result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setId("本部门及下级部门负责的");
+            result.add(0, dimeVo);
+            dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setId("本部门的");
+            result.add(0, dimeVo);
+        } else if (userType.getUserType().intValue() == UserTypeInfo.LONG_TEAM) {
+            result = this.sysStaffInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setId("本人及下属的");
+            result.add(0, dimeVo);
+        }
+        if (CollectionUtils.isEmpty(result)) {
+            result = new ArrayList<>();
+        }
+        CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+        dimeVo.setId(CustomerQueryType.CHARGE);
+        dimeVo.setId("我的客户");
+        result.add(0, dimeVo);
+        return result;
     }
 
     @Override

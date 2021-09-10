@@ -7,6 +7,7 @@ import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.vo.CustomerQueryDimensionalityVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
@@ -132,4 +133,15 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     void updateCompanyEdit(@Param("param") List<Map<String, String>> companyInfoMap);
 
     Page<CompanyInfoVo> getPageCompanyInner(@Param("param")RatioPageDto param, IPage<SysComapnyInfoVo> iPage);
+
+    /**
+     *
+     *  查询全部企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/9/10 9:44
+     * @param
+     * @return               java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>
+     */
+    List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality();
 }

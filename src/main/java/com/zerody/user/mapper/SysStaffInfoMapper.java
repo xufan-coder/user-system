@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import java.util.List;
 
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
@@ -332,4 +333,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<StaffInfoVo> getStaffInfoByIds(@Param("ids") List<String> userId);
 
     List<String> getUserIdByCompIdOrDeptId(@Param("compId") String companyId, @Param("departId") String departId);
+
+    List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(@Param("user") UserVo user);
 }
