@@ -255,4 +255,13 @@
             sci.is_edit = 1
         </where>
     </select>
+    <select id="getCustomerQuerydimensionality" resultType="com.zerody.user.vo.CustomerQueryDimensionalityVo">
+    SELECT
+        sci.id,
+        sci.company_name AS `name`
+      FROM
+            sys_company_info AS sci
+      WHERE
+        sci.status = 0
+    </select>
 </mapper>
