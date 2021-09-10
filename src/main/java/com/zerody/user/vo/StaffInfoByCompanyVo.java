@@ -26,4 +26,34 @@ public class StaffInfoByCompanyVo {
     /** 头像 */
     private String avatar;
 
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 企业ID
+     */
+    private String compId;
+
+    /**
+     * 企业名称
+     */
+    private String companyName;
+
+
+    /**
+     * 岗位名称
+     */
+    private String positionName;
+
+    /**
+     * 部门名称
+     */
+    private String departName;
+
+    /**
+     * 角色
+     */
+    private String roleName;
 }
