@@ -1961,7 +1961,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             dimeVo.setName("本部门及下级部门负责的");
             result.add(0, dimeVo);
             dimeVo = new CustomerQueryDimensionalityVo();
-            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setId(CustomerQueryType.POST);
             dimeVo.setName("本部门的");
             result.add(0, dimeVo);
         } else if (userType.getUserType().intValue() == UserTypeInfo.LONG_TEAM) {
