@@ -390,4 +390,17 @@ public class SysStaffInfoController {
         }
     }
 
+    /***
+     * @description  查看员工详情
+     * @author zhangpingping
+     * @date 2021/9/11
+     * @param [id]
+     * @return
+     */
+    @GetMapping(value = "/get/staff-details-count/{id}")
+    public DataResult<SysStaffInfoDetailsVo> getStaffDetailsCount(@PathVariable("id") String id){
+        SysStaffInfoDetailsVo sysStaffInfoDetailsVo=this.sysStaffInfoService.getStaffDetailsCount(id);
+        return R.success(sysStaffInfoDetailsVo);
+    }
+
 }

@@ -335,4 +335,12 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<String> getUserIdByCompIdOrDeptId(@Param("compId") String companyId, @Param("departId") String departId);
 
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(@Param("user") UserVo user);
+    /***
+     * @description 查询员工详情信息
+     * @author zhangpingping
+     * @date 2021/9/11
+     * @param
+     * @return
+     */
+    SysStaffInfoDetailsVo getStaffinfoDetails(@Param("staffId") String staffId);
 }

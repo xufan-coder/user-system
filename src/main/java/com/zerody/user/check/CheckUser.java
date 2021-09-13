@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CheckUser {
 
-    
+
     /**
      * 用户操作参数校验
      */
@@ -28,6 +28,8 @@ public class CheckUser {
             if (!IdCardUtil.validate18Idcard(SysUserInfo.getCertificateCard())) {
                 throw new DefaultException("身份证不合法");
             }
+        } else {
+            throw new DefaultException("身份证不能为空");
         }
     }
 

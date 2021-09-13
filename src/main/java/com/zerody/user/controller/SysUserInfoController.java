@@ -607,6 +607,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     @RequestMapping(value = "/get/user", method = RequestMethod.GET)
+    @Override
     public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getUserByDepartOrRole(@RequestParam(value = "departId", required = false)String departId,
                                                                               @RequestParam(value = "roleId", required = false) String roleId,
                                                                                     @RequestParam(value = "companyId", required = false) String companyId){
@@ -635,6 +636,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysUserInfoVo>>
      */
 	@RequestMapping(value = "/superior", method = GET)
+    @Override
     public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getSuperiorUesrByUserAndRole(@RequestParam("userId")String userId,
                                                                                      @RequestParam("roleId")String roleId){
         try {

@@ -1,8 +1,12 @@
 package com.zerody.user.feign;
 
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.customer.api.service.CustomerRemoteService;
+import com.zerody.user.dto.StaffCustomerDetailsDto;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author PengQiang
@@ -12,4 +16,7 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 @FeignClient(value = "${zerody-customer.name:zerody-customer}", contextId = "zerody-customer-customer")
 public interface CustomerFeignService extends CustomerRemoteService {
+
+    @GetMapping("/customer/get/staff-details")
+    DataResult<Long> getStaffCustomerDetailsCount(@RequestParam("userId") String userId,@RequestParam("type")String type);
 }
