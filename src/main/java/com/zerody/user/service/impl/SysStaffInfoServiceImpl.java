@@ -1982,16 +1982,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public SysStaffInfoDetailsVo getStaffDetailsCount(String staffId) {
+    public SysStaffInfoDetailsVo getStaffDetailsCount(String userId) {
         String type = "A";
-        SysStaffInfoDetailsVo sysStaffInfoDetailsVo = this.sysStaffInfoMapper.getStaffinfoDetails(staffId);
+        SysStaffInfoDetailsVo sysStaffInfoDetailsVo = this.sysStaffInfoMapper.getStaffinfoDetails(userId);
         if (Objects.nonNull(sysStaffInfoDetailsVo)) {
 //            PerformanceInfoDto performanceInfoDto = new PerformanceInfoDto();
 //            performanceInfoDto.setUserId(sysStaffInfoDetailsVo.getUserId());
             //获取统计
             DataResult<PerformanceInfoVo> performanceInfoVoDataResult = this.contractService.getPerformanceInfoContainSubordinate(sysStaffInfoDetailsVo.getUserId());
-            sysStaffInfoDetailsVo.setLoanMoney(performanceInfoVoDataResult.getData().getLoanMoney());
-            sysStaffInfoDetailsVo.setPaymentMoney(performanceInfoVoDataResult.getData().getPaymentMoney());
+            sysStaffInfoDetailsVo.setLoanMoney(performanceInfoVoDataResult.getData().getPaymentMoney());
+            sysStaffInfoDetailsVo.setPaymentMoney(performanceInfoVoDataResult.getData().getMoney());
             sysStaffInfoDetailsVo.setSignOrderMoney(performanceInfoVoDataResult.getData().getSignOrderMoney());
             sysStaffInfoDetailsVo.setSignFailNumber(performanceInfoVoDataResult.getData().getSignFailNumber());
             StaffCustomerDetailsDto staffCustomerDetailsDto = new StaffCustomerDetailsDto();

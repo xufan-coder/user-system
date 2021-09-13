@@ -10,6 +10,10 @@ import lombok.Data;
 public class SysStaffInfoDetailsVo {
     private String userId;
     /**
+     * 个人图片路径
+     */
+    private String avatar;
+    /**
      * 员工名称
      */
     private String userName;

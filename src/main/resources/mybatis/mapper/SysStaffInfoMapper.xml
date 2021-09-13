@@ -780,6 +780,7 @@
     <select id="getStaffinfoDetails" resultType="com.zerody.user.vo.SysStaffInfoDetailsVo">
         SELECT
             ssi.user_id,
+            ssi.avatar,
             sui.user_name,
             sui.phone_number,
             sui.certificate_card,
@@ -794,6 +795,6 @@
             LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
             LEFT JOIN union_staff_position usp ON ssi.id=usp.staff_id
             LEFT JOIN sys_job_position sjp ON usp.position_id=sjp.id
-            where ssi.id=#{staffId}
+            where ssi.user_id=#{userId}
     </select>
 </mapper>

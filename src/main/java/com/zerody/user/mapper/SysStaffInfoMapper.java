@@ -342,5 +342,5 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param
      * @return
      */
-    SysStaffInfoDetailsVo getStaffinfoDetails(@Param("staffId") String staffId);
+    SysStaffInfoDetailsVo getStaffinfoDetails(@Param("userId") String userId);
 }
