@@ -17,7 +17,6 @@ public class SysStaffRelation {
     /**
      * 主键id
      */
-    @TableId(value = "id", type = IdType.UUID)
     private String id;
     /**
      * 员工ID
