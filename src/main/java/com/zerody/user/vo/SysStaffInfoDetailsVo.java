@@ -41,11 +41,11 @@ public class SysStaffInfoDetailsVo {
     /**
      * 客户数
      */
-    private Long customerCount;
+    private Integer customerCount;
     /**
      * A类客户数
      */
-    private Long customerTypeCount;
+    private Integer customerTypeCount;
     /**
      * 签单金额
      */

@@ -1994,14 +1994,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sysStaffInfoDetailsVo.setPaymentMoney(performanceInfoVoDataResult.getData().getMoney());
             sysStaffInfoDetailsVo.setSignOrderMoney(performanceInfoVoDataResult.getData().getSignOrderMoney());
             sysStaffInfoDetailsVo.setSignFailNumber(performanceInfoVoDataResult.getData().getSignFailNumber());
-            StaffCustomerDetailsDto staffCustomerDetailsDto = new StaffCustomerDetailsDto();
-            staffCustomerDetailsDto.setUserId(sysStaffInfoDetailsVo.getUserId());
             //客户统计
-            DataResult<Long> customerCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(),null);
+            DataResult<Integer> customerCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(),null);
             sysStaffInfoDetailsVo.setCustomerCount(customerCount.getData());
             //A类统计
-            staffCustomerDetailsDto.setType(type);
-            DataResult<Long> customerTypeCount = this.customerService.getStaffCustomerDetailsCount(staffCustomerDetailsDto.getUserId(),staffCustomerDetailsDto.getType());
+            DataResult<Integer> customerTypeCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(),type);
             sysStaffInfoDetailsVo.setCustomerTypeCount(customerTypeCount.getData());
 
         }
