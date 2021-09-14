@@ -206,7 +206,7 @@ public class SysUserInfoVo {
     /**
      * 关系
      */
-    private List<SysStaffRelationVo> sysStaffRelationVos;
+    private List<SysStaffRelationVo> staffRelationDtoList;
 
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);

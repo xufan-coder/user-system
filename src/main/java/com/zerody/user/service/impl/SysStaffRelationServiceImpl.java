@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.user.domain.SysStaffRelation;
 import com.zerody.user.dto.SysStaffRelationDto;
 import com.zerody.user.mapper.SysStaffRelationMapper;
@@ -31,10 +32,24 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     public void addRelation(SysStaffRelationDto sysStaffRelationDto) {
         SysStaffRelation sysStaffRelation = new SysStaffRelation();
         //赋值
+        sysStaffRelation.setId(UUIDutils.getUUID32());
         setSysStaffRelationVo(sysStaffRelation, sysStaffRelationDto);
         sysStaffRelation.setDeletd(YesNo.NO);
         sysStaffRelation.setCreateTime(new Date());
         this.save(sysStaffRelation);
+
+        SysStaffRelation sysStaffRelation1 = new SysStaffRelation();
+        sysStaffRelation1.setId(UUIDutils.getUUID32());
+        sysStaffRelation1.setStaffId(sysStaffRelationDto.getRelationStaffId());
+        sysStaffRelation1.setStaffName(sysStaffRelationDto.getRelationStaffName());
+        sysStaffRelation1.setRelationStaffId(sysStaffRelationDto.getStaffId());
+        sysStaffRelation1.setRelationStaffName(sysStaffRelationDto.getUserName());
+        sysStaffRelation1.setDepartId(sysStaffRelationDto.getDepartId());
+        sysStaffRelation1.setDepartName(sysStaffRelationDto.getDepartName());
+        sysStaffRelation1.setDescribe(sysStaffRelationDto.getDesc());
+        sysStaffRelation1.setDeletd(YesNo.NO);
+        sysStaffRelation1.setCreateTime(new Date());
+        this.save(sysStaffRelation1);
     }
 
     @Override
@@ -58,8 +73,8 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     public List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         List<SysStaffRelationVo> sysStaffRelationVos = Lists.newArrayList();
         QueryWrapper<SysStaffRelation> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysStaffRelation::getStaffId, sysStaffRelationDto.getStaffId());
-        queryWrapper.lambda().eq(SysStaffRelation::getRelationStaffId, sysStaffRelationDto.getRelationStaffId());
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(sysStaffRelationDto.getStaffId()),SysStaffRelation::getStaffId, sysStaffRelationDto.getStaffId()).or()
+                .eq(StringUtils.isNotEmpty(sysStaffRelationDto.getRelationStaffId()),SysStaffRelation::getRelationStaffId, sysStaffRelationDto.getRelationStaffId());
         queryWrapper.lambda().eq(SysStaffRelation::getDeletd, YesNo.NO);
         List<SysStaffRelation> sysStaffRelations = this.list(queryWrapper);
         sysStaffRelations.forEach(item -> {
