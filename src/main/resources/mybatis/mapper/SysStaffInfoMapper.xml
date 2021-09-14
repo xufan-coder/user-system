@@ -781,6 +781,7 @@
         SELECT
             ssi.user_id,
             ssi.avatar,
+            ssi.id AS staffId,
             sui.user_name,
             sui.phone_number,
             sui.certificate_card,

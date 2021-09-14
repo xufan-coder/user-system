@@ -19,5 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CustomerFeignService extends CustomerRemoteService {
 
     @GetMapping("/customer/get/staff-details")
-    DataResult<Integer> getStaffCustomerDetailsCount(@RequestParam("userId") String userId, @RequestParam("state")String state);
+    DataResult<Integer> getStaffCustomerDetailsCount(@RequestParam("userId") String userId,
+                                                     @RequestParam("companyId")String companyId,
+                                                     @RequestParam("deptId")String deptId,
+                                                     @RequestParam("state")String state);
 }

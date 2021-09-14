@@ -399,6 +399,7 @@ public class SysStaffInfoController {
      */
     @GetMapping(value = "/get/staff-details-count/{id}")
     public DataResult<SysStaffInfoDetailsVo> getStaffDetailsCount(@PathVariable("id") String id){
+
         SysStaffInfoDetailsVo sysStaffInfoDetailsVo=this.sysStaffInfoService.getStaffDetailsCount(id);
         return R.success(sysStaffInfoDetailsVo);
     }

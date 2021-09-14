@@ -137,5 +137,5 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(UserVo user);
 
-    SysStaffInfoDetailsVo getStaffDetailsCount(String staffId);
+    SysStaffInfoDetailsVo getStaffDetailsCount(String userId);
 }

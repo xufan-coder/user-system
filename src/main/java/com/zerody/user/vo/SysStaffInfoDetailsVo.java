@@ -8,7 +8,20 @@ import lombok.Data;
  */
 @Data
 public class SysStaffInfoDetailsVo {
+    /**
+     * 部门
+     */
+    private String deptId;
+    /**
+     * 企业Id
+     */
+    private String companyId;
+
     private String userId;
+    /**
+     * 员工ID
+     */
+    private String staffId;
     /**
      * 个人图片路径
      */

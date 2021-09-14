@@ -1986,19 +1986,33 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String type = "A";
         SysStaffInfoDetailsVo sysStaffInfoDetailsVo = this.sysStaffInfoMapper.getStaffinfoDetails(userId);
         if (Objects.nonNull(sysStaffInfoDetailsVo)) {
-//            PerformanceInfoDto performanceInfoDto = new PerformanceInfoDto();
-//            performanceInfoDto.setUserId(sysStaffInfoDetailsVo.getUserId());
             //获取统计
             DataResult<PerformanceInfoVo> performanceInfoVoDataResult = this.contractService.getPerformanceInfoContainSubordinate(sysStaffInfoDetailsVo.getUserId());
             sysStaffInfoDetailsVo.setLoanMoney(performanceInfoVoDataResult.getData().getPaymentMoney());
             sysStaffInfoDetailsVo.setPaymentMoney(performanceInfoVoDataResult.getData().getMoney());
             sysStaffInfoDetailsVo.setSignOrderMoney(performanceInfoVoDataResult.getData().getSignOrderMoney());
             sysStaffInfoDetailsVo.setSignFailNumber(performanceInfoVoDataResult.getData().getSignFailNumber());
+            CompanyAdmin companyAdmin = this.companyAdminMapper.selectOne(new QueryWrapper<CompanyAdmin>().lambda().eq(CompanyAdmin::getStaffId, sysStaffInfoDetailsVo.getStaffId()));
+            if (Objects.nonNull(companyAdmin)) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(companyAdmin.getCompanyId())) {
+                    sysStaffInfoDetailsVo.setCompanyId(companyAdmin.getCompanyId());
+                }
+            }
+            QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
+            depAdminQw.lambda().select(SysDepartmentInfo::getId)
+                    .eq(SysDepartmentInfo::getAdminAccount, sysStaffInfoDetailsVo.getStaffId()).
+                    eq(SysDepartmentInfo::getStatus, StatusEnum.activity);
+            SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
+            if (Objects.nonNull(dep)) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(dep.getAdminAccount())) {
+                    sysStaffInfoDetailsVo.setDeptId(dep.getAdminAccount());
+                }
+            }
             //客户统计
-            DataResult<Integer> customerCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(),null);
+            DataResult<Integer> customerCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(), sysStaffInfoDetailsVo.getCompanyId(), sysStaffInfoDetailsVo.getDeptId(), null);
             sysStaffInfoDetailsVo.setCustomerCount(customerCount.getData());
             //A类统计
-            DataResult<Integer> customerTypeCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(),type);
+            DataResult<Integer> customerTypeCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(), sysStaffInfoDetailsVo.getCompanyId(), sysStaffInfoDetailsVo.getDeptId(), type);
             sysStaffInfoDetailsVo.setCustomerTypeCount(customerTypeCount.getData());
 
         }
