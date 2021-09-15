@@ -1639,6 +1639,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         user.setCompanyId(userInfo.getCompanyId());
         //获取荣耀和惩罚记录
         getRecord(userInfo.getStaffId(), userInfo);
+        //查询关系
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
