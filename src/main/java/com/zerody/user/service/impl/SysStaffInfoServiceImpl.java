@@ -480,7 +480,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
-                item.setStaffUserId(item.getRelationUserId());
                 item.setRelationUserId(setSysUserInfoDto.getId());
                 sysStaffRelationService.addRelation(item);
             });
