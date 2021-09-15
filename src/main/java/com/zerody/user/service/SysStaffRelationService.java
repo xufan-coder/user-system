@@ -39,4 +39,13 @@ public interface SysStaffRelationService extends IService<SysStaffRelation> {
      * @return
      */
     List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto);
+
+    /***
+     * @description 查询
+     * @author zhangpingping
+     * @date 2021/9/10
+     * @param [sysStaffRelationDto]
+     * @return
+     */
+    List<SysStaffRelationVo> queryRelationByListId(SysStaffRelationDto sysStaffRelationDto);
 }
