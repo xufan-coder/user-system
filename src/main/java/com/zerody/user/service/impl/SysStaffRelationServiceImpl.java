@@ -48,8 +48,8 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
         sysStaffRelation1.setDepartName(sysStaffRelationDto.getDepartName());
         sysStaffRelation1.setDescribe(sysStaffRelationDto.getDesc());
         sysStaffRelation1.setDeletd(YesNo.NO);
-        sysStaffRelation.setStaffUserId(sysStaffRelationDto.getRelationUserId());
-        sysStaffRelation.setRelationUserId(sysStaffRelationDto.getStaffUserId());
+        sysStaffRelation1.setStaffUserId(sysStaffRelationDto.getRelationUserId());
+        sysStaffRelation1.setRelationUserId(sysStaffRelationDto.getStaffUserId());
         sysStaffRelation1.setCreateTime(new Date());
         this.save(sysStaffRelation1);
     }
