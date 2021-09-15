@@ -41,6 +41,7 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import lombok.Data;
@@ -1675,7 +1676,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
-
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
