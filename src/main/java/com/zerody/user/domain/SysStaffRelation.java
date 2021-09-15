@@ -63,4 +63,13 @@ public class SysStaffRelation {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
+    /**
+     * 关系员工UserId
+     */
+    private String relationUserId;
+    /**
+     * 员工UserId
+     */
+    private String staffUserId;
+
 }
