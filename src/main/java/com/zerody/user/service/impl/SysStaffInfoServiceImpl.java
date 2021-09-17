@@ -470,14 +470,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
         //关系
-        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
+        if (Objects.nonNull(setSysUserInfoDto.getRelations())) {
             //删除
             SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
             sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
             sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
             this.sysStaffRelationService.removeRelation(sysStaffRelationDto);
             //添加
-            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
+            setSysUserInfoDto.getRelations().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
                 item.setRelationUserId(setSysUserInfoDto.getId());
