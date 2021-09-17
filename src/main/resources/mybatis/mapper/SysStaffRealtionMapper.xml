@@ -18,7 +18,7 @@
             sys_staff_relation AS ssr
         JOIN sys_staff_info AS ssi ON ssi.id = ssr.staff_id
         JOIN sys_staff_info AS relation_ssi ON relation_ssi.id = ssr.relation_staff_id
-        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssr.relation_staff_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssr.staff_id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
             ssr.deletd = 0
