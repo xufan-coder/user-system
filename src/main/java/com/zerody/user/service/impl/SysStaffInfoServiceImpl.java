@@ -265,8 +265,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             });
         }
         //添加关系
-        if (Objects.nonNull(setSysUserInfoDto.getRelations())) {
-            setSysUserInfoDto.getRelations().forEach(item -> {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
+            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
                 item.setStaffUserId(sysUserInfo.getId());
@@ -470,14 +470,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
         //关系
-        if (Objects.nonNull(setSysUserInfoDto.getRelations())) {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
             //删除
             SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
             sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
             sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
             this.sysStaffRelationService.removeRelation(sysStaffRelationDto);
             //添加
-            setSysUserInfoDto.getRelations().forEach(item -> {
+            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
                 item.setRelationUserId(setSysUserInfoDto.getId());
