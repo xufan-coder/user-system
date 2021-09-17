@@ -77,7 +77,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /**
      * 关系
      */
-    private List<SysStaffRelationDto> staffRelationDtoList;
+    private List<SysStaffRelationDto> relations;
 
 
 }
