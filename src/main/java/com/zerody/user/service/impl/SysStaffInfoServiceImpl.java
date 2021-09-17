@@ -265,8 +265,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             });
         }
         //添加关系
-        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
-            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
+        if (Objects.nonNull(setSysUserInfoDto.getRelations())) {
+            setSysUserInfoDto.getRelations().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
                 item.setStaffUserId(sysUserInfo.getId());
