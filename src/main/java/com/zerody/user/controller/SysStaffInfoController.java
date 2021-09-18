@@ -16,7 +16,9 @@ import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
@@ -287,6 +289,15 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.getStaff(companyId,departId,positionId));
     }
 
+    /**
+     *   按企业获取员工
+     */
+    @RequestMapping(value = "/get/by-company", method = RequestMethod.GET)
+    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(@RequestParam(value = "companyId",required = true)String companyId){
+        return R.success(sysStaffInfoService.getStaffByCompany(companyId));
+    }
+
+
 
     /**
     *   分页获取平台管理员列表
@@ -351,6 +362,46 @@ public class SysStaffInfoController {
             log.error("获取管理员信息:{}",e.getMessage());
             return R.error("获取管理员信息,请求异常");
         }
+    }
+
+
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取客户查询维度
+     * @date                 2021/3/10 10:40
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @GetMapping("/get/customer-query-dimensionality")
+    public DataResult<List<CustomerQueryDimensionalityVo>> getCustomerQuerydimensionality(){
+        try {
+            List<CustomerQueryDimensionalityVo> result = this.sysStaffInfoService.getCustomerQuerydimensionality(UserUtils.getUser());
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取客户查询维度错误!", e , e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取客户查询维度错误!", e , e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /***
+     * @description  查看员工详情
+     * @author zhangpingping
+     * @date 2021/9/11
+     * @param [id]
+     * @return
+     */
+    @GetMapping(value = "/get/staff-details-count/{id}")
+    public DataResult<SysStaffInfoDetailsVo> getStaffDetailsCount(@PathVariable("id") String id){
+
+        SysStaffInfoDetailsVo sysStaffInfoDetailsVo=this.sysStaffInfoService.getStaffDetailsCount(id);
+        return R.success(sysStaffInfoDetailsVo);
     }
 
 }

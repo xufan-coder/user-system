@@ -15,6 +15,8 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.constant.CustomerQueryType;
+import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
@@ -39,6 +41,7 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import lombok.Data;
@@ -167,6 +170,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private StaffBlacklistService staffBlacklistService;
     @Autowired
     private StaffHistoryService staffHistoryService;
+    @Autowired
+    private SysStaffRelationService sysStaffRelationService;
+
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -256,6 +264,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 staffHistoryService.addStaffHistory(item);
             });
         }
+        //添加关系
+        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
+            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
+                item.setRelationStaffId(setSysUserInfoDto.getStaffId());
+                item.setRelationStaffName(setSysUserInfoDto.getUserName());
+                item.setStaffUserId(sysUserInfo.getId());
+                sysStaffRelationService.addRelation(item);
+            });
+        }
+
+
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -417,7 +436,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
         //荣耀记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())&&setSysUserInfoDto.getStaffHistoryHonor().size()>0) {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
@@ -425,16 +444,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
-        }else{
+        } else {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
-            StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
+            StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
             this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
         //惩罚记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())&&setSysUserInfoDto.getStaffHistoryPunishment().size()>0) {
+        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment()) && setSysUserInfoDto.getStaffHistoryPunishment().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
@@ -442,14 +461,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
-        }else{
+        } else {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
-            StaffHistoryDto staffHistoryDto=new StaffHistoryDto();
+            StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             staffHistoryDto.setStaffId(setSysUserInfoDto.getStaffId());
             this.staffHistoryService.modifyStaffHistory(staffHistoryDto);
         }
+        //关系
+        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
+            //删除
+            SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+            sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
+            sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
+            this.sysStaffRelationService.removeRelation(sysStaffRelationDto);
+            //添加
+            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
+                item.setRelationStaffId(setSysUserInfoDto.getStaffId());
+                item.setRelationStaffName(setSysUserInfoDto.getUserName());
+                item.setRelationUserId(setSysUserInfoDto.getId());
+                sysStaffRelationService.addRelation(item);
+            });
+        }
+
         //当状态为在职时判断是否在其他公司入职
         if (oldUserInfo.getStatus().intValue() == StatusEnum.stop.getValue() &&
                 (StatusEnum.activity.getValue() == setSysUserInfoDto.getStatus().intValue()
@@ -535,7 +570,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
         //  员工为离职状态时 增加app推送
-        if (StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
+        if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
             if (DataUtil.isNotEmpty(appUserPush)) {
                 appUserPush.setResigned(YesNo.YES);
@@ -544,7 +579,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
         //  员工为离职状态时 清除token
-        if (removeToken && StatusEnum.stop.getValue() == setSysUserInfoDto.getStatus()) {
+        if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
         }
@@ -632,26 +667,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
-        //荣耀记录
-        StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
-        staffHonor.setStaffId(id);
-        staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
-        List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
-        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
-            userInfo.setStaffHistoryHonor(staffHistoryVos);
-        } else {
-            userInfo.setStaffHistoryHonor(Lists.newArrayList());
-        }
-        //惩罚记录
-        StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
-        staffPunishment.setStaffId(id);
-        staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-        List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
-        if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
-            userInfo.setStaffHistoryPunishment(staffHistoryVos1);
-        } else {
-            userInfo.setStaffHistoryPunishment(Lists.newArrayList());
-        }
+        //获取荣耀和惩罚记录
+        getRecord(id, userInfo);
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(id);
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         return userInfo;
     }
 
@@ -1619,6 +1640,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
+        //获取荣耀和惩罚记录
+        getRecord(userInfo.getStaffId(), userInfo);
+        //查询关系
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
@@ -1650,6 +1678,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
@@ -1916,6 +1946,94 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return null;
     }
 
+    @Override
+    public List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(UserVo user) {
+        List<CustomerQueryDimensionalityVo> result = null;
+        //总裁获取全部企业的
+        if (user.isCEO()) {
+            result = this.sysCompanyInfoMapper.getCustomerQuerydimensionality();
+            return result;
+        }
+        UserTypeInfoVo userType = this.sysUserInfoService.getUserTypeInfo(user);
+        // 企业管理获取 一级部门的
+        if (userType.getUserType().intValue() == UserTypeInfo.COMPANY_ADMIN) {
+            //企业管理员不管他的部门
+            user.setDeptId(null);
+            result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.POST);
+            dimeVo.setName("本企业客户");
+            result.add(0, dimeVo);
+        } else if (userType.getUserType().intValue() == UserTypeInfo.DEPUTY_GENERAL_MANAGERv) {
+            result = this.sysDepartmentInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setName("本部门及下级部门负责的");
+            result.add(0, dimeVo);
+            dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.POST);
+            dimeVo.setName("本部门的");
+            result.add(0, dimeVo);
+        } else if (userType.getUserType().intValue() == UserTypeInfo.LONG_TEAM) {
+            result = this.sysStaffInfoMapper.getCustomerQuerydimensionality(user);
+            CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+            dimeVo.setId(CustomerQueryType.SUBORDINATE);
+            dimeVo.setName("本人及下属的");
+            result.add(0, dimeVo);
+        }
+        if (CollectionUtils.isEmpty(result)) {
+            result = new ArrayList<>();
+        }
+        CustomerQueryDimensionalityVo dimeVo = new CustomerQueryDimensionalityVo();
+        dimeVo.setId(CustomerQueryType.CHARGE);
+        dimeVo.setName("我的客户");
+        result.add(0, dimeVo);
+        return result;
+    }
+
+    @Override
+    public SysStaffInfoDetailsVo getStaffDetailsCount(String userId) {
+        String type = "A";
+        SysStaffInfoDetailsVo sysStaffInfoDetailsVo = this.sysStaffInfoMapper.getStaffinfoDetails(userId);
+        if (Objects.nonNull(sysStaffInfoDetailsVo)) {
+            //获取统计
+            DataResult<PerformanceInfoVo> performanceInfoVoDataResult = this.contractService.getPerformanceInfoContainSubordinate(sysStaffInfoDetailsVo.getUserId());
+            sysStaffInfoDetailsVo.setLoanMoney(performanceInfoVoDataResult.getData().getPaymentMoney());
+            sysStaffInfoDetailsVo.setPaymentMoney(performanceInfoVoDataResult.getData().getMoney());
+            sysStaffInfoDetailsVo.setSignOrderMoney(performanceInfoVoDataResult.getData().getSignOrderMoney());
+            sysStaffInfoDetailsVo.setSignFailNumber(performanceInfoVoDataResult.getData().getSignFailNumber());
+            CompanyAdmin companyAdmin = this.companyAdminMapper.selectOne(new QueryWrapper<CompanyAdmin>().lambda().eq(CompanyAdmin::getStaffId, sysStaffInfoDetailsVo.getStaffId()));
+            if (Objects.nonNull(companyAdmin)) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(companyAdmin.getCompanyId())) {
+                    sysStaffInfoDetailsVo.setCompanyId(companyAdmin.getCompanyId());
+                }
+            }
+            QueryWrapper<SysDepartmentInfo> depAdminQw = new QueryWrapper<>();
+            depAdminQw.lambda().select(SysDepartmentInfo::getId)
+                    .eq(SysDepartmentInfo::getAdminAccount, sysStaffInfoDetailsVo.getStaffId()).
+                    eq(SysDepartmentInfo::getStatus, StatusEnum.activity);
+            SysDepartmentInfo dep = this.sysDepartmentInfoMapper.selectOne(depAdminQw);
+            if (Objects.nonNull(dep)) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(dep.getAdminAccount())) {
+                    sysStaffInfoDetailsVo.setDeptId(dep.getAdminAccount());
+                }
+            }
+            //客户统计
+            DataResult<Integer> customerCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(), sysStaffInfoDetailsVo.getCompanyId(), sysStaffInfoDetailsVo.getDeptId(), null);
+            sysStaffInfoDetailsVo.setCustomerCount(customerCount.getData());
+            //A类统计
+            DataResult<Integer> customerTypeCount = this.customerService.getStaffCustomerDetailsCount(sysStaffInfoDetailsVo.getUserId(), sysStaffInfoDetailsVo.getCompanyId(), sysStaffInfoDetailsVo.getDeptId(), type);
+            sysStaffInfoDetailsVo.setCustomerTypeCount(customerTypeCount.getData());
+
+        }
+        return sysStaffInfoDetailsVo;
+    }
+
+    @Override
+    public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId) {
+        return sysStaffInfoMapper.getStaffByCompany(companyId);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
@@ -1982,5 +2100,31 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             r.setMonth(finalTime);
         });
+    }
+
+    /**
+     * 获取荣耀和惩罚记录
+     */
+    private void getRecord(String id, SysUserInfoVo userInfo) {
+        //荣耀记录
+        StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
+        staffHonor.setStaffId(id);
+        staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
+        List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
+        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+            userInfo.setStaffHistoryHonor(staffHistoryVos);
+        } else {
+            userInfo.setStaffHistoryHonor(Lists.newArrayList());
+        }
+        //惩罚记录
+        StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
+        staffPunishment.setStaffId(id);
+        staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+        List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
+        if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
+            userInfo.setStaffHistoryPunishment(staffHistoryVos1);
+        } else {
+            userInfo.setStaffHistoryPunishment(Lists.newArrayList());
+        }
     }
 }
