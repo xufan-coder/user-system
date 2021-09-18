@@ -221,4 +221,25 @@
         </where>
         GROUP BY sdi.id
     </select>
+    <select id="getCustomerQuerydimensionality" resultType="com.zerody.user.vo.CustomerQueryDimensionalityVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name AS `name`
+        FROM
+            sys_department_info AS sdi
+        WHERE
+            status = 0
+            AND
+            sdi.is_show_business = 1
+            AND
+            sdi.comp_id = #{user.companyId}
+            <choose>
+                <when test="user.deptId eq null or user.deptId eq ''">
+                    AND (sdi.parent_id IS NULL OR sdi.parent_id = '')
+                </when>
+                <otherwise>
+                    AND sdi.parent_id = #{user.deptId}
+                </otherwise>
+            </choose>
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import java.util.List;
 
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
@@ -113,6 +114,17 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               java.util.List<com.zerody.user.vo.BosStaffInfoVo>
      */
     List<BosStaffInfoVo> getStaff(@Param("companyId")String companyId, @Param("departId")String departId, @Param("positionId")String positionId);
+
+    /**************************************************************************************************
+     **
+     *  通过 企业查询员工
+     *
+     * @param companyId
+     * @return {@link List<BosStaffInfoVo> }
+     * @author DaBai
+     * @date 2021/9/7  14:56
+     */
+    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("companyId")String companyId);
 
     /**
      *
@@ -321,4 +333,14 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<StaffInfoVo> getStaffInfoByIds(@Param("ids") List<String> userId);
 
     List<String> getUserIdByCompIdOrDeptId(@Param("compId") String companyId, @Param("departId") String departId);
+
+    List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(@Param("user") UserVo user);
+    /***
+     * @description 查询员工详情信息
+     * @author zhangpingping
+     * @date 2021/9/11
+     * @param
+     * @return
+     */
+    SysStaffInfoDetailsVo getStaffinfoDetails(@Param("userId") String userId);
 }

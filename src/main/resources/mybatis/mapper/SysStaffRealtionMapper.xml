@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.SysStaffRelationMapper" >
+
+    <select id="queryRelationList" resultType="com.zerody.user.vo.SysStaffRelationVo">
+        SELECT
+            ssr.id,
+            ssi.id AS staff_id,
+            ssi.user_name,
+            ssi.user_id,
+            ssr.`describe` AS `desc`,
+            ssr.relation_staff_id,
+            relation_ssi.user_name AS relation_staff_name,
+            sdi.id AS depart_id,
+            sdi.depart_name AS depart_name,
+            relation_ssi.user_id AS relation_user_id
+        FROM
+            sys_staff_relation AS ssr
+        JOIN sys_staff_info AS ssi ON ssi.id = ssr.staff_id
+        JOIN sys_staff_info AS relation_ssi ON relation_ssi.id = ssr.relation_staff_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssr.staff_id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            ssr.deletd = 0
+            <if test="param.staffId neq null and param.staffId neq ''">
+                AND ssr.staff_id = #{param.staffId}
+            </if>
+            <if test="param.relationStaffId neq null and param.relationStaffId neq ''">
+                AND ssr.relation_staff_id = #{param.relationStaffId}
+            </if>
+        </where>
+    </select>
+</mapper>
