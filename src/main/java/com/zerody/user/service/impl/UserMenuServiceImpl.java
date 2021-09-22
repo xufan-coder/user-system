@@ -6,6 +6,7 @@ import com.zerody.common.util.JsonUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.UserMenu;
+import com.zerody.user.enums.MenuSetTypeEnum;
 import com.zerody.user.mapper.UserMenuMapper;
 import com.zerody.user.service.ImageService;
 import com.zerody.user.service.UserMenuService;
@@ -29,9 +30,10 @@ public class UserMenuServiceImpl extends ServiceImpl<UserMenuMapper, UserMenu> i
 
 
     @Override
-    public List<Map> getUserMenu(String userId) {
+    public List<Map> getUserMenu(String userId,Integer type) {
         QueryWrapper<UserMenu> qw =new QueryWrapper<>();
         qw.lambda().eq(UserMenu::getUserId,userId);
+        qw.lambda().eq(UserMenu::getType, type);
         UserMenu one = this.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
            return JsonUtils.json2List(one.getMenuJson(), Map.class);
@@ -40,9 +42,10 @@ public class UserMenuServiceImpl extends ServiceImpl<UserMenuMapper, UserMenu> i
     }
 
     @Override
-    public void addOrUpdateUserMenu(List<Map<String, Object>> param, UserVo user) {
+    public void addOrUpdateUserMenu(List<Map<String, Object>> param, UserVo user,Integer type) {
         QueryWrapper<UserMenu> qw =new QueryWrapper<>();
         qw.lambda().eq(UserMenu::getUserId,user.getUserId());
+        qw.lambda().eq(UserMenu::getType,type);
         UserMenu one = this.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
             one.setMenuJson(JsonUtils.toString(param));
