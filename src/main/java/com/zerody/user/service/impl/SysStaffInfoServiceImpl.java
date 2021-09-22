@@ -41,6 +41,7 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import lombok.Data;
@@ -268,6 +269,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
+                item.setStaffUserId(sysUserInfo.getId());
                 sysStaffRelationService.addRelation(item);
             });
         }
@@ -478,6 +480,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
                 item.setRelationStaffId(setSysUserInfoDto.getStaffId());
                 item.setRelationStaffName(setSysUserInfoDto.getUserName());
+                item.setRelationUserId(setSysUserInfoDto.getId());
                 sysStaffRelationService.addRelation(item);
             });
         }
@@ -1639,6 +1642,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         user.setCompanyId(userInfo.getCompanyId());
         //获取荣耀和惩罚记录
         getRecord(userInfo.getStaffId(), userInfo);
+        //查询关系
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
@@ -1670,7 +1678,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
-
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 

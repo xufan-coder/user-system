@@ -6,13 +6,13 @@ import lombok.Data;
  * @author zhangpingping
  * @date 2021年09月10日 9:50
  */
- @Data
+@Data
 public class SysStaffRelationVo {
-     private String id;
+    private String id;
     /**
      * 员工ID
      */
-     private String staffId;
+    private String staffId;
     /**
      * 员工名称
      */
@@ -37,6 +37,14 @@ public class SysStaffRelationVo {
      * 关系员工名称
      */
     private String relationStaffName;
+    /**
+     * 关系员工userID
+     */
+    private String relationUserId;
+    /**
+     * 员工userID
+     */
+    private String staffUserId;
 
 
 }

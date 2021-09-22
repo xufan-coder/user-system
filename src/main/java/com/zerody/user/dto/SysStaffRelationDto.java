@@ -2,6 +2,8 @@ package com.zerody.user.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author zhangpingping
  * @date 2021年09月09日 17:18
@@ -18,6 +20,10 @@ public class SysStaffRelationDto {
      * 员工名称
      */
     private String userName;
+    /**
+     * 员工UserId
+     */
+    private String staffUserId;
     /**
      * 部门名称
      */
@@ -38,4 +44,13 @@ public class SysStaffRelationDto {
      * 关系员工名称
      */
     private String relationStaffName;
+    /**
+     * 关系员工UserId
+     */
+    private String relationUserId;
+
+    /**
+     * 查询多个ID
+     */
+    private List<String> ids;
 }
