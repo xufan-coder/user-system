@@ -667,12 +667,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
-        //获取荣耀和惩罚记录
-        getRecord(id, userInfo);
-        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
-        sysStaffRelationDto.setRelationStaffId(id);
-        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
-        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        if(Objects.nonNull(userInfo)) {
+            //获取荣耀和惩罚记录
+            getRecord(id, userInfo);
+            SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+            sysStaffRelationDto.setRelationStaffId(id);
+            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+            userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        }
         return userInfo;
     }
 
