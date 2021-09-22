@@ -2107,24 +2107,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
      */
     private void getRecord(String id, SysUserInfoVo userInfo) {
         //荣耀记录
-        StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
-        staffHonor.setStaffId(id);
-        staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
-        List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
-        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
-            userInfo.setStaffHistoryHonor(staffHistoryVos);
-        } else {
-            userInfo.setStaffHistoryHonor(Lists.newArrayList());
-        }
-        //惩罚记录
-        StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
-        staffPunishment.setStaffId(id);
-        staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-        List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
-        if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
-            userInfo.setStaffHistoryPunishment(staffHistoryVos1);
-        } else {
-            userInfo.setStaffHistoryPunishment(Lists.newArrayList());
+        if(Objects.nonNull(userInfo)) {
+            StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
+            staffHonor.setStaffId(id);
+            staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
+            List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
+            if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+                userInfo.setStaffHistoryHonor(staffHistoryVos);
+            } else {
+                userInfo.setStaffHistoryHonor(Lists.newArrayList());
+            }
+            //惩罚记录
+            StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
+            staffPunishment.setStaffId(id);
+            staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
+            if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
+                userInfo.setStaffHistoryPunishment(staffHistoryVos1);
+            } else {
+                userInfo.setStaffHistoryPunishment(Lists.newArrayList());
+            }
         }
     }
 }
