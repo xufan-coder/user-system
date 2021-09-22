@@ -7,6 +7,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.UserMenu;
+import com.zerody.user.enums.MenuSetTypeEnum;
 import com.zerody.user.service.UserMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,9 @@ public class UserMenuControlller {
         try {
             UserVo user = UserUtils.getUser();
             if(DataUtil.isEmpty(user)){
-                throw new DefaultException("常用菜单获取失败！");
+                throw new DefaultException("编辑失败！");
             }
-            this.service.addOrUpdateUserMenu(param,user);
+            this.service.addOrUpdateUserMenu(param,user, MenuSetTypeEnum.MINI.getCode());
             return R.success();
         } catch (DefaultException e) {
             log.error("编辑菜单错误：{}", e, e);
@@ -48,10 +49,34 @@ public class UserMenuControlller {
     }
 
 
+    /**
+    *    APP 编辑常用菜单
+    */
+    @PostMapping("/app/edit")
+    public DataResult updateAppUserMenu(@RequestBody List<Map<String,Object>> param){
+        try {
+            UserVo user = UserUtils.getUser();
+            if(DataUtil.isEmpty(user)){
+                throw new DefaultException("编辑失败！");
+            }
+            this.service.addOrUpdateUserMenu(param,user, MenuSetTypeEnum.APP.getCode());
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("编辑菜单错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("编辑菜单错误：{}", e, e);
+            return R.error("编辑菜单错误" + e.getMessage());
+        }
+    }
+
+
+
+
     @GetMapping("/get")
     public DataResult<List<Map>> getUserMenu(){
         try {
-            List<Map> result = this.service.getUserMenu(UserUtils.getUserId());
+            List<Map> result = this.service.getUserMenu(UserUtils.getUserId(), MenuSetTypeEnum.MINI.getCode());
             return R.success(result);
         } catch (DefaultException e) {
             log.error("获取常用菜单出错：{}", e, e);
@@ -62,4 +87,20 @@ public class UserMenuControlller {
         }
     }
 
+    /**
+    *   APP 获取常用菜单
+    */
+    @GetMapping("/app/get")
+    public DataResult<List<Map>> getAppUserMenu(){
+        try {
+            List<Map> result = this.service.getUserMenu(UserUtils.getUserId(), MenuSetTypeEnum.APP.getCode());
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取常用菜单出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取常用菜单出错：{}", e, e);
+            return R.error("获取常用菜单出错" + e.getMessage());
+        }
+    }
 }

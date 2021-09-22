@@ -16,7 +16,8 @@ public interface UserMenuService extends IService<UserMenu> {
 
 
 
-    List<Map> getUserMenu(String userId);
+    List<Map> getUserMenu(String userId,Integer type);
 
-    void addOrUpdateUserMenu(List<Map<String, Object>> param, UserVo user);
+    void addOrUpdateUserMenu(List<Map<String, Object>> param, UserVo user,Integer type);
+
 }

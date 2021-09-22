@@ -38,4 +38,7 @@ public class UserMenu {
     /** 修改时间 **/
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updateTime;
+
+    /**类型：1小程序 2APP'**/
+    private Integer type;
 }
