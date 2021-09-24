@@ -667,12 +667,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
-        //获取荣耀和惩罚记录
-        getRecord(id, userInfo);
-        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
-        sysStaffRelationDto.setRelationStaffId(id);
-        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
-        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        if(Objects.nonNull(userInfo)) {
+            //获取荣耀和惩罚记录
+            getRecord(id, userInfo);
+            SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+            sysStaffRelationDto.setRelationStaffId(id);
+            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+            userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        }
         return userInfo;
     }
 
@@ -2110,24 +2112,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
      */
     private void getRecord(String id, SysUserInfoVo userInfo) {
         //荣耀记录
-        StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
-        staffHonor.setStaffId(id);
-        staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
-        List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
-        if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
-            userInfo.setStaffHistoryHonor(staffHistoryVos);
-        } else {
-            userInfo.setStaffHistoryHonor(Lists.newArrayList());
-        }
-        //惩罚记录
-        StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
-        staffPunishment.setStaffId(id);
-        staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-        List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
-        if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
-            userInfo.setStaffHistoryPunishment(staffHistoryVos1);
-        } else {
-            userInfo.setStaffHistoryPunishment(Lists.newArrayList());
+        if(Objects.nonNull(userInfo)) {
+            StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();
+            staffHonor.setStaffId(id);
+            staffHonor.setType(StaffHistoryTypeEnum.HONOR.name());
+            List<StaffHistoryVo> staffHistoryVos = this.staffHistoryService.queryStaffHistory(staffHonor);
+            if (staffHistoryVos.size() > 0 && Objects.nonNull(staffHistoryVos)) {
+                userInfo.setStaffHistoryHonor(staffHistoryVos);
+            } else {
+                userInfo.setStaffHistoryHonor(Lists.newArrayList());
+            }
+            //惩罚记录
+            StaffHistoryQueryDto staffPunishment = new StaffHistoryQueryDto();
+            staffPunishment.setStaffId(id);
+            staffPunishment.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            List<StaffHistoryVo> staffHistoryVos1 = this.staffHistoryService.queryStaffHistory(staffPunishment);
+            if (staffHistoryVos1.size() > 0 && Objects.nonNull(staffHistoryVos1)) {
+                userInfo.setStaffHistoryPunishment(staffHistoryVos1);
+            } else {
+                userInfo.setStaffHistoryPunishment(Lists.newArrayList());
+            }
         }
     }
 }
