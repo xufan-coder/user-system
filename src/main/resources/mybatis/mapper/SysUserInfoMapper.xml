@@ -294,12 +294,19 @@ WHERE
         sui.user_name,
         sui.phone_number AS mobile,
         sdi.depart_name,
+        sjp.position_name AS positionName,
+        urs.role_name AS roleName,
+        sci.company_name AS companyName,
         ssi.avatar
         FROM
         sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         <where>
             sui.status IN (0, 3)
             <if test="param.companyId neq null and param.companyId neq ''">
