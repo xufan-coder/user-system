@@ -2035,8 +2035,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId) {
-        return sysStaffInfoMapper.getStaffByCompany(companyId);
+    public List<StaffInfoByCompanyVo> getStaffByCompany( StaffByCompanyDto staffByCompanyDto) {
+        return sysStaffInfoMapper.getStaffByCompany(staffByCompanyDto);
     }
 
 
