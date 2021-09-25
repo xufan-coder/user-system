@@ -57,6 +57,7 @@ public class UserMenuServiceImpl extends ServiceImpl<UserMenuMapper, UserMenu> i
             one.setUserName(user.getUserName());
             one.setMenuJson(JsonUtils.toString(param));
             one.setCreateTime(new Date());
+            one.setType(type);
             this.save(one);
         }
     }
