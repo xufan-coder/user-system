@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.SysAddressBookMapper">
+
+    <select id="queryAddressBook" resultType="com.zerody.user.vo.SysAddressBookVo">
+    	 SELECT
+            COUNT( sui.id )as staffCountId ,
+            sci.company_name,
+            sci.id as compId
+         FROM
+         sys_company_info AS sci
+	     LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
+         LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id  and ( sui.`status` = 0 OR sui.`status` = 3 )
+         GROUP BY
+              sci.id;
+  </select>
+    <select id="queryDepartInfo" resultType="com.zerody.user.vo.DepartInfoVo">
+        SELECT
+            COUNT( sui.id )AS staffCountId,
+            sdi.depart_name,
+            sci.company_name,
+            sdi.id AS departmentId,
+            ssis.user_name,
+            sci.id AS copmId,
+            sui.id AS userId
+            FROM
+            sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id
+        LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
+        LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
+        WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
+        <if test="id neq null and id neq ''">
+            AND sci.id=#{id}
+        </if>
+        GROUP BY
+        sdi.id;
+
+    </select>
+    <select id="queryTeam" resultType="com.zerody.user.vo.DepartInfoVo">
+        SELECT
+            COUNT( sui.id )AS staffCountId,
+            sdi.depart_name,
+            sci.company_name,
+            sdi.id AS departmentId,
+            ssis.user_name,
+            sci.id AS copmId,
+            sui.id AS userId
+            FROM
+            sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id
+        LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
+        LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
+        WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        <if test="id neq null and id neq ''">
+            AND sci.id=#{id}
+        </if>
+        GROUP BY
+        sdi.id;
+    </select>
+
+
+    <select id="getStaffByCompany" resultType="com.zerody.user.vo.StaffInfoByAddressBookVo">
+        SELECT
+        sui.id AS id,
+        sui.avatar AS avatar,
+        ssi.user_name AS userName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        urs.role_name AS roleName,
+        sdi.depart_name AS departName,
+        sci.company_name AS companyName,
+        ssi.id AS staffId
+        FROM
+        sys_staff_info ssi
+        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.deleted = 0
+            and sui.status in (0,3)
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departmentId!=null and param.departmentId neq ''">
+                and sdi.id=#{param.departmentId}
+            </if>
+            <if test="param.isDepartment!=null">
+                <if test="param.isDepartment==0">
+                    and (sdi.parent_id IS NULL OR sdi.parent_id='')
+                </if>
+                <if test="param.isDepartment==1">
+                    and (sdi.parent_id IS NOT NULL OR sdi.parent_id!='')
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>
