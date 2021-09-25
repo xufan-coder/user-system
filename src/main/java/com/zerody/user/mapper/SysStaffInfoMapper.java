@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -125,7 +124,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @author DaBai
      * @date 2021/9/7  14:56
      */
-    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
+    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("companyId")String companyId);
 
     /**
      *
