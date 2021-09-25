@@ -8,12 +8,9 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,7 +130,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<String> getSubordinateUserByUserId(String userId);
 
-    List<StaffInfoByCompanyVo> getStaffByCompany(String companyId);
+    List<StaffInfoByCompanyVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto);
 
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(UserVo user);
 

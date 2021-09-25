@@ -304,8 +304,19 @@
         <where>
             ssi.deleted = 0
             and sui.status in (0,3)
-            <if test="companyId != null and companyId != ''">
-                and ssi.comp_id = #{companyId}
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departmentId!=null and param.departmentId neq ''">
+                and sdi.id=#{param.departmentId}
+            </if>
+            <if test="param.isDepartment!=null">
+                <if test="param.isDepartment==0">
+                    and (sdi.parent_id IS NULL OR sdi.parent_id='')
+                </if>
+                <if test="param.isDepartment==1">
+                    and (sdi.parent_id IS NOT NULL OR sdi.parent_id!='')
+                </if>
             </if>
         </where>
     </select>
