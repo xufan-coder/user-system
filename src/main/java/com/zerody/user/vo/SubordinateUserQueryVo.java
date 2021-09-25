@@ -18,6 +18,20 @@ public class SubordinateUserQueryVo {
     private String mobile;
 
     private String departName;
+    /**
+     * 岗位名称
+     */
+    private String positionName;
+
+    /**
+     * 角色
+     */
+    private String roleName;
+
+    /**
+     * 企业名称
+     */
+    private String companyName;
 
     private String avatar;
 }
