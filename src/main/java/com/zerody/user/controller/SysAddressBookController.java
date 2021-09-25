@@ -2,13 +2,14 @@ package com.zerody.user.controller;
 
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.vo.DepartInfoVo;
+import com.zerody.user.vo.StaffInfoByAddressBookVo;
+import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -60,6 +61,14 @@ public class SysAddressBookController {
     public DataResult<List<DepartInfoVo>> queryTeam(String id) {
         List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(id);
         return R.success(departInfoVoList);
+    }
+
+    /**
+     *   按企业获取员工
+     */
+    @GetMapping(value = "/get/by-company")
+    public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto){
+        return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
     }
 
 

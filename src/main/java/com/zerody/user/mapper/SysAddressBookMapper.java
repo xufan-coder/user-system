@@ -1,6 +1,9 @@
 package com.zerody.user.mapper;
 
+import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
+import com.zerody.user.vo.StaffInfoByAddressBookVo;
+import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,6 +42,14 @@ public interface SysAddressBookMapper {
      * @return
      */
     List<DepartInfoVo> queryTeam(@Param("id") String id);
+    /***
+     * @description  查询员工
+     * @author zhangpingping
+     * @date 2021/9/25
+     * @param [staffByCompanyDto]
+     * @return
+     */
+    List<StaffInfoByAddressBookVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
 
 
 }

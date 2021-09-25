@@ -12,7 +12,6 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysStaffInfoService;
@@ -294,8 +293,8 @@ public class SysStaffInfoController {
      *   按企业获取员工
      */
     @RequestMapping(value = "/get/by-company", method = RequestMethod.GET)
-    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto){
-        return R.success(sysStaffInfoService.getStaffByCompany(staffByCompanyDto));
+    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(@RequestParam(value = "companyId",required = true)String companyId){
+        return R.success(sysStaffInfoService.getStaffByCompany(companyId));
     }
 
 

@@ -1,8 +1,11 @@
 package com.zerody.user.service.impl;
 
+import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.vo.DepartInfoVo;
+import com.zerody.user.vo.StaffInfoByAddressBookVo;
+import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
 import groovy.util.logging.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,5 +39,10 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     public List<DepartInfoVo> queryTeam(String id) {
         List<DepartInfoVo> departInfoVoList=sysMailListMapper.queryTeam(id);
         return departInfoVoList;
+    }
+
+    @Override
+    public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
+        return sysMailListMapper.getStaffByCompany(staffByCompanyDto);
     }
 }
