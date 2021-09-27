@@ -58,8 +58,8 @@ public class SysAddressBookController {
      * @return
      */
     @GetMapping(value = "/team")
-    public DataResult<List<DepartInfoVo>> queryTeam(String id) {
-        List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(id);
+    public DataResult<List<DepartInfoVo>> queryTeam(StaffByCompanyDto staffByCompanyDto) {
+        List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(staffByCompanyDto);
         return R.success(departInfoVoList);
     }
 
