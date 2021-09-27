@@ -55,11 +55,11 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
-        <if test="param.departmentId neq null and param.departmentId neq ''">
-            AND sdi.parent_id=#{param.departmentId}
+        <if test="departmentId neq null and departmentId neq ''">
+            AND sdi.parent_id=#{departmentId}
         </if>
-        <if test="param.companyId neq null and param.companyId neq ''">
-            AND sci.id=#{param.companyId}
+        <if test="id neq null and id neq ''">
+            AND sci.id=#{id}
         </if>
 
         GROUP BY
