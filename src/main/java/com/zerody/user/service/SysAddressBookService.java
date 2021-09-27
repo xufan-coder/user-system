@@ -40,7 +40,7 @@ public interface SysAddressBookService {
      * @param [id]
      * @return
      */
-    List<DepartInfoVo> queryTeam(String id);
+    List<DepartInfoVo> queryTeam(StaffByCompanyDto staffByCompanyDto);
 
     /***
      * @description  查询员工
