@@ -56,7 +56,7 @@
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
         <if test="param.departmentId neq null and param.departmentId neq ''">
-            AND sci.parent_id=#{param.departmentId}
+            AND sdi.parent_id=#{param.departmentId}
         </if>
         <if test="param.companyId neq null and param.companyId neq ''">
             AND sci.id=#{param.companyId}
