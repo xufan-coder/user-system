@@ -11,6 +11,7 @@
          sys_company_info AS sci
 	     LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
          LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id  and ( sui.`status` = 0 OR sui.`status` = 3 )
+         where sci.status=0
          GROUP BY
               sci.id;
   </select>
