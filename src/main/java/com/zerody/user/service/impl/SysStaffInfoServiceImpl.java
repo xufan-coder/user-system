@@ -1990,9 +1990,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         dimeVo.setId(CustomerQueryType.CHARGE);
         dimeVo.setName("我的客户");
         result.add(0, dimeVo);
-        CustomerQueryDimensionalityVo dimeVo1 = new CustomerQueryDimensionalityVo();
-        dimeVo1.setName("全部");
-        result.add(0, dimeVo1);
         return result;
     }
 
