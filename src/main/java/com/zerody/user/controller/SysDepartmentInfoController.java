@@ -412,7 +412,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
 
 
     @Override
-    @GetMapping(value = "/get/depart-info/inner")
+    @GetMapping(value = "/get/depart-all-info/inner")
     public DataResult<DepartInfoVo> getDepartInfoInner(@RequestParam("id") String departId) {
         try {
             DepartInfoVo result = this.sysDepartmentInfoService.getDepartInfoInner(departId);
