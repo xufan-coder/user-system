@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.DeptInfo;
+import com.zerody.user.api.vo.DepartInfoVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
@@ -146,4 +147,6 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<DepartSubordinateVo> getDepartByParentId(@Param("id") String id, @Param("companyId") String companyId);
 
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(@Param("user") UserVo user);
+
+    DepartInfoVo getDepartInfoInner(@Param("id")String departId);
 }
