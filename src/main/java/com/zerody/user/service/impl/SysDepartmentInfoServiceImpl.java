@@ -18,6 +18,7 @@ import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.user.api.dto.DeptInfo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.DepartInfoVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
@@ -563,6 +564,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return subs;
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public DepartInfoVo getDepartInfoInner(String departId) {
+        DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoInner(departId);
+        result.setIsFinally(this.getDepartIsFinally(departId, false));
+        return result;
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {

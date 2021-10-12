@@ -13,10 +13,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.DepartRemoteService;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.DepartmentInfoVo;
-import com.zerody.user.api.vo.SysUserInfo;
-import com.zerody.user.api.vo.UserDepartInfoVo;
+import com.zerody.user.api.vo.*;
 import com.zerody.user.dto.DirectLyDepartOrUserQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -410,6 +407,22 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         } catch (Exception e){
             log.error("判断部门是否最后一级出错:{}", e.getMessage(),e);
             return R.error("判断部门是否最后一级出错,请求异常");
+        }
+    }
+
+
+    @Override
+    @GetMapping(value = "/get/depart-info/inner")
+    public DataResult<DepartInfoVo> getDepartInfoInner(@RequestParam("id") String departId) {
+        try {
+            DepartInfoVo result = this.sysDepartmentInfoService.getDepartInfoInner(departId);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取部门信息出错:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取部门信息出错:{}", e.getMessage(),e);
+            return R.error("获取部门信息出错,请求异常");
         }
     }
 }
