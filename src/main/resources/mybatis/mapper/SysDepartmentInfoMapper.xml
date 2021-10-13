@@ -251,7 +251,7 @@
             ssi.user_name AS admin_user_name
         FROM
             sys_department_info AS sdi
-        LEFT sys_staff_info AS ssi ON ssi.id = sdi.admin_account
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account
         <where>
             sdi.id = #{id}
         </where>
