@@ -425,4 +425,29 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             return R.error("获取部门信息出错,请求异常");
         }
     }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          根据部门id获取部门相关信息
+     * @date                 2021/10/13 17:34
+     * @param                id
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.DepartInfoVo>
+     */
+    @GetMapping(value = "/get/depart/correlation-info/{id}")
+    public DataResult<DepartInfoVo> getDepartCorrelationInfo(@PathVariable("id") String id) {
+        try {
+            DepartInfoVo result = this.sysDepartmentInfoService.getDepartInfoInner(id);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取部门信息出错:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取部门信息出错:{}", e.getMessage(),e);
+            return R.error("获取部门信息出错,请求异常");
+        }
+    }
+
 }
