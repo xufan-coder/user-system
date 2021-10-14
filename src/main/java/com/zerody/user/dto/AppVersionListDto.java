@@ -15,7 +15,7 @@ import lombok.Data;
 public class AppVersionListDto {
 
     @ApiModelProperty(value = "系统类型")
-    private OsType osType;
+    private Integer osType;
 
     @ApiModelProperty(value = "版本号")
     private String version;
@@ -24,6 +24,6 @@ public class AppVersionListDto {
     private String name;
 
     @ApiModelProperty(value = "平台系统类型", required = true)
-    private SystemType systemType;
+    private Integer systemType;
 
 }
