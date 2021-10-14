@@ -569,7 +569,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public DepartInfoVo getDepartInfoInner(String departId) {
         DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoInner(departId);
-        result.setIsFinally(this.getDepartIsFinally(departId, false));
+        if (Objects.isNull(result)) {
+            throw new DefaultException("找不到部门");
+        }
+        result.setIsFinally(this.getDepartIsFinally(departId, Boolean.FALSE.booleanValue()));
         return result;
     }
 
