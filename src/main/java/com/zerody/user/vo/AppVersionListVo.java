@@ -25,13 +25,13 @@ public class AppVersionListVo {
     private String name;
 
     @ApiModelProperty(value = "手机系统类型", required = true)
-    private OsType osType;
+    private Integer osType;
 
     @ApiModelProperty(value = "版本号", required = true)
     private String version;
 
     @ApiModelProperty(value = "更新类型", required = true)
-    private UpdateType updateType;
+    private Integer updateType;
 
     @ApiModelProperty(value = "更新内容", required = true)
     private String updateContent;
@@ -49,6 +49,6 @@ public class AppVersionListVo {
     private String createBy;
 
     @ApiModelProperty(value = "平台系统类型", required = true)
-    private SystemType systemType;
+    private Integer systemType;
 
 }

@@ -26,7 +26,7 @@ public class AppVersion {
     /**
      * 系统类型
      */
-    private OsType osType;
+    private Integer osType;
 
     /**
      * 版本号
@@ -36,7 +36,7 @@ public class AppVersion {
     /**
      * 更新类型
      */
-    private UpdateType updateType;
+    private Integer updateType;
 
     /**
      * 更新内容
@@ -65,5 +65,5 @@ public class AppVersion {
     /**
      * 平台系统类型
      */
-    private SystemType systemType;
+    private Integer systemType;
 }

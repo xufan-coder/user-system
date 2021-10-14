@@ -1,19 +1,22 @@
 package com.zerody.user.execption;
 
-import com.itcoon.common.exception.ex.ExceptionResponseEnum;
-import com.itcoon.common.exception.ex.ServiceException;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author yumiaoxia
  * @since 2021-06-29
  */
-public enum PlatformResponseEnum implements ExceptionResponseEnum<ServiceException> {
+public enum PlatformResponseEnum  {
     INVALID_TOKEN(1, "访问令牌无效"),
     APP_VERSION_MISSING(2, "该app版本不存在"),
     LINK_URL_EMPTY(3, "链接url不能为空")
     ;
-
+    @Getter
+    @Setter
     private final int code;
+    @Getter
+    @Setter
     private final String message;
 
 
@@ -22,18 +25,4 @@ public enum PlatformResponseEnum implements ExceptionResponseEnum<ServiceExcepti
         this.message= message;
     }
 
-    @Override
-    public ServiceException bindException() {
-        return new ServiceException(this);
-    }
-
-    @Override
-    public Integer getCode() {
-        return this.code;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
 }

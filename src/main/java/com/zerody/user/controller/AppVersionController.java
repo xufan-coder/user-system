@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
-import com.zerody.user.config.SwaggerApiConfig;
 import com.zerody.user.domain.AppVersion;
 import com.zerody.user.dto.AppVersionCreateDto;
 import com.zerody.user.dto.AppVersionListDto;
@@ -15,7 +14,6 @@ import com.zerody.user.dto.AppVersionUpdateDto;
 import com.zerody.user.service.AppVersionService;
 import com.zerody.user.vo.AppVersionListVo;
 import com.zerody.user.vo.AppVersionVo;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +29,13 @@ import java.util.List;
  * @author yumiaoxia
  * @since 2021-06-29
  */
-@Api(tags = SwaggerApiConfig.APP_VERSION)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/app-versions")
 public class AppVersionController {
 
-    private final AppVersionService AppVersionervice;
+    @Autowired
+    private  AppVersionService AppVersionervice;
 
     @Autowired
     private RedisTemplate redisTemplate;
