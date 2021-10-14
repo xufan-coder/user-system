@@ -53,6 +53,7 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     cache-enabled: true
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+  type-enums-package: com.zerody.user.enums
 logging:
   level:
     com:
