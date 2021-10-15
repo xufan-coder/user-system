@@ -1,9 +1,7 @@
 package com.zerody.user.vo;
 
 
-import com.zerody.user.enums.OsType;
-import com.zerody.user.enums.SystemType;
-import com.zerody.user.enums.UpdateType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -40,9 +38,11 @@ public class AppVersionListVo {
     private String downloadUrl;
 
     @ApiModelProperty(value = "更新时间", required = true)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updateTime;
 
     @ApiModelProperty(value = "创建时间", required = true)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createTime;
 
     @ApiModelProperty(value = "创建人", required = true)
