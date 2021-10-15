@@ -41,7 +41,7 @@ public interface SysAddressBookMapper {
      * @param
      * @return
      */
-    List<DepartInfoVo> queryTeam(@Param("id") String id);
+    List<DepartInfoVo> queryTeam(@Param("id") String id,@Param("departmentId")String departmentId);
     /***
      * @description  查询员工
      * @author zhangpingping

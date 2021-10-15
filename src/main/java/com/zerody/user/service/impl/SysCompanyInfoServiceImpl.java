@@ -331,6 +331,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, dto.getId());
         CompanyAdmin admin = this.companyAdminMapper.selectOne(adminQw);
+        String oldAdminUserId = null;
+        if (DataUtil.isNotEmpty(admin)) {
+            SysStaffInfo oldAdmin = this.sysStaffInfoMapper.selectById(admin.getStaffId());
+            oldAdminUserId = oldAdmin.getUserId();
+        }
         if(admin ==  null){
             admin = new CompanyAdmin();
             admin.setId(UUIDutils.getUUID32());
@@ -350,6 +355,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.companyAdminMapper.updateById(admin);
         //  设置企业负责人 清除该员工token
         this.checkUtil.removeUserToken(user.getId());
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(oldAdminUserId)) {
+            this.checkUtil.removeUserToken(oldAdminUserId);
+        }
     }
 
     @Override

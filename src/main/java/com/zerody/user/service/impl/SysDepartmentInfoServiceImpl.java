@@ -18,6 +18,7 @@ import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.user.api.dto.DeptInfo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.DepartInfoVo;
 import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
@@ -254,6 +255,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         if(StringUtils.isEmpty(dto.getStaffId())){
             throw new DefaultException("员工id为空");
         }
+        SysDepartmentInfo oldAdmin = this.sysDepartmentInfoMapper.selectById(dto.getId());
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
         UnionStaffDepart dep  = this.unionStaffDepartMapper.selectOne(usdQW);
@@ -299,6 +301,10 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
         this.sysUserInfoService.update(userUw);
         this.checkUtil.removeUserToken(staffInfo.getUserId());
+        if (StringUtils.isNotEmpty(oldAdmin.getAdminAccount())) {
+            SysStaffInfo oldAdminStaff =  this.stafffMapper.selectById(oldAdmin.getAdminAccount());
+            this.checkUtil.removeUserToken(oldAdminStaff.getUserId());
+        }
     }
 
     @Override
@@ -558,6 +564,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return subs;
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public DepartInfoVo getDepartInfoInner(String departId) {
+        DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoInner(departId);
+        if (Objects.isNull(result)) {
+            throw new DefaultException("找不到部门");
+        }
+        result.setIsFinally(this.getDepartIsFinally(departId, Boolean.FALSE.booleanValue()));
+        return result;
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {
