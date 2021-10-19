@@ -1032,6 +1032,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[17]);
         userInfo.setMajor(row[18]);
         userInfo.setRegisterTime(new Date());
+        userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
@@ -1203,6 +1204,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setMajor(row[17]);
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
+        userInfo.setIsEdit(YesNo.YES);
         userInfo.setCreateId(UserUtils.getUserId());
         userInfo.setCreateUser(UserUtils.getUserName());
         userInfo.setCreateTime(new Date());
