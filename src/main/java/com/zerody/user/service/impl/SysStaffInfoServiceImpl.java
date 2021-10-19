@@ -1652,6 +1652,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
+        userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
+        userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
             return userInfo;
