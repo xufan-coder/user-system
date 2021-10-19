@@ -11,21 +11,22 @@
          sys_company_info AS sci
 	     LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
          LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id  and ( sui.`status` = 0 OR sui.`status` = 3 )
+         where sci.status=0
          GROUP BY
               sci.id;
   </select>
     <select id="queryDepartInfo" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
-            COUNT( sui.id )AS staffCountId,
-            sdi.depart_name,
-            sci.company_name,
-            sdi.id AS departmentId,
-            ssis.user_name,
-            sci.id AS copmId,
-            sui.id AS userId
-            FROM
-            sys_company_info AS sci
-        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id
+        COUNT( sui.id )AS staffCountId,
+        sdi.depart_name,
+        sci.company_name,
+        sdi.id AS departmentId,
+        ssis.user_name,
+        sci.id AS copmId,
+        sui.id AS userId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
         LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
         LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
@@ -40,24 +41,28 @@
     </select>
     <select id="queryTeam" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
-            COUNT( sui.id )AS staffCountId,
-            sdi.depart_name,
-            sci.company_name,
-            sdi.id AS departmentId,
-            ssis.user_name,
-            sci.id AS copmId,
-            sui.id AS userId
-            FROM
-            sys_company_info AS sci
-        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id
+        COUNT( sui.id )AS staffCountId,
+        sdi.depart_name,
+        sci.company_name,
+        sdi.id AS departmentId,
+        ssis.user_name,
+        sci.id AS copmId,
+        sui.id AS userId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
         LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
         LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        <if test="departmentId neq null and departmentId neq ''">
+            AND sdi.parent_id=#{departmentId}
+        </if>
         <if test="id neq null and id neq ''">
             AND sci.id=#{id}
         </if>
+
         GROUP BY
         sdi.id;
     </select>
@@ -89,15 +94,14 @@
             <if test="param.companyId != null and param.companyId != ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departmentId!=null and param.departmentId neq ''">
-                and sdi.id=#{param.departmentId}
-            </if>
             <if test="param.isDepartment!=null">
-                <if test="param.isDepartment==0">
-                    and (sdi.parent_id IS NULL OR sdi.parent_id='')
-                </if>
-                <if test="param.isDepartment==1">
-                    and (sdi.parent_id IS NOT NULL OR sdi.parent_id!='')
+                <if test="param.departmentId!=null and param.departmentId neq ''">
+                    <if test="param.isDepartment==0">
+                        and sdi.parent_id=#{param.departmentId}
+                    </if>
+                    <if test="param.isDepartment==1">
+                        and sdi.id=#{param.departmentId}
+                    </if>
                 </if>
             </if>
         </where>

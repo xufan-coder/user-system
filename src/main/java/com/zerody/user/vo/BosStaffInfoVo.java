@@ -4,6 +4,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.enums.StaffStatusEnum;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
@@ -93,5 +94,11 @@ public class BosStaffInfoVo {
         return statusEnum.getDesc();
     }
 
+    public String getPhone() {
+        if (StringUtils.isEmpty(this.phone)) {
+            return null;
+        }
+        return this.phone.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
     /** 员工状态 */
 }

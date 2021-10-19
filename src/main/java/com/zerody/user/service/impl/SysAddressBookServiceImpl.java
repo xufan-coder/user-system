@@ -36,8 +36,8 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
-    public List<DepartInfoVo> queryTeam(String id) {
-        List<DepartInfoVo> departInfoVoList=sysMailListMapper.queryTeam(id);
+    public List<DepartInfoVo> queryTeam(String id,String departmentId) {
+        List<DepartInfoVo> departInfoVoList=sysMailListMapper.queryTeam(id,departmentId);
         return departInfoVoList;
     }
 
