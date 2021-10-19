@@ -208,6 +208,10 @@ public class SysUserInfoVo {
      */
     private List<SysStaffRelationVo> staffRelationDtoList;
 
+    private Boolean isCompanyAdmin;
+
+    private Boolean isDepartAdmin;
+
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
