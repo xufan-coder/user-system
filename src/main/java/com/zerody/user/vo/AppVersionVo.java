@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.enums.OsType;
 import com.zerody.user.enums.SystemType;
 import com.zerody.user.enums.UpdateType;
@@ -22,13 +23,13 @@ public class AppVersionVo {
     private String name;
 
     @ApiModelProperty(value = "系统类型", required = true)
-    private OsType osType;
+    private Integer osType;
 
     @ApiModelProperty(value = "版本号", required = true)
     private String version;
 
     @ApiModelProperty(value = "更新类型", required = true)
-    private UpdateType updateType;
+    private Integer updateType;
 
     @ApiModelProperty(value = "更新内容", required = true)
     private String updateContent;
@@ -37,14 +38,16 @@ public class AppVersionVo {
     private String downloadUrl;
 
     @ApiModelProperty(value = "更新时间", required = true)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updateTime;
 
     @ApiModelProperty(value = "创建时间", required = true)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createTime;
 
     @ApiModelProperty(value = "创建人", required = true)
     private String createBy;
 
     @ApiModelProperty(value = "平台系统类型", required = true)
-    private SystemType systemType;
+    private Integer systemType;
 }

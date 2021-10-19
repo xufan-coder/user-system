@@ -21,7 +21,7 @@ public class AppVersionCreateDto {
     private String name;
 
     @ApiModelProperty(value = "系统类型", required = true)
-    private OsType osType;
+    private Integer osType;
 
     @ApiModelProperty(value = "版本号",required = true)
     private String version;
@@ -31,12 +31,12 @@ public class AppVersionCreateDto {
     private String downloadUrl;
 
     @ApiModelProperty(value = "更新类型")
-    private UpdateType updateType;
+    private Integer updateType;
 
     @Length(max = 1000)
     @ApiModelProperty(value = "更新内容")
     private String updateContent;
 
     @ApiModelProperty(value = "平台系统类型", required = true)
-    private SystemType systemType;
+    private Integer systemType;
 }

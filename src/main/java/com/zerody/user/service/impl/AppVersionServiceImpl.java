@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import com.itcoon.common.exception.ex.Assertion;
-import com.itcoon.transform.starter.Transformer;
 import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.exception.DefaultException;
@@ -27,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +42,9 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
     @Override
     public void createAppVersion(AppVersionCreateDto param) {
         IUser userData = UserUtils.getUserData();
-        Assertion.assertNotNull(userData).raise(PlatformResponseEnum.INVALID_TOKEN);
+        if (Objects.isNull(userData)) {
+            throw new DefaultException(PlatformResponseEnum.INVALID_TOKEN.getMessage());
+        }
         AppVersion appVersion = new AppVersion();
         BeanUtils.copyProperties(param, appVersion);
 
@@ -57,7 +58,9 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
     @Override
     public void updateAppVersion(String id, AppVersionUpdateDto param) {
         AppVersion appVersion = this.baseMapper.selectById(id);
-        Assertion.assertNotNull(appVersion).raise(PlatformResponseEnum.APP_VERSION_MISSING);
+        if (Objects.isNull(appVersion)) {
+            throw new DefaultException(PlatformResponseEnum.APP_VERSION_MISSING.getMessage());
+        }
         BeanUtils.copyProperties(param, appVersion);
         appVersion.setUpdateTime(new Date());
         this.baseMapper.updateById(appVersion);
@@ -81,21 +84,33 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         }
         Page<AppVersion> appVersionPage = this.baseMapper.selectPage(pageRequest, wrapper);
         Page<AppVersionListVo> resultPage = new Page<>(appVersionPage.getCurrent(), appVersionPage.getSize(), appVersionPage.getTotal());
-        resultPage.setRecords(Transformer.toList(AppVersionListVo.class).apply(appVersionPage.getRecords()).done());
+        List<AppVersionListVo> appVersionListVos = new ArrayList<>();
+        appVersionPage.getRecords().forEach(item -> {
+            AppVersionListVo appVersionListVo = new AppVersionListVo();
+            BeanUtils.copyProperties(item, appVersionListVo);
+            appVersionListVos.add(appVersionListVo);
+        });
+        resultPage.setRecords(appVersionListVos);
         return resultPage;
     }
 
     @Override
     public AppVersionVo detail(String id) {
         AppVersion appVersion = this.baseMapper.selectById(id);
-        Assertion.assertNotNull(appVersion).raise(PlatformResponseEnum.APP_VERSION_MISSING);
-        return Transformer.to(AppVersionVo.class).apply(appVersion).done();
+        if (Objects.isNull(appVersion)) {
+            throw new DefaultException(PlatformResponseEnum.APP_VERSION_MISSING.getMessage());
+        }
+        AppVersionVo appVersionVo = new AppVersionVo();
+        BeanUtils.copyProperties(appVersion, appVersionVo);
+        return appVersionVo;
     }
 
     @Override
     public void deleteVersion(String id) {
         AppVersion appVersion = this.baseMapper.selectById(id);
-        Assertion.assertNotNull(appVersion).raise(PlatformResponseEnum.APP_VERSION_MISSING);
+        if (Objects.isNull(appVersion)) {
+            throw new DefaultException(PlatformResponseEnum.APP_VERSION_MISSING.getMessage());
+        }
         this.baseMapper.deleteById(id);
     }
 
