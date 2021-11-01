@@ -29,7 +29,7 @@ public class CheckUser {
                 throw new DefaultException("身份证不合法");
             }
         } else {
-            throw new DefaultException("身份证不能为空");
+//            throw new DefaultException("身份证不能为空");
         }
     }
 
