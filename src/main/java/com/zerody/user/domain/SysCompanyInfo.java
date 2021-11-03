@@ -200,4 +200,7 @@ public class SysCompanyInfo extends BaseModel {
 
     private Integer isEdit;
 
+    @TableField(exist = false)
+    private String certificateCard;
+
 }
