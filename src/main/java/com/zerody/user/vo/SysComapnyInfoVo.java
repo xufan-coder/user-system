@@ -94,4 +94,8 @@ public class SysComapnyInfoVo {
 
     private String companyLogo;
 
+    /**
+     * 身份证号
+     */
+    private String certificateCard;
 }
