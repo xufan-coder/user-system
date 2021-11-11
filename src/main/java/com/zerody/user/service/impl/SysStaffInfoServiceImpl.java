@@ -238,6 +238,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setAvatar(avatar);
+        staff.setRecommendId(setSysUserInfoDto.getRecommendId());
+        staff.setRecommendType(setSysUserInfoDto.getRecommendType());
+        staff.setIntegral(setSysUserInfoDto.getIntegral());
         staff.setUserName(sysUserInfo.getUserName());
         staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
@@ -424,6 +427,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
+        staff.setRecommendId(setSysUserInfoDto.getRecommendId());
+        staff.setRecommendType(setSysUserInfoDto.getRecommendType());
+        staff.setIntegral(setSysUserInfoDto.getIntegral());
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setAvatar(setSysUserInfoDto.getAvatar());
         staff.setUserName(setSysUserInfoDto.getUserName());
@@ -667,6 +673,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
+        RecommendInfoVo recommendInfo = null;
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+             userInfo.setRecommendInfo(recommendInfo);
+        }
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
+            userInfo.setRecommendSecond(recommendInfo);
+        }
         if(Objects.nonNull(userInfo)) {
             //获取荣耀和惩罚记录
             getRecord(id, userInfo);
@@ -675,6 +690,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
+        userInfo.setRecommendSecond(new RecommendInfoVo());
+        userInfo.setRecommendInfo(new RecommendInfoVo());
         return userInfo;
     }
 
@@ -1640,6 +1657,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
             throw new DefaultException("用户信息不存在");
+        }
+        RecommendInfoVo recommendInfo = null;
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+            userInfo.setRecommendInfo(recommendInfo);
+        }
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
+            userInfo.setRecommendSecond(recommendInfo);
         }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());

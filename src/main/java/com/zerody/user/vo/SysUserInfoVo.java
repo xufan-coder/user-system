@@ -212,6 +212,21 @@ public class SysUserInfoVo {
 
     private Boolean isDepartAdmin;
 
+    /** 推荐人id */
+    private String recommendId;
+
+    /** 推荐类型 0:公司社招,1员工介绍 */
+    private Integer recommendType;
+
+    /** 积分 */
+    private Integer integral;
+
+    /** 一级推荐人 */
+    private RecommendInfoVo recommendInfo;
+
+    /** 二级推荐人 */
+    private RecommendInfoVo recommendSecond;
+
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
