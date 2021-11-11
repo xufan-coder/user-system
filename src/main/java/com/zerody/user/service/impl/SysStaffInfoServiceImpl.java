@@ -884,7 +884,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 4};
+        Integer[] mustIndex = {0, 1, 4, 11};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
@@ -1010,7 +1010,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 2, 5};
+        Integer[] mustIndex = {0, 1, 2, 5, 12};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
