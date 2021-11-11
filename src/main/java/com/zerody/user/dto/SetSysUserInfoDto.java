@@ -84,7 +84,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     private String recommendId;
 
     /** 推荐类型 0:公司社招,1员工介绍 */
-    @NotNull(message = "请选择推荐人")
+    @NotNull(message = "请选择推荐类型")
     private Integer recommendType;
 
     /** 积分 */
