@@ -52,4 +52,9 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
 
     private String queryType;
 
+    private Integer status;
+
+    /** 是否黑名单 */
+    private Integer isBlack;
+
 }
