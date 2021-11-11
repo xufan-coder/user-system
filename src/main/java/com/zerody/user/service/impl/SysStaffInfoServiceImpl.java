@@ -734,8 +734,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
-        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
-        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
+//        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+//        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
