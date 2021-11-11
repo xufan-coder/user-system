@@ -690,8 +690,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
-        userInfo.setRecommendSecond(new RecommendInfoVo());
-        userInfo.setRecommendInfo(new RecommendInfoVo());
         return userInfo;
     }
 
