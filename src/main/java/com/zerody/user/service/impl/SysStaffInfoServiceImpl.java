@@ -690,6 +690,52 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
+
+        UserVo user = new UserVo();
+        user.setUserId(userInfo.getId());
+        user.setCompanyId(userInfo.getCompanyId());
+        //获取荣耀和惩罚记录
+        getRecord(userInfo.getStaffId(), userInfo);
+        //查询关系
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        AdminVo admin = this.getIsAdmin(user);
+        userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
+        userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
+        if (admin.getIsCompanyAdmin()) {
+            userInfo.setSuperiorName(userInfo.getUserName());
+            return userInfo;
+        }
+        if (StringUtils.isEmpty(userInfo.getDepartId())) {
+            return userInfo;
+        }
+        if (admin.getIsDepartAdmin()) {
+            String departId = userInfo.getDepartId();
+            if (departId.indexOf("_") == -1) {
+                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                staffQw.lambda().inSql(SysStaffInfo::getId, "select staff_id from company_admin where company_id = '".concat(userInfo.getCompanyId()).concat("'"));
+                SysStaffInfo sysStaffInfo = this.getOne(staffQw);
+                userInfo.setSuperiorName(DataUtil.isEmpty(sysStaffInfo) ? null : sysStaffInfo.getUserName());
+                return userInfo;
+            }
+            departId = departId.substring(0, departId.lastIndexOf("_"));
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(departId);
+            if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+//                userInfo.setSuperiorName("暂无上级");
+                return userInfo;
+            }
+        }
+
+        SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(userInfo.getDepartId());
+        if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+            return userInfo;
+        }
+        SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
+        userInfo.setSuperiorName(staffInfo.getUserName());
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
@@ -884,7 +930,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 4};
+        Integer[] mustIndex = {0, 1, 4, 11};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
@@ -1010,7 +1056,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 2, 5};
+        Integer[] mustIndex = {0, 1, 2, 5, 12};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
