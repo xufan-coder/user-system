@@ -95,6 +95,9 @@
             <if test="staff.isBlack neq null and staff.isBlack eq 1">
                 AND sb.state = 'BLOCK'
             </if>
+            <if test="staff.isBlack neq null and staff.isBlack eq 0">
+                AND sb.state != 'BLOCK'
+            </if>
             <if test="staff.status neq null">
                 AND sui.status = #{staff.status}
             </if>
