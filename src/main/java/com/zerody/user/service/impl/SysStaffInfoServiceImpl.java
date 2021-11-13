@@ -1846,6 +1846,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             admin.setIsDepartAdmin(DataUtil.isNotEmpty(dep));
             return admin;
         }
+        admin.setIsDepartAdmin(Boolean.FALSE);
         return admin;
     }
 
