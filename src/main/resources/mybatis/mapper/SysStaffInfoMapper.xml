@@ -92,11 +92,11 @@
             <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
                 and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
             </if>
-            <if test="staff.isBlack neq null and staff.isBlack eq 1">
-                AND sb.state = 'BLOCK'
+            <if test="staff.isBlock neq null and staff.isBlock eq 1">
+                AND sb.id = 'BLOCK'
             </if>
-            <if test="staff.isBlack neq null and staff.isBlack eq 0">
-                AND sb.state != 'BLOCK'
+            <if test="staff.isBlock neq null and staff.isBlock eq 0">
+                AND sb.id IS NULL
             </if>
             <if test="staff.status neq null">
                 AND sui.status = #{staff.status}
