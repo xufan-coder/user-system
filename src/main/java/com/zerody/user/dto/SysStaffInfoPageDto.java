@@ -55,6 +55,6 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
     private Integer status;
 
     /** 是否黑名单 */
-    private Integer isBlack;
+    private Integer isBlock;
 
 }
