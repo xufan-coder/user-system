@@ -92,6 +92,15 @@
             <if test="staff.phoneNumber != null and staff.phoneNumber != ''">
                 and sui.phone_number like concat('%', #{staff.phoneNumber}, '%')
             </if>
+            <if test="staff.isBlock neq null and staff.isBlock eq 1">
+                AND sb.state = 'BLOCK'
+            </if>
+            <if test="staff.isBlock neq null and staff.isBlock eq 0">
+                AND sb.id IS NULL
+            </if>
+            <if test="staff.status neq null">
+                AND sui.status = #{staff.status}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
@@ -168,7 +177,11 @@
         sui.urgent_phone,
         ssi.evaluate,
         ssi.resume_url,
-        ssi.leave_reason
+        ssi.leave_reason,
+        ssi.recommend_type,
+        ssi.recommend_id,
+        sb.id is not null AS is_block,
+        ssi.integral
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -178,6 +191,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and ssi.id = #{id}
         </where>
@@ -186,22 +200,20 @@
     <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
-        ssi.id AS staffId,
-        ssi.resume_url,
-        ssi.evaluate,
+        ssi.id staffId,
         sui.user_name,
         sui.gender,
         sui.phone_number,
         sui.email,
         sui.nickname,
-        sui.avatar,
+        ssi.avatar,
         sui.birthday,
         sui.certificate_card,
         sui.certificate_card_address,
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.status,
+        ssi.STATUS,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -224,7 +236,14 @@
         sui.create_time,
         sui.urgent_name,
         sui.urgent_relation,
-        sui.urgent_phone
+        sui.urgent_phone,
+        ssi.evaluate,
+        ssi.resume_url,
+        ssi.leave_reason,
+        ssi.recommend_type,
+        ssi.recommend_id,
+        sb.id is not null AS is_block,
+        ssi.integral
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -234,6 +253,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
         <where>
             sui.id = #{userId}
         </where>
@@ -797,5 +817,26 @@
             LEFT JOIN union_staff_position usp ON ssi.id=usp.staff_id
             LEFT JOIN sys_job_position sjp ON usp.position_id=sjp.id
             where ssi.user_id=#{userId}
+    </select>
+    <select id="getRecommendInfo" resultType="com.zerody.user.vo.RecommendInfoVo">
+        SELECT
+            ssi.id AS staff_id,
+            ssi.user_id AS user_id,
+            ssi.user_name AS user_name,
+            sdi.id AS depart_id,
+            sdi.depart_name AS depart_name,
+            sci.id AS company_id,
+            sci.company_name AS company_name,
+            ssi.recommend_id
+        FROM
+            sys_staff_info AS ssi
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        <where>
+            <if test="recommendId neq null and recommendId neq ''">
+               AND  ssi.id = #{recommendId}
+            </if>
+        </where>
     </select>
 </mapper>

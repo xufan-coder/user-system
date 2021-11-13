@@ -82,8 +82,8 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
-    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
+    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
+    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
     private static final String[] PERFORMANCE_REVIEWS_EXPORT_TITLE = {"企业名称", "部门", "角色", "姓名", "业绩收入", "回款笔数", "放款金额", "放款笔数", "签单金额", "签单笔数", "在审批金额", "审批笔数", "月份"};
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
@@ -238,6 +238,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setAvatar(avatar);
+        staff.setRecommendId(setSysUserInfoDto.getRecommendId());
+        staff.setRecommendType(setSysUserInfoDto.getRecommendType());
+        staff.setIntegral(setSysUserInfoDto.getIntegral());
         staff.setUserName(sysUserInfo.getUserName());
         staff.setCompId(setSysUserInfoDto.getCompanyId());
         staff.setStatus(setSysUserInfoDto.getStatus());
@@ -424,6 +427,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
+        if (setSysUserInfoDto.getRecommendType().intValue() == 1 && StringUtils.isEmpty(setSysUserInfoDto.getRecommendId())) {
+            throw new DefaultException("请选择推荐人");
+        }
+        if (setSysUserInfoDto.getRecommendType().intValue() == 1 && setSysUserInfoDto.getRecommendId().equals(staff.getId())) {
+            throw new DefaultException("不能选择自己为推荐人");
+        }
+        staff.setRecommendId(setSysUserInfoDto.getRecommendId());
+        staff.setRecommendType(setSysUserInfoDto.getRecommendType());
+        staff.setIntegral(setSysUserInfoDto.getIntegral());
         staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setAvatar(setSysUserInfoDto.getAvatar());
         staff.setUserName(setSysUserInfoDto.getUserName());
@@ -667,6 +679,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
+        RecommendInfoVo recommendInfo = null;
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+             userInfo.setRecommendInfo(recommendInfo);
+        }
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
+            userInfo.setRecommendSecond(recommendInfo);
+        }
         if(Objects.nonNull(userInfo)) {
             //获取荣耀和惩罚记录
             getRecord(id, userInfo);
@@ -675,6 +696,52 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
+
+        UserVo user = new UserVo();
+        user.setUserId(userInfo.getId());
+        user.setCompanyId(userInfo.getCompanyId());
+        //获取荣耀和惩罚记录
+        getRecord(userInfo.getStaffId(), userInfo);
+        //查询关系
+        SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
+        sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+        AdminVo admin = this.getIsAdmin(user);
+        userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
+        userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
+        if (admin.getIsCompanyAdmin()) {
+            userInfo.setSuperiorName(userInfo.getUserName());
+            return userInfo;
+        }
+        if (StringUtils.isEmpty(userInfo.getDepartId())) {
+            return userInfo;
+        }
+        if (admin.getIsDepartAdmin()) {
+            String departId = userInfo.getDepartId();
+            if (departId.indexOf("_") == -1) {
+                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                staffQw.lambda().inSql(SysStaffInfo::getId, "select staff_id from company_admin where company_id = '".concat(userInfo.getCompanyId()).concat("'"));
+                SysStaffInfo sysStaffInfo = this.getOne(staffQw);
+                userInfo.setSuperiorName(DataUtil.isEmpty(sysStaffInfo) ? null : sysStaffInfo.getUserName());
+                return userInfo;
+            }
+            departId = departId.substring(0, departId.lastIndexOf("_"));
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(departId);
+            if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+//                userInfo.setSuperiorName("暂无上级");
+                return userInfo;
+            }
+        }
+
+        SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(userInfo.getDepartId());
+        if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
+            return userInfo;
+        }
+        SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
+        userInfo.setSuperiorName(staffInfo.getUserName());
+//        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+//        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
@@ -869,7 +936,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 4};
+        Integer[] mustIndex = {0, 1, 4, 11};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
@@ -995,7 +1062,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成功条数
         result.put("successCount", dataList.size() - errors.size() - 1);
         //标红必填项
-        Integer[] mustIndex = {0, 1, 2, 5};
+        Integer[] mustIndex = {0, 1, 2, 5, 12};
         if (errors.size() > 0) {
             String[] heads = Arrays.copyOf(headers, headers.length + 1);
             heads[heads.length - 1] = "导入失败原因";
@@ -1089,7 +1156,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[12])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
@@ -1256,7 +1323,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【17】};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4]) || DataUtil.isEmpty(row[11])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
@@ -1640,6 +1707,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
             throw new DefaultException("用户信息不存在");
+        }
+        RecommendInfoVo recommendInfo = null;
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+            userInfo.setRecommendInfo(recommendInfo);
+        }
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
+            userInfo.setRecommendSecond(recommendInfo);
         }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());

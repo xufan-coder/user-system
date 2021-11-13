@@ -343,4 +343,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return
      */
     SysStaffInfoDetailsVo getStaffinfoDetails(@Param("userId") String userId);
+
+    /**
+     *
+     *获取推荐人信息
+     * @author               PengQiang
+     * @description
+     * @date                 2021/11/11 10:06
+     * @param                recommendId
+     * @return               com.zerody.user.vo.RecommendInfoVo
+     */
+    RecommendInfoVo getRecommendInfo(@Param("recommendId") String recommendId);
 }

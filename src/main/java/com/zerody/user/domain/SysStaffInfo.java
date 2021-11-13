@@ -3,6 +3,7 @@ package com.zerody.user.domain;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
@@ -73,4 +74,16 @@ public class SysStaffInfo extends BaseModel {
 
     /** 离职原因 */
     private String leaveReason;
+
+
+    /** 推荐人id */
+    private String recommendId;
+
+    /** 推荐类型 0:公司社招,1员工介绍 */
+    @NotEmpty(message = "请选择推荐人")
+    private Integer recommendType;
+
+    /** 积分 */
+    private Integer integral;
+
 }
