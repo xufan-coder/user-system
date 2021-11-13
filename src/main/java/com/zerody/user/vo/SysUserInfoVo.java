@@ -212,6 +212,8 @@ public class SysUserInfoVo {
 
     private Boolean isDepartAdmin;
 
+    private Boolean isBlock;
+
     /** 推荐人id */
     private String recommendId;
 

@@ -427,6 +427,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff = this.getOne(staffQW);
+        if (setSysUserInfoDto.getRecommendType().intValue() == 1 && StringUtils.isEmpty(setSysUserInfoDto.getRecommendId())) {
+            throw new DefaultException("请选择推荐人");
+        }
+        if (setSysUserInfoDto.getRecommendType().intValue() == 1 && setSysUserInfoDto.getRecommendId().equals(staff.getId())) {
+            throw new DefaultException("不能选择自己为推荐人");
+        }
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
         staff.setRecommendType(setSysUserInfoDto.getRecommendType());
         staff.setIntegral(setSysUserInfoDto.getIntegral());
