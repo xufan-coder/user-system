@@ -180,6 +180,7 @@
         ssi.leave_reason,
         ssi.recommend_type,
         ssi.recommend_id,
+        sb.id is not null AS is_block,
         ssi.integral
         FROM
         sys_user_info sui
@@ -190,6 +191,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and ssi.id = #{id}
         </where>
@@ -240,6 +242,7 @@
         ssi.leave_reason,
         ssi.recommend_type,
         ssi.recommend_id,
+        sb.id is not null AS is_block,
         ssi.integral
         FROM
         sys_user_info sui
@@ -250,6 +253,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
         <where>
             sui.id = #{userId}
         </where>
