@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -78,6 +79,16 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 关系
      */
     private List<SysStaffRelationDto> staffRelationDtoList;
+
+    /** 推荐人id */
+    private String recommendId;
+
+    /** 推荐类型 0:公司社招,1员工介绍 */
+    @NotNull(message = "请选择推荐类型")
+    private Integer recommendType;
+
+    /** 积分 */
+    private Integer integral;
 
 
 }
