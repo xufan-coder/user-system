@@ -36,7 +36,6 @@ public class UserPwdSmsTask {
     @XxlJob("user-pwd-sms")
     public ReturnT<String> execute(String param){
         List<String> companyIds =  this.companyInfoService.getNotSmsCompany();
-        UpdateWrapper<SysCompanyInfo> uwCompany = new UpdateWrapper<>();
         int row = 50;
         if (CollectionUtils.isEmpty(companyIds)) {
             return ReturnT.SUCCESS;
