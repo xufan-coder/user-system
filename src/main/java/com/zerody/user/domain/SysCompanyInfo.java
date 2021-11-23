@@ -203,4 +203,6 @@ public class SysCompanyInfo extends BaseModel {
     @TableField(exist = false)
     private String certificateCard;
 
+    private Integer isNotSms;
+
 }

@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
@@ -18,7 +19,7 @@ import java.util.List;
  * @DateTime 2020/12/18_15:51
  * @Deacription TODO
  */
-public interface SysCompanyInfoService {
+public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     void addCompany(SysCompanyInfo sysCompanyInfo);
 
     void updateCompanyStatus(String companyId, Integer loginStatus);
@@ -48,4 +49,6 @@ public interface SysCompanyInfoService {
     void doCompangEditInfo();
 
     Page<CompanyInfoVo> getPageInner(RatioPageDto pageQueryDto);
+
+    List<String> getNotSmsCompany();
 }

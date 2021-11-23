@@ -354,4 +354,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.zerody.user.vo.RecommendInfoVo
      */
     RecommendInfoVo getRecommendInfo(@Param("recommendId") String recommendId);
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/11/23 10:32
+     * @param                companyId
+     * @return               java.util.List<com.zerody.user.vo.CheckLoginVo>
+     */
+    List<CheckLoginVo> getNotSendPwdSmsStaff(@Param("companyId") String companyId);
 }

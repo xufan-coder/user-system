@@ -86,4 +86,7 @@ public class SysStaffInfo extends BaseModel {
     /** 积分 */
     private Integer integral;
 
+    /** 密码 */
+    private String password;
+
 }

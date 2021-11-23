@@ -426,6 +426,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         return pageCompanyInner;
     }
 
+    @Override
+    public List<String> getNotSmsCompany() {
+        return this.sysCompanyInfoMapper.getNotSmsCompany();
+    }
+
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo=new CardUserInfo();
