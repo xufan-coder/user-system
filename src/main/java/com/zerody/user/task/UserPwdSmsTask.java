@@ -46,7 +46,7 @@ public class UserPwdSmsTask {
                 continue;
             }
             //指定数量发送短信防止事务超时
-            for (int i = 0, size = staffs.size(); i <= size; i += row) {
+            for (int i = 0, size = staffs.size(); i < size; i += row) {
                 if (size - i < row) {
                     row = size - i;
                 }
