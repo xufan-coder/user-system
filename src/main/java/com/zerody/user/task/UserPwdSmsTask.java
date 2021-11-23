@@ -36,7 +36,6 @@ public class UserPwdSmsTask {
     @XxlJob("user-pwd-sms")
     public ReturnT<String> execute(String param){
         List<String> companyIds =  this.companyInfoService.getNotSmsCompany();
-        UpdateWrapper<SysCompanyInfo> uwCompany = new UpdateWrapper<>();
         int row = 50;
         if (CollectionUtils.isEmpty(companyIds)) {
             return ReturnT.SUCCESS;
@@ -47,7 +46,7 @@ public class UserPwdSmsTask {
                 continue;
             }
             //指定数量发送短信防止事务超时
-            for (int i = 0, size = staffs.size(); i <= size; i += row) {
+            for (int i = 0, size = staffs.size(); i < size; i += row) {
                 if (size - i < row) {
                     row = size - i;
                 }
