@@ -23,5 +23,9 @@ public class CheckLoginVo {
     private String staffId;
 
 
+    /** 手机号码 */
+    private String phoneNumber;
+
+
 
 }
