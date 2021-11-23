@@ -226,18 +226,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setStatus(StatusEnum.activity.getValue());
         log.info("添加用户后生成登录账户入库参数--{}", JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
-        SmsDto smsDto = new SmsDto();
-        smsDto.setMobile(sysUserInfo.getPhoneNumber());
-        Map<String, Object> content = new HashMap<>();
-        content.put("userName", sysUserInfo.getPhoneNumber());
-        content.put("passWord", initPwd);
-        smsDto.setContent(content);
-        smsDto.setTemplateCode(userTipTemplate);
-        smsDto.setSign(smsSign);
+//        SmsDto smsDto = new SmsDto();
+//        smsDto.setMobile(sysUserInfo.getPhoneNumber());
+//        Map<String, Object> content = new HashMap<>();
+//        content.put("userName", sysUserInfo.getPhoneNumber());
+//        content.put("passWord", initPwd);
+//        smsDto.setContent(content);
+//        smsDto.setTemplateCode(userTipTemplate);
+//        smsDto.setSign(smsSign);
 
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
         staff.setAvatar(avatar);
+        staff.setPassword(initPwd);
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
         staff.setRecommendType(setSysUserInfoDto.getRecommendType());
         staff.setIntegral(setSysUserInfoDto.getIntegral());
@@ -324,8 +325,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
         saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
-        //最后发送短信
-        smsFeignService.sendSms(smsDto);
+//        //最后发送短信
+//        smsFeignService.sendSms(smsDto);
         //推送app账户
         appUserPushService.doPushAppUser(sysUserInfo.getId(), setSysUserInfoDto.getCompanyId());
         return staff;
@@ -947,7 +948,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String base64 = FileUtil.fileToBase64(inputStream);
             result.put("base64File", base64);
         }
-        sendInitPwdSms(smsDtos);
+//        sendInitPwdSms(smsDtos);
         return result;
     }
 
@@ -1073,7 +1074,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String base64 = FileUtil.fileToBase64(inputStream);
             result.put("base64File", base64);
         }
-        sendInitPwdSms(smsDtos);
+//        sendInitPwdSms(smsDtos);
         return result;
     }
 
@@ -1124,15 +1125,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto smsDto = new SmsDto();
-        smsDto.setMobile(userInfo.getPhoneNumber());
-        Map<String, Object> content = new HashMap<>();
-        content.put("userName", userInfo.getPhoneNumber());
-        content.put("passWord", initPwd);
-        smsDto.setContent(content);
-        smsDto.setTemplateCode(userTipTemplate);
-        smsDto.setSign(smsSign);
-        smsDtos.add(smsDto);
+//        SmsDto smsDto = new SmsDto();
+//        smsDto.setMobile(userInfo.getPhoneNumber());
+//        Map<String, Object> content = new HashMap<>();
+//        content.put("userName", userInfo.getPhoneNumber());
+//        content.put("passWord", initPwd);
+//        smsDto.setContent(content);
+//        smsDto.setTemplateCode(userTipTemplate);
+//        smsDto.setSign(smsSign);
+//        smsDtos.add(smsDto);
 
 
         //获取企业信息的地址用于生成名片
@@ -1278,32 +1279,33 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();;
+        String initPwd = SysStaffInfoService.getInitPwd();
         SysStaffInfo staff = new SysStaffInfo();
         //获取当前登录用户的当前公司id
         staff.setCompId(UserUtils.getUser().getCompanyId());
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
         staff.setStatus(status);
+        staff.setPassword(initPwd);
         staff.setDeleted(YesNo.NO);
         //保存到员工表
         this.saveOrUpdate(staff);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
-        String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
-        SmsDto smsDto = new SmsDto();
-        smsDto.setMobile(userInfo.getPhoneNumber());
-        Map<String, Object> content = new HashMap<>();
-        content.put("userName", userInfo.getPhoneNumber());
-        content.put("passWord", initPwd);
-        smsDto.setContent(content);
-        smsDto.setTemplateCode(userTipTemplate);
-        smsDto.setSign(smsSign);
-        smsDtos.add(smsDto);
+//        SmsDto smsDto = new SmsDto();
+//        smsDto.setMobile(userInfo.getPhoneNumber());
+//        Map<String, Object> content = new HashMap<>();
+//        content.put("userName", userInfo.getPhoneNumber());
+//        content.put("passWord", initPwd);
+//        smsDto.setContent(content);
+//        smsDto.setTemplateCode(userTipTemplate);
+//        smsDto.setSign(smsSign);
+//        smsDtos.add(smsDto);
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
@@ -2110,6 +2112,36 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         }
         return sysStaffInfoDetailsVo;
+    }
+
+    @Override
+    public List<CheckLoginVo> getNotSendPwdSmsStaff(String companyId) {
+        return this.sysStaffInfoMapper.getNotSendPwdSmsStaff(companyId);
+    }
+
+    @Override
+    public void doSendStaffPwdSms(List<CheckLoginVo> subList) {
+        SmsDto smsDto;
+        Map<String, Object> content;
+        UpdateWrapper<SysStaffInfo> uwStaff = new UpdateWrapper<>();
+        for (CheckLoginVo user : subList) {
+            //循环发送短信
+            smsDto = new SmsDto();
+            smsDto.setMobile(user.getPhoneNumber());
+            content = new HashMap<>();
+            content.put("userName", user.getPhoneNumber());
+            content.put("passWord", user.getUserPwd());
+            smsDto.setContent(content);
+            smsDto.setTemplateCode(userTipTemplate);
+            smsDto.setSign(smsSign);
+            smsFeignService.sendSms(smsDto);
+            //发送短信后明文密码清空
+            uwStaff.clear();
+            uwStaff.lambda().set(SysStaffInfo::getPassword, "");
+            uwStaff.lambda().eq(SysStaffInfo::getId, user.getStaffId());
+            this.update(uwStaff);
+        }
+
     }
 
     @Override
