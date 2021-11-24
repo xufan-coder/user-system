@@ -35,7 +35,7 @@ public class StaffBlacklistControlller {
     private CheckUtil checkUtil;
 
     /**
-     *
+     *流程原子服务调用
      *
      * @author               PengQiang
      * @description          添加员工黑名单
@@ -57,6 +57,30 @@ public class StaffBlacklistControlller {
             return R.error("添加员工黑名单错误" + e.getMessage());
         }
     }
+
+
+
+    /**
+     * 添加员工黑名单 pc 后台
+     * @author  DaBai
+     * @date  2021/11/24 14:31
+     */
+
+    @PostMapping("/join")
+    public DataResult<StaffBlacklistAddDto> addStaffBlaklistJoin(@RequestBody StaffBlacklistAddDto param){
+        try {
+            this.checkUtil.getCheckAddBlacListParam(param);
+            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("pc后台添加员工黑名单错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("pc后台添加员工黑名单错误：{}", e, e);
+            return R.error("pc后台添加员工黑名单错误" + e.getMessage());
+        }
+    }
+
 
 
     /**
