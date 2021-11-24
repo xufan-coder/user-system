@@ -265,4 +265,12 @@
       WHERE
         sci.status = 0
     </select>
+    <select id="getNotSmsCompany" resultType="string">
+        SELECT
+            id
+        FROM
+            sys_company_info
+        WHERE
+            status = 0 AND is_not_sms = 0
+    </select>
 </mapper>

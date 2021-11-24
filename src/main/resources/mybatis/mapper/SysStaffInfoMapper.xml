@@ -839,4 +839,20 @@
             </if>
         </where>
     </select>
+    <select id="getNotSendPwdSmsStaff" resultType="com.zerody.user.vo.CheckLoginVo">
+        SELECT
+            ssi.id AS staff_id,
+            ssi.password AS user_pwd,
+            sui.phone_number
+        FROM
+        sys_staff_info AS ssi
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
+        <where>
+            (sui.status = 0 OR sui.status = 3)
+            AND ssi.password &gt; ''
+            <if test="companyId neq null and companyId neq ''">
+                AND ssi.comp_id = #{companyId}
+            </if>
+        </where>
+    </select>
 </mapper>

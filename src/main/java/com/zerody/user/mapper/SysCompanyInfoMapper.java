@@ -144,4 +144,15 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>
      */
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality();
+
+    /**
+     *
+     *  获取未发送短信的企业
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/11/23 10:04
+     * @param
+     * @return               java.util.List<java.lang.String>
+     */
+    List<String> getNotSmsCompany();
 }

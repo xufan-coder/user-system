@@ -67,11 +67,14 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         StaffBlacklist blac = param.getBlacklist();
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            blacQw.lambda().eq(StaffBlacklist::getMobile, blac.getMobile());
-            blacQw.lambda().eq(StaffBlacklist::getCompanyId, blac.getCompanyId());
-            StaffBlacklist oldBlac = this.getOne(blacQw);
-            if (DataUtil.isNotEmpty(oldBlac)) {
-                throw new DefaultException("该员工已被拉黑无法！无法重复发起");
+            StaffInfoVo staffInfo = staffInfoService.getStaffInfo(blac.getUserId());
+            if(DataUtil.isNotEmpty(staffInfo)){
+                blacQw.lambda().eq(StaffBlacklist::getMobile, staffInfo.getMobile());
+                blacQw.lambda().eq(StaffBlacklist::getCompanyId, staffInfo.getCompanyId());
+                StaffBlacklist oldBlac = this.getOne(blacQw);
+                if (DataUtil.isNotEmpty(oldBlac)) {
+                    throw new DefaultException("该员工已被拉黑无法！无法重复发起");
+                }
             }
 //            this.remove(blacQw);
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
