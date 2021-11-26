@@ -76,9 +76,11 @@ public class StaffBlacklistControlller {
             if(param.getBlacklist().getType()== BlacklistTypeEnum.INSIDE.getValue()){
                this.service.addStaffBlaklist(param);
             }else {
+                param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
+                param.getBlacklist().setSubmitUserId(UserUtils.getUserId());
                 this.service.addStaffBlaklistJoin(param);
             }
-            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
+            this.service.addStaffBlaklist(param);
             return R.success();
         } catch (DefaultException e) {
             log.error("pc后台添加员工黑名单错误：{}", e, e);
