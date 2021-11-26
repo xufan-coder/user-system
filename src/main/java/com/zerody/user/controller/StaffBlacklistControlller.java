@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
+import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
@@ -72,8 +73,13 @@ public class StaffBlacklistControlller {
             this.checkUtil.getCheckAddBlacListParam(param);
             //TODO //此处pc的提交人能显示关联名称，后台添加的人只录入ID，待修改表结构，完善外部黑名单添加需求
             param.getBlacklist().setSubmitUserId(UserUtils.getUserId());
+            if(param.getBlacklist().getType()== BlacklistTypeEnum.INSIDE.getValue()){
+               this.service.addStaffBlaklist(param);
+            }else {
+                this.service.addStaffBlaklistJoin(param);
+            }
             StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
-            return R.success(result);
+            return R.success();
         } catch (DefaultException e) {
             log.error("pc后台添加员工黑名单错误：{}", e, e);
             return R.error(e.getMessage());

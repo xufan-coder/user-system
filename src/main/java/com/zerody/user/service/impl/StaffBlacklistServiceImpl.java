@@ -63,26 +63,61 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     private CheckUtil checkUtil;
 
     @Override
+    public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
+        StaffBlacklist blac = param.getBlacklist();
+        QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
+        blacQw.lambda().eq(StaffBlacklist::getMobile, blac.getMobile());
+        StaffBlacklist oldBlac = this.getOne(blacQw);
+        if (DataUtil.isNotEmpty(oldBlac)) {
+            throw new DefaultException("该号码已被拉黑！无法不需重复添加");
+        }
+        blac.setCreateTime(new Date());
+        blac.setApprovalTime(new Date());
+        blac.setState(StaffBlacklistApproveState.BLOCK.name());
+        blac.setId(UUIDutils.getUUID32());
+        this.save(blac);
+        List<String> images = param.getImages();
+        List<Image> imageAdds = new ArrayList<>();
+        Image image;
+        for (String s : images) {
+            image = new Image();
+            image.setConnectId(blac.getId());
+            image.setId(UUIDutils.getUUID32());
+            image.setImageType(ImageTypeInfo.STAFF_BLACKLIST);
+            image.setImageUrl(s);
+            image.setCreateTime(new Date());
+            imageAdds.add(image);
+        }
+        QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+        imageRemoveQw.lambda().eq(Image::getConnectId, blac.getId());
+        imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
+        this.imageService.addImages(imageRemoveQw, imageAdds);
+    }
+    @Override
     public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
+        StaffInfoVo staffInfo=null;
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            StaffInfoVo staffInfo = staffInfoService.getStaffInfo(blac.getUserId());
+            staffInfo = staffInfoService.getStaffInfo(blac.getUserId());
             if(DataUtil.isNotEmpty(staffInfo)){
+                blac.setSubmitUserName(staffInfo.getUserName());
                 blacQw.lambda().eq(StaffBlacklist::getMobile, staffInfo.getMobile());
                 blacQw.lambda().eq(StaffBlacklist::getCompanyId, staffInfo.getCompanyId());
                 StaffBlacklist oldBlac = this.getOne(blacQw);
                 if (DataUtil.isNotEmpty(oldBlac)) {
-                    throw new DefaultException("该员工已被拉黑无法！无法重复发起");
+                    throw new DefaultException("该员工已被拉黑！无法重复发起");
                 }
             }
 //            this.remove(blacQw);
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
+            blac.setUserName(staff.getUserName());
+            blac.setCompanyId(staff.getCompanyId());
+            blac.setMobile(staff.getMobile());
+
             blac.setCreateTime(new Date());
             blac.setApprovalTime(new Date());
-            blac.setCompanyId(staff.getCompanyId());
             blac.setState(StaffBlacklistApproveState.BLOCK.name());
-            blac.setMobile(staff.getMobile());
             blac.setId(UUIDutils.getUUID32());
             this.save(blac);
         } else {
