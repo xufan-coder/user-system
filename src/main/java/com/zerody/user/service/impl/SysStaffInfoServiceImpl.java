@@ -410,12 +410,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
         sysUserInfo.setAvatar(null);
-        //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
-        if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
-            sysUserInfo.setIsUpdateName(YesNo.YES);
-            this.checkUtil.removeUserToken(sysUserInfo.getId());
-            removeToken = !removeToken;
-        }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
@@ -451,6 +445,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
+        //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
+        if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
+            sysUserInfo.setIsUpdateName(YesNo.YES);
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
+            removeToken = !removeToken;
+        }
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
