@@ -459,7 +459,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         this.sysUserInfoMapper.updateUserNameModilyState(staffInfos);
         //  mq发送消息通知修改用户名称
         staffInfos.stream().forEach(staff -> {
-            mqService.send(staff, MQ.QUEUE_USER_NAME);
+            mqService.sendFanout(staff, MQ.QUEUE_USER_NAME);
         });
         log.info("发送用户修改名称通知:{}", JSON.toJSONString(staffInfos));
     }
