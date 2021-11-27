@@ -401,7 +401,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         this.sysCompanyInfoMapper.updateIsUpdateName(companyInfos);
         //  发送消息修改冗余的企业名称
         companyInfos.stream().forEach(c -> {
-            this.mqService.sendFanout(c, MQ.QUEUE_COMPANY_NAME);
+            this.mqService.sendFanout(c, MQ.QUEUE_COMPANY_NAME_CUSTOMER);
         });
 
         log.info("发送企业名称修改通知:{}", JSON.toJSONString(companyInfos));
