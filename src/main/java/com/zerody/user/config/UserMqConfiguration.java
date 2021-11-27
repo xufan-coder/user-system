@@ -117,12 +117,12 @@ public class UserMqConfiguration {
 
 	@Bean
 	Binding bindingUserNameQueueCustomer() {
-		return BindingBuilder.bind(userNameQueueCustomer()).to(exchange()).with(USER_NAME_ROUTE);
+		return BindingBuilder.bind(userNameQueueCustomer()).to(exchange()).with(MQ.QUEUE_USER_NAME_CUSTOMER);
 	}
 
 	@Bean
 	Binding bindingDeptNameCustomer() {
-		return BindingBuilder.bind(queueDeptNameCustomer()).to(exchange()).with(DEPT_NAME_ROUTE);
+		return BindingBuilder.bind(queueDeptNameCustomer()).to(exchange()).with(MQ.QUEUE_DEPT_NAME_CUSTOMER);
 	}
 
 	@Bean
@@ -137,7 +137,7 @@ public class UserMqConfiguration {
 
 	@Bean
 	Binding bindingCompanyNameQueueCustomer() {
-		return BindingBuilder.bind(companyNameQueueCustomer()).to(exchange()).with(COMPAY_NAME_ROUTE);
+		return BindingBuilder.bind(companyNameQueueCustomer()).to(exchange()).with(MQ.QUEUE_DEPT_NAME_CUSTOMER);
 	}
 
 	/** 扇形交换机 */
