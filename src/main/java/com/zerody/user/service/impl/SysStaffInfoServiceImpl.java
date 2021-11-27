@@ -386,6 +386,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     @Transactional
     public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+        boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
             throw new DefaultException("离职原因不能为空");
         }
@@ -412,6 +413,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
         if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
             sysUserInfo.setIsUpdateName(YesNo.YES);
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
+            removeToken = !removeToken;
         }
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
@@ -559,8 +562,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 throw new DefaultException("修改线索负责人名称失败!");
             }
         }
-        boolean removeToken = true;
-        if (DataUtil.isEmpty(dep)) {
+        if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
                 this.checkUtil.removeUserToken(sysUserInfo.getId());
                 removeToken = !removeToken;
@@ -1108,19 +1110,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String initPwd = SysStaffInfoService.getInitPwd();
         SysStaffInfo staff = new SysStaffInfo();
         staff.setCompId(companyId);
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
-
+        staff.setPassword(initPwd);
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
         //保存到员工表
         this.saveOrUpdate(staff);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
-        String initPwd = SysStaffInfoService.getInitPwd();
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
