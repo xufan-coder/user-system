@@ -198,6 +198,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (flag) {
             throw new DefaultException("该手机号已存在！");
         }
+        StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
+        if (DataUtil.isNotEmpty(staffInfo)) {
+            String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());
+            hintContent = hintContent.concat("-");
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                hintContent = hintContent.concat(staffInfo.getDepartmentName());
+            }
+            hintContent = hintContent.concat("”存在，请再次确认");
+            throw new DefaultException(hintContent);
+        }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
         log.info("添加用户入库参数--{}", JSON.toJSONString(sysUserInfo));
@@ -400,6 +410,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
             throw new DefaultException("手机号或用户名被占用");
+        }
+        StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
+        if (DataUtil.isNotEmpty(staffInfo) && !staffInfo.getUserId().equals(setSysUserInfoDto.getId())) {
+            String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());
+            hintContent = hintContent.concat("-");
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                hintContent = hintContent.concat(staffInfo.getDepartmentName());
+            }
+            hintContent = hintContent.concat("”存在，请再次确认");
+            throw new DefaultException(hintContent);
         }
         //效验通过保存用户信息
         log.info("修改员工信息入参-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
@@ -1183,6 +1203,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(cardId)) {
                 if (!IdCardUtil.isValidatedAllIdcard(cardId)) {
                     errorStr.append("身份证错误,");
+                } else {
+                    StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(cardId);
+                    if (DataUtil.isNotEmpty(staffInfo)) {
+                        errorStr.append("该身份证号码已在“").append(staffInfo.getCompanyName());
+                        errorStr.append("-");
+                        if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                            errorStr.append(staffInfo.getDepartmentName());
+                        }
+                        errorStr.append("”存在");
+                    }
                 }
             }
             //先校验企业存不存在，企业不存在则不需要在校验部门岗位角色
@@ -1351,6 +1381,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(cardId)) {
                 if (!IdCardUtil.isValidatedAllIdcard(cardId)) {
                     errorStr.append("身份证错误");
+                } else {
+                    StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(cardId);
+                    if (DataUtil.isNotEmpty(staffInfo)) {
+                        errorStr.append("该身份证号码已在“").append(staffInfo.getCompanyName());
+                        errorStr.append("-");
+                        if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                            errorStr.append(staffInfo.getDepartmentName());
+                        }
+                        errorStr.append("”存在");
+                    }
                 }
             }
 
