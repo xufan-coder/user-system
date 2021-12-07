@@ -34,7 +34,7 @@
         <result column="identityCard2" property="identityCard2" jdbcType="VARCHAR" />
         <result column="type" property="type" />
         <result column="image_type"  jdbcType="VARCHAR" />
-        <result column="sb_id"  jdbcType="VARCHAR" />
+        <result column="sb_id"   property="blackId" jdbcType="VARCHAR" />
         <collection property="images" ofType="string" column="{connectId = sb_id, imageType = image_type}" select="com.zerody.user.mapper.ImageMapper.getImageListByConnectIdAndType" javaType="java.util.ArrayList">
              <result column="image_url"  jdbcType="VARCHAR" />
         </collection>
@@ -95,6 +95,12 @@
     <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'blockUser'">
         AND ssi.user_id = #{param.userId}
     </if>
+        <if test="param.queryDimensionality eq 'blockUser' and  param.type eq null">
+            OR sb.type = 2
+        </if>
+        <if test="param.queryDimensionality eq 'blockUser' and  param.type neq null">
+            AND sb.type = #{param.type}
+        </if>
       <if test="param.mobile neq null and param.mobile neq ''">
             AND sui.phone_number LIKE CONCAT('%', #{param.mobile}, '%')
       </if>

@@ -593,8 +593,8 @@
         sdi.id AS departId,
         sci.id AS companyId,
         sdi.depart_name AS departmentName,
-        sui.phone_number AS mobile
-
+        sui.phone_number AS mobile,
+        sui.certificate_card AS identity_card
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id

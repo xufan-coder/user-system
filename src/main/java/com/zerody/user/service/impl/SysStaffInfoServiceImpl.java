@@ -20,6 +20,7 @@ import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
+import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
@@ -411,12 +412,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (users != null && users.size() > 0) {
             throw new DefaultException("手机号或用户名被占用");
         }
-        StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
-        if (DataUtil.isNotEmpty(staffInfo) && !staffInfo.getUserId().equals(setSysUserInfoDto.getId())) {
-            String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());
+        StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
+        if (DataUtil.isNotEmpty(staffInfoIdCard) && !staffInfoIdCard.getUserId().equals(setSysUserInfoDto.getId())) {
+            String hintContent = "该身份证号码已在“".concat(staffInfoIdCard.getCompanyName());
             hintContent = hintContent.concat("-");
-            if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
-                hintContent = hintContent.concat(staffInfo.getDepartmentName());
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfoIdCard.getDepartmentName())) {
+                hintContent = hintContent.concat(staffInfoIdCard.getDepartmentName());
             }
             hintContent = hintContent.concat("”存在，请再次确认");
             throw new DefaultException(hintContent);
@@ -533,7 +534,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //            if (activityCompanyCount > 0) {
 //                throw new DefaultException("该员工已在其他公司入职！");
 //            }
-            this.staffBlacklistService.doRelieveByStaffId(staff.getId());
+            QueryWrapper<StaffBlacklist> blackQw = new QueryWrapper<>();
+            blackQw.lambda().eq(StaffBlacklist::getUserId,staff.getUserId());
+            blackQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+            blackQw.lambda().last("limit 0,1");
+            StaffBlacklist one = this.staffBlacklistService.getOne(blackQw);
+            if (DataUtil.isNotEmpty(one)) {
+                this.staffBlacklistService.doRelieveByStaffId(one.getId());
+            }
         }
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();

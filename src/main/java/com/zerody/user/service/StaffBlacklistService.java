@@ -2,11 +2,15 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * @author PengQiang
@@ -65,4 +69,18 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     *   新增加入黑名单
     */
     void addStaffBlaklistJoin(StaffBlacklistAddDto param);
+
+    /**
+     *
+     * 导入内控名单
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/12/2 14:48
+     * @param                file
+     * @param                user
+     * @return               void
+     */
+    void doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException;
+
+    FrameworkBlacListQueryPageVo getInfoById(String id);
 }

@@ -79,6 +79,8 @@ public class FrameworkBlacListQueryPageVo {
     /** 身份证号码 2*/
     private String identityCard2;
 
+    private String blackId;
+
     private List<String> images;
 
     public String getStateSting() {
