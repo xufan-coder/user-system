@@ -4,6 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.domain.StaffBlacklist;
@@ -81,6 +82,9 @@ public class CheckUtil {
     public void getCheckAddBlacListParam(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
         // 添加校验
+        if (DataUtil.isEmpty(blac.getType())) {
+            throw new DefaultException("请选择黑名单人员类型");
+        }
         if (StringUtils.isEmpty(blac.getId())) {
             if (StringUtils.isEmpty(blac.getReason())) {
                 throw new DefaultException("原因不能为空");

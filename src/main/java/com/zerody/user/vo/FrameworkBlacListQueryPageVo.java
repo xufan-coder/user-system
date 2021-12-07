@@ -2,6 +2,7 @@ package com.zerody.user.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
+import com.zerody.common.utils.DataUtil;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.Data;
 
@@ -69,6 +70,17 @@ public class FrameworkBlacListQueryPageVo {
     /** 流程key */
     private String processKey;
 
+    /** 黑名单类型：1企业内部 2外部人员*/
+    private Integer type;
+
+    /** 身份证号码 */
+    private String identityCard;
+
+    /** 身份证号码 2*/
+    private String identityCard2;
+
+    private String blackId;
+
     private List<String> images;
 
     public String getStateSting() {
@@ -76,5 +88,11 @@ public class FrameworkBlacListQueryPageVo {
             return null;
         }
         return StaffBlacklistApproveState.getTextByCode(this.state);
+    }
+    public String getIdentityCard() {
+        if (DataUtil.isEmpty(this.identityCard)) {
+            return identityCard2;
+        }
+        return this.identityCard;
     }
 }

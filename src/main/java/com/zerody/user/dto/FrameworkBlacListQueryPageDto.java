@@ -19,4 +19,6 @@ public class FrameworkBlacListQueryPageDto extends UserPositionPageParam {
     private String state;
 
     private String queryDimensionality;
+
+    private Integer type;
 }
