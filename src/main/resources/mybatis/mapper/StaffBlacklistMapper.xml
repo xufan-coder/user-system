@@ -96,7 +96,7 @@
         AND ssi.user_id = #{param.userId}
     </if>
         <if test="param.queryDimensionality eq 'blockUser' and  param.type eq null">
-            OR sb.type = 2
+           AND sb.type = 1 OR sb.type = 2
         </if>
         <if test="param.queryDimensionality eq 'blockUser' and  param.type neq null">
             AND sb.type = #{param.type}
