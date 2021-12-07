@@ -513,7 +513,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         this.sysDepartmentInfoMapper.updateDepartIsUpdateName(depts);
         depts.stream().forEach(dep -> {
             //  发送修改部门名称通知
-            mqService.send(dep, MQ.QUEUE_DEPT_NAME_CUSTOMER);
+            mqService.sendFanout(dep, MQ.QUEUE_DEPT_NAME_CUSTOMER);
         });
         log.info("发送部门名称修改通知:{}", JSON.toJSONString(depts));
     }

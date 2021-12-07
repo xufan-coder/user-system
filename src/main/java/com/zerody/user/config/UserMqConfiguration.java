@@ -72,11 +72,11 @@ public class UserMqConfiguration {
 	/** ==============================================================================================================  */
 
 
+
 	@Bean
 	public Queue companyNameQueueContract() {
 		return new Queue(MQ.QUEUE_COMPANY_NAME_CONTRACT, true);
 	}
-
 	@Bean
 	public Queue companyNameQueueCustomer() {
 		return new Queue(MQ.QUEUE_COMPANY_NAME_CUSTOMER, true);
