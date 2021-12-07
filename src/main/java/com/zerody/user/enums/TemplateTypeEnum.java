@@ -8,7 +8,9 @@ public enum TemplateTypeEnum {
 
 
     STAFF_IMPORT(0,"员工导入","crm_staff.xlsx"),
-    BACK_STAFF_IMPORT(1,"后台管理员工导入","bos_staff.xlsx");
+    BACK_STAFF_IMPORT(1,"后台管理员工导入","bos_staff.xlsx"),
+    USER_BLACKLIST(2, "内控用户导入", "user_blacklist.xlsx")
+    ;
 
     private Integer code;
 

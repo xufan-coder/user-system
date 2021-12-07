@@ -593,8 +593,8 @@
         sdi.id AS departId,
         sci.id AS companyId,
         sdi.depart_name AS departmentName,
-        sui.phone_number AS mobile
-
+        sui.phone_number AS mobile,
+        sui.certificate_card AS identity_card
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
@@ -854,5 +854,27 @@
                 AND ssi.comp_id = #{companyId}
             </if>
         </where>
+    </select>
+
+    <select id="getUserByCertificateCard" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            sui.id AS user_id,
+            ssi.id AS staff_id,
+            sui.user_name,
+            sci.company_name,
+            sdi.depart_name
+        FROM
+                sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        <where>
+            sui.status IN (0, 3)
+            <if test="idCard neq null and idCard neq ''">
+               AND sui.certificate_card = #{idCard}
+            </if>
+        </where>
+        limit 0,1
     </select>
 </mapper>
