@@ -24,6 +24,15 @@ public class CommonUtils {
         return id.replaceAll("(?<=\\w{3})\\w(?=\\w{4})", "*");
     }
 
+    //身份证前三后四脱敏
+    public static String idEncrypt(String idCard, int prefix, int suffix) {
+        if (StringUtils.isEmpty(idCard) || (idCard.length() < 8)) {
+            return idCard;
+        }
+        return idCard.replaceAll("(?<=\\w{" + prefix +"})\\w(?=\\w{"+ suffix +"})", "*");
+    }
+
+
     //护照前2后3位脱敏，护照一般为8或9位
     public static String idPassport(String id) {
         if (StringUtils.isEmpty(id) || (id.length() < 8)) {

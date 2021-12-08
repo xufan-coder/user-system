@@ -244,16 +244,16 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         StaffInfoVo staffInfo=null;
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            staffInfo = staffInfoService.getStaffInfo(blac.getUserId());
-            if(DataUtil.isNotEmpty(staffInfo)){
-                blac.setSubmitUserName(staffInfo.getUserName());
-                StaffInfoVo finalStaffInfo = staffInfo;
+            staffInfo = staffInfoService.getStaffInfo(blac.getSubmitUserId());
+            StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
+            if(DataUtil.isNotEmpty(staff)){
+                StaffInfoVo finalStaffInfo = staff;
                 blacQw.lambda().and(bl ->
                         bl.eq(StaffBlacklist::getMobile, finalStaffInfo.getMobile())
                         .or()
                         .eq(StaffBlacklist::getIdentityCard, finalStaffInfo.getIdentityCard())
                         );
-                blacQw.lambda().eq(StaffBlacklist::getCompanyId, staffInfo.getCompanyId());
+                blacQw.lambda().eq(StaffBlacklist::getCompanyId, staff.getCompanyId());
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
                 StaffBlacklist oldBlac = this.getOne(blacQw);
                 //内部内控名单验重
@@ -267,7 +267,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 }
             }
 //            this.remove(blacQw);
-            StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
+
+            blac.setSubmitUserName(staffInfo.getUserName());
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());
             blac.setMobile(staff.getMobile());
