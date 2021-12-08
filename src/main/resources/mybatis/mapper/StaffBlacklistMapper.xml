@@ -51,7 +51,7 @@
         urs2.role_name AS applicant_role_name,
         sb.reason,
         ssi.avatar,
-        sui.phone_number AS mobile,
+        sb.mobile,
         sdi.depart_name,
         sb.create_time,
         sb.approval_time,
