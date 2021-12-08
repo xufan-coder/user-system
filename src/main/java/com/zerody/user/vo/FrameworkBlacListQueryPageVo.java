@@ -3,8 +3,9 @@ package com.zerody.user.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.utils.DataUtil;
-import io.micrometer.core.instrument.util.StringUtils;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -90,9 +91,20 @@ public class FrameworkBlacListQueryPageVo {
         return StaffBlacklistApproveState.getTextByCode(this.state);
     }
     public String getIdentityCard() {
-        if (DataUtil.isEmpty(this.identityCard)) {
-            return identityCard2;
+        String idCard = this.identityCard;
+        if (DataUtil.isEmpty(idCard)) {
+            if (StringUtils.isEmpty(this.identityCard2)) {
+                return  "";
+            }
+            idCard = identityCard2;
         }
-        return this.identityCard;
+        return CommonUtils.idEncrypt(idCard, 2, 2);
+    }
+
+    public String getMobile() {
+        if (StringUtils.isEmpty(this.mobile)) {
+            return "";
+        }
+        return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
     }
 }

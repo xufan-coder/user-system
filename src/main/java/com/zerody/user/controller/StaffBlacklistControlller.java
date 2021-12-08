@@ -108,7 +108,6 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getFrameworkPage(FrameworkBlacListQueryPageDto param){
         try {
             this.checkUtil.SetUserPositionInfo(param);
-            param.setState(StaffBlacklistApproveState.BLOCK.name());
             param.setQueryDimensionality("sumbmitUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
@@ -137,7 +136,6 @@ public class StaffBlacklistControlller {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             param.setQueryDimensionality("blockUser");
-            param.setState(StaffBlacklistApproveState.BLOCK.name());
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
