@@ -102,7 +102,7 @@
             AND sb.type = #{param.type}
         </if>
       <if test="param.mobile neq null and param.mobile neq ''">
-            AND sui.phone_number LIKE CONCAT('%', #{param.mobile}, '%')
+            AND sb.mobile LIKE CONCAT('%', #{param.mobile}, '%')
       </if>
       <if test="param.state neq null and param.state neq ''">
             AND sb.state = #{param.state}
