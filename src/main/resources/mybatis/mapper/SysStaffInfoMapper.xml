@@ -862,7 +862,7 @@
             ssi.id AS staff_id,
             sui.user_name,
             sci.company_name,
-            sdi.depart_name
+            sdi.depart_name AS department_name
         FROM
                 sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
