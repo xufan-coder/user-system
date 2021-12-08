@@ -202,8 +202,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfo)) {
             String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());
-            hintContent = hintContent.concat("-");
             if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                hintContent = hintContent.concat("-");
                 hintContent = hintContent.concat(staffInfo.getDepartmentName());
             }
             hintContent = hintContent.concat("”存在，请再次确认");
