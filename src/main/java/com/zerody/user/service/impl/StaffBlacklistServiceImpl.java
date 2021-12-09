@@ -241,10 +241,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
-        StaffInfoVo staffInfo=null;
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            staffInfo = staffInfoService.getStaffInfo(blac.getSubmitUserId());
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
             if(DataUtil.isNotEmpty(staff)){
                 StaffInfoVo finalStaffInfo = staff;
@@ -267,8 +265,6 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 }
             }
 //            this.remove(blacQw);
-
-            blac.setSubmitUserName(staffInfo.getUserName());
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());
             blac.setMobile(staff.getMobile());
