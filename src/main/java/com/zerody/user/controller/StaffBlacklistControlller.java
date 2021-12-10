@@ -74,13 +74,12 @@ public class StaffBlacklistControlller {
     public DataResult<StaffBlacklistAddDto> addStaffBlaklistJoin(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
-            //TODO //此处pc的提交人能显示关联名称，后台添加的人只录入ID，待修改表结构，完善外部黑名单添加需求
             param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
             param.getBlacklist().setSubmitUserId(UserUtils.getUser().getUserId());
-            if(param.getBlacklist().getType()== BlacklistTypeEnum.INSIDE.getValue()){
-               this.service.addStaffBlaklist(param);
-            }else {
+            if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
                 this.service.addStaffBlaklistJoin(param);
+            }else {
+                this.service.addStaffBlaklist(param);
             }
             return R.success();
         } catch (DefaultException e) {
