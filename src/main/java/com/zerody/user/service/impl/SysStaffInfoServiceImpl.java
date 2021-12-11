@@ -416,8 +416,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfoIdCard) && !staffInfoIdCard.getUserId().equals(setSysUserInfoDto.getId())) {
             String hintContent = "该身份证号码已在“".concat(staffInfoIdCard.getCompanyName());
-            hintContent = hintContent.concat("-");
             if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfoIdCard.getDepartmentName())) {
+                hintContent = hintContent.concat("-");
                 hintContent = hintContent.concat(staffInfoIdCard.getDepartmentName());
             }
             hintContent = hintContent.concat("”存在，请再次确认");
@@ -1217,8 +1217,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(cardId);
                     if (DataUtil.isNotEmpty(staffInfo)) {
                         errorStr.append("该身份证号码已在“").append(staffInfo.getCompanyName());
-                        errorStr.append("-");
                         if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                            errorStr.append("-");
                             errorStr.append(staffInfo.getDepartmentName());
                         }
                         errorStr.append("”存在");
@@ -1395,8 +1395,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(cardId);
                     if (DataUtil.isNotEmpty(staffInfo)) {
                         errorStr.append("该身份证号码已在“").append(staffInfo.getCompanyName());
-                        errorStr.append("-");
                         if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
+                            errorStr.append("-");
                             errorStr.append(staffInfo.getDepartmentName());
                         }
                         errorStr.append("”存在");
