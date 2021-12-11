@@ -255,7 +255,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 blacQw.lambda().and(bl ->
                         bl.eq(StaffBlacklist::getMobile, finalStaffInfo.getMobile())
                         .or()
-                        .eq(StaffBlacklist::getIdentityCard, finalStaffInfo.getIdentityCard())
+                        .eq(StringUtils.isNotEmpty( finalStaffInfo.getIdentityCard()), StaffBlacklist::getIdentityCard, finalStaffInfo.getIdentityCard())
                         );
                 blacQw.lambda().eq(StaffBlacklist::getCompanyId, staff.getCompanyId());
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
