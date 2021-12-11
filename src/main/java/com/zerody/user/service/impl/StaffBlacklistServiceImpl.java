@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -37,10 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author PengQiang
@@ -129,7 +127,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     saveRow = size - i;
                 }
                 //校验以及保存伙伴内控名单
-                this.doBlacklistImport(dataList.subList(i, saveRow), user);
+                this.doBlacklistImport(dataList.subList(i, i + saveRow), user);
             }
         }).start();
     }
@@ -153,39 +151,47 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         List<StaffBlacklist> entitys = new ArrayList<>();
         List<ImportResultInfo> errors = new ArrayList<>();
         ImportResultInfo importInfo ;
+        Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             String[] rowData = dataList.get(rowIndex);
             boolean rowEmpty = true;
             for (int lineIndex = 0; lineIndex < rowData.length; lineIndex++) {
                 if (org.apache.commons.lang3.StringUtils.isNotEmpty(rowData[lineIndex])) {
-                    rowEmpty = !rowEmpty;
                     rowData[lineIndex] = rowData[lineIndex].trim();//去掉空格
                     //  去掉逗号
                     rowData[lineIndex] = org.apache.commons.lang3.StringUtils.join(rowData[lineIndex].split(","));
                     if(rowEmpty){
                         rowEmpty = !rowEmpty;
                     }
-                    continue;
                 }
-                if (rowEmpty) {
-                    continue;
-                }
-                errStr = new StringBuilder();
-                entity = new StaffBlacklist();
-                importInfo = new ImportResultInfo();
-                this.checkImportBlacklistParam(rowData, errStr, entity, user);
-                if (errStr.length() > 0) {
-                    importInfo.setCreateTime(entity.getCreateTime());
-                    importInfo.setErrorCause(errStr.toString());
-                    importInfo.setUserId(user.getUserId());
-                    importInfo.setImportContent(JSON.toJSONString(entity));
-                    importInfo.setType(ImportResultInfoType.STAFF_BLACK_EXTERNAL);
-                    importInfo.setState(YesNo.YES);
-                    errors.add(importInfo);
-                    continue;
-                }
-                entitys.add(entity);
             }
+            if (rowEmpty) {
+                continue;
+            }
+            errStr = new StringBuilder();
+            entity = new StaffBlacklist();
+            importInfo = new ImportResultInfo();
+            if (DataUtil.isNotEmpty(mobiles.get(rowData[1]))) {
+                errStr.append("表格中重复手机号,");
+            }
+            if (DataUtil.isNotEmpty(idCards.get(rowData[2]))) {
+                errStr.append("表格中重复身份证号,");
+            }
+            mobiles.put(rowData[1], rowData[1]);
+            idCards.put(rowData[2], rowData[2]);
+            this.checkImportBlacklistParam(rowData, errStr, entity, user);
+            if (errStr.length() > 0) {
+                importInfo.setCreateTime(entity.getCreateTime());
+                importInfo.setErrorCause(errStr.toString());
+                importInfo.setUserId(user.getUserId());
+                importInfo.setImportContent(JSON.toJSONString(entity));
+                importInfo.setType(ImportResultInfoType.STAFF_BLACK_EXTERNAL);
+                importInfo.setState(YesNo.YES);
+                errors.add(importInfo);
+                continue;
+            }
+            entitys.add(entity);
         }
         this.saveBatch(entitys);
         this.importResultInfoService.saveBatch(errors);
