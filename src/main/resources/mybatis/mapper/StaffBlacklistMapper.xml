@@ -30,8 +30,11 @@
         <result column="state" property="state" jdbcType="VARCHAR" />
         <result column="process_id" property="processId" jdbcType="VARCHAR" />
         <result column="process_key" property="processKey" jdbcType="VARCHAR" />
+        <result column="identity_card" property="identityCard" jdbcType="VARCHAR" />
+        <result column="identityCard2" property="identityCard2" jdbcType="VARCHAR" />
+        <result column="type" property="type" />
         <result column="image_type"  jdbcType="VARCHAR" />
-        <result column="sb_id"  jdbcType="VARCHAR" />
+        <result column="sb_id"   property="blackId" jdbcType="VARCHAR" />
         <collection property="images" ofType="string" column="{connectId = sb_id, imageType = image_type}" select="com.zerody.user.mapper.ImageMapper.getImageListByConnectIdAndType" javaType="java.util.ArrayList">
              <result column="image_url"  jdbcType="VARCHAR" />
         </collection>
@@ -40,21 +43,24 @@
     SELECT
         sui.id,
         ssi.id AS staff_id,
-        ssi.user_name,
+        sb.user_name,
         sci.company_name,
         sjp.position_name AS job_name,
         urs.role_name,
-        ssi2.user_name AS applicant_name,
+        sb.submit_user_name AS applicant_name,
         urs2.role_name AS applicant_role_name,
         sb.reason,
         ssi.avatar,
-        sui.phone_number AS mobile,
+        sb.mobile,
         sdi.depart_name,
         sb.create_time,
         sb.approval_time,
         sb.state,
         sb.process_id,
         sb.process_key,
+        sb.type,
+        sb.identity_card as identity_card,
+        sui.certificate_card as identityCard2,
         sb.id AS sb_id,
         'staff-blacklist' AS image_type
     FROM
@@ -81,7 +87,7 @@
             AND ssi2.user_id = #{param.userId}
       </if>
       <if test="param.userName neq null and param.userName neq '' ">
-            AND sui.user_name LIKE CONCAT('%', #{param.userName}, '%')
+            AND sb.user_name LIKE CONCAT('%', #{param.userName}, '%')
       </if>
     <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'blockUser'">
         AND usd.department_id LIKE CONCAT(#{param.departId}, '%')
@@ -89,8 +95,14 @@
     <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'blockUser'">
         AND ssi.user_id = #{param.userId}
     </if>
+        <if test="param.queryDimensionality eq 'blockUser' and  param.type eq null">
+           AND (sb.type = 1 OR sb.type = 2)
+        </if>
+        <if test="param.queryDimensionality eq 'blockUser' and  param.type neq null">
+            AND sb.type = #{param.type}
+        </if>
       <if test="param.mobile neq null and param.mobile neq ''">
-            AND sui.phone_number LIKE CONCAT('%', #{param.mobile}, '%')
+            AND sb.mobile LIKE CONCAT('%', #{param.mobile}, '%')
       </if>
       <if test="param.state neq null and param.state neq ''">
             AND sb.state = #{param.state}

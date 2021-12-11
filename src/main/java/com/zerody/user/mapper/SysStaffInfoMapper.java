@@ -365,4 +365,15 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               java.util.List<com.zerody.user.vo.CheckLoginVo>
      */
     List<CheckLoginVo> getNotSendPwdSmsStaff(@Param("companyId") String companyId);
+
+    /**
+     *
+     * 根据身份证查询id
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/12/2 10:27
+     * @param                certificateCard
+     * @return               com.zerody.user.api.vo.StaffInfoVo
+     */
+    StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard);
 }

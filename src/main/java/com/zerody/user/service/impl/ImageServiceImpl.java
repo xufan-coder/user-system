@@ -32,4 +32,9 @@ public class ImageServiceImpl extends ServiceImpl<ImageMapper, Image> implements
         this.saveBatch(images);
 
     }
+
+    @Override
+    public List<String> getListImages(String connectId, String type) {
+        return this.baseMapper.getImageListByConnectIdAndType(connectId, type);
+    }
 }

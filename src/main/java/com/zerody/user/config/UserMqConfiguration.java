@@ -69,14 +69,14 @@ public class UserMqConfiguration {
 	Binding bindingDeptQueue() {
 		return BindingBuilder.bind(deptEdit()).to(exchange()).with(MQ.QUEUE_DEPT_EDIT);
 	}
-/** ==============================================================================================================  */
+	/** ==============================================================================================================  */
+
 
 
 	@Bean
 	public Queue companyNameQueueContract() {
-	return new Queue(MQ.QUEUE_COMPANY_NAME_CONTRACT, true);
-}
-
+		return new Queue(MQ.QUEUE_COMPANY_NAME_CONTRACT, true);
+	}
 	@Bean
 	public Queue companyNameQueueCustomer() {
 		return new Queue(MQ.QUEUE_COMPANY_NAME_CUSTOMER, true);
@@ -84,10 +84,10 @@ public class UserMqConfiguration {
 
 	@Bean
 	public Queue queueDeptNameContract() {
-	//		Map<String, Object> arguments = new HashMap<>();
-	//		arguments.put("x-dead-letter-exchange", MQ.TOPIC_ZERODY + MQ.DEAD_SUFFIX);
-	//		arguments.put("x-dead-letter-routing-key", MQ.QUEUE_CARD_MOBILE + MQ.DEAD_SUFFIX);
-	//		return new Queue(MQ.QUEUE_CARD_MOBILE, true, false, false, arguments);
+		//		Map<String, Object> arguments = new HashMap<>();
+		//		arguments.put("x-dead-letter-exchange", MQ.TOPIC_ZERODY + MQ.DEAD_SUFFIX);
+		//		arguments.put("x-dead-letter-routing-key", MQ.QUEUE_CARD_MOBILE + MQ.DEAD_SUFFIX);
+		//		return new Queue(MQ.QUEUE_CARD_MOBILE, true, false, false, arguments);
 		return new Queue(MQ.QUEUE_DEPT_NAME_CONTRACT, true);
 	}
 

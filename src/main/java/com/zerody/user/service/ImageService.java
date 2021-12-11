@@ -25,4 +25,6 @@ public interface ImageService extends IService<Image> {
      * @return               void
      */
     void addImages(QueryWrapper<Image> removeQw, List<Image> images);
+
+    List<String> getListImages(String connectId, String type) ;
 }
