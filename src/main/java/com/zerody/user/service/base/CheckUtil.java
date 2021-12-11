@@ -82,9 +82,6 @@ public class CheckUtil {
     public void getCheckAddBlacListParam(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
         // 添加校验
-        if (DataUtil.isEmpty(blac.getType())) {
-            throw new DefaultException("请选择黑名单人员类型");
-        }
         if (StringUtils.isEmpty(blac.getId())) {
             if (StringUtils.isEmpty(blac.getReason())) {
                 throw new DefaultException("原因不能为空");
