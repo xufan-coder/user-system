@@ -8,13 +8,18 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
+import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 员工黑名单控制类
@@ -70,10 +75,23 @@ public class StaffBlacklistControlller {
     public DataResult<StaffBlacklistAddDto> addStaffBlaklistJoin(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
-            //TODO //此处pc的提交人能显示关联名称，后台添加的人只录入ID，待修改表结构，完善外部黑名单添加需求
-            param.getBlacklist().setSubmitUserId(UserUtils.getUserId());
-            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
-            return R.success(result);
+            param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
+            param.getBlacklist().setSubmitUserId(UserUtils.getUser().getUserId());
+            if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
+                if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
+                    return R.error("请输入手机号码");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
+                    return R.error("请输入名称");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getIdentityCard())) {
+                    return R.error("请输入身份证号码");
+                }
+                this.service.addStaffBlaklistJoin(param);
+            }else {
+                this.service.addStaffBlaklist(param);
+            }
+            return R.success();
         } catch (DefaultException e) {
             log.error("pc后台添加员工黑名单错误：{}", e, e);
             return R.error(e.getMessage());
@@ -98,7 +116,6 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getFrameworkPage(FrameworkBlacListQueryPageDto param){
         try {
             this.checkUtil.SetUserPositionInfo(param);
-            param.setState(StaffBlacklistApproveState.BLOCK.name());
             param.setQueryDimensionality("sumbmitUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
@@ -127,7 +144,6 @@ public class StaffBlacklistControlller {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             param.setQueryDimensionality("blockUser");
-            param.setState(StaffBlacklistApproveState.BLOCK.name());
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
@@ -149,10 +165,10 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @DeleteMapping("/relieve/{id}")
-    public DataResult<Object> doRelieveByStaffId(@PathVariable("id") String userId){
+    public DataResult<Object> doRelieveByStaffId(@PathVariable("id") String id){
         try {
 
-            this.service.doRelieveByStaffId(userId);
+            this.service.doRelieveByStaffId(id);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);
@@ -162,6 +178,31 @@ public class StaffBlacklistControlller {
             return R.error("解除黑名单出错" + e.getMessage());
         }
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取黑名单详情
+     * @date                 2021/8/4 16:01
+     * @param                [staffId]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @GetMapping("/get/{id}")
+    public DataResult<FrameworkBlacListQueryPageVo> getInfoById(@PathVariable("id") String id){
+        try {
+
+            FrameworkBlacListQueryPageVo result = this.service.getInfoById(id);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取黑名单详情出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取黑名单详情出错：{}", e, e);
+            return R.error("解除黑名单出错" + e.getMessage());
+        }
+    }
+
 
     /**
      *
@@ -184,6 +225,29 @@ public class StaffBlacklistControlller {
         } catch (Exception e) {
             log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
             return R.error("根据手机号码查询是否被拉黑出错" + e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          导入内控用户
+     * @date                 2021/8/4 16:01
+     * @param                file
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @PostMapping("/import")
+    public DataResult<Void> doBlacklistExternalImport(MultipartFile file){
+        try {
+            this.service.doBlacklistExternalImport(file, UserUtils.getUser());
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("导入内控用户出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("导入内控用户出错：{}", e, e);
+            return R.error("导入内控用户出错" + e.getMessage());
         }
     }
 

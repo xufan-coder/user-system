@@ -48,4 +48,17 @@ public class StaffBlacklist {
     private String processKey;
 
     private Date updateTime;
+
+    /** 提交人姓名 */
+    private String submitUserName;
+
+    /** 黑名单类型：1企业内部 2外部人员 */
+
+    private Integer type;
+
+    /** 黑名单姓名 */
+    private String userName;
+
+    /** 身份证号码 */
+    private String identityCard;
 }
