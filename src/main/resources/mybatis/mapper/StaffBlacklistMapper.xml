@@ -87,7 +87,7 @@
             AND ssi2.user_id = #{param.userId}
       </if>
       <if test="param.userName neq null and param.userName neq '' ">
-            AND sui.user_name LIKE CONCAT('%', #{param.userName}, '%')
+            AND sb.user_name LIKE CONCAT('%', #{param.userName}, '%')
       </if>
     <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'blockUser'">
         AND usd.department_id LIKE CONCAT(#{param.departId}, '%')
