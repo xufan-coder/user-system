@@ -13,6 +13,7 @@ import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +78,15 @@ public class StaffBlacklistControlller {
             param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
             param.getBlacklist().setSubmitUserId(UserUtils.getUser().getUserId());
             if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
+                if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
+                    return R.error("请输入手机号码");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
+                    return R.error("请输入名称");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getIdentityCard())) {
+                    return R.error("请输入身份证号码");
+                }
                 this.service.addStaffBlaklistJoin(param);
             }else {
                 this.service.addStaffBlaklist(param);
