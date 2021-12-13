@@ -16,6 +16,7 @@ import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.CustomerQueryType;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -31,6 +32,7 @@ import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
@@ -620,6 +622,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 appUserPush.setUpdateTime(new Date());
                 appUserPushService.updateById(appUserPush);
             }
+            StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+            staffDimissionInfo.setUserId(setSysUserInfoDto.getId());
+            this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {

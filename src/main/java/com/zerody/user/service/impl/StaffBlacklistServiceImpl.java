@@ -8,15 +8,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
@@ -28,6 +31,7 @@ import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -66,6 +70,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private CheckUtil checkUtil;
+
+    @Autowired
+    private RabbitMqService mqService;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -204,25 +211,33 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (StringUtils.isEmpty(data[1])) {
             errStr.append("手机号码必填,");
         } else {
-            QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            blacQw.lambda().eq(StaffBlacklist::getMobile, data[1]);
-            blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
-            blacQw.lambda().last("limit 0,1");
-            StaffBlacklist oldBlac = this.getOne(blacQw);
-            if (DataUtil.isNotEmpty(oldBlac)) {
-               errStr.append("该号码已被拉黑,");
+            if (true) {
+                QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
+                blacQw.lambda().eq(StaffBlacklist::getMobile, data[1]);
+                blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+                blacQw.lambda().last("limit 0,1");
+                StaffBlacklist oldBlac = this.getOne(blacQw);
+                if (DataUtil.isNotEmpty(oldBlac)) {
+                    errStr.append("该手机号码已被拉黑,");
+                }
+            } else {
+                errStr.append("手机号码不合法,");
             }
         }
         if (StringUtils.isEmpty(data[2])) {
             errStr.append("身份证号码必填,");
         } else {
-            QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-            blacQw.lambda().eq(StaffBlacklist::getIdentityCard, data[2]);
-            blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
-            blacQw.lambda().last("limit 0,1");
-            StaffBlacklist oldBlac = this.getOne(blacQw);
-            if (DataUtil.isNotEmpty(oldBlac)) {
-                errStr.append("该身份证号码已被拉黑,");
+            if (IdCardUtil.isValidatedAllIdcard(data[2])) {
+                QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
+                blacQw.lambda().eq(StaffBlacklist::getIdentityCard, data[2]);
+                blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+                blacQw.lambda().last("limit 0,1");
+                StaffBlacklist oldBlac = this.getOne(blacQw);
+                if (DataUtil.isNotEmpty(oldBlac)) {
+                    errStr.append("该身份证号码已被拉黑,");
+                }
+            } else {
+                errStr.append("身份证号码不合法,");
             }
         }
         if (StringUtils.isEmpty(data[3])) {
@@ -311,6 +326,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             image.setCreateTime(new Date());
             imageAdds.add(image);
         }
+        StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+        staffDimissionInfo.setUserId(blac.getUserId());
+        this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+
         QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
         imageRemoveQw.lambda().eq(Image::getConnectId, blac.getId());
         imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
