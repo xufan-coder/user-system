@@ -390,6 +390,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
         this.update(staffUw);
+        if (StatusEnum.stop.getValue() == status.intValue() ) {
+            StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+            staffDimissionInfo.setUserId(userId);
+            this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+        }
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
