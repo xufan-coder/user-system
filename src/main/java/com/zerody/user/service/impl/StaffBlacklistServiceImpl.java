@@ -26,6 +26,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
+import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
@@ -74,6 +75,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private RabbitMqService mqService;
 
+    @Autowired
+    private ImportInfoService importInfoService;
+
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
@@ -118,7 +122,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public void doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException {
+    public String doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException {
         List<String[]> dataList = FileUtil.fileImport(file);
         if (CollectionUtils.isEmpty(dataList) || Arrays.equals(dataList.get(0), BLACKLIST_IMOPRT_TITLE)) {
             throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
@@ -127,16 +131,46 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (dataList.size() == titleRow) {
             throw new DefaultException("导入的模板为空，没有数据！");
         }
+        ImportInfo importInfo = new ImportInfo();
+        importInfo.setImportState(ImportStateEnum.UNDERWAY.name());
+        if (user.isBackAdmin()) {
+            importInfo.setCompanyName("后台管理员");
+        } else {
+            StaffInfoVo staff = this.staffInfoService.getStaffInfo(user.getUserId());
+            importInfo.setCompanyName(staff.getCompanyName());
+            importInfo.setCompanyId(user.getCompanyId());
+        }
+        importInfo.setUserId(user.getUserId());
+        importInfo.setUserName(user.getUserName());
+        importInfo.setImportFileName(file.getOriginalFilename());
+        importInfo.setImportType(ImportResultInfoType.STAFF_BLACK_EXTERNAL);
+        importInfo.setCreateTime(new Date());
+        importInfo.setExcelRows(0);
+        importInfo.setSuccessNum(0);
+        importInfo.setErrorNum(0);
+        this.importInfoService.save(importInfo);
         new Thread(() -> {
-            int saveRow = 500;
-            for (int i = titleRow, size = dataList.size(); i < size; i += saveRow) {
-                if (saveRow + i >= size ) {
-                    saveRow = size - i;
+            try {
+                int saveRow = 500;
+
+                for (int i = titleRow, size = dataList.size(); i < size; i += saveRow) {
+                    if (saveRow + i >= size ) {
+                        saveRow = size - i;
+                    }
+                    //校验以及保存伙伴内控名单
+                    Map<String, Integer> result = this.doBlacklistImport(dataList.subList(i, i + saveRow), user, importInfo);
+                    importInfo.setExcelRows(importInfo.getExcelRows() + result.get("excelRows"));
+                    importInfo.setSuccessNum(importInfo.getSuccessNum() + result.get("successNum"));
+                    importInfo.setErrorNum(importInfo.getErrorNum() + result.get("errorNum"));
                 }
-                //校验以及保存伙伴内控名单
-                this.doBlacklistImport(dataList.subList(i, i + saveRow), user);
+            } catch (Exception e) {
+                log.error("内控名单导入出错#错误信息：{}", e, e);
+            } finally {
+                importInfo.setImportState(ImportStateEnum.ACCOMPLISH.name());
+                this.importInfoService.updateById(importInfo);
             }
         }).start();
+        return importInfo.getId();
     }
 
     @Override
@@ -152,11 +186,13 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         return result;
     }
 
-    private void doBlacklistImport(List<String[]> dataList, UserVo user) {
+    private Map<String, Integer> doBlacklistImport(List<String[]> dataList, UserVo user, ImportInfo imp) {
+        Map<String, Integer> importResult = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         StringBuilder errStr = null;
         StaffBlacklist entity = null;
         List<StaffBlacklist> entitys = new ArrayList<>();
         List<ImportResultInfo> errors = new ArrayList<>();
+        Integer excelRows = 0;
         ImportResultInfo importInfo ;
         Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
@@ -176,32 +212,42 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             if (rowEmpty) {
                 continue;
             }
-            errStr = new StringBuilder();
-            entity = new StaffBlacklist();
-            importInfo = new ImportResultInfo();
-            if (DataUtil.isNotEmpty(mobiles.get(rowData[1]))) {
-                errStr.append("表格中重复手机号,");
+            excelRows++;
+            try {
+                errStr = new StringBuilder();
+                entity = new StaffBlacklist();
+                importInfo = new ImportResultInfo();
+                if (DataUtil.isNotEmpty(mobiles.get(rowData[1]))) {
+                    errStr.append("表格中重复手机号,");
+                }
+                if (DataUtil.isNotEmpty(idCards.get(rowData[2]))) {
+                    errStr.append("表格中重复身份证号,");
+                }
+                mobiles.put(rowData[1], rowData[1]);
+                idCards.put(rowData[2], rowData[2]);
+                this.checkImportBlacklistParam(rowData, errStr, entity, user);
+                if (errStr.length() > 0) {
+                    importInfo.setImportId(imp.getId());
+                    importInfo.setCreateTime(entity.getCreateTime());
+                    importInfo.setErrorCause(errStr.toString());
+                    importInfo.setUserId(user.getUserId());
+                    importInfo.setImportContent(JSON.toJSONString(entity));
+                    importInfo.setType(ImportResultInfoType.STAFF_BLACK_EXTERNAL);
+                    importInfo.setState(YesNo.YES);
+                    errors.add(importInfo);
+                    continue;
+                }
+                entitys.add(entity);
+            } catch (Exception e) {
+                log.error("内控名单导入出错：{}",e ,e);
             }
-            if (DataUtil.isNotEmpty(idCards.get(rowData[2]))) {
-                errStr.append("表格中重复身份证号,");
-            }
-            mobiles.put(rowData[1], rowData[1]);
-            idCards.put(rowData[2], rowData[2]);
-            this.checkImportBlacklistParam(rowData, errStr, entity, user);
-            if (errStr.length() > 0) {
-                importInfo.setCreateTime(entity.getCreateTime());
-                importInfo.setErrorCause(errStr.toString());
-                importInfo.setUserId(user.getUserId());
-                importInfo.setImportContent(JSON.toJSONString(entity));
-                importInfo.setType(ImportResultInfoType.STAFF_BLACK_EXTERNAL);
-                importInfo.setState(YesNo.YES);
-                errors.add(importInfo);
-                continue;
-            }
-            entitys.add(entity);
         }
         this.saveBatch(entitys);
         this.importResultInfoService.saveBatch(errors);
+        importResult.put("excelRows", excelRows);
+        importResult.put("successNum", entitys.size());
+        importResult.put("errorNum", errors.size());
+        return importResult;
     }
 
     private void checkImportBlacklistParam(String[] data, StringBuilder errStr, StaffBlacklist entity, UserVo user) {
@@ -328,6 +374,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         }
         StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
         staffDimissionInfo.setUserId(blac.getUserId());
+        staffDimissionInfo.setOperationUserId(blac.getSubmitUserId());
+        staffDimissionInfo.setOperationUserName(blac.getSubmitUserName());
         this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
 
         QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();

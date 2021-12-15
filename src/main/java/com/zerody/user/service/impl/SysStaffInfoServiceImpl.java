@@ -629,6 +629,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
             staffDimissionInfo.setUserId(setSysUserInfoDto.getId());
+            staffDimissionInfo.setOperationUserId(UserUtils.getUser().getUserId());
+            staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
         }
         //  员工为离职状态时 清除token
