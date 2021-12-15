@@ -60,11 +60,10 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
         switch (info.getImportType()) {
             default:
                 return;
-            // ImportResultInfoType.STAFF_BLACK_EXTERNAL = 1
-            case 1:
+            case ImportResultInfoType.STAFF_BLACK_EXTERNAL_VICE:
                 header = new String[]{"*姓名", "*手机号码", "*身份证号码", "*加入原因", "失败原因"};
                 requiredNum = new Integer[]{0, 1, 2, 3, 4};
-                fileName = "导入外部内控名单失败记录";
+                fileName = "导入外部内控名单失败记录_" + System.currentTimeMillis();
                 data = this.getStaffBlacklistLoseRecord(id);
                 break;
         }
