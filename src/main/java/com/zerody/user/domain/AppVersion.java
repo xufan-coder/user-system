@@ -11,7 +11,7 @@ import java.util.Date;
  * @author zhangpingping
  * @date 2021年10月13日 17:19
  */
- @Data
+@Data
 public class AppVersion {
     /**
      * ID
@@ -66,4 +66,8 @@ public class AppVersion {
      * 平台系统类型
      */
     private Integer systemType;
+    /**
+     * 版本信息
+     */
+    private String versionInfoId;
 }
