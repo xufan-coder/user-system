@@ -257,4 +257,33 @@
             sdi.id = #{id}
         </where>
     </select>
+    <select id="getDepartBusiness" resultType="com.zerody.user.vo.ReportFormsQueryVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name AS `name`
+        FROM sys_department_info AS sdi
+        <where>
+            sdi.status = 0 AND sdi.is_show_business = 1
+            <if test="departId neq null and departId neq ''">
+                AND sdi.parent_id = #{departId}
+            </if>
+            <if test="(companyId neq null and companyId neq '') and (departId eq null or  departId eq '')">
+                AND (
+                    sdi.parent_id IS NULL AND sdi.parent_id = ''
+                )
+                AND sdi.comp_id = #{companyId}
+            </if>
+        </where>
+    </select>
+    <select id="getSubordinateIdsById" resultType="java.lang.String">
+        SELECT
+        sdi.id
+        FROM
+        sys_department_info AS sdi
+        <where>
+            <if test="id neq null and id neq ''">
+                AND id LIKE CONCAT(#{id}, '\_%')
+            </if>
+        </where>
+    </select>
 </mapper>

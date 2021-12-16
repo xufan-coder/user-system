@@ -32,10 +32,7 @@ import com.zerody.user.service.UnionStaffPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
-import com.zerody.user.vo.DepartSubordinateVo;
-import com.zerody.user.vo.SysDepartmentInfoVo;
-import com.zerody.user.vo.SysJobPositionVo;
-import com.zerody.user.vo.UserStructureVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -574,6 +571,16 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         result.setIsFinally(this.getDepartIsFinally(departId, Boolean.FALSE.booleanValue()));
         return result;
+    }
+
+    @Override
+    public List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId) {
+        return this.sysDepartmentInfoMapper.getDepartBusiness(companyId, departId);
+    }
+
+    @Override
+    public List<String> getSubordinateIdsById(String departId) {
+        return this.sysDepartmentInfoMapper.getSubordinateIdsById(departId);
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {

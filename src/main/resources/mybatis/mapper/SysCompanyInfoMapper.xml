@@ -273,4 +273,14 @@
         WHERE
             status = 0 AND is_not_sms = 0
     </select>
+    <select id="getCompanyBusiness" resultType="com.zerody.user.vo.ReportFormsQueryVo">
+        SELECT
+            sci.id,
+            sci.company_name AS `name`
+        FROM
+            sys_company_info AS sci
+        <where>
+            sci.status = 0
+        </where>
+    </select>
 </mapper>
