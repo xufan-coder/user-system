@@ -14,6 +14,7 @@ import com.zerody.user.service.SysStaffRelationService;
 import com.zerody.user.vo.SysStaffRelationVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -102,20 +103,12 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
         QueryWrapper<SysStaffRelation> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(Objects.nonNull(sysStaffRelationDto.getIds()), SysStaffRelation::getStaffId, sysStaffRelationDto.getIds());
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(sysStaffRelationDto.getRelationStaffId()), SysStaffRelation::getRelationStaffId, sysStaffRelationDto.getRelationStaffId());
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(sysStaffRelationDto.getStaffUserId()), SysStaffRelation::getStaffUserId, sysStaffRelationDto.getStaffUserId());
         queryWrapper.lambda().eq(SysStaffRelation::getDeletd, YesNo.NO);
         List<SysStaffRelation> sysStaffRelations = this.list(queryWrapper);
         sysStaffRelations.forEach(item -> {
             SysStaffRelationVo sysStaffRelationVo = new SysStaffRelationVo();
-            sysStaffRelationVo.setId(item.getId());
-            sysStaffRelationVo.setStaffId(item.getStaffId());
-            sysStaffRelationVo.setUserName(item.getStaffName());
-            sysStaffRelationVo.setDepartId(item.getDepartId());
-            sysStaffRelationVo.setDepartName(item.getDepartName());
-            sysStaffRelationVo.setDesc(item.getDescribe());
-            sysStaffRelationVo.setRelationStaffId(item.getRelationStaffId());
-            sysStaffRelationVo.setRelationStaffName(item.getRelationStaffName());
-            sysStaffRelationVo.setRelationUserId(item.getRelationUserId());
-            sysStaffRelationVo.setStaffUserId(item.getStaffUserId());
+            BeanUtils.copyProperties(item, sysStaffRelationVo);
             sysStaffRelationVos.add(sysStaffRelationVo);
         });
 
