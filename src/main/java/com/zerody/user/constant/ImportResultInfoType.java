@@ -8,6 +8,11 @@ package com.zerody.user.constant;
  */
 public class ImportResultInfoType {
 
+
+
     /** 外部黑名单导入 */
-    public final static Integer STAFF_BLACK_EXTERNAL = 1;
+    public final static int STAFF_BLACK_EXTERNAL_VICE = 1;
+
+    /** 外部黑名单导入 */
+    public final static Integer STAFF_BLACK_EXTERNAL = Integer.valueOf(STAFF_BLACK_EXTERNAL_VICE);
 }

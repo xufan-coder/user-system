@@ -11,10 +11,13 @@ import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
 import com.zerody.user.api.vo.CompanyInfoVo;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
+import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +41,9 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Autowired
     private SysCompanyInfoService sysCompanyInfoService;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     /**
      *  添加企业
@@ -291,5 +297,27 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     public DataResult<Page<CompanyInfoVo>> getPageInner(@RequestBody RatioPageDto pageQueryDto) {
         Page<CompanyInfoVo> companyInfos = sysCompanyInfoService.getPageInner(pageQueryDto);
         return R.success(companyInfos);
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取报表
+     * @date                 2021/12/15 11:41
+     * @param                [param]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ReportFormsQueryVo>>
+     */
+    @GetMapping("/report-forms")
+    public DataResult<List<ReportFormsQueryVo>> getReportForms(ReportFormsQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            this.checkUtil.setFiltrateTime(param);
+            List<ReportFormsQueryVo> list =  this.sysCompanyInfoService.getReportForms(param);
+            return R.success(list);
+        } catch (Exception e) {
+            log.error("获取报表出错：{}", e, e);
+            return R.error(e.getMessage());
+        }
     }
 }

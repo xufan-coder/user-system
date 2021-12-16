@@ -24,11 +24,13 @@ import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.ContractFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -36,10 +38,13 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -106,6 +111,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Autowired
     private CheckUtil checkUtil;
+
+    @Autowired
+    private ContractFeignService contractFeignService;
 
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
@@ -429,6 +437,55 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<String> getNotSmsCompany() {
         return this.sysCompanyInfoMapper.getNotSmsCompany();
+    }
+
+    @Override
+    public List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param) {
+        List<ReportFormsQueryVo> list = new ArrayList<>();
+        if (DataUtil.isNotEmpty(param.getUserId())) {
+
+        } else if (DataUtil.isNotEmpty(param.getDepartId())) {
+            Boolean lastDepart = this.departService.getDepartIsFinally(param.getDepartId(), Boolean.TRUE);
+            if (lastDepart) {
+                list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId());
+                if (CollectionUtils.isNotEmpty(list)) {
+                    List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+                    param.setUserIds(userIds);
+                }
+                param.setDepartId(null);
+            } else {
+                list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId());
+            }
+        } else if (DataUtil.isNotEmpty(param.getCompanyId())) {
+            list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId());
+        } else {
+            list = this.sysCompanyInfoMapper.getCompanyBusiness();
+        }
+        Map<String, ReportFormsQueryVo> signMap = null;
+        try {
+            DataResult<List<ReportFormsQueryVo>> signResult = this.contractFeignService.getReportForms(param);
+            if (!signResult.isSuccess()) {
+                log.error("报表查询#合同信息查询出错:{}", signResult.getMessage());
+            }
+            List<ReportFormsQueryVo> sign = signResult.getData();
+            if (CollectionUtils.isNotEmpty(sign)) {
+                signMap = sign.stream().collect(Collectors.toMap(ReportFormsQueryVo::getId, a -> a, (k1, k2) -> k1, HashMap::new));
+            }
+        } catch (Exception e) {
+            log.error("报表查询出错:{}", e, e);
+        }
+        String id;
+        String name;
+        for (ReportFormsQueryVo rfq : list) {
+            id = rfq.getId();
+            name = rfq.getName();
+            if (CollectionUtils.isNotEmpty(signMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
+                BeanUtils.copyProperties(signMap.get(rfq.getId()), rfq);
+                rfq.setId(id);
+                rfq.setName(name);
+            }
+        }
+        return list;
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

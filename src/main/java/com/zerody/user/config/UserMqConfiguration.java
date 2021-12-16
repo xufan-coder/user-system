@@ -69,6 +69,17 @@ public class UserMqConfiguration {
 	Binding bindingDeptQueue() {
 		return BindingBuilder.bind(deptEdit()).to(exchange()).with(MQ.QUEUE_DEPT_EDIT);
 	}
+
+
+	@Bean
+	public Queue staffDimissionQueue() {
+		return new Queue(MQ.QUEUE_STAFF_DIMISSION, true);
+	}
+	@Bean
+	Binding bindingStaffDimissionQueue() {
+		return BindingBuilder.bind(staffDimissionQueue()).to(exchange()).with(MQ.QUEUE_STAFF_DIMISSION);
+	}
+
 	/** ==============================================================================================================  */
 
 

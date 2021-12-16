@@ -12,6 +12,7 @@ import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.vo.DepartSubordinateVo;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysDepartmentInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 
@@ -202,4 +203,8 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
     List<DepartSubordinateVo> getDepartSubordinateByParentId(String id, String companyId,UserVo user);
 
     DepartInfoVo getDepartInfoInner(String departId);
+
+    List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId);
+
+    List<String> getSubordinateIdsById(String departId);
 }
