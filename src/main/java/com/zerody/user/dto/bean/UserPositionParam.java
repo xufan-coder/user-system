@@ -2,6 +2,8 @@ package com.zerody.user.dto.bean;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName UserPositionPageParam
@@ -19,4 +21,7 @@ public class UserPositionParam {
 
     /** 用户id */
     private String userId;
+
+    /** 部门id */
+    private List<String> departIds;
 }

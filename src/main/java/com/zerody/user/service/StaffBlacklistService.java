@@ -80,7 +80,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @param                user
      * @return               void
      */
-    void doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException;
+    String doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException;
 
     FrameworkBlacListQueryPageVo getInfoById(String id);
 }
