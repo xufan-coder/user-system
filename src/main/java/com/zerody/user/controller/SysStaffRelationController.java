@@ -46,7 +46,7 @@ public class SysStaffRelationController {
     @GetMapping(value = "/query")
     public DataResult<List<SysStaffRelationVo>> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         try {
-            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
+            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             return R.success(sysStaffRelationVos);
         } catch (DefaultException e) {
             log.error("查询员工关系错误:{}" + JSON.toJSONString(sysStaffRelationDto), e);
