@@ -56,7 +56,7 @@ public class AppVersionController {
 
     @ApiOperation("分页查询App版本")
     @GetMapping
-    public DataResult<IPage<AppVersionListVo>> pageVersion(@Validated AppVersionListDto param, @Validated PageQueryDto pageParam) {
+    public DataResult<IPage<AppVersionListVo>> pageVersion(AppVersionListDto param,PageQueryDto pageParam) {
         Page<AppVersionListVo> result = AppVersionervice.pageVersion(param, pageParam);
         return R.success(result);
     }
