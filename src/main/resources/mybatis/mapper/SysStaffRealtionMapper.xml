@@ -7,7 +7,7 @@
         ssr.id,
         ssi.id AS staff_id,
         ssi.user_name,
-        ssi.user_id,
+        ssi.user_id as staffUserId,
         ssr.`describe` AS `desc`,
         ssr.relation_staff_id,
         relation_ssi.user_name AS relation_staff_name,
