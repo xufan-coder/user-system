@@ -61,9 +61,9 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<String> getStaffRoles(String userId, String companyId);
 
-    Map<String, Object> doBatchImportUser(MultipartFile file) throws Exception;
+    String doBatchImportUser(MultipartFile file, UserVo user) throws Exception;
 
-    Map<String, Object> doBatchImportCompanyUser(MultipartFile file) throws Exception;
+    String doBatchImportCompanyUser(MultipartFile file, UserVo user) throws Exception;
 
     List<BosStaffInfoVo> getStaff(String companyId, String departId, String positionId);
 
