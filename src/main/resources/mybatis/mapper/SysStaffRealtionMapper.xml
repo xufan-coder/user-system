@@ -37,13 +37,13 @@
                 AND ssi.user_name=#{param.userName}
             </if>
             <if test="param.relationStaffName neq null and param.relationStaffName neq ''">
-                relation_ssi.user_name=#{param.relationStaffName}
+                 AND relation_ssi.user_name=#{param.relationStaffName}
             </if>
             <if test="param.userName neq null and param neq ''">
                 AND ssr.stff_name=#{param.userName}
             </if>
             <if test="param.ids!=null">
-                AND ssr.id in
+                AND ssr.staff_id in
                 <foreach collection="param.ids" item="id" open="(" separator="," close=")">
                     #{id}
                 </foreach>
