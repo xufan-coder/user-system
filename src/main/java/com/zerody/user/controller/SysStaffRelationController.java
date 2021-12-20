@@ -41,7 +41,7 @@ public class SysStaffRelationController {
     }
 
     /**
-     * 更据ID查询关系
+     * 根据ID查询关系
      */
     @GetMapping(value = "/query")
     public DataResult<List<SysStaffRelationVo>> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
