@@ -250,7 +250,7 @@ public class SysStaffInfoController {
     @PostMapping("/import")
     public DataResult<Object> doBatchImportUser(MultipartFile file){
         try {
-            return R.success(sysStaffInfoService.doBatchImportUser(file));
+            return R.success(sysStaffInfoService.doBatchImportUser(file, UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
@@ -267,7 +267,7 @@ public class SysStaffInfoController {
     @PostMapping("/company/import")
     public DataResult<Object> doBatchImportCompanyUser(MultipartFile file){
         try {
-            return R.success(sysStaffInfoService.doBatchImportCompanyUser(file));
+            return R.success(sysStaffInfoService.doBatchImportCompanyUser(file, UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("批量导入员工错误:{}",e, e);
             return R.error(e.getMessage());
