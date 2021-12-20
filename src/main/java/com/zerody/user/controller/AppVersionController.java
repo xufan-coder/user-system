@@ -35,7 +35,7 @@ import java.util.List;
 public class AppVersionController {
 
     @Autowired
-    private  AppVersionService AppVersionervice;
+    private AppVersionService AppVersionervice;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -81,6 +81,14 @@ public class AppVersionController {
         List<AppVersion> appVersionVo = this.AppVersionervice.queryDetail(appVersionDetatilDto);
         return R.success(appVersionVo);
     }
+
+    @ApiOperation("根据版本号查询")
+    @GetMapping(value = "/query-version")
+    public DataResult<List<AppVersion>> queryVersion(@Validated AppVersionListDto appVersionDetatilDto) {
+        List<AppVersion> appVersionVo = this.AppVersionervice.queryVersion(appVersionDetatilDto);
+        return R.success(appVersionVo);
+    }
+
 
     @ApiOperation("查询App最新版本-官网")
     @GetMapping(value = "/query-newest")
