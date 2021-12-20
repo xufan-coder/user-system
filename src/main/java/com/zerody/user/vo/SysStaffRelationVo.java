@@ -45,6 +45,14 @@ public class SysStaffRelationVo {
      * 员工userID
      */
     private String staffUserId;
+    /**
+     * 岗位
+     */
+    private String positionName;
+    /**
+     * 企业名称
+     */
+    private String companyName;
 
 
 }

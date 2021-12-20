@@ -39,4 +39,6 @@ public class AppVersionCreateDto {
 
     @ApiModelProperty(value = "平台系统类型", required = true)
     private Integer systemType;
+    /**产品版本信息*/
+    private String versionInfoId;
 }
