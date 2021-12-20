@@ -79,6 +79,8 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
                 iPage.getRecords().forEach(item -> {
                     AppVersionInfoPageVo appVersionInfoPageVo = new AppVersionInfoPageVo();
                     BeanUtils.copyProperties(item, appVersionInfoPageVo);
+                    appVersionInfoPageVo.setCreateTime(item.getCreateTime());
+                    appVersionInfoPageVo.setUpdateTime(item.getUpdateTime());
                     appVersionInfoPageVos.add(appVersionInfoPageVo);
                 });
             }
