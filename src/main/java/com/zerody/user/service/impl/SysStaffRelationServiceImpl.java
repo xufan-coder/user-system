@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffRelation;
 import com.zerody.user.dto.SysStaffRelationDto;
 import com.zerody.user.mapper.SysStaffRelationMapper;
@@ -15,6 +16,7 @@ import com.zerody.user.vo.SysStaffRelationVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,7 +30,8 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMapper, SysStaffRelation> implements SysStaffRelationService {
-
+    @Autowired
+    private SysStaffInfoServiceImpl sysStaffInfoService;
     @Override
     public void addRelation(SysStaffRelationDto sysStaffRelationDto) {
         SysStaffRelation sysStaffRelation = new SysStaffRelation();
@@ -81,6 +84,16 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     @Override
     public List<SysStaffRelationVo> queryRelationByListId(SysStaffRelationDto sysStaffRelationDto) {
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
+        sysStaffRelationVos.forEach(item->{
+            StaffInfoVo staffInfo =sysStaffInfoService.getStaffInfo(item.getStaffUserId());
+            item.setCompanyName(staffInfo.getCompanyName());
+            item.setDepartName(staffInfo.getDepartmentName());
+            item.setPositionName(staffInfo.getPositionName());
+            StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
+            item.setRelationCompanyName(staffInfoVo.getCompanyName());
+            item.setRelationDepartName(staffInfoVo.getDepartmentName());
+            item.setRelationPositionName(staffInfoVo.getPositionName());
+        });
         return sysStaffRelationVos;
     }
 
