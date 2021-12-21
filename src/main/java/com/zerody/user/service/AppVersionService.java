@@ -30,7 +30,7 @@ public interface AppVersionService extends IService<AppVersion> {
 
     List<AppVersion> queryDetail(AppVersionListDto param);
 
-    List<AppVersion> queryVersion(AppVersionListDto param);
+    AppVersion queryVersion(AppVersionListDto param);
 
     /**
      * @param

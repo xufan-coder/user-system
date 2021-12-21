@@ -136,13 +136,13 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
     }
 
     @Override
-    public List<AppVersion> queryVersion(AppVersionListDto param) {
+    public AppVersion queryVersion(AppVersionListDto param) {
         QueryWrapper<AppVersion> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getVersion()), AppVersion::getVersion, param.getVersion());
         queryWrapper.lambda().eq(Objects.nonNull(param.getOsType()), AppVersion::getOsType, param.getOsType());
         queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
         queryWrapper.lambda().orderByDesc(AppVersion::getVersion);
-        List<AppVersion> appVersion = this.baseMapper.selectList(queryWrapper);
+        AppVersion appVersion = this.baseMapper.selectOne(queryWrapper);
         return appVersion;
     }
 

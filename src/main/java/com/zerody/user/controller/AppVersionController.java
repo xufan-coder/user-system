@@ -84,8 +84,8 @@ public class AppVersionController {
 
     @ApiOperation("根据版本号查询")
     @GetMapping(value = "/query-version")
-    public DataResult<List<AppVersion>> queryVersion(@Validated AppVersionListDto appVersionDetatilDto) {
-        List<AppVersion> appVersionVo = this.AppVersionervice.queryVersion(appVersionDetatilDto);
+    public DataResult<AppVersion> queryVersion(@Validated AppVersionListDto appVersionDetatilDto) {
+        AppVersion appVersionVo = this.AppVersionervice.queryVersion(appVersionDetatilDto);
         return R.success(appVersionVo);
     }
 
