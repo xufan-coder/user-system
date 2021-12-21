@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,8 +64,19 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private String resumeUrl;
 
-    /** 离职原因 */
+    /**
+     * 离职原因
+     */
     private String leaveReason;
+    /**
+     * 入职时间
+     */
+    private Date dateJoin;
+
+    /**
+     * 工作年限
+     */
+    private Integer workingYears;
 
 
     /**
@@ -80,14 +92,20 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private List<SysStaffRelationDto> staffRelationDtoList;
 
-    /** 推荐人id */
+    /**
+     * 推荐人id
+     */
     private String recommendId;
 
-    /** 推荐类型 0:公司社招,1员工介绍 */
+    /**
+     * 推荐类型 0:公司社招,1员工介绍
+     */
     @NotNull(message = "请选择推荐类型")
     private Integer recommendType;
 
-    /** 积分 */
+    /**
+     * 积分
+     */
     private Integer integral;
 
 

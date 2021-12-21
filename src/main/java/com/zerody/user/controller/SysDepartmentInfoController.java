@@ -450,4 +450,29 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         }
     }
 
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取下级部门
+     * @date                 2021/12/21 10:17
+     * @param                [id]
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.DepartInfoVo>
+     */
+    @Override
+    @GetMapping(value = "/get/subordinate-id/innner")
+    public DataResult<List<String>> getSubordinateDepartId(@RequestParam("id") String id) {
+        try {
+            List<String> result = this.sysDepartmentInfoService.getSubordinateIdsById(id);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取下级部门出错:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取下级部门出错:{}", e.getMessage(),e);
+            return R.error("获取下级部门出错,请求异常");
+        }
+    }
+
 }

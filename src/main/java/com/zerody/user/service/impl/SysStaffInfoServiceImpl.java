@@ -273,6 +273,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("添加员工入库参数--{}", JSON.toJSONString(staff));
         staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
+        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
+        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
@@ -483,6 +485,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
+        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
+        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
