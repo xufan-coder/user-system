@@ -16,9 +16,11 @@ import com.zerody.user.dto.AppVersionInfoPageDto;
 import com.zerody.user.mapper.AppVersionInfoMapper;
 import com.zerody.user.service.AppVersionInfoService;
 import com.zerody.user.vo.AppVersionInfoPageVo;
+import com.zerody.user.vo.AppVersionInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -56,7 +58,9 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         if (StringUtils.isEmpty(id)) {
             throw new DefaultException("参数ID不能为空");
         }
-        this.removeById(id);
+        AppVersionInfo appVersionInfo = this.getById(id);
+        appVersionInfo.setDeleted(YesNo.YES);
+        this.updateById(appVersionInfo);
 
     }
 
@@ -66,6 +70,8 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         QueryWrapper<AppVersionInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getId()), AppVersionInfo::getId, param.getId());
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getTitle()), AppVersionInfo::getTitle, param.getTitle());
+        queryWrapper.lambda().eq(Objects.nonNull(param.getStatus()), AppVersionInfo::getStatus, param.getStatus());
         queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
         iPage = this.baseMapper.selectPage(iPage, queryWrapper);
         IPage<AppVersionInfoPageVo> infoPageVoIPage = new Page<>();
@@ -95,6 +101,7 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         QueryWrapper<AppVersionInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getId()), AppVersionInfo::getId, param.getId());
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
+        queryWrapper.lambda().eq(AppVersionInfo::getStatus, YesNo.YES);
         queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
         this.list(queryWrapper).forEach(item -> {
             AppVersionInfoPageVo appVersionInfo = new AppVersionInfoPageVo();
@@ -103,4 +110,19 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         });
         return voList;
     }
+
+    @Override
+    public AppVersionInfoVo queryAppVersionInfoDetail(AppVersionInfoListDto appVersionInfoListDto) {
+        AppVersionInfoVo appVersionInfoVo = new AppVersionInfoVo();
+        QueryWrapper<AppVersionInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(appVersionInfoListDto.getId()), AppVersionInfo::getId, appVersionInfoListDto.getId());
+        queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
+        queryWrapper.lambda().eq(Objects.nonNull(appVersionInfoListDto.getStatus()),AppVersionInfo::getStatus, appVersionInfoListDto.getStatus());
+        queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
+        AppVersionInfo appVersionInfo = this.getOne(queryWrapper);
+        BeanUtils.copyProperties(appVersionInfo, appVersionInfoVo);
+        return appVersionInfoVo;
+    }
+
+
 }

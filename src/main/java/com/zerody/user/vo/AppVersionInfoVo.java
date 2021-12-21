@@ -7,16 +7,20 @@ import java.util.Date;
 
 /**
  * @author zhangpingping
- * @date 2021年12月16日 15:32
+ * @date 2021年12月21日 15:53
  */
 @Data
-public class AppVersionInfoPageVo {
+public class AppVersionInfoVo {
     /***/
     private String id;
     /**
      * 标题
      */
     private String title;
+    /**
+     * 内容
+     */
+    private String content;
     /**
      * 状态
      */

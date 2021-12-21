@@ -8,6 +8,7 @@ import com.zerody.user.dto.AppVersionInfoListDto;
 import com.zerody.user.dto.AppVersionInfoModifyDto;
 import com.zerody.user.dto.AppVersionInfoPageDto;
 import com.zerody.user.vo.AppVersionInfoPageVo;
+import com.zerody.user.vo.AppVersionInfoVo;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public interface AppVersionInfoService extends IService<AppVersionInfo> {
      * @return
      */
     IPage<AppVersionInfoPageVo> queryAppVersionInfoPage(AppVersionInfoPageDto appVersionInfoPageDto);
+
     /***
      * @description 查询
      * @author zhangpingping
@@ -60,4 +62,14 @@ public interface AppVersionInfoService extends IService<AppVersionInfo> {
      * @return
      */
     List<AppVersionInfoPageVo> queryAppVersionInfoList(AppVersionInfoListDto appVersionInfoListDto);
+
+    /***
+     * @description 查询详情
+     * @author zhangpingping
+     * @date 2021/12/21
+     * @param [appVersionInfoListDto]
+     * @return
+     */
+    AppVersionInfoVo queryAppVersionInfoDetail(AppVersionInfoListDto appVersionInfoListDto);
+
 }
