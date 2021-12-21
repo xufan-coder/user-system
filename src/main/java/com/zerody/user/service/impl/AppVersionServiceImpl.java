@@ -78,6 +78,7 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         wrapper.eq(param.getSystemType() != null, AppVersion::getSystemType, param.getSystemType());
         wrapper.like(!StringUtils.isEmpty(param.getName()), AppVersion::getName, String.format(CommonConstants.QUERY_LIKE_RAW, param.getName()));
         wrapper.like(!StringUtils.isEmpty(param.getVersion()), AppVersion::getVersion, String.format(CommonConstants.QUERY_LIKE_RAW, param.getVersion()));
+        wrapper.orderByDesc(AppVersion::getCreateTime);
 
         Page pageRequest = new Page<>(pageParam.getCurrent(), pageParam.getSize());
         if (!StringUtils.isEmpty(pageParam.getOrderProp())) {
@@ -86,8 +87,6 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
             } else {
                 pageRequest.setOrders(Lists.newArrayList(OrderItem.desc(pageParam.getOrderColumn())));
             }
-        } else {
-            pageRequest.setOrders(Lists.newArrayList(OrderItem.desc(param.getVersion())));
         }
         Page<AppVersion> appVersionPage = this.baseMapper.selectPage(pageRequest, wrapper);
         Page<AppVersionListVo> resultPage = new Page<>(appVersionPage.getCurrent(), appVersionPage.getSize(), appVersionPage.getTotal());
