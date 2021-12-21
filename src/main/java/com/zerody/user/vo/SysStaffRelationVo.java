@@ -17,11 +17,6 @@ public class SysStaffRelationVo {
      * 员工名称
      */
     private String userName;
-
-    /**
-     * 部门ID
-     */
-    private String departId;
     /**
      * 描述
      */
@@ -43,6 +38,14 @@ public class SysStaffRelationVo {
      */
     private String staffUserId;
     /**
+     * 部门ID
+     */
+    private String departId;
+    /**
+     * 公司ID
+     */
+    private String companyId;
+    /**
      * 岗位
      */
     private String positionName;
@@ -56,18 +59,25 @@ public class SysStaffRelationVo {
     private String departName;
 
     /**
-     * 岗位
+     * 关系岗位
      */
     private String relationPositionName;
     /**
-     * 企业名称
+     * 关系企业名称
      */
     private String relationCompanyName;
     /**
-     * 部门名称
+     * 关系公司ID
+     */
+    private String relationCompanyId;
+    /**
+     * 关系部门名称
      */
     private String relationDepartName;
-
+    /**
+     * 关系部门ID
+     */
+    private String relationDepartId;
 
 
 }
