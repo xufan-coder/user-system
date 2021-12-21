@@ -24,10 +24,6 @@ public class AppVersionInfoPageDto extends PageQueryDto {
      */
     private Integer status;
     /**
-     * 是否删除0 否1是
-     */
-    private Integer deleted;
-    /**
      * 创建时间
      */
     private String createTime;
