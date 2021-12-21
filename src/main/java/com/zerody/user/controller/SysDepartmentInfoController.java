@@ -470,8 +470,8 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             log.error("获取下级部门出错:{}", e.getMessage(),e);
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("获取部门信息出错:{}", e.getMessage(),e);
-            return R.error("获取部门信息出错,请求异常");
+            log.error("获取下级部门出错:{}", e.getMessage(),e);
+            return R.error("获取下级部门出错,请求异常");
         }
     }
 
