@@ -32,6 +32,7 @@ import java.util.Objects;
 public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMapper, SysStaffRelation> implements SysStaffRelationService {
     @Autowired
     private SysStaffInfoServiceImpl sysStaffInfoService;
+
     @Override
     public void addRelation(SysStaffRelationDto sysStaffRelationDto) {
         SysStaffRelation sysStaffRelation = new SysStaffRelation();
@@ -78,22 +79,26 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     @Override
     public List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
+        sysStaffRelationVos.forEach(item -> {
+            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());
+            item.setCompanyName(staffInfo.getCompanyName());
+            item.setDepartName(staffInfo.getDepartmentName());
+            item.setPositionName(staffInfo.getPositionName());
+            item.setCompanyId(staffInfo.getCompanyId());
+            item.setDepartId(staffInfo.getDepartId());
+            StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
+            item.setRelationCompanyName(staffInfoVo.getCompanyName());
+            item.setRelationDepartName(staffInfoVo.getDepartmentName());
+            item.setRelationPositionName(staffInfoVo.getPositionName());
+            item.setRelationCompanyId(staffInfoVo.getCompanyId());
+            item.setRelationDepartId(staffInfoVo.getDepartId());
+        });
         return sysStaffRelationVos;
     }
 
     @Override
     public List<SysStaffRelationVo> queryRelationByListId(SysStaffRelationDto sysStaffRelationDto) {
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
-        sysStaffRelationVos.forEach(item->{
-            StaffInfoVo staffInfo =sysStaffInfoService.getStaffInfo(item.getStaffUserId());
-            item.setCompanyName(staffInfo.getCompanyName());
-            item.setDepartName(staffInfo.getDepartmentName());
-            item.setPositionName(staffInfo.getPositionName());
-            StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
-            item.setRelationCompanyName(staffInfoVo.getCompanyName());
-            item.setRelationDepartName(staffInfoVo.getDepartmentName());
-            item.setRelationPositionName(staffInfoVo.getPositionName());
-        });
         return sysStaffRelationVos;
     }
 

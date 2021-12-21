@@ -11,7 +11,8 @@
         ssr.`describe` AS `desc`,
         ssr.relation_staff_id,
         relation_ssi.user_name AS relation_staff_name,
-        relation_ssi.user_id AS relation_user_id
+        relation_ssi.user_id AS relation_user_id,
+
         FROM
         sys_staff_relation AS ssr
         JOIN sys_staff_info AS ssi ON ssi.id = ssr.staff_id
