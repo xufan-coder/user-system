@@ -181,7 +181,8 @@
         ssi.recommend_type,
         ssi.recommend_id,
         sb.id is not null AS is_block,
-        ssi.integral
+        ssi.integral,
+        ssi.date_join
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
