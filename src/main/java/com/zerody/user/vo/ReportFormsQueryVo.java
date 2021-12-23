@@ -4,6 +4,8 @@ import com.zerody.common.utils.DataUtil;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
+
 /**
  * @author PengQiang
  * @ClassName ReportFormsQueryVo
@@ -74,7 +76,7 @@ public class ReportFormsQueryVo {
     private Integer performanceNumTotal;
 
     /** 回款点数 */
-    private Integer paymentCount;
+    private String paymentCount;
 
     /** 人均业绩 */
     private String perCapitaPerformance;
@@ -88,6 +90,14 @@ public class ReportFormsQueryVo {
 
     /** 上门人数 */
     private Integer visitNum;
+
+    /** 业务员数量 */
+    private Integer salesmanNum;
+
+    /** 业务员数量 */
+    private Integer paymentUserNum;
+
+    private String paymentMoney;
 
     public String getSignMoney() {
         if (StringUtils.isEmpty(this.signMoney) || "0.00".equals(this.signMoney)) {
@@ -223,25 +233,39 @@ public class ReportFormsQueryVo {
     }
 
 
-    public Integer getPaymentCount() {
-        if (DataUtil.isEmpty(this.paymentCount)) {
-            return 0;
+    public String getPaymentCount() {
+        BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
+        BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
+        if (lonasMoney.compareTo(new BigDecimal(0)) == 0) {
+            return "0";
         }
+        BigDecimal ave = paymentMoney.divide(lonasMoney);
+        ave.setScale(4, BigDecimal.ROUND_HALF_UP);
+        ave.multiply(new BigDecimal("100"));
         return this.paymentCount;
     }
 
     public String getPerCapitaPerformance() {
-        if (StringUtils.isEmpty(this.perCapitaPerformance) || "0.00".equals(this.perCapitaPerformance)) {
+        BigDecimal money = new BigDecimal(StringUtils.isEmpty(this.performanceMoneyTotal) ? "0" :this.performanceMoneyTotal);
+        BigDecimal num  = new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
+        if (num.compareTo(new BigDecimal(0)) == 0) {
             return "0";
         }
-        return this.perCapitaPerformance;
+        BigDecimal ave = money.divide(num);
+        ave.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return ave.toString();
     }
 
     public String getStaffPaymentRate(){
-        if (StringUtils.isEmpty(this.staffPaymentRate) || "0.00".equals(this.staffPaymentRate)) {
+        BigDecimal num =  new BigDecimal(this.paymentUserNum == null ? 0 : this.paymentUserNum);
+        BigDecimal numTotal =  new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
+        if (numTotal.compareTo(new BigDecimal(0)) == 0) {
             return "0";
         }
-        return this.staffPaymentRate;
+        BigDecimal rate = num.divide(numTotal);
+        rate.setScale(4, BigDecimal.ROUND_HALF_UP);
+        rate.multiply(new BigDecimal(100));
+        return rate.toString();
     }
 
 

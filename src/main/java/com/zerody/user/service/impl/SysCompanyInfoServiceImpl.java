@@ -31,6 +31,7 @@ import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.feign.CardFeignService;
 import com.zerody.user.feign.ContractFeignService;
+import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -38,11 +39,13 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.InviteStateVo;
 import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.SysUserClewCollectVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +117,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Autowired
     private ContractFeignService contractFeignService;
+
+    @Autowired
+    private CustomerFeignService customerFeignService;
 
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
@@ -441,48 +447,73 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param) {
+        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(param.getCompanyId());
+        if (!salesmanRolesResult.isSuccess()) {
+            throw new DefaultException("获取角色错误");
+        }
+        param.setSalesmanRoles(salesmanRolesResult.getData());
         List<ReportFormsQueryVo> list = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getUserId())) {
-
+            list = this.sysUserInfoMapper.getUserById(param.getUserId(), param.getSalesmanRoles());
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
             Boolean lastDepart = this.departService.getDepartIsFinally(param.getDepartId(), Boolean.TRUE);
             if (lastDepart) {
-                list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId());
+                list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId(), param.getSalesmanRoles());
                 if (CollectionUtils.isNotEmpty(list)) {
                     List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
                     param.setUserIds(userIds);
                 }
                 param.setDepartId(null);
             } else {
-                list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId());
+                list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
             }
         } else if (DataUtil.isNotEmpty(param.getCompanyId())) {
-            list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId());
+            list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
         } else {
-            list = this.sysCompanyInfoMapper.getCompanyBusiness();
+            list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
         }
         Map<String, ReportFormsQueryVo> signMap = null;
+        Map<String, InviteStateVo> inviteMap = null;
         try {
             DataResult<List<ReportFormsQueryVo>> signResult = this.contractFeignService.getReportForms(param);
             if (!signResult.isSuccess()) {
-                log.error("报表查询#合同信息查询出错:{}", signResult.getMessage());
+                log.error("合同报表查询#合同信息查询出错:{}", signResult.getMessage());
             }
             List<ReportFormsQueryVo> sign = signResult.getData();
             if (CollectionUtils.isNotEmpty(sign)) {
                 signMap = sign.stream().collect(Collectors.toMap(ReportFormsQueryVo::getId, a -> a, (k1, k2) -> k1, HashMap::new));
             }
         } catch (Exception e) {
-            log.error("报表查询出错:{}", e, e);
+            log.error("合同报表查询出错:{}", e, e);
+        }
+        try {
+            DataResult<List<InviteStateVo>> signResult = this.customerFeignService.getInviteStatis(param);
+            if (!signResult.isSuccess()) {
+                log.error("报表查询#客户信息查询出错:{}", signResult.getMessage());
+            }
+            List<InviteStateVo> invite = signResult.getData();
+            if (CollectionUtils.isNotEmpty(invite)) {
+                inviteMap = invite.stream().collect(Collectors.toMap(InviteStateVo::getId, a -> a, (k1, k2) -> k1, HashMap::new));
+            }
+        } catch (Exception e) {
+            log.error("客户报表查询出错:{}", e, e);
         }
         String id;
         String name;
+        Integer num;
         for (ReportFormsQueryVo rfq : list) {
             id = rfq.getId();
             name = rfq.getName();
+            num = rfq.getSalesmanNum();
             if (CollectionUtils.isNotEmpty(signMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
                 BeanUtils.copyProperties(signMap.get(rfq.getId()), rfq);
                 rfq.setId(id);
                 rfq.setName(name);
+                rfq.setSalesmanNum(num);
+            }
+            if (CollectionUtils.isNotEmpty(inviteMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
+                rfq.setInviteNum(inviteMap.get(rfq.getId()).getInviteNum());
+                rfq.setSignNum(inviteMap.get(rfq.getId()).getSignNum());
             }
         }
         return list;

@@ -158,5 +158,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
     List<SubordinateUserQueryVo> getSubordinateUser(@Param("param") SubordinateUserQueryDto param);
 
-    List<ReportFormsQueryVo> getUserByDepartId(@Param("departId") String departId);
+    List<ReportFormsQueryVo> getUserByDepartId(@Param("departId") String departId, @Param("roleIds") List<String> roleIds);
+
+    List<ReportFormsQueryVo> getUserById(@Param("userId") String userId, @Param("roleIds") List<String> roleIds);
 }

@@ -67,6 +67,7 @@ public class CheckUtil {
             if(admin.getIsCompanyAdmin()){
 
             } else if (admin.getIsDepartAdmin()) {
+                param.setDepartId(user.getDeptId());
                 param.setDepartIds(departmentInfoService.getSubordinateIdsById(param.getDepartId()));
                 if (CollectionUtils.isEmpty(param.getDepartIds())) {
                     param.setDepartIds(new ArrayList<>());
@@ -96,6 +97,7 @@ public class CheckUtil {
             if(admin.getIsCompanyAdmin()){
 
             } else if (admin.getIsDepartAdmin()) {
+                param.setDepartId(user.getDeptId());
                 param.setDepartIds(departmentInfoService.getSubordinateIdsById(param.getDepartId()));
                 if (CollectionUtils.isEmpty(param.getDepartIds())) {
                     param.setDepartIds(new ArrayList<>());

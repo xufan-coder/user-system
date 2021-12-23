@@ -574,8 +574,8 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     }
 
     @Override
-    public List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId) {
-        return this.sysDepartmentInfoMapper.getDepartBusiness(companyId, departId);
+    public List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId, List<String> roleIds) {
+        return this.sysDepartmentInfoMapper.getDepartBusiness(companyId, departId, roleIds);
     }
 
     @Override
