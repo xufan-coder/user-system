@@ -147,7 +147,7 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
 
     DepartInfoVo getDepartInfoInner(@Param("id")String departId);
 
-    List<ReportFormsQueryVo> getDepartBusiness(@Param("companyId") String companyId, @Param("departId") String departId);
+    List<ReportFormsQueryVo> getDepartBusiness(@Param("companyId") String companyId, @Param("departId") String departId, @Param("roleIds") List<String> roleIds);
 
     List<String> getSubordinateIdsById(@Param("id") String departId);
 }

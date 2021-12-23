@@ -204,7 +204,7 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
 
     DepartInfoVo getDepartInfoInner(String departId);
 
-    List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId);
+    List<ReportFormsQueryVo> getDepartBusiness(String companyId, String departId, List<String> roleIds);
 
     List<String> getSubordinateIdsById(String departId);
 }
