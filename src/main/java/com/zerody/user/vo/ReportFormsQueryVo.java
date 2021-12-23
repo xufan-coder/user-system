@@ -236,13 +236,13 @@ public class ReportFormsQueryVo {
     public String getPaymentCount() {
         BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
         BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
-        if (lonasMoney.compareTo(new BigDecimal(0)) == 0) {
+        if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
             return "0";
         }
         BigDecimal ave = paymentMoney.divide(lonasMoney);
         ave.setScale(4, BigDecimal.ROUND_HALF_UP);
         ave.multiply(new BigDecimal("100"));
-        return this.paymentCount;
+        return ave.toString();
     }
 
     public String getPerCapitaPerformance() {
