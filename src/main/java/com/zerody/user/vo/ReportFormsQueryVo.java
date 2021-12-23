@@ -236,25 +236,15 @@ public class ReportFormsQueryVo {
 
 
     public String getPaymentCount() {
-        BigDecimal ave = null;
-        try {
-            BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
-            log.info("签单点数bug1 ：{}", paymentMoney);
-            BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
-            log.info("签单点数bug2 ：{}", lonasMoney);
-            if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
-                return "0";
-            }
-            log.info("签单点数bug3 ：{}", paymentMoney);
-            ave = paymentMoney.divide(lonasMoney);
-            log.info("签单点数bug4 ：{}", ave);
-            ave.setScale(4, BigDecimal.ROUND_HALF_UP);
-            log.info("签单点数bug5 ：{}", ave);
-            ave.multiply(new BigDecimal("100"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
+        BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
+        if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
+            return "0";
         }
-        return "";
+        BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
+        ave.setScale(4, BigDecimal.ROUND_HALF_UP);
+        ave.multiply(new BigDecimal("100"));
+        return ave.toString();
     }
 
     public String getPerCapitaPerformance() {
@@ -263,8 +253,7 @@ public class ReportFormsQueryVo {
         if (num.compareTo(new BigDecimal(0)) == 0) {
             return "0";
         }
-        BigDecimal ave = money.divide(num);
-        ave.setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
         return ave.toString();
     }
 
@@ -274,8 +263,7 @@ public class ReportFormsQueryVo {
         if (numTotal.compareTo(new BigDecimal(0)) == 0) {
             return "0";
         }
-        BigDecimal rate = num.divide(numTotal);
-        rate.setScale(4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal rate = num.divide(numTotal, 4, BigDecimal.ROUND_HALF_UP);
         rate.multiply(new BigDecimal(100));
         return rate.toString();
     }
