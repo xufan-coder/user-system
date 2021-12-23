@@ -2,6 +2,7 @@ package com.zerody.user.vo;
 
 import com.zerody.common.utils.DataUtil;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  * @Deacription TODO
  */
 @Data
+@Slf4j
 public class ReportFormsQueryVo {
 
     /** id */
@@ -234,15 +236,25 @@ public class ReportFormsQueryVo {
 
 
     public String getPaymentCount() {
-        BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
-        BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
-        if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
-            return "0";
+        BigDecimal ave = null;
+        try {
+            BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
+            log.info("签单点数bug1 ：{}", paymentMoney);
+            BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
+            log.info("签单点数bug2 ：{}", lonasMoney);
+            if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
+                return "0";
+            }
+            log.info("签单点数bug3 ：{}", paymentMoney);
+            ave = paymentMoney.divide(lonasMoney);
+            log.info("签单点数bug4 ：{}", ave);
+            ave.setScale(4, BigDecimal.ROUND_HALF_UP);
+            log.info("签单点数bug5 ：{}", ave);
+            ave.multiply(new BigDecimal("100"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        BigDecimal ave = paymentMoney.divide(lonasMoney);
-        ave.setScale(4, BigDecimal.ROUND_HALF_UP);
-        ave.multiply(new BigDecimal("100"));
-        return ave.toString();
+        return "";
     }
 
     public String getPerCapitaPerformance() {
