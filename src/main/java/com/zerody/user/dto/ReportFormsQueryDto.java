@@ -18,4 +18,6 @@ public class ReportFormsQueryDto extends SetTimePeriodPage {
 
     private List<String> salesmanRoles;
 
+    private String title;
+
 }
