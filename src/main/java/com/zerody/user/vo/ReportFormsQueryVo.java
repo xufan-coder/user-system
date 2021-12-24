@@ -244,6 +244,7 @@ public class ReportFormsQueryVo {
         BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
         ave.setScale(4, BigDecimal.ROUND_HALF_UP);
         ave.multiply(new BigDecimal("100"));
+        ave.setScale(2, BigDecimal.ROUND_HALF_UP);
         return ave.toString();
     }
 
@@ -265,6 +266,7 @@ public class ReportFormsQueryVo {
         }
         BigDecimal rate = num.divide(numTotal, 4, BigDecimal.ROUND_HALF_UP);
         rate.multiply(new BigDecimal(100));
+        rate.setScale(2, BigDecimal.ROUND_HALF_UP);
         return rate.toString();
     }
 
