@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
@@ -113,6 +114,7 @@ public class StaffBlacklistControlller {
     @GetMapping("/framework/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getFrameworkPage(FrameworkBlacListQueryPageDto param){
         try {
+            param.setState(StaffBlacklistApproveState.BLOCK.name());
             this.checkUtil.SetUserPositionInfo(param);
             param.setQueryDimensionality("sumbmitUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
