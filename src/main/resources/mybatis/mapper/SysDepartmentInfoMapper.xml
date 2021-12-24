@@ -21,7 +21,7 @@
     <result column="depart_desc" property="departDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, comp_id, depart_name, parent_id, telephone, creat_time, create_id, create_user, 
+    id, comp_id, depart_name, parent_id, telephone, creat_time, create_id, create_user,
     create_time, update_id, update_user, update_time, status, depart_code
   </sql>
   <sql id="Blob_Column_List" >
@@ -126,7 +126,7 @@
         <where>
             sdi.status = 0 and sdi.comp_id = #{user.companyId}
             <if test="user.deptId neq null and user.deptId neq ''">
-                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'%')
+                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'\_%')
             </if>
         </where>
     </select>
