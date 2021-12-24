@@ -2148,8 +2148,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return Boolean.TRUE;
         }
         AdminVo admin = this.getIsAdmin(user);
+        StaffInfoVo staff = this.getStaffInfo(userId);
+        //如果是企业管理 查看指定用户是否与企业管理员同一个企业下
         if (admin.getIsCompanyAdmin()) {
-            return Boolean.FALSE;
+            return user.getCompanyId().equals(staff.getCompanyId());
         }
         if (admin.getIsDepartAdmin()) {
             List<String> ids = this.sysDepartmentInfoService.getSubordinateIdsById(user.getDeptId());
