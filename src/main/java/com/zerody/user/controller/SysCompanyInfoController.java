@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -315,6 +316,28 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             this.checkUtil.setFiltrateTime(param);
             List<ReportFormsQueryVo> list =  this.sysCompanyInfoService.getReportForms(param);
             return R.success(list);
+        } catch (Exception e) {
+            log.error("获取报表出错：{}", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          导出报表
+     * @date                 2021/12/15 11:41
+     * @param                [param]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ReportFormsQueryVo>>
+     */
+    @PostMapping("/report-forms/export")
+    public DataResult<Object> getReportFormsExport(HttpServletResponse response, @RequestBody ReportFormsQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            this.checkUtil.setFiltrateTime(param);
+            this.sysCompanyInfoService.getReportFormsExport(response, param);
+            return R.success();
         } catch (Exception e) {
             log.error("获取报表出错：{}", e, e);
             return R.error(e.getMessage());

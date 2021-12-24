@@ -13,6 +13,8 @@ import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -55,4 +57,6 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<String> getNotSmsCompany();
 
     List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param);
+
+    void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException;
 }

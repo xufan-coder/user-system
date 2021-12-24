@@ -9,14 +9,12 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.MQ;
+import com.zerody.common.constant.TimeDimensionality;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
-import com.zerody.common.util.CheckParamUtils;
-import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.UUIDutils;
-import com.zerody.common.util.UserUtils;
+import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
@@ -46,6 +44,7 @@ import com.zerody.user.vo.SysUserClewCollectVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +55,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -454,10 +457,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         param.setSalesmanRoles(salesmanRolesResult.getData());
         List<ReportFormsQueryVo> list = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getUserId())) {
+            param.setTitle("伙伴");
             list = this.sysUserInfoMapper.getUserById(param.getUserId(), param.getSalesmanRoles());
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
             Boolean lastDepart = this.departService.getDepartIsFinally(param.getDepartId(), Boolean.TRUE);
             if (lastDepart) {
+                param.setTitle("伙伴");
                 list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId(), param.getSalesmanRoles());
                 if (CollectionUtils.isNotEmpty(list)) {
                     List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
@@ -465,11 +470,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 }
                 param.setDepartId(null);
             } else {
+                param.setTitle("部门");
                 list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
             }
         } else if (DataUtil.isNotEmpty(param.getCompanyId())) {
+            param.setTitle("部门");
             list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
         } else {
+            param.setTitle("公司");
             list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
         }
         Map<String, ReportFormsQueryVo> signMap = null;
@@ -517,6 +525,72 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             }
         }
         return list;
+    }
+
+    @Override
+    public void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException {
+        List<ReportFormsQueryVo> list = this.getReportForms(param);
+        if (CollectionUtils.isEmpty(list)) {
+            throw new DefaultException("暂无数据导出");
+        }
+        String timePeriodStr = "总";
+        if (StringUtils.isNotEmpty(param.getTimePeriod())) {
+            switch (param.getTimePeriod()) {
+                case TimeDimensionality.DAY:
+                    timePeriodStr = "今日";
+                    break;
+                case TimeDimensionality.YESTER:
+                    timePeriodStr = "昨日";
+                    break;
+                case TimeDimensionality.WEEK:
+                    timePeriodStr = "本周";
+                    break;
+                case TimeDimensionality.MONTH:
+                    timePeriodStr = "本月";
+                    break;
+                case TimeDimensionality.QUARTER:
+                    timePeriodStr = "本季";
+                    break;
+                case TimeDimensionality.YEAR:
+                    timePeriodStr = "本年";
+                    break;
+            }
+        }
+        List<String[]> exportData = new ArrayList<>();
+        final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
+                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "已放未收/笔数", timePeriodStr + "业绩/笔数",
+                "总业绩/笔数", "回款点数", "人均业绩", "人员回款率", "邀约人数", "上门人数"};
+        String[] rowData;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (ReportFormsQueryVo info : list) {
+            rowData = new String[15];
+            int index = 0;
+            rowData[index++] = info.getName();
+            rowData[index++] = info.getSignMoney() + "/" + info.getSignNum() + "笔";
+            rowData[index++] = info.getSignMoneyTotal() + "/" + info.getSignNumTotal() + "笔";
+            rowData[index++] = info.getApproveMoney() + "/" + info.getApproveNum() + "笔";
+            rowData[index++] = info.getApproveMoneyTotal() + "/" + info.getApproveNumTotal() + "笔";
+            rowData[index++] = info.getLoansMoney() + "/" + info.getLoansNum() + "笔";
+            rowData[index++] = info.getLoansMoneyTotal() + "/" + info.getLoansNumTotal() + "笔";
+            rowData[index++] = info.getNotProceedsMoney() + "/" + info.getNotProceedsNum() + "笔";
+            rowData[index++] = info.getPerformanceMoney() + "/" + info.getPerformanceNum() + "笔";
+            rowData[index++] = info.getPerformanceMoneyTotal() + "/" + info.getPerformanceNumTotal() + "笔";
+            rowData[index++] = info.getPaymentCount() + "%";
+            rowData[index++] = info.getPerCapitaPerformance();
+            rowData[index++] = info.getStaffPaymentRate() + "%";
+            rowData[index++] = String.valueOf(info.getInviteNum());
+            rowData[index++] = String.valueOf(info.getVisitNum());
+            exportData.add(rowData);
+        }
+        HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
+        String fileName = "报表_" + System.currentTimeMillis();
+//        response.getContentType("octets/stream");
+        response.addHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8") + ".xls");
+        response.setCharacterEncoding("UTF-8");
+        OutputStream os = response.getOutputStream();
+        workbook.write(os);
+        os.close();
+
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
