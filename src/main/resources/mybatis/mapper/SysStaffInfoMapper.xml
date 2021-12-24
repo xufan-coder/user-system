@@ -78,7 +78,7 @@
                 and sci.id = #{staff.companyId}
             </if>
             <if test="staff.departId != null and staff.departId != ''">
-                and sdi.id like concat('', #{staff.departId}, '%')
+                and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
             <if test="staff.jobId != null and staff.jobId != ''">
                 and sjp.id = #{staff.jobId}
@@ -528,7 +528,7 @@
         <where>
             sui.status IN (0, 2)
             <if test="departId neq null and departId neq ''">
-                AND usd.department_id LIKE CONCAT('',#{departId},'%')
+                AND (usd.department_id LIKE CONCAT('',#{departId},'\_%') or usd.department_id=#{departId})
             </if>
             <if test="roleId neq null and roleId neq ''">
                 AND urs.role_id = #{roleId}
@@ -722,7 +722,7 @@
                 and sci.id = #{staff.companyId}
             </if>
             <if test="staff.departId != null and staff.departId != ''">
-                and sdi.id like concat('', #{staff.departId}, '%')
+                and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
             <if test="staff.userId != null and staff.userId != ''">
                 and sui.id = #{staff.userId}
@@ -784,7 +784,7 @@
                 AND ssi.comp_id = #{compId}
             </if>
             <if test="departId neq null and departId neq ''">
-                AND usd.department_id LIKE CONCAT(#{departId}, '%')
+                AND (usd.department_id LIKE CONCAT('',#{departId},'\_%') or usd.department_id=#{departId})
             </if>
         </where>
     </select>
