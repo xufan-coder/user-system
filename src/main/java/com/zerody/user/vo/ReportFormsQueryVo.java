@@ -242,7 +242,6 @@ public class ReportFormsQueryVo {
             return "0";
         }
         BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
-        ave.setScale(4, BigDecimal.ROUND_HALF_UP);
         ave.multiply(new BigDecimal("100"));
         ave.setScale(2, BigDecimal.ROUND_HALF_UP);
         return ave.toString();
