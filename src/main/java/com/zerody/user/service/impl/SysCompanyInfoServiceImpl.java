@@ -521,7 +521,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             }
             if (CollectionUtils.isNotEmpty(inviteMap) && DataUtil.isNotEmpty(inviteMap.get(rfq.getId()))) {
                 rfq.setInviteNum(inviteMap.get(rfq.getId()).getInviteNum());
-                rfq.setSignNum(inviteMap.get(rfq.getId()).getSignNum());
+                rfq.setVisitNum(inviteMap.get(rfq.getId()).getSignNum());
             }
         }
         return list;
