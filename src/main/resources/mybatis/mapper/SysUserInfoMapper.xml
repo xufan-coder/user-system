@@ -354,7 +354,8 @@ WHERE
     <select id="getUserByDepartId" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sui.id,
-            sui.user_name AS `name`
+            sui.user_name AS `name`,
+            COUNT(ssi.id) AS salesman_num
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
@@ -378,7 +379,8 @@ WHERE
     <select id="getUserById" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sui.id,
-            sui.user_name AS `name`
+            sui.user_name AS `name`,
+             COUNT(ssi.id) AS salesman_num
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id

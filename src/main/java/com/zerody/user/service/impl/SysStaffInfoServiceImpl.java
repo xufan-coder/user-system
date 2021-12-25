@@ -1861,6 +1861,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public StaffInfoVo getStaffInfo(String userId) {
         StaffInfoVo staffInfoVo = this.sysStaffInfoMapper.getStaffInfoInner(userId);
+        if (DataUtil.isEmpty(staffInfoVo)) {
+            throw new DefaultException("找不到伙伴");
+        }
         return staffInfoVo;
     }
 
