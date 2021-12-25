@@ -85,7 +85,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private RabbitMqService mqService;
-    
+
     @Autowired
     private CheckUtil checkUtil;
 
@@ -98,8 +98,8 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     //  添加部门redis 自动增长 过期时间 单位天
     private final static Long ADD_DEPART_REDIS_OUTTIME = 2L;
-    
-    
+
+
     @Override
     public void addDepartment(SysDepartmentInfo sysDepartmentInfo) {
         log.info("添加部门  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(sysDepartmentInfo), JSON.toJSONString(UserUtils.getUser()));
@@ -168,7 +168,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         //  如果当前部门设置不显示
         if (sysDepartmentInfo.getIsShowBusiness().equals(YesNo.NO)) {
             UpdateWrapper<SysDepartmentInfo> departUw = new UpdateWrapper<>();
-            departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("_"));
+            departUw.lambda().likeRight(SysDepartmentInfo::getId, sysDepartmentInfo.getId().concat("\\_"));
             departUw.lambda().set(SysDepartmentInfo::getIsShowBusiness, YesNo.NO);
             this.update(departUw);
         } else {
@@ -199,7 +199,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         List<String> list = this.getDepChildernsIds(depId, deps);
         list.add(0, depId);
         unQw = new QueryWrapper<>();
-        unQw.lambda().like(UnionStaffDepart::getDepartmentId, depId);
+        unQw.lambda().and(a -> a.like(UnionStaffDepart::getDepartmentId, depId.concat("\\_")).or().eq(UnionStaffDepart::getDepartmentId,depId));
         count = unionStaffDepartMapper.selectCount(unQw);
         if(count > 0){
             throw new DefaultException("该子级部门下有员工不可删除!");
@@ -208,11 +208,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getStatus, StatusEnum.deleted.getValue());
         depUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
-        depUw.lambda().like(SysDepartmentInfo::getId, depId);
+        depUw.lambda().and(a -> a.like(SysDepartmentInfo::getId, depId.concat("\\_")).or().eq(SysDepartmentInfo::getId,depId));
         this.update(depUw);
         //删除部门下的岗位
         QueryWrapper<SysJobPosition> jobQw = new QueryWrapper<>();
-        jobQw.lambda().like(SysJobPosition::getDepartId, depId);
+        jobQw.lambda().and(a->a.like(SysJobPosition::getDepartId, depId.concat("\\_")).or().eq(SysJobPosition::getDepartId,depId));
         jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.deleted.getValue());
         SysJobPosition job = new SysJobPosition();
         job.setStatus(StatusEnum.deleted.getValue());

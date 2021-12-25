@@ -81,7 +81,7 @@
             AND sb.company_id = #{param.companyId}
       </if>
       <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'submitUser'">
-            AND usd2.department_id LIKE CONCAT(#{param.departId}, '%')
+            AND (usd2.department_id LIKE CONCAT(#{param.departId}, '\_%') or usd2.department_id=#{param.departId})
       </if>
       <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'submitUser'">
             AND ssi2.user_id = #{param.userId}
@@ -90,7 +90,7 @@
             AND sb.user_name LIKE CONCAT('%', #{param.userName}, '%')
       </if>
     <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'blockUser'">
-        AND usd.department_id LIKE CONCAT(#{param.departId}, '%')
+        AND (usd.department_id LIKE CONCAT(#{param.departId}, '\_%') or usd.department_id=#{param.departId})
     </if>
     <if test="param.userId neq null and param.userId neq ''  and param.queryDimensionality eq 'blockUser'">
         AND ssi.user_id = #{param.userId}

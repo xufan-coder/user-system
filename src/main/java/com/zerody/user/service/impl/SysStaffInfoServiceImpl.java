@@ -2139,6 +2139,36 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public Boolean getLoginUserIsSuperion(UserVo user, String userId) {
+        if (userId.equals(user.getUserId())) {
+            return Boolean.TRUE;
+        }
+        // 如果是后台或ceo 就直接返回true 是上级
+        if (user.isBackAdmin()) {
+            return Boolean.TRUE;
+        }
+        AdminVo admin = this.getIsAdmin(user);
+        StaffInfoVo staff = this.getStaffInfo(userId);
+        //如果是企业管理 查看指定用户是否与企业管理员同一个企业下
+        if (admin.getIsCompanyAdmin()) {
+            return user.getCompanyId().equals(staff.getCompanyId());
+        }
+        if (admin.getIsDepartAdmin()) {
+            List<String> ids = this.sysDepartmentInfoService.getSubordinateIdsById(user.getDeptId());
+            if (CollectionUtils.isEmpty(ids)) {
+                ids = new ArrayList<>();
+                ids.add(user.getDeptId());
+            }
+            String departId = this.getDepartId(userId);
+            if (StringUtils.isEmpty(departId)) {
+                return Boolean.FALSE;
+            }
+            return ids.indexOf(departId) != -1;
+        }
+        return Boolean.FALSE;
+    }
+
+    @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId) {
         return sysStaffInfoMapper.getStaffByCompany(companyId);
     }
