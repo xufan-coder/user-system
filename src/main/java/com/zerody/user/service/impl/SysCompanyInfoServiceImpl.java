@@ -519,7 +519,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 rfq.setName(name);
                 rfq.setSalesmanNum(num);
             }
-            if (CollectionUtils.isNotEmpty(inviteMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
+            if (CollectionUtils.isNotEmpty(inviteMap) && DataUtil.isNotEmpty(inviteMap.get(rfq.getId()))) {
                 rfq.setInviteNum(inviteMap.get(rfq.getId()).getInviteNum());
                 rfq.setSignNum(inviteMap.get(rfq.getId()).getSignNum());
             }
