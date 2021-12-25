@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 
 /**
  * @author PengQiang
@@ -242,8 +243,8 @@ public class ReportFormsQueryVo {
             return "0";
         }
         BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
-        ave.multiply(new BigDecimal("100"));
-        ave.setScale(2, BigDecimal.ROUND_HALF_UP);
+        ave = ave.multiply(new BigDecimal("100"));
+        ave = ave.setScale(2, BigDecimal.ROUND_HALF_UP);
         return ave.toString();
     }
 
@@ -264,8 +265,8 @@ public class ReportFormsQueryVo {
             return "0";
         }
         BigDecimal rate = num.divide(numTotal, 4, BigDecimal.ROUND_HALF_UP);
-        rate.multiply(new BigDecimal(100));
-        rate.setScale(2, BigDecimal.ROUND_HALF_UP);
+        rate = rate.multiply(new BigDecimal(100));
+        rate = rate.setScale(2, BigDecimal.ROUND_HALF_UP);
         return rate.toString();
     }
 
