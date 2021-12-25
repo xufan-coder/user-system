@@ -30,6 +30,6 @@ public interface CustomerFeignService extends CustomerRemoteService {
                                                      @RequestParam("deptId")String deptId,
                                                      @RequestParam("state")String state);
 
-    @PostMapping("/invite/get/invite-state/inner")
+    @PostMapping("/invite/get/invite-state-list/inner")
     DataResult<List<InviteStateVo>> getInviteStatis(@RequestBody ReportFormsQueryDto param);
 }
