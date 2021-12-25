@@ -212,7 +212,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         this.update(depUw);
         //删除部门下的岗位
         QueryWrapper<SysJobPosition> jobQw = new QueryWrapper<>();
-        jobQw.lambda().like(SysJobPosition::getDepartId, depId.concat("_")).or().eq(SysJobPosition::getDepartId,depId);
+        jobQw.lambda().and(a->a.like(SysJobPosition::getDepartId, depId.concat("\\_")).or().eq(SysJobPosition::getDepartId,depId));
         jobQw.lambda().ne(SysJobPosition::getStatus, StatusEnum.deleted.getValue());
         SysJobPosition job = new SysJobPosition();
         job.setStatus(StatusEnum.deleted.getValue());
