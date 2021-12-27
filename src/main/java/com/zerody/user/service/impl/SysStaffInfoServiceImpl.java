@@ -1480,7 +1480,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setUserName(userInfo.getUserName());
             cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
             cardUserInfo.setUserPwd(loginInfo.getUserPwd());
-            cardUserInfo.setCreateBy(UserUtils.getUserId());
+//            cardUserInfo.setCreateBy(UserUtils.getUserId());
             cardUserInfo.setCreateTime(new Date());
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
@@ -1501,7 +1501,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setAvatar(userInfo.getAvatar());
             cardDto.setEmail(userInfo.getEmail());
             cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setCreateBy(UserUtils.getUserId());
+//            cardDto.setCreateBy(UserUtils.getUserId());
             cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
             cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
             cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
