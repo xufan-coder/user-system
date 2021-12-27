@@ -1066,4 +1066,32 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取员工信息失败"+ e);
         }
     }
+
+
+    /**
+     *   当前登录用户为CEO 或 后台登录 为 true
+     *   当前登录为企业管理员为 true
+     *   指定用户没有部门 当前登录用户不是企业管理员 为 false
+     *   当前登录用户为部门管理员 且指定用户 在当前登录用户的部门下(包含下级部门) 为 true
+     *   其他均为 false
+     * @author               PengQiang
+     * @description          当前登录用户是否是指定用户上级
+     * @date                 2021/12/24 9:47
+     * @param                [userId]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<java.lang.String>>
+     */
+    @GetMapping("/get/login-user/is-superior")
+    public DataResult<Boolean> getLoginUserIsSuperion(@RequestParam("userId") String userId){
+        try {
+            UserVo user = UserUtils.getUser();
+            Boolean isSuperion = this.sysStaffInfoService.getLoginUserIsSuperion(user, userId);
+            return R.success(isSuperion);
+        } catch (DefaultException e){
+            log.error("当前登录用户是否是上级失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("当前登录用户是否是上级失败:{}",e,e);
+            return R.error("获取当前登录用户是否是上级失败!请求异常");
+        }
+    }
 }

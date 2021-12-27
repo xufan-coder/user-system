@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffRelation;
 import com.zerody.user.dto.SysStaffRelationDto;
 import com.zerody.user.mapper.SysStaffRelationMapper;
@@ -14,6 +15,8 @@ import com.zerody.user.service.SysStaffRelationService;
 import com.zerody.user.vo.SysStaffRelationVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,6 +30,8 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMapper, SysStaffRelation> implements SysStaffRelationService {
+    @Autowired
+    private SysStaffInfoServiceImpl sysStaffInfoService;
 
     @Override
     public void addRelation(SysStaffRelationDto sysStaffRelationDto) {
@@ -74,51 +79,26 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     @Override
     public List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
-//        QueryWrapper<SysStaffRelation> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.lambda().eq(StringUtils.isNotEmpty(sysStaffRelationDto.getStaffId()), SysStaffRelation::getStaffId, sysStaffRelationDto.getStaffId()).or()
-//                .eq(StringUtils.isNotEmpty(sysStaffRelationDto.getRelationStaffId()), SysStaffRelation::getRelationStaffId, sysStaffRelationDto.getRelationStaffId());
-//        queryWrapper.lambda().eq(SysStaffRelation::getDeletd, YesNo.NO);
-//        List<SysStaffRelation> sysStaffRelations = this.list(queryWrapper);
-//        sysStaffRelations.forEach(item -> {
-//            SysStaffRelationVo sysStaffRelationVo = new SysStaffRelationVo();
-//            sysStaffRelationVo.setId(item.getId());
-//            sysStaffRelationVo.setStaffId(item.getStaffId());
-//            sysStaffRelationVo.setUserName(item.getStaffName());
-//            sysStaffRelationVo.setDepartId(item.getDepartId());
-//            sysStaffRelationVo.setDepartName(item.getDepartName());
-//            sysStaffRelationVo.setDesc(item.getDescribe());
-//            sysStaffRelationVo.setRelationStaffId(item.getRelationStaffId());
-//            sysStaffRelationVo.setRelationStaffName(item.getRelationStaffName());
-//            sysStaffRelationVo.setRelationUserId(item.getRelationUserId());
-//            sysStaffRelationVo.setStaffUserId(item.getStaffUserId());
-//            sysStaffRelationVos.add(sysStaffRelationVo);
-//        });
+        sysStaffRelationVos.forEach(item -> {
+            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());
+            item.setCompanyName(staffInfo.getCompanyName());
+            item.setDepartName(staffInfo.getDepartmentName());
+            item.setPositionName(staffInfo.getPositionName());
+            item.setCompanyId(staffInfo.getCompanyId());
+            item.setDepartId(staffInfo.getDepartId());
+            StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
+            item.setRelationCompanyName(staffInfoVo.getCompanyName());
+            item.setRelationDepartName(staffInfoVo.getDepartmentName());
+            item.setRelationPositionName(staffInfoVo.getPositionName());
+            item.setRelationCompanyId(staffInfoVo.getCompanyId());
+            item.setRelationDepartId(staffInfoVo.getDepartId());
+        });
         return sysStaffRelationVos;
     }
 
     @Override
     public List<SysStaffRelationVo> queryRelationByListId(SysStaffRelationDto sysStaffRelationDto) {
-        List<SysStaffRelationVo> sysStaffRelationVos = Lists.newArrayList();
-        QueryWrapper<SysStaffRelation> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(Objects.nonNull(sysStaffRelationDto.getIds()), SysStaffRelation::getStaffId, sysStaffRelationDto.getIds());
-        queryWrapper.lambda().eq(StringUtils.isNotEmpty(sysStaffRelationDto.getRelationStaffId()), SysStaffRelation::getRelationStaffId, sysStaffRelationDto.getRelationStaffId());
-        queryWrapper.lambda().eq(SysStaffRelation::getDeletd, YesNo.NO);
-        List<SysStaffRelation> sysStaffRelations = this.list(queryWrapper);
-        sysStaffRelations.forEach(item -> {
-            SysStaffRelationVo sysStaffRelationVo = new SysStaffRelationVo();
-            sysStaffRelationVo.setId(item.getId());
-            sysStaffRelationVo.setStaffId(item.getStaffId());
-            sysStaffRelationVo.setUserName(item.getStaffName());
-            sysStaffRelationVo.setDepartId(item.getDepartId());
-            sysStaffRelationVo.setDepartName(item.getDepartName());
-            sysStaffRelationVo.setDesc(item.getDescribe());
-            sysStaffRelationVo.setRelationStaffId(item.getRelationStaffId());
-            sysStaffRelationVo.setRelationStaffName(item.getRelationStaffName());
-            sysStaffRelationVo.setRelationUserId(item.getRelationUserId());
-            sysStaffRelationVo.setStaffUserId(item.getStaffUserId());
-            sysStaffRelationVos.add(sysStaffRelationVo);
-        });
-
+        List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
         return sysStaffRelationVos;
     }
 

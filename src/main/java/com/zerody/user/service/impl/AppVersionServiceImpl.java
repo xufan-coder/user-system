@@ -12,17 +12,20 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.AppVersion;
+import com.zerody.user.domain.AppVersionInfo;
 import com.zerody.user.dto.AppVersionCreateDto;
 import com.zerody.user.dto.AppVersionListDto;
 import com.zerody.user.dto.AppVersionUpdateDto;
 import com.zerody.user.execption.PlatformResponseEnum;
 import com.zerody.user.mapper.AppVersionMapper;
+import com.zerody.user.service.AppVersionInfoService;
 import com.zerody.user.service.AppVersionService;
 import com.zerody.user.vo.AppVersionListVo;
 import com.zerody.user.vo.AppVersionVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> implements AppVersionService {
+    @Autowired
+    private AppVersionInfoService appVersionInfoService;
 
     @Override
     public void createAppVersion(AppVersionCreateDto param) {
@@ -73,6 +78,7 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         wrapper.eq(param.getSystemType() != null, AppVersion::getSystemType, param.getSystemType());
         wrapper.like(!StringUtils.isEmpty(param.getName()), AppVersion::getName, String.format(CommonConstants.QUERY_LIKE_RAW, param.getName()));
         wrapper.like(!StringUtils.isEmpty(param.getVersion()), AppVersion::getVersion, String.format(CommonConstants.QUERY_LIKE_RAW, param.getVersion()));
+        wrapper.orderByDesc(AppVersion::getCreateTime);
 
         Page pageRequest = new Page<>(pageParam.getCurrent(), pageParam.getSize());
         if (!StringUtils.isEmpty(pageParam.getOrderProp())) {
@@ -102,6 +108,10 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         }
         AppVersionVo appVersionVo = new AppVersionVo();
         BeanUtils.copyProperties(appVersion, appVersionVo);
+        if (StringUtils.isNotEmpty(appVersion.getVersionInfoId())) {
+            AppVersionInfo appVersionInfo = this.appVersionInfoService.getById(appVersion.getVersionInfoId());
+            appVersionVo.setAppVersionInfo(appVersionInfo);
+        }
         return appVersionVo;
     }
 
@@ -122,6 +132,17 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
         queryWrapper.lambda().orderByDesc(AppVersion::getVersion);
         List<AppVersion> appVersion = this.baseMapper.selectList(queryWrapper);
+        return appVersion;
+    }
+
+    @Override
+    public AppVersion queryVersion(AppVersionListDto param) {
+        QueryWrapper<AppVersion> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getVersion()), AppVersion::getVersion, param.getVersion());
+        queryWrapper.lambda().eq(Objects.nonNull(param.getOsType()), AppVersion::getOsType, param.getOsType());
+        queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
+        queryWrapper.lambda().orderByDesc(AppVersion::getVersion);
+        AppVersion appVersion = this.baseMapper.selectOne(queryWrapper);
         return appVersion;
     }
 

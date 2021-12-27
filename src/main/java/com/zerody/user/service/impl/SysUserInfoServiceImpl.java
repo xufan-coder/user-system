@@ -152,6 +152,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         logInfo.setNickname(userInfo.getNickname());
         logInfo.setAvatar(userInfo.getAvatar());
         logInfo.setStatus(StatusEnum.activity.getValue());
+        logInfo.setCreateId(UserUtils.getUser().getUserId());
         log.info("B端添加用户后生成登录账户入库参数--{}",JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         return dataResult;

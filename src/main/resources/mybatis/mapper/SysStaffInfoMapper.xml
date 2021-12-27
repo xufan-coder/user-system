@@ -24,6 +24,9 @@
     date_left, create_id, create_user, create_time, update_id, update_user, update_time,
     status
   </sql>
+    <update id="updateDateJoin">
+        update sys_staff_info set date_join=#{dateJoin} where id=#{id}
+    </update>
     <select id="selectByUserIdAndCompId" resultType="com.zerody.user.vo.SysStaffInfoVo">
       SELECT
           id,
@@ -78,7 +81,7 @@
                 and sci.id = #{staff.companyId}
             </if>
             <if test="staff.departId != null and staff.departId != ''">
-                and sdi.id like concat('', #{staff.departId}, '%')
+                and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
             <if test="staff.jobId != null and staff.jobId != ''">
                 and sjp.id = #{staff.jobId}
@@ -181,7 +184,9 @@
         ssi.recommend_type,
         ssi.recommend_id,
         sb.id is not null AS is_block,
-        ssi.integral
+        ssi.integral,
+        ssi.date_join,
+        ssi.working_years
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -243,7 +248,9 @@
         ssi.recommend_type,
         ssi.recommend_id,
         sb.id is not null AS is_block,
-        ssi.integral
+        ssi.integral,
+        ssi.working_years,
+        ssi.date_join
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -526,7 +533,7 @@
         <where>
             sui.status IN (0, 2)
             <if test="departId neq null and departId neq ''">
-                AND usd.department_id LIKE CONCAT('',#{departId},'%')
+                AND (usd.department_id LIKE CONCAT('',#{departId},'\_%') or usd.department_id=#{departId})
             </if>
             <if test="roleId neq null and roleId neq ''">
                 AND urs.role_id = #{roleId}
@@ -594,12 +601,15 @@
         sci.id AS companyId,
         sdi.depart_name AS departmentName,
         sui.phone_number AS mobile,
-        sui.certificate_card AS identity_card
+        sui.certificate_card AS identity_card,
+        sjp.position_name
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        LEFT JOIN  union_staff_position AS usp ON usp.staff_id=ssi.id
+        LEFT JOIN sys_job_position AS sjp ON sjp.id=usp.position_id
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             sui.id = #{id}
@@ -717,7 +727,7 @@
                 and sci.id = #{staff.companyId}
             </if>
             <if test="staff.departId != null and staff.departId != ''">
-                and sdi.id like concat('', #{staff.departId}, '%')
+                and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
             <if test="staff.userId != null and staff.userId != ''">
                 and sui.id = #{staff.userId}
@@ -779,7 +789,7 @@
                 AND ssi.comp_id = #{compId}
             </if>
             <if test="departId neq null and departId neq ''">
-                AND usd.department_id LIKE CONCAT(#{departId}, '%')
+                AND (usd.department_id LIKE CONCAT('',#{departId},'\_%') or usd.department_id=#{departId})
             </if>
         </where>
     </select>

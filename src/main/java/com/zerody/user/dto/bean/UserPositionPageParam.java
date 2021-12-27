@@ -3,6 +3,8 @@ package com.zerody.user.dto.bean;
 import com.zerody.common.api.bean.PageQueryDto;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName UserPositionPageParam
@@ -20,4 +22,8 @@ public class UserPositionPageParam extends PageQueryDto {
 
     /** 用户id */
     private String userId;
+
+    /** 部门集合 */
+    private List<String> departIds;
+
 }

@@ -47,12 +47,12 @@ public abstract class BaseStringService<M extends BaseMapper<T>, T extends BaseS
 		//此处少了企业条件
 		if(entity.getId() != null && entity.getId().length()>0){
 			entity.setUpdateTime(new Date());
-			entity.setCreateId(UserUtils.getUserId());
+//			entity.setCreateId(UserUtils.getUserId());
 			entity.setCreateTime(new Date());
 			return this.updateById(entity);
 		}else{
 			entity.setId(UUIDutils.getUUID32());
-			entity.setCreateId(UserUtils.getUserId());
+//			entity.setCreateId(UserUtils.getUserId());
 			entity.setCreateTime(new Date());
 			entity.setCreateTime(new Date());
 			return retBool(baseMapper.insert(entity));
