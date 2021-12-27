@@ -897,16 +897,14 @@
         JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         <where>
             sci.status = 0 AND sui.status IN(0, 3)
-            <if test="param.companyId neq null">
+            <if test="param.companyId neq null and param.companyId neq ''">
                 AND sci.id = #{param.companyId}
             </if>
-            <if test="param">
-                <if test="param.salesmanRoles neq null and param.salesmanRoles.size() gt 0">
-                    AND uprs.role_id
-                    <foreach collection="param.salesmanRoles" item="id" open="IN (" separator="," close=")" >
-                        #{id}
-                    </foreach>
-                </if>
+            <if test="param.salesmanRoles neq null and param.salesmanRoles.size() gt 0">
+                AND uprs.role_id
+                <foreach collection="param.salesmanRoles" item="id" open="IN (" separator="," close=")" >
+                    #{id}
+                </foreach>
             </if>
         </where>
     </select>
