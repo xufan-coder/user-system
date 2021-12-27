@@ -21,7 +21,7 @@
     <result column="depart_desc" property="departDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, comp_id, depart_name, parent_id, telephone, creat_time, create_id, create_user, 
+    id, comp_id, depart_name, parent_id, telephone, creat_time, create_id, create_user,
     create_time, update_id, update_user, update_time, status, depart_code
   </sql>
   <sql id="Blob_Column_List" >
@@ -126,7 +126,7 @@
         <where>
             sdi.status = 0 and sdi.comp_id = #{user.companyId}
             <if test="user.deptId neq null and user.deptId neq ''">
-                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'%')
+                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'\_%')
             </if>
         </where>
     </select>
@@ -255,6 +255,53 @@
         LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account
         <where>
             sdi.id = #{id}
+        </where>
+    </select>
+    <select id="getDepartBusiness" resultType="com.zerody.user.vo.ReportFormsQueryVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name AS `name`  ,
+            COUNT(ssi.id) AS salesman_num
+        FROM sys_department_info AS sdi
+        LEFT JOIN (
+            sys_staff_info AS ssi,
+            union_staff_depart AS usd,
+            sys_user_info AS sui,
+            union_role_staff AS urs
+        ) ON (usd.department_id LIKE CONCAT(sdi.id, '\_%') OR usd.department_id = sdi.id)
+        AND usd.staff_id = ssi.user_id
+        AND sui.id = ssi.id
+        AND sui. STATUS IN (0, 3)
+        AND urs.staff_id = ssi.id
+        <if test="roleIds neq null and roleIds.size() gt 0">
+            AND urs.role_id
+            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
+                #{id}
+            </foreach>
+        </if>
+        <where>
+            sdi.status = 0 AND sdi.is_show_business = 1
+            <if test="departId neq null and departId neq ''">
+                AND sdi.parent_id = #{departId}
+            </if>
+            <if test="(companyId neq null and companyId neq '') and (departId eq null or  departId eq '')">
+                AND (
+                    sdi.parent_id IS NULL OR sdi.parent_id = ''
+                )
+                AND sdi.comp_id = #{companyId}
+            </if>
+        </where>
+        GROUP BY sdi.id
+    </select>
+    <select id="getSubordinateIdsById" resultType="java.lang.String">
+        SELECT
+        sdi.id
+        FROM
+        sys_department_info AS sdi
+        <where>
+            <if test="id neq null and id neq ''">
+                AND id LIKE CONCAT(#{id}, '\_%')
+            </if>
         </where>
     </select>
 </mapper>

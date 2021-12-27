@@ -9,6 +9,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
+import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
@@ -18,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * 员工黑名单控制类
@@ -115,6 +114,7 @@ public class StaffBlacklistControlller {
     @GetMapping("/framework/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getFrameworkPage(FrameworkBlacListQueryPageDto param){
         try {
+            param.setState(StaffBlacklistApproveState.BLOCK.name());
             this.checkUtil.SetUserPositionInfo(param);
             param.setQueryDimensionality("sumbmitUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
@@ -238,10 +238,10 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @PostMapping("/import")
-    public DataResult<Void> doBlacklistExternalImport(MultipartFile file){
+    public DataResult<String> doBlacklistExternalImport(MultipartFile file){
         try {
-            this.service.doBlacklistExternalImport(file, UserUtils.getUser());
-            return R.success();
+            String id = this.service.doBlacklistExternalImport(file, UserUtils.getUser());
+            return R.success(id);
         } catch (DefaultException e) {
             log.error("导入内控用户出错：{}", e, e);
             return R.error(e.getMessage());

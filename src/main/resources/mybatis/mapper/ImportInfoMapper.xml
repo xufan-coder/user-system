@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.ImportInfoMapper" >
+    <select id="getPageImportInfo" resultType="com.zerody.user.vo.ImportInfoQueryVo">
+        SELECT
+            ii.id,
+            ii.import_file_name,
+            ii.company_id,
+            ii.company_name,
+            ii.create_time,
+            ii.excel_rows,
+            ii.success_num,
+            ii.excel_rows,
+            ii.import_state,
+            ii.user_id,
+            ii.user_name,
+            ii.error_num
+        FROM import_info AS ii
+        <where>
+            <if test="param.companyId neq null and param.companyId neq ''">
+               AND  ii.company_id = #{param.companyId}
+            </if>
+            <if test="param.type neq null">
+                AND ii.import_type = #{param.type}
+            </if>
+        </where>
+        ORDER BY ii.create_time DESC
+    </select>
+</mapper>

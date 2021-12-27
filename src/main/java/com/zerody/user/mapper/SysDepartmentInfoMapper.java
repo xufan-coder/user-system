@@ -9,10 +9,7 @@ import com.zerody.user.api.vo.UserDepartInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.dto.SysDepartmentInfoDto;
 import com.zerody.user.domain.SysDepartmentInfo;
-import com.zerody.user.vo.CustomerQueryDimensionalityVo;
-import com.zerody.user.vo.DepartSubordinateVo;
-import com.zerody.user.vo.SysDepartmentInfoVo;
-import com.zerody.user.vo.UserStructureVo;
+import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -149,4 +146,8 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(@Param("user") UserVo user);
 
     DepartInfoVo getDepartInfoInner(@Param("id")String departId);
+
+    List<ReportFormsQueryVo> getDepartBusiness(@Param("companyId") String companyId, @Param("departId") String departId, @Param("roleIds") List<String> roleIds);
+
+    List<String> getSubordinateIdsById(@Param("id") String departId);
 }

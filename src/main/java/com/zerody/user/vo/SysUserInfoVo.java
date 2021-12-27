@@ -228,6 +228,15 @@ public class SysUserInfoVo {
 
     /** 二级推荐人 */
     private RecommendInfoVo recommendSecond;
+    /**
+     * 工作年限
+     */
+    private Integer workingYears;
+    /**
+     * 入职时间
+     **/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date dateJoin;
 
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);

@@ -9,14 +9,12 @@ import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.MQ;
+import com.zerody.common.constant.TimeDimensionality;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
-import com.zerody.common.util.CheckParamUtils;
-import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.UUIDutils;
-import com.zerody.common.util.UserUtils;
+import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.sms.api.dto.SmsDto;
@@ -24,11 +22,14 @@ import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.feign.CardFeignService;
+import com.zerody.user.feign.ContractFeignService;
+import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -36,10 +37,16 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.InviteStateVo;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.SysUserClewCollectVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,6 +55,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,6 +118,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Autowired
     private CheckUtil checkUtil;
 
+    @Autowired
+    private ContractFeignService contractFeignService;
+
+    @Autowired
+    private CustomerFeignService customerFeignService;
+
     @Value("${sms.template.userTip:}")
     String userTipTemplate;
 
@@ -148,6 +165,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
+        sysCompanyInfo.setCreateId(UserUtils.getUserId());
+        sysCompanyInfo.setCreateUser(UserUtils.getUserName());
         sysCompanyInfo.setIsEdit(YesNo.YES);
         sysCompanyInfo.setIsUpdateName(YesNo.NO);
         this.saveOrUpdate(sysCompanyInfo);
@@ -429,6 +448,151 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     @Override
     public List<String> getNotSmsCompany() {
         return this.sysCompanyInfoMapper.getNotSmsCompany();
+    }
+
+    @Override
+    public List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param) {
+        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(param.getCompanyId());
+        if (!salesmanRolesResult.isSuccess()) {
+            throw new DefaultException("获取角色错误");
+        }
+        param.setSalesmanRoles(salesmanRolesResult.getData());
+        List<ReportFormsQueryVo> list = new ArrayList<>();
+        if (DataUtil.isNotEmpty(param.getUserId())) {
+            param.setTitle("伙伴");
+            list = this.sysUserInfoMapper.getUserById(param.getUserId(), param.getSalesmanRoles());
+        } else if (DataUtil.isNotEmpty(param.getDepartId())) {
+            Boolean lastDepart = this.departService.getDepartIsFinally(param.getDepartId(), Boolean.TRUE);
+            if (lastDepart) {
+                param.setTitle("伙伴");
+                list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId(), param.getSalesmanRoles());
+                if (CollectionUtils.isNotEmpty(list)) {
+                    List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+                    param.setUserIds(userIds);
+                }
+                param.setDepartId(null);
+            } else {
+                param.setTitle("部门");
+                list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
+            }
+        } else if (DataUtil.isNotEmpty(param.getCompanyId())) {
+            param.setTitle("部门");
+            list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
+        } else {
+            param.setTitle("公司");
+            list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
+        }
+        Map<String, ReportFormsQueryVo> signMap = null;
+        Map<String, InviteStateVo> inviteMap = null;
+        try {
+            DataResult<List<ReportFormsQueryVo>> signResult = this.contractFeignService.getReportForms(param);
+            if (!signResult.isSuccess()) {
+                log.error("合同报表查询#合同信息查询出错:{}", signResult.getMessage());
+            }
+            List<ReportFormsQueryVo> sign = signResult.getData();
+            if (CollectionUtils.isNotEmpty(sign)) {
+                signMap = sign.stream().collect(Collectors.toMap(ReportFormsQueryVo::getId, a -> a, (k1, k2) -> k1, HashMap::new));
+            }
+        } catch (Exception e) {
+            log.error("合同报表查询出错:{}", e, e);
+        }
+        try {
+            DataResult<List<InviteStateVo>> signResult = this.customerFeignService.getInviteStatis(param);
+            if (!signResult.isSuccess()) {
+                log.error("报表查询#客户信息查询出错:{}", signResult.getMessage());
+            }
+            List<InviteStateVo> invite = signResult.getData();
+            if (CollectionUtils.isNotEmpty(invite)) {
+                inviteMap = invite.stream().collect(Collectors.toMap(InviteStateVo::getId, a -> a, (k1, k2) -> k1, HashMap::new));
+            }
+        } catch (Exception e) {
+            log.error("客户报表查询出错:{}", e, e);
+        }
+        String id;
+        String name;
+        Integer num;
+        for (ReportFormsQueryVo rfq : list) {
+            id = rfq.getId();
+            name = rfq.getName();
+            num = rfq.getSalesmanNum();
+            if (CollectionUtils.isNotEmpty(signMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
+                BeanUtils.copyProperties(signMap.get(rfq.getId()), rfq);
+                rfq.setId(id);
+                rfq.setName(name);
+                rfq.setSalesmanNum(num);
+            }
+            if (CollectionUtils.isNotEmpty(inviteMap) && DataUtil.isNotEmpty(inviteMap.get(rfq.getId()))) {
+                rfq.setInviteNum(inviteMap.get(rfq.getId()).getInviteNum());
+                rfq.setVisitNum(inviteMap.get(rfq.getId()).getSignNum());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException {
+        List<ReportFormsQueryVo> list = this.getReportForms(param);
+        if (CollectionUtils.isEmpty(list)) {
+            throw new DefaultException("暂无数据导出");
+        }
+        String timePeriodStr = "总";
+        if (StringUtils.isNotEmpty(param.getTimePeriod())) {
+            switch (param.getTimePeriod()) {
+                case TimeDimensionality.DAY:
+                    timePeriodStr = "今日";
+                    break;
+                case TimeDimensionality.YESTER:
+                    timePeriodStr = "昨日";
+                    break;
+                case TimeDimensionality.WEEK:
+                    timePeriodStr = "本周";
+                    break;
+                case TimeDimensionality.MONTH:
+                    timePeriodStr = "本月";
+                    break;
+                case TimeDimensionality.QUARTER:
+                    timePeriodStr = "本季";
+                    break;
+                case TimeDimensionality.YEAR:
+                    timePeriodStr = "本年";
+                    break;
+            }
+        }
+        List<String[]> exportData = new ArrayList<>();
+        final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
+                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "已放未收/笔数", timePeriodStr + "业绩/笔数",
+                "总业绩/笔数", "回款点数", "人均业绩", "人员回款率", "邀约人数", "上门人数"};
+        String[] rowData;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (ReportFormsQueryVo info : list) {
+            rowData = new String[15];
+            int index = 0;
+            rowData[index++] = info.getName();
+            rowData[index++] = info.getSignMoney() + "/" + info.getSignNum() + "笔";
+            rowData[index++] = info.getSignMoneyTotal() + "/" + info.getSignNumTotal() + "笔";
+            rowData[index++] = info.getApproveMoney() + "/" + info.getApproveNum() + "笔";
+            rowData[index++] = info.getApproveMoneyTotal() + "/" + info.getApproveNumTotal() + "笔";
+            rowData[index++] = info.getLoansMoney() + "/" + info.getLoansNum() + "笔";
+            rowData[index++] = info.getLoansMoneyTotal() + "/" + info.getLoansNumTotal() + "笔";
+            rowData[index++] = info.getNotProceedsMoney() + "/" + info.getNotProceedsNum() + "笔";
+            rowData[index++] = info.getPerformanceMoney() + "/" + info.getPerformanceNum() + "笔";
+            rowData[index++] = info.getPerformanceMoneyTotal() + "/" + info.getPerformanceNumTotal() + "笔";
+            rowData[index++] = info.getPaymentCount() + "%";
+            rowData[index++] = info.getPerCapitaPerformance();
+            rowData[index++] = info.getStaffPaymentRate() + "%";
+            rowData[index++] = String.valueOf(info.getInviteNum());
+            rowData[index++] = String.valueOf(info.getVisitNum());
+            exportData.add(rowData);
+        }
+        HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
+        String fileName = "报表_" + System.currentTimeMillis();
+//        response.getContentType("octets/stream");
+        response.addHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8") + ".xls");
+        response.setCharacterEncoding("UTF-8");
+        OutputStream os = response.getOutputStream();
+        workbook.write(os);
+        os.close();
+
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

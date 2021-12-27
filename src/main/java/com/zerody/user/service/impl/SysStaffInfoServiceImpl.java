@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.CustomerQueryType;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -31,11 +33,14 @@ import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
+import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.enums.StaffHistoryTypeEnum;
 import com.zerody.user.feign.*;
@@ -177,6 +182,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private SysUserInfoService sysUserInfoService;
 
+    @Autowired
+    private ImportInfoService importInfoService;
+
+    @Autowired
+    private ImportResultInfoService importResultInfoService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -235,6 +246,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         logInfo.setStatus(StatusEnum.activity.getValue());
+        logInfo.setCreateId(UserUtils.getUser().getUserId());
         log.info("添加用户后生成登录账户入库参数--{}", JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
 //        SmsDto smsDto = new SmsDto();
@@ -262,6 +274,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("添加员工入库参数--{}", JSON.toJSONString(staff));
         staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
+        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
+        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
@@ -388,6 +402,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
         this.update(staffUw);
+        if (StatusEnum.stop.getValue() == status.intValue() ) {
+            StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+            staffDimissionInfo.setUserId(userId);
+            this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+        }
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
@@ -445,6 +464,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
         logInfo.setStatus(StatusEnum.activity.getValue());
+        logInfo.setUpdateId(UserUtils.getUserId());
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
 
@@ -467,7 +487,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
+        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
+        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
+        if(Objects.isNull(setSysUserInfoDto.getDateJoin())){
+            if(StringUtils.isNotEmpty(staff.getId())) {
+                this.sysStaffInfoMapper.updateDateJoin(staff.getId(),null);
+            }
+        }
+
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
@@ -620,6 +648,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 appUserPush.setUpdateTime(new Date());
                 appUserPushService.updateById(appUserPush);
             }
+            StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+            staffDimissionInfo.setUserId(setSysUserInfoDto.getId());
+            staffDimissionInfo.setOperationUserId(UserUtils.getUser().getUserId());
+            staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
+            this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -853,8 +886,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> doBatchImportUser(MultipartFile file) throws Exception {
-        Map<String, Object> result = new HashMap<String, Object>();
+    public String doBatchImportUser(MultipartFile file, UserVo user) throws Exception {
         List<String[]> dataList = FileUtil.fileImport(file);
         if (DataUtil.isEmpty(dataList)) {
             throw new DefaultException("请检查上传数据是否正确！");
@@ -883,109 +915,67 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (!isLegitimate) {
             throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
         }
+        ImportInfo importInfo = new ImportInfo();
+        importInfo.setImportState(ImportStateEnum.UNDERWAY.name());
+        StaffInfoVo staff = this.getStaffInfo(user.getUserId());
+        importInfo.setCompanyName(staff.getCompanyName());
+        importInfo.setCompanyId(user.getCompanyId());
+        importInfo.setUserId(user.getUserId());
+        importInfo.setUserName(user.getUserName());
+        importInfo.setImportFileName(file.getOriginalFilename());
+        importInfo.setImportType(ImportResultInfoType.STAFF_EXTERNAL);
+        importInfo.setCreateTime(new Date());
+        importInfo.setExcelRows(0);
+        importInfo.setSuccessNum(0);
+        importInfo.setErrorNum(0);
+        this.importInfoService.save(importInfo);
+        new Thread(() -> {
+            try {
+                int saveRow = 50;
 
-        //  部门
-        List<UnionStaffDepart> unionStaffDepartList = new ArrayList<>();
-        //  岗位
-        List<UnionStaffPosition> unionStaffPositionList = new ArrayList<>();
-        //  角色
-        List<UnionRoleStaff> unionRoleStaffList = new ArrayList<>();
-        //需要发送的短信集合
-        List<SmsDto> smsDtos = new ArrayList<>();
-        //错误集合
-        List<String[]> errors = new ArrayList<>();
-        //错误行
-        String[] errorData = new String[headers.length + 1];
-        //错误字符构造
-        StringBuilder errorStr = new StringBuilder("");
-
-        //获取企业信息的地址用于生成名片
-        QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
-        qw.lambda().eq(SysCompanyInfo::getId, UserUtils.getUser().getCompanyId())
-                .ne(BaseModel::getStatus, StatusEnum.deleted.getValue());
-        SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
-        //循环行
-        for (int rowIndex = dataIndex; rowIndex < dataList.size(); rowIndex++) {
-            //这一行的数据
-            boolean rowIsEmpty = true;
-            String[] row = dataList.get(rowIndex);
-            for (int lineIndex = 0, lineLength = row.length; lineIndex < lineLength; lineIndex++) {
-                if (row[lineIndex] == null || "".equals(row[lineIndex])) {
-                    continue;
+                for (int i = 1, size = dataList.size(); i < size; i += saveRow) {
+                    if (saveRow + i >= size ) {
+                        saveRow = size - i;
+                    }
+                    //校验以及保存伙伴内控名单
+                    Map<String, Integer> result = this.doBatchImportUserSave(dataList.subList(i, i + saveRow), importInfo, user);
+                    importInfo.setExcelRows(importInfo.getExcelRows() + result.get("total"));
+                    importInfo.setSuccessNum(importInfo.getSuccessNum() + result.get("successCount"));
+                    importInfo.setErrorNum(importInfo.getErrorNum() + result.get("errorCount"));
                 }
-                //去掉空格
-                row[lineIndex] = row[lineIndex].trim();
-                if (rowIsEmpty && StringUtils.isNotEmpty(row[lineIndex])) {
-                    rowIsEmpty = !rowIsEmpty;
-                }
+            } catch (Exception e) {
+                log.error("员工导入出错#错误信息：{}", e, e);
+            } finally {
+                importInfo.setImportState(ImportStateEnum.ACCOMPLISH.name());
+                this.importInfoService.updateById(importInfo);
             }
-            //  空行校验
-            if (rowIsEmpty) {
-                continue;
-            }
-            //校验参数；
-            UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
-            UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
-            UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
-            checkParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff);
-            if (errorStr.length() > 0) {
-                //如果有错误信息就下一次循环 不保存  并记录错误信息
-                System.arraycopy(row, 0, errorData, 0, row.length);
-                errorData[errorData.length - 1] = errorStr.toString();
-                errors.add(errorData);
-                //循环最后清空错误信息以方便记录下一次循环的错误信息
-                errorStr = new StringBuilder("");
-                errorData = new String[errorData.length];
-                continue;
-            }
-            //构建用户信息；
-            String staffId = saveUser(row, smsDtos, sysCompanyInfo);
-            unionStaffDepart.setStaffId(staffId);
-            unionStaffPosition.setStaffId(staffId);
-            unionRoleStaff.setStaffId(staffId);
-            if (DataUtil.isNotEmpty(unionStaffPosition.getPositionId())) {
-                unionStaffPositionList.add(unionStaffPosition);
-            }
-            if (DataUtil.isNotEmpty(unionStaffDepart.getDepartmentId())) {
-                unionStaffDepartList.add(unionStaffDepart);
-            }
-            unionRoleStaffList.add(unionRoleStaff);
-        }
-        //保存关联关系
-        if (DataUtil.isNotEmpty(unionStaffDepartList)) {
-            unionStaffDeparService.saveBatch(unionStaffDepartList);
-        }
-        if (DataUtil.isNotEmpty(unionStaffPositionList)) {
-            unionStaffPositionService.saveBatch(unionStaffPositionList);
-        }
-        unionRoleStaffService.saveBatch(unionRoleStaffList);
+        }).start();
 
-        //数据总条数
-        result.put("total", dataList.size() - 1);
-        //异常条数
-        result.put("errorCount", errors.size());
-        //成功条数
-        result.put("successCount", dataList.size() - errors.size() - 1);
-        //标红必填项
-        Integer[] mustIndex = {0, 1, 4, 11};
-        if (errors.size() > 0) {
-            String[] heads = Arrays.copyOf(headers, headers.length + 1);
-            heads[heads.length - 1] = "导入失败原因";
-            HSSFWorkbook hw = ExcelToolUtil.createExcel(heads, errors, mustIndex);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            hw.write(os);
-            InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-            String base64 = FileUtil.fileToBase64(inputStream);
-            result.put("base64File", base64);
-        }
-//        sendInitPwdSms(smsDtos);
-        return result;
+//        //数据总条数
+//        result.put("total", dataList.size() - 1);
+//        //异常条数
+//        result.put("errorCount", errors.size());
+//        //成功条数
+//        result.put("successCount", dataList.size() - errors.size() - 1);
+//        //标红必填项
+//        Integer[] mustIndex = {0, 1, 4, 11};
+//        if (errors.size() > 0) {
+//            String[] heads = Arrays.copyOf(headers, headers.length + 1);
+//            heads[heads.length - 1] = "导入失败原因";
+//            HSSFWorkbook hw = ExcelToolUtil.createExcel(heads, errors, mustIndex);
+//            ByteArrayOutputStream os = new ByteArrayOutputStream();
+//            hw.write(os);
+//            InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
+//            String base64 = FileUtil.fileToBase64(inputStream);
+//            result.put("base64File", base64);
+//        }
+////        sendInitPwdSms(smsDtos);
+        return importInfo.getId();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> doBatchImportCompanyUser(MultipartFile file) throws Exception {
-        Map<String, Object> result = new HashMap<String, Object>();
+    public String doBatchImportCompanyUser(MultipartFile file, UserVo user) throws Exception {
         List<String[]> dataList = FileUtil.fileImport(file);
         if (DataUtil.isEmpty(dataList)) {
             throw new DefaultException("请检查上传数据是否正确！");
@@ -1014,101 +1004,63 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (!isLegitimate) {
             throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
         }
+        ImportInfo importInfo = new ImportInfo();
+        importInfo.setImportState(ImportStateEnum.UNDERWAY.name());
+        importInfo.setCompanyName("后台管理员");
+        importInfo.setUserId(user.getUserId());
+        importInfo.setUserName(user.getUserName());
+        importInfo.setImportFileName(file.getOriginalFilename());
+        importInfo.setImportType(ImportResultInfoType.STAFF_EXTERNAL);
+        importInfo.setCreateTime(new Date());
+        importInfo.setExcelRows(0);
+        importInfo.setSuccessNum(0);
+        importInfo.setErrorNum(0);
+        this.importInfoService.save(importInfo);
+        new Thread(() -> {
+            try {
+                int saveRow = 50;
 
-        //  部门
-        List<UnionStaffDepart> unionStaffDepartList = new ArrayList<>();
-        //  岗位
-        List<UnionStaffPosition> unionStaffPositionList = new ArrayList<>();
-        //  角色
-        List<UnionRoleStaff> unionRoleStaffList = new ArrayList<>();
-        //需要发送的短信集合
-        List<SmsDto> smsDtos = new ArrayList<>();
-        //错误集合
-        List<String[]> errors = new ArrayList<>();
-        //错误行
-        String[] errorData = new String[headers.length + 1];
-        //错误字符构造
-        StringBuilder errorStr = new StringBuilder("");
-
-        //循环行
-        for (int rowIndex = dataIndex; rowIndex < dataList.size(); rowIndex++) {
-            //这一行的数据
-            boolean rowIsEmpty = true;
-            String[] row = dataList.get(rowIndex);
-            for (int lineIndex = 0, lineLength = row.length; lineIndex < lineLength; lineIndex++) {
-                if (row[lineIndex] == null || "".equals(row[lineIndex])) {
-                    continue;
+                for (int i = 1, size = dataList.size(); i < size; i += saveRow) {
+                    if (saveRow + i >= size ) {
+                        saveRow = size - i;
+                    }
+                    //校验以及保存伙伴内控名单
+                    Map<String, Integer> result = this.doBatchImportCompanyUserSave(dataList.subList(i, i + saveRow), importInfo, user);
+                    importInfo.setExcelRows(importInfo.getExcelRows() + result.get("total"));
+                    importInfo.setSuccessNum(importInfo.getSuccessNum() + result.get("successCount"));
+                    importInfo.setErrorNum(importInfo.getErrorNum() + result.get("errorCount"));
                 }
-                //去掉空格
-                row[lineIndex] = row[lineIndex].trim();
-                if (rowIsEmpty && StringUtils.isNotEmpty(row[lineIndex])) {
-                    rowIsEmpty = !rowIsEmpty;
-                }
+            } catch (Exception e) {
+                log.error("员工后台导入出错#错误信息：{}", e, e);
+            } finally {
+                importInfo.setImportState(ImportStateEnum.ACCOMPLISH.name());
+                this.importInfoService.updateById(importInfo);
             }
-            //  空行校验
-            if (rowIsEmpty) {
-                continue;
-            }
-            //校验参数；
-            UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
-            UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
-            UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
-            String companyId = checkCompanyParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff);
-            if (errorStr.length() > 0) {
-                //如果有错误信息就下一次循环 不保存  并记录错误信息
-                System.arraycopy(row, 0, errorData, 0, row.length);
-                errorData[errorData.length - 1] = errorStr.toString();
-                errors.add(errorData);
-                //循环最后清空错误信息以方便记录下一次循环的错误信息
-                errorStr = new StringBuilder("");
-                errorData = new String[errorData.length];
-                continue;
-            }
-            //构建用户信息；
-            String staffId = saveCompanyUser(row, smsDtos, companyId);
-            unionStaffDepart.setStaffId(staffId);
-            unionStaffPosition.setStaffId(staffId);
-            unionRoleStaff.setStaffId(staffId);
-            if (DataUtil.isNotEmpty(unionStaffPosition.getPositionId())) {
-                unionStaffPositionList.add(unionStaffPosition);
-            }
-            if (DataUtil.isNotEmpty(unionStaffDepart.getDepartmentId())) {
-                unionStaffDepartList.add(unionStaffDepart);
-            }
-            unionRoleStaffList.add(unionRoleStaff);
-        }
-        //保存关联关系
-        if (DataUtil.isNotEmpty(unionStaffDepartList)) {
-            unionStaffDeparService.saveBatch(unionStaffDepartList);
-        }
-        if (DataUtil.isNotEmpty(unionStaffPositionList)) {
-            unionStaffPositionService.saveBatch(unionStaffPositionList);
-        }
-        unionRoleStaffService.saveBatch(unionRoleStaffList);
+        }).start();
 
-        //数据总条数
-        result.put("total", dataList.size() - 1);
-        //异常条数
-        result.put("errorCount", errors.size());
-        //成功条数
-        result.put("successCount", dataList.size() - errors.size() - 1);
-        //标红必填项
-        Integer[] mustIndex = {0, 1, 2, 5, 12};
-        if (errors.size() > 0) {
-            String[] heads = Arrays.copyOf(headers, headers.length + 1);
-            heads[heads.length - 1] = "导入失败原因";
-            HSSFWorkbook hw = ExcelToolUtil.createExcel(heads, errors, mustIndex);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            hw.write(os);
-            InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-            String base64 = FileUtil.fileToBase64(inputStream);
-            result.put("base64File", base64);
-        }
-//        sendInitPwdSms(smsDtos);
-        return result;
+//        //数据总条数
+//        result.put("total", dataList.size() - 1);
+//        //异常条数
+//        result.put("errorCount", errors.size());
+//        //成功条数
+//        result.put("successCount", dataList.size() - errors.size() - 1);
+//        //标红必填项
+//        Integer[] mustIndex = {0, 1, 4, 11};
+//        if (errors.size() > 0) {
+//            String[] heads = Arrays.copyOf(headers, headers.length + 1);
+//            heads[heads.length - 1] = "导入失败原因";
+//            HSSFWorkbook hw = ExcelToolUtil.createExcel(heads, errors, mustIndex);
+//            ByteArrayOutputStream os = new ByteArrayOutputStream();
+//            hw.write(os);
+//            InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
+//            String base64 = FileUtil.fileToBase64(inputStream);
+//            result.put("base64File", base64);
+//        }
+////        sendInitPwdSms(smsDtos);
+        return importInfo.getId();
     }
 
-    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId) {
+    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user) {
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
@@ -1132,8 +1084,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setRegisterTime(new Date());
         userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setCreateId(user.getUserId());
+        userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
@@ -1147,13 +1099,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setPassword(initPwd);
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
+        staff.setCreateTime(new Date());
+        staff.setCreateId(user.getUserId());
+        staff.setCreateUser(user.getUserName());
         //保存到员工表
-        this.saveOrUpdate(staff);
+        this.save(staff);
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
+        loginInfo.setCreateId(user.getUserId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(userInfo.getPhoneNumber());
@@ -1289,7 +1245,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return companyId;
     }
 
-    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo) {
+    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user) {
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
@@ -1313,8 +1269,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
         userInfo.setIsEdit(YesNo.YES);
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setCreateId(user.getUserId());
+        userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
@@ -1323,19 +1279,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         SysStaffInfo staff = new SysStaffInfo();
         //获取当前登录用户的当前公司id
-        staff.setCompId(UserUtils.getUser().getCompanyId());
+        staff.setCompId(user.getCompanyId());
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
         staff.setStatus(status);
         staff.setPassword(initPwd);
         staff.setDeleted(YesNo.NO);
+        staff.setCreateTime(new Date());
+        staff.setCreateId(user.getUserId());
+        staff.setCreateUser(user.getUserName());
         //保存到员工表
-        this.saveOrUpdate(staff);
+        this.save(staff);
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
+        loginInfo.setCreateId(user.getUserId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(userInfo.getPhoneNumber());
@@ -1358,9 +1318,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     private void checkParam(String[] row, StringBuilder errorStr,
-                            UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff) {
+                            UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user) {
         //当前企业ID
-        String companyId = UserUtils.getUser().getCompanyId();
+        String companyId = user.getCompanyId();
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【17】};
@@ -1526,7 +1486,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardUserInfo.setUserName(userInfo.getUserName());
             cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
             cardUserInfo.setUserPwd(loginInfo.getUserPwd());
-            cardUserInfo.setCreateBy(UserUtils.getUserId());
+//            cardUserInfo.setCreateBy(UserUtils.getUserId());
             cardUserInfo.setCreateTime(new Date());
             cardUserInfo.setStatus(StatusEnum.activity.getValue());
             cardUserInfoMapper.insert(cardUserInfo);
@@ -1547,7 +1507,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             cardDto.setAvatar(userInfo.getAvatar());
             cardDto.setEmail(userInfo.getEmail());
             cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setCreateBy(UserUtils.getUserId());
+//            cardDto.setCreateBy(UserUtils.getUserId());
             cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
             cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
             cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
@@ -1917,6 +1877,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public StaffInfoVo getStaffInfo(String userId) {
         StaffInfoVo staffInfoVo = this.sysStaffInfoMapper.getStaffInfoInner(userId);
+        if (DataUtil.isEmpty(staffInfoVo)) {
+            throw new DefaultException("找不到伙伴");
+        }
         return staffInfoVo;
     }
 
@@ -2195,6 +2158,36 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public Boolean getLoginUserIsSuperion(UserVo user, String userId) {
+        if (userId.equals(user.getUserId())) {
+            return Boolean.TRUE;
+        }
+        // 如果是后台或ceo 就直接返回true 是上级
+        if (user.isBackAdmin()) {
+            return Boolean.TRUE;
+        }
+        AdminVo admin = this.getIsAdmin(user);
+        StaffInfoVo staff = this.getStaffInfo(userId);
+        //如果是企业管理 查看指定用户是否与企业管理员同一个企业下
+        if (admin.getIsCompanyAdmin()) {
+            return user.getCompanyId().equals(staff.getCompanyId());
+        }
+        if (admin.getIsDepartAdmin()) {
+            List<String> ids = this.sysDepartmentInfoService.getSubordinateIdsById(user.getDeptId());
+            if (CollectionUtils.isEmpty(ids)) {
+                ids = new ArrayList<>();
+                ids.add(user.getDeptId());
+            }
+            String departId = this.getDepartId(userId);
+            if (StringUtils.isEmpty(departId)) {
+                return Boolean.FALSE;
+            }
+            return ids.indexOf(departId) != -1;
+        }
+        return Boolean.FALSE;
+    }
+
+    @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId) {
         return sysStaffInfoMapper.getStaffByCompany(companyId);
     }
@@ -2293,5 +2286,229 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setStaffHistoryPunishment(Lists.newArrayList());
             }
         }
+    }
+
+    private Map<String, Integer> doBatchImportCompanyUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) {
+        Map<String, Integer> result = new HashMap<>();
+        List<ImportResultInfo> errors = new ArrayList<>();
+        Integer excelRows = 0;
+        ImportResultInfo importInfo ;
+        UserImportErrorDataDto errorData = new UserImportErrorDataDto();
+        Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        //  部门
+        List<UnionStaffDepart> unionStaffDepartList = new ArrayList<>();
+        //  岗位
+        List<UnionStaffPosition> unionStaffPositionList = new ArrayList<>();
+        //  角色
+        List<UnionRoleStaff> unionRoleStaffList = new ArrayList<>();
+        //需要发送的短信集合
+        List<SmsDto> smsDtos = new ArrayList<>();
+        //错误字符构造
+        StringBuilder errorStr = new StringBuilder("");
+
+        //循环行
+        for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
+            //这一行的数据
+            boolean rowIsEmpty = true;
+            String[] row = dataList.get(rowIndex);
+            for (int lineIndex = 0, lineLength = row.length; lineIndex < lineLength; lineIndex++) {
+                if (row[lineIndex] == null || "".equals(row[lineIndex])) {
+                    continue;
+                }
+                //去掉空格
+                row[lineIndex] = row[lineIndex].trim();
+                if (rowIsEmpty && StringUtils.isNotEmpty(row[lineIndex])) {
+                    rowIsEmpty = !rowIsEmpty;
+                }
+            }
+            //  空行校验
+            if (rowIsEmpty) {
+                continue;
+            }
+            //校验参数；
+            UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
+            UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
+            UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
+            if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
+                errorStr.append("表格中重复手机号,");
+            }
+            if (DataUtil.isNotEmpty(idCards.get(row[2]))) {
+                errorStr.append("表格中重复身份证号,");
+            }
+            mobiles.put(row[1], row[1]);
+            idCards.put(row[12], row[12]);
+            String companyId = checkCompanyParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff);
+            if (errorStr.length() > 0) {
+                importInfo = new ImportResultInfo();
+                errorData = new UserImportErrorDataDto();
+                this.setUserImportInfo(dataList.get(rowIndex), errorData, user);
+                importInfo.setImportId(imp.getId());
+                importInfo.setCreateTime(new Date());
+                importInfo.setErrorCause(errorStr.toString());
+                importInfo.setUserId(user.getUserId());
+                importInfo.setImportContent(JSON.toJSONString(errorData));
+                importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
+                importInfo.setState(YesNo.YES);
+                errors.add(importInfo);
+                continue;
+            }
+            //构建用户信息；
+            String staffId = saveCompanyUser(row, smsDtos, companyId, user);
+            unionStaffDepart.setStaffId(staffId);
+            unionStaffPosition.setStaffId(staffId);
+            unionRoleStaff.setStaffId(staffId);
+            if (DataUtil.isNotEmpty(unionStaffPosition.getPositionId())) {
+                unionStaffPositionList.add(unionStaffPosition);
+            }
+            if (DataUtil.isNotEmpty(unionStaffDepart.getDepartmentId())) {
+                unionStaffDepartList.add(unionStaffDepart);
+            }
+            unionRoleStaffList.add(unionRoleStaff);
+        }
+        //保存关联关系
+        if (DataUtil.isNotEmpty(unionStaffDepartList)) {
+            unionStaffDeparService.saveBatch(unionStaffDepartList);
+        }
+        if (DataUtil.isNotEmpty(unionStaffPositionList)) {
+            unionStaffPositionService.saveBatch(unionStaffPositionList);
+        }
+        unionRoleStaffService.saveBatch(unionRoleStaffList);
+        this.importResultInfoService.saveBatch(errors);
+        //数据总条数
+        result.put("total", dataList.size());
+        //异常条数
+        result.put("errorCount", errors.size());
+        //成功条数
+        result.put("successCount", dataList.size() - errors.size());
+        return result;
+    }
+
+    private Map<String, Integer> doBatchImportUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) {
+        Map<String, Integer> result = new HashMap<>();
+        List<ImportResultInfo> errors = new ArrayList<>();
+        Integer excelRows = 0;
+        ImportResultInfo importInfo ;
+        UserImportErrorDataDto errorData = new UserImportErrorDataDto();
+        Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+
+        //  部门
+        List<UnionStaffDepart> unionStaffDepartList = new ArrayList<>();
+        //  岗位
+        List<UnionStaffPosition> unionStaffPositionList = new ArrayList<>();
+        //  角色
+        List<UnionRoleStaff> unionRoleStaffList = new ArrayList<>();
+        //需要发送的短信集合
+        List<SmsDto> smsDtos = new ArrayList<>();
+
+        //错误字符构造
+        StringBuilder errorStr = new StringBuilder("");
+
+        //获取企业信息的地址用于生成名片
+        QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
+        qw.lambda().eq(SysCompanyInfo::getId, user.getCompanyId())
+                .ne(BaseModel::getStatus, StatusEnum.deleted.getValue());
+        SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
+        //循环行
+        for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
+            //这一行的数据
+            boolean rowIsEmpty = true;
+            String[] row = dataList.get(rowIndex);
+            for (int lineIndex = 0, lineLength = row.length; lineIndex < lineLength; lineIndex++) {
+                if (row[lineIndex] == null || "".equals(row[lineIndex])) {
+                    continue;
+                }
+                //去掉空格
+                row[lineIndex] = row[lineIndex].trim();
+                if (rowIsEmpty && StringUtils.isNotEmpty(row[lineIndex])) {
+                    rowIsEmpty = !rowIsEmpty;
+                }
+            }
+            //  空行校验
+            if (rowIsEmpty) {
+                continue;
+            }
+            //校验参数；
+            UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
+            UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
+            UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
+            if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
+                errorStr.append("表格中重复手机号,");
+            }
+            if (DataUtil.isNotEmpty(idCards.get(row[2]))) {
+                errorStr.append("表格中重复身份证号,");
+            }
+            mobiles.put(row[1], row[1]);
+            idCards.put(row[11], row[11]);
+            checkParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, user);
+            if (errorStr.length() > 0) {
+                importInfo = new ImportResultInfo();
+                errorData = new UserImportErrorDataDto();
+                this.setUserImportInfo(dataList.get(rowIndex), errorData, user);
+                importInfo.setImportId(imp.getId());
+                importInfo.setCreateTime(new Date());
+                importInfo.setErrorCause(errorStr.toString());
+                importInfo.setUserId(user.getUserId());
+                importInfo.setImportContent(JSON.toJSONString(errorData));
+                importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
+                importInfo.setState(YesNo.YES);
+                errors.add(importInfo);
+                continue;
+            }
+            //构建用户信息；
+            String staffId = saveUser(row, smsDtos, sysCompanyInfo, user);
+            unionStaffDepart.setStaffId(staffId);
+            unionStaffPosition.setStaffId(staffId);
+            unionRoleStaff.setStaffId(staffId);
+            if (DataUtil.isNotEmpty(unionStaffPosition.getPositionId())) {
+                unionStaffPositionList.add(unionStaffPosition);
+            }
+            if (DataUtil.isNotEmpty(unionStaffDepart.getDepartmentId())) {
+                unionStaffDepartList.add(unionStaffDepart);
+            }
+            unionRoleStaffList.add(unionRoleStaff);
+        }
+        //保存关联关系
+        if (DataUtil.isNotEmpty(unionStaffDepartList)) {
+            unionStaffDeparService.saveBatch(unionStaffDepartList);
+        }
+        if (DataUtil.isNotEmpty(unionStaffPositionList)) {
+            unionStaffPositionService.saveBatch(unionStaffPositionList);
+        }
+        unionRoleStaffService.saveBatch(unionRoleStaffList);
+        this.importResultInfoService.saveBatch(errors);
+                //数据总条数
+        result.put("total", dataList.size());
+        //异常条数
+        result.put("errorCount", errors.size());
+        //成功条数
+        result.put("successCount", dataList.size() - errors.size());
+        return result;
+    }
+
+    private void setUserImportInfo(String[] data, UserImportErrorDataDto bean, UserVo user) {
+        int index = 0;
+        bean.setName(data[index++]);
+        bean.setMobile(data[index++]);
+        if (user.isBack()) {
+            bean.setCompanyName(data[index++]);
+        }
+        bean.setDepartName(data[index++]);
+        bean.setJobName(data[index++]);
+        bean.setRoleName(data[index++]);
+        bean.setStatus(data[index++]);
+        bean.setGender(data[index++]);
+        bean.setAncestral(data[index++]);
+        bean.setNation(data[index++]);
+        bean.setMarital(data[index++]);
+        bean.setBirthday((data[index++]));
+        bean.setIdCard(data[index++]);
+        bean.setCertificateCardAddress(data[index++]);
+        bean.setContactAddress(data[index++]);
+        bean.setEmail(data[index++]);
+        bean.setHighestEducation(data[index++]);
+        bean.setGraduatedFrom(data[index++]);
+        bean.setMajor(data[index++]);
     }
 }

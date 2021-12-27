@@ -8,6 +8,7 @@ import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.CustomerQueryDimensionalityVo;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import com.zerody.user.vo.UserStructureVo;
 import org.apache.ibatis.annotations.Param;
@@ -155,4 +156,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @return               java.util.List<java.lang.String>
      */
     List<String> getNotSmsCompany();
+
+    List<ReportFormsQueryVo> getCompanyBusiness(@Param("roleIds") List<String> roleIds);
 }

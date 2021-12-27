@@ -1,5 +1,7 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -44,12 +46,12 @@ public class SysStaffInfo extends BaseModel {
     private String jobNumber;
 
     /**
-     * 转正时间
+     *  入职时间
      **/
     private Date dateJoin;
 
     /**
-     * 入职时间
+     * 转正时间
      **/
     private Date conversionDate;
 
@@ -88,5 +90,10 @@ public class SysStaffInfo extends BaseModel {
 
     /** 密码 */
     private String password;
+
+    /**
+     * 工作年限
+     */
+    private Integer workingYears;
 
 }
