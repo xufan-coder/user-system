@@ -1052,7 +1052,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return importInfo.getId();
     }
 
-    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId) {
+    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user) {
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
@@ -1076,8 +1076,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setRegisterTime(new Date());
         userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setCreateId(user.getUserId());
+        userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
@@ -1233,7 +1233,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return companyId;
     }
 
-    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo) {
+    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user) {
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
@@ -1257,8 +1257,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
         userInfo.setIsEdit(YesNo.YES);
-        userInfo.setCreateId(UserUtils.getUserId());
-        userInfo.setCreateUser(UserUtils.getUserName());
+        userInfo.setCreateId(user.getUserId());
+        userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
@@ -1267,7 +1267,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         SysStaffInfo staff = new SysStaffInfo();
         //获取当前登录用户的当前公司id
-        staff.setCompId(UserUtils.getUser().getCompanyId());
+        staff.setCompId(user.getCompanyId());
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
         staff.setStatus(status);
@@ -2338,7 +2338,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 continue;
             }
             //构建用户信息；
-            String staffId = saveCompanyUser(row, smsDtos, companyId);
+            String staffId = saveCompanyUser(row, smsDtos, companyId, user);
             unionStaffDepart.setStaffId(staffId);
             unionStaffPosition.setStaffId(staffId);
             unionRoleStaff.setStaffId(staffId);
@@ -2441,7 +2441,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 continue;
             }
             //构建用户信息；
-            String staffId = saveUser(row, smsDtos, sysCompanyInfo);
+            String staffId = saveUser(row, smsDtos, sysCompanyInfo, user);
             unionStaffDepart.setStaffId(staffId);
             unionStaffPosition.setStaffId(staffId);
             unionRoleStaff.setStaffId(staffId);
