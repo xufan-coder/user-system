@@ -456,6 +456,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if (!salesmanRolesResult.isSuccess()) {
             throw new DefaultException("获取角色错误");
         }
+        int salesmanNum = this.sysStaffInfoMapper.getSalesmanNum(param);
         param.setSalesmanRoles(salesmanRolesResult.getData());
         List<ReportFormsQueryVo> list = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getUserId())) {
@@ -514,7 +515,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         for (ReportFormsQueryVo rfq : list) {
             id = rfq.getId();
             name = rfq.getName();
-            num = rfq.getSalesmanNum();
+            num = salesmanNum;
             if (CollectionUtils.isNotEmpty(signMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
                 BeanUtils.copyProperties(signMap.get(rfq.getId()), rfq);
                 rfq.setId(id);

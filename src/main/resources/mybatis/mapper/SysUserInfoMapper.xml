@@ -354,20 +354,11 @@ WHERE
     <select id="getUserByDepartId" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sui.id,
-            sui.user_name AS `name`,
-            COUNT(ssi.id) AS salesman_num
+            sui.user_name AS `name`
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
-        LEFT JOIN union_platform_role_staff AS urs ON urs.staff_id = ssi.id
-        <if test="roleIds neq null and roleIds.size() gt 0">
-            AND urs.id
-            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
-                #{id}
-            </foreach>
-        </if>
         <where>
             AND sui.status IN (0, 3)
             <if test="departId neq null and departId neq ''">
