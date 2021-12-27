@@ -24,5 +24,6 @@
                 AND ii.import_type = #{param.type}
             </if>
         </where>
+        ORDER BY ii.create_time DESC
     </select>
 </mapper>

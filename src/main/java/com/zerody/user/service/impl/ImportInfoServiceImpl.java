@@ -97,6 +97,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
         List<String[]> data = new ArrayList<>();
         QueryWrapper<ImportResultInfo> importInfoQw = new QueryWrapper<>();
         importInfoQw.lambda().eq(ImportResultInfo::getImportId, importId);
+        importInfoQw.lambda().orderByDesc(ImportResultInfo::getCreateTime);
         List<ImportResultInfo> importResults = this.importResultInfoService.list(importInfoQw);
         String[] linData;
         for (ImportResultInfo result : importResults) {
@@ -116,6 +117,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
         List<String[]> result = new ArrayList<>();
         QueryWrapper<ImportResultInfo> importInfoQw = new QueryWrapper<>();
         importInfoQw.lambda().eq(ImportResultInfo::getImportId, importId);
+        importInfoQw.lambda().orderByDesc(ImportResultInfo::getCreateTime);
         List<ImportResultInfo> importResults = this.importResultInfoService.list(importInfoQw);
         String[] data;
         for (ImportResultInfo ir : importResults) {
