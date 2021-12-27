@@ -1,5 +1,7 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 

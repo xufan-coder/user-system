@@ -24,6 +24,9 @@
     date_left, create_id, create_user, create_time, update_id, update_user, update_time,
     status
   </sql>
+    <update id="updateDateJoin">
+        update sys_staff_info set date_join=#{param.dateJoin} where id=#{param.id}
+    </update>
     <select id="selectByUserIdAndCompId" resultType="com.zerody.user.vo.SysStaffInfoVo">
       SELECT
           id,
