@@ -374,6 +374,7 @@ WHERE
                 AND usd.department_id = #{departId}
             </if>
         </where>
+        GROUP BY sui.id
         ORDER BY sui.create_time DESC;
     </select>
     <select id="getUserById" resultType="com.zerody.user.vo.ReportFormsQueryVo">
