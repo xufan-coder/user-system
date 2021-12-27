@@ -7,6 +7,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.constant.ImportResultInfoType;
+import com.zerody.user.domain.ImportInfo;
 import com.zerody.user.domain.ImportResultInfo;
 import com.zerody.user.dto.ExportDto;
 import com.zerody.user.dto.ImportInfoQueryDto;
@@ -62,6 +63,30 @@ public class ImportInfoController {
             return R.error(e.getMessage());
         } catch (Exception e) {
             log.error("分页查询导入记录异常：", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          根据id查询导入信息
+     * @date                 2021/12/27 14:58
+     * @param                id
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.domain.ImportInfo>
+     */
+    @GetMapping("/get/{id}")
+    public DataResult<ImportInfo> getByIdImportInfo(@PathVariable("id") String id) {
+
+        try {
+            ImportInfo result = this.importInfoService.getById(id);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("根据id查询导入信息异常：", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("根据id查询导入信息异常：", e, e);
             return R.error(e.getMessage());
         }
     }
