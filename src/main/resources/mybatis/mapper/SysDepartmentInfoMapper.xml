@@ -260,8 +260,7 @@
     <select id="getDepartBusiness" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sdi.id,
-            sdi.depart_name AS `name`  ,
-            COUNT(ssi.id) AS salesman_num
+            sdi.depart_name AS `name`
         FROM sys_department_info AS sdi
         <where>
             sdi.status = 0 AND sdi.is_show_business = 1
