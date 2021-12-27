@@ -456,8 +456,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if (!salesmanRolesResult.isSuccess()) {
             throw new DefaultException("获取角色错误");
         }
-        int salesmanNum = this.sysStaffInfoMapper.getSalesmanNum(param);
         param.setSalesmanRoles(salesmanRolesResult.getData());
+        int salesmanNum = this.sysStaffInfoMapper.getSalesmanNum(param);
         List<ReportFormsQueryVo> list = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getUserId())) {
             param.setTitle("伙伴");
