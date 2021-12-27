@@ -1091,8 +1091,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setPassword(initPwd);
         staff.setStatus(status);
         staff.setDeleted(YesNo.NO);
+        staff.setCreateTime(new Date());
+        staff.setCreateId(user.getUserId());
+        staff.setCreateUser(user.getUserName());
         //保存到员工表
-        this.saveOrUpdate(staff);
+        this.save(staff);
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
@@ -1273,8 +1276,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setStatus(status);
         staff.setPassword(initPwd);
         staff.setDeleted(YesNo.NO);
+        staff.setCreateTime(new Date());
+        staff.setCreateId(user.getUserId());
+        staff.setCreateUser(user.getUserName());
         //保存到员工表
-        this.saveOrUpdate(staff);
+        this.save(staff);
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
