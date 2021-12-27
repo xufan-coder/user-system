@@ -1,5 +1,6 @@
 package com.zerody.user.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import com.zerody.common.vo.UserVo;
@@ -376,4 +377,12 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.zerody.user.api.vo.StaffInfoVo
      */
     StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard);
+    /***
+     * @description 修改入职时间
+     * @author zhangpingping
+     * @date 2021/12/27
+     * @param [id, dateJoin]
+     * @return
+     */
+    void updateDateJoin(@Param("id") String id, @Param("dateJoin") Date dateJoin);
 }
