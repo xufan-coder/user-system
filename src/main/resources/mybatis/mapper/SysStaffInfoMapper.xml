@@ -893,7 +893,7 @@
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        JOIN union_platform_role_staff AS uprs ON uprs.role_id = ssi.id
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         <where>
             sci.status = 0 AND sui.status IN(0, 3)
@@ -901,7 +901,7 @@
                 AND sci.id = #{param.companyId}
             </if>
             <if test="param.salesmanRoles neq null and param.salesmanRoles.size() gt 0">
-                AND uprs.role_id
+                AND urs.role_id
                 <foreach collection="param.salesmanRoles" item="id" open="IN (" separator="," close=")" >
                     #{id}
                 </foreach>
