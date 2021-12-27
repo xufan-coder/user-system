@@ -490,6 +490,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
+        if(Objects.isNull(setSysUserInfoDto.getDateJoin())){
+            if(StringUtils.isNotEmpty(staff.getId())) {
+                this.sysStaffInfoMapper.updateDateJoin(staff.getId(),null);
+            }
+        }
+
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
