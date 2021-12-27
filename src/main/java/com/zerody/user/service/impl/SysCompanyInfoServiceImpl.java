@@ -165,6 +165,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         //添加企业默认为该企业为有效状态
         sysCompanyInfo.setStatus(StatusEnum.activity.getValue());
         log.info("B端添加企业入库参数--{}", JSON.toJSONString(sysCompanyInfo));
+        sysCompanyInfo.setCreateId(UserUtils.getUserId());
+        sysCompanyInfo.setCreateUser(UserUtils.getUserName());
         sysCompanyInfo.setIsEdit(YesNo.YES);
         sysCompanyInfo.setIsUpdateName(YesNo.NO);
         this.saveOrUpdate(sysCompanyInfo);

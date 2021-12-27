@@ -246,6 +246,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         logInfo.setStatus(StatusEnum.activity.getValue());
+        logInfo.setCreateId(UserUtils.getUser().getUserId());
         log.info("添加用户后生成登录账户入库参数--{}", JSON.toJSONString(logInfo));
         sysLoginInfoService.addOrUpdateLogin(logInfo);
 //        SmsDto smsDto = new SmsDto();
@@ -463,6 +464,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setNickname(sysUserInfo.getNickname());
         logInfo.setAvatar(sysUserInfo.getAvatar());
         logInfo.setStatus(StatusEnum.activity.getValue());
+        logInfo.setUpdateId(UserUtils.getUserId());
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
 
@@ -1101,6 +1103,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
+        loginInfo.setCreateId(user.getUserId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(userInfo.getPhoneNumber());
@@ -1286,6 +1289,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
         loginInfo.setStatus(StatusEnum.activity.getValue());
         loginInfo.setUserId(userInfo.getId());
+        loginInfo.setCreateId(user.getUserId());
         sysLoginInfoService.addOrUpdateLogin(loginInfo);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(userInfo.getPhoneNumber());
