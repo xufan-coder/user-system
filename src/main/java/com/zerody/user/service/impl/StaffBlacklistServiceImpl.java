@@ -44,6 +44,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author PengQiang
@@ -257,7 +259,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (StringUtils.isEmpty(data[1])) {
             errStr.append("手机号码必填,");
         } else {
-            if (true) {
+            String regex = "^(1[3-9]\\d{9}$)";
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(data[1]);
+            if (!m.matches()) {
                 QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
                 blacQw.lambda().eq(StaffBlacklist::getMobile, data[1]);
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
@@ -302,6 +307,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         entity.setState(String.valueOf(YesNo.NO));
         entity.setSubmitUserId(user.getUserId());
         entity.setSubmitUserName(user.getUserName());
+        entity.setState(StaffBlacklistApproveState.BLOCK.name());
         entity.setType(2);
     }
 
