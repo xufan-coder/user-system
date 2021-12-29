@@ -72,7 +72,7 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getTitle()), AppVersionInfo::getTitle, param.getTitle());
         queryWrapper.lambda().eq(Objects.nonNull(param.getStatus()), AppVersionInfo::getStatus, param.getStatus());
-        queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
+        queryWrapper.lambda().orderByDesc(AppVersionInfo::getOrderNum,AppVersionInfo::getCreateTime);
         iPage = this.baseMapper.selectPage(iPage, queryWrapper);
         IPage<AppVersionInfoPageVo> infoPageVoIPage = new Page<>();
         if (Objects.nonNull(iPage)) {
@@ -102,7 +102,7 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getId()), AppVersionInfo::getId, param.getId());
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
         queryWrapper.lambda().eq(AppVersionInfo::getStatus, YesNo.YES);
-        queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
+        queryWrapper.lambda().orderByDesc(AppVersionInfo::getOrderNum,AppVersionInfo::getCreateTime);
         this.list(queryWrapper).forEach(item -> {
             AppVersionInfoPageVo appVersionInfo = new AppVersionInfoPageVo();
             BeanUtils.copyProperties(item, appVersionInfo);
@@ -118,7 +118,7 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(appVersionInfoListDto.getId()), AppVersionInfo::getId, appVersionInfoListDto.getId());
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
         queryWrapper.lambda().eq(Objects.nonNull(appVersionInfoListDto.getStatus()),AppVersionInfo::getStatus, appVersionInfoListDto.getStatus());
-        queryWrapper.lambda().orderByDesc(AppVersionInfo::getCreateTime);
+        queryWrapper.lambda().orderByDesc(AppVersionInfo::getOrderNum,AppVersionInfo::getCreateTime);
         AppVersionInfo appVersionInfo = this.getOne(queryWrapper);
         BeanUtils.copyProperties(appVersionInfo, appVersionInfoVo);
         return appVersionInfoVo;

@@ -35,4 +35,8 @@ public class AppVersionInfoVo {
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+    /**
+     * 排序
+     */
+    private Integer orderNum;
 }
