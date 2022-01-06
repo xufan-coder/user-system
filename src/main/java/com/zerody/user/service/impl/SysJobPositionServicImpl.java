@@ -129,7 +129,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
         this.saveOrUpdate(sysJobPosition);
-        List<SysUserInfo> jobUser = this.sysStaffInfoService.getJobUser(sysJobPosition.getParentId());
+        List<SysUserInfo> jobUser = this.sysStaffInfoService.getJobUser(sysJobPosition.getId());
         this.sysUserInfoService.updateBatchById(jobUser);
         return new DataResult();
     }
