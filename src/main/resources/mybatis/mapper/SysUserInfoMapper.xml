@@ -386,7 +386,7 @@ WHERE
         <where>
             AND sui.status IN (0, 3)
             <if test="userId neq null and userId neq ''">
-                AND sui.id = ${userId}
+                AND sui.id = #{userId}
             </if>
         </where>
         ORDER BY sui.create_time DESC;
