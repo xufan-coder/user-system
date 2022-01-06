@@ -278,11 +278,15 @@ WHERE
             usd.department_id AS depart_id,
             sui.user_name AS `name`,
             sui.avatar AS user_avatar,
-            ssi.avatar AS staff_avatar
+            ssi.avatar AS staff_avatar,
+            sjp.id AS `job_id`,
+            sjp.position_name AS `job_name`
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN union_staff_position AS usp ON sui.staff_id = ssi.id
+        LEFT JOIN sys_job_position AS sjp ON sjp.id = sui.position_id
         <where>
             sui.is_edit = 1
         </where>

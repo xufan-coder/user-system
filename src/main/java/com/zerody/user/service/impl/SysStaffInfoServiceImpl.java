@@ -2191,6 +2191,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public List<SysUserInfo> getJobUser(String parentId) {
+        return this.sysStaffInfoMapper.getJobUser(parentId);
+    }
+
+    @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId) {
         return sysStaffInfoMapper.getStaffByCompany(companyId);
     }

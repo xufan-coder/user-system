@@ -908,4 +908,18 @@
             </if>
         </where>
     </select>
+    <select id="getJobUser" resultType="com.zerody.user.domain.SysUserInfo">
+        SELECT
+            sui.id,
+            1 AS is_edit
+        FROM
+            sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN union_staff_position AS usp ON usp.staff_id = ssi.id
+        <where>
+            <if test="jobId neq null and jobId neq ''">
+                AND usp.position_id = #{jobId}
+            </if>
+        </where>
+    </select>
 </mapper>

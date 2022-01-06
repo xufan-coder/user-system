@@ -144,4 +144,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void doSendStaffPwdSms(List<CheckLoginVo> subList);
 
     Boolean getLoginUserIsSuperion(UserVo user, String userId);
+
+    List<SysUserInfo> getJobUser(String parentId);
 }
