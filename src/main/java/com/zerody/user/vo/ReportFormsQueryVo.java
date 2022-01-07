@@ -24,6 +24,24 @@ public class ReportFormsQueryVo {
     /** 名称 */
     private String name;
 
+    /** 企业id */
+    private String companyId;
+
+    /** 企业名称 */
+    private String companyName;
+
+    /** 部门id */
+    private String departId;
+
+    /** 部门名称 */
+    private String departName;
+
+    /** 负责人id */
+    private String adminId;
+
+    /** 负责人名称 */
+    private String adminName;
+
     /** 签单金额 */
     private String signMoney;
 
