@@ -23,7 +23,6 @@ import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -83,25 +82,6 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         if ("lower".equals(sysStaffInfoPageDto.getQueryType())) {
             this.checkUtil.SetUserPositionInfo(sysStaffInfoPageDto);
-        }
-        return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
-    }
-    /**
-     *
-     *
-     * @author               zhangpingping
-     * @description          查询在职员工当前部门
-     * @date                 2022/1/10 16:27
-     * @param                sysStaffInfoPageDto
-     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
-     */
-    @RequestMapping(value = "/page/get/active-duty-depart", method = RequestMethod.GET)
-    public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyDepartStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
-        if ("lower".equals(sysStaffInfoPageDto.getQueryType())) {
-            this.checkUtil.SetUserPositionInfo(sysStaffInfoPageDto);
-        }
-        if(StringUtils.isNotEmpty(sysStaffInfoPageDto.getUserId())){
-            sysStaffInfoPageDto.setUserId(null);
         }
         return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
     }

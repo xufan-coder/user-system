@@ -7,7 +7,9 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
 import com.zerody.user.api.vo.CompanyInfoVo;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -47,66 +50,62 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     private CheckUtil checkUtil;
 
     /**
-     *  添加企业
+     * 添加企业
      *
-     * @author               PengQiang
-     * @description          添加企业
-     * @date                 2020/12/30 20:07
-     * @param                sysCompanyInfo
-     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @param sysCompanyInfo
+     * @return com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @author PengQiang
+     * @description 添加企业
+     * @date 2020/12/30 20:07
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public DataResult<Object> addCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
+    public DataResult<Object> addCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo) {
         try {
             sysCompanyInfoService.addCompany(sysCompanyInfo);
             return R.success();
-        } catch (DefaultException e){
+        } catch (DefaultException e) {
             log.error("企业添加错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("企业添加错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error("添加企业失败,请求异常");
         }
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          修改企业状态
-     * @date                 2020/12/31 9:41
-     * @param                [companyId, loginStatus]
-     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @param [companyId, loginStatus]
+     * @return com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @author PengQiang
+     * @description 修改企业状态
+     * @date 2020/12/31 9:41
      */
     @RequestMapping(value = "/{id}/{status}", method = RequestMethod.PUT)
-    public DataResult<Object> updateCompanyStatus(@PathVariable("id")String companyId,@PathVariable("status") Integer loginStatus){
+    public DataResult<Object> updateCompanyStatus(@PathVariable("id") String companyId, @PathVariable("status") Integer loginStatus) {
         try {
             sysCompanyInfoService.updateCompanyStatus(companyId, loginStatus);
             return R.success();
-        } catch (DefaultException e){
-            log.error("企业状态修改错误:{}",e.getMessage());
+        } catch (DefaultException e) {
+            log.error("企业状态修改错误:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
-            log.error("企业修改错误:{}",e.getMessage());
+        } catch (Exception e) {
+            log.error("企业修改错误:{}", e.getMessage());
             return R.error("修改企业登录状态失败,请求异常");
         }
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          修改企业信息
-     * @date                 2020/12/31 9:47
-     * @param                [sysCompanyInfo]
-     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @param [sysCompanyInfo]
+     * @return com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @author PengQiang
+     * @description 修改企业信息
+     * @date 2020/12/31 9:47
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public DataResult<Object> updateCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo){
+    public DataResult<Object> updateCompany(@Validated @RequestBody SysCompanyInfo sysCompanyInfo) {
         try {
             sysCompanyInfoService.updateCompany(sysCompanyInfo);
             return R.success();
-        } catch (DefaultException e){
+        } catch (DefaultException e) {
             log.error("企业修改错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error(e.getMessage());
         } catch (Exception e) {
@@ -116,107 +115,116 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          分页查询企业
-     * @date                 2020/12/31 9:55
-     * @param                companyInfoDto
-     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.SysComapnyInfoVo>>
+     * @param companyInfoDto
+     * @return com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage < com.zerody.user.vo.SysComapnyInfoVo>>
+     * @author PengQiang
+     * @description 分页查询企业
+     * @date 2020/12/31 9:55
      */
     @RequestMapping(value = "/page", method = RequestMethod.GET)
-    public DataResult<IPage<SysComapnyInfoVo>> getPageCompany(SysCompanyInfoDto companyInfoDto){
+    public DataResult<IPage<SysComapnyInfoVo>> getPageCompany(SysCompanyInfoDto companyInfoDto) {
         return R.success(sysCompanyInfoService.getPageCompany(companyInfoDto));
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          删除企业
-     * @date                 2020/12/31 9:55
-     * @param                [companyId]
-     * @return               com.zerody.common.api.bean.DataResult
+     * @param [companyId]
+     * @return com.zerody.common.api.bean.DataResult
+     * @author PengQiang
+     * @description 删除企业
+     * @date 2020/12/31 9:55
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public DataResult<Object> deleteCompanyById(@PathVariable(name = "id") String companyId){
+    public DataResult<Object> deleteCompanyById(@PathVariable(name = "id") String companyId) {
         try {
             sysCompanyInfoService.deleteCompanyById(companyId);
             return R.success();
-        } catch (DefaultException e){
-            log.error("企业删除错误:{}",e.getMessage());
+        } catch (DefaultException e) {
+            log.error("企业删除错误:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
-            log.error("企业修改错误:{}",e.getMessage());
+        } catch (Exception e) {
+            log.error("企业修改错误:{}", e.getMessage());
             return R.error("删除企业失败,请求异常");
         }
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          获取组织树形结构
-     * @date                 2020/12/31 9:57
      * @param
-     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     * @return com.zerody.common.api.bean.DataResult<java.util.List < com.zerody.user.vo.SysComapnyInfoVo>>
+     * @author PengQiang
+     * @description 获取组织树形结构
+     * @date 2020/12/31 9:57
      */
     @RequestMapping(value = "/structure", method = RequestMethod.GET)
-    public DataResult<List<SysComapnyInfoVo>> getAllCompany(String companyId){
+    public DataResult<List<SysComapnyInfoVo>> getAllCompany(String companyId) {
         return R.success(sysCompanyInfoService.getAllCompany(companyId));
     }
 
     /**
+     * @param
+     * @return com.zerody.common.api.bean.DataResult<java.util.List < com.zerody.user.vo.SysComapnyInfoVo>>
+     * @author PengQiang
+     * @description 获取组织树形结构
+     * @date 2020/12/31 9:57
+     */
+    @RequestMapping(value = "/structure-depart", method = RequestMethod.GET)
+    public DataResult<List<SysComapnyInfoVo>> getUserCompany() {
+        UserVo userVo = UserUtils.getUser();
+        if (Objects.isNull(userVo)) {
+            throw new DefaultException("用户不存在");
+        }
+        List<SysComapnyInfoVo> sysComapnyInfoVos = sysCompanyInfoService.getUserCompany(userVo);
+        return R.success(sysComapnyInfoVos);
+    }
+
+    /**
+     * 获取企业详情
      *
-     *  获取企业详情
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/5 11:02
-     * @param                [id]
-     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     * @param [id]
+     * @return com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     * @author PengQiang
+     * @description DELL
+     * @date 2021/1/5 11:02
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public DataResult<SysComapnyInfoVo> getCompanyInfoById(@PathVariable(name = "id") String id){
+    public DataResult<SysComapnyInfoVo> getCompanyInfoById(@PathVariable(name = "id") String id) {
 
         return R.success(sysCompanyInfoService.getCompanyInfoById(id));
     }
 
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          设置企业管理员
-     * @date                 2021/1/8 16:41
-     * @param                [dto]
-     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @param [dto]
+     * @return com.zerody.common.api.bean.DataResult<java.lang.Object>
+     * @author PengQiang
+     * @description 设置企业管理员
+     * @date 2021/1/8 16:41
      */
     @RequestMapping(value = "/admin-account", method = RequestMethod.PUT)
-    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto){
+    public DataResult<Object> updateAdminAccout(@RequestBody SetAdminAccountDto dto) {
         try {
             this.sysCompanyInfoService.updateAdminAccout(dto);
             return R.success();
-        } catch (DefaultException e){
+        } catch (DefaultException e) {
             log.error("设置企业管理员错误:{}", JSON.toJSONString(dto), e);
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("设置企业管理员错误:{}", JSON.toJSONString(dto), e);
             return R.error("设置企业管理员错误,请求异常");
         }
     }
 
     /**
+     * 获取企业详情inner
      *
-     *  获取企业详情inner
-     * @author               PengQiang
-     * @description          DELL
-     * @date                 2021/1/5 11:02
-     * @param                [id]
-     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     * @param [id]
+     * @return com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysComapnyInfoVo>
+     * @author PengQiang
+     * @description DELL
+     * @date 2021/1/5 11:02
      */
     @Override
     @RequestMapping(value = "/get/company-info/inner", method = RequestMethod.GET)
-    public DataResult<CompanyInfoVo> getCompanyInfoByIdInner(@PathVariable(name = "companyId") String id){
+    public DataResult<CompanyInfoVo> getCompanyInfoByIdInner(@PathVariable(name = "companyId") String id) {
         SysComapnyInfoVo companyInfo = sysCompanyInfoService.getCompanyInfoById(id);
         CompanyInfoVo companyInfoInner = new CompanyInfoVo();
         BeanUtils.copyProperties(companyInfo, companyInfoInner);
@@ -225,70 +233,66 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     }
 
     @GetMapping("/get/addr-filtrate")
-    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("cityCodes") List<String> cityCodes){
+    public DataResult<List<SysComapnyInfoVo>> getCompanyInfoByAddr(@RequestParam("cityCodes") List<String> cityCodes) {
         try {
-            if ( CollectionUtils.isEmpty(cityCodes)){
+            if (CollectionUtils.isEmpty(cityCodes)) {
                 return R.error("地址code值必填");
             }
-           return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(cityCodes));
-        } catch (DefaultException e){
-            log.error("通过地址获取企业错误!", e , e);
+            return R.success(this.sysCompanyInfoService.getCompanyInfoByAddr(cityCodes));
+        } catch (DefaultException e) {
+            log.error("通过地址获取企业错误!", e, e);
             return R.error(e.getMessage());
-        } catch (Exception e){
-            log.error("通过地址获取企业错误!", e , e);
+        } catch (Exception e) {
+            log.error("通过地址获取企业错误!", e, e);
             return R.error(e.getMessage());
         }
     }
 
     @Override
     @RequestMapping(value = "/get/company-infos/inner", method = RequestMethod.GET)
-    public DataResult<List<CompanyInfoVo>> getCompanyInfoByIdsInner(@PathVariable(name = "companyIds") List<String> ids){
+    public DataResult<List<CompanyInfoVo>> getCompanyInfoByIdsInner(@PathVariable(name = "companyIds") List<String> ids) {
         List<CompanyInfoVo> companyInfos = sysCompanyInfoService.getCompanyInfoByIds(ids);
         return R.success(companyInfos);
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          获取全部企业
-     * @date                 2021/3/10 10:40
-     * @param                []
-     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     * @param []
+     * @return com.zerody.common.api.bean.DataResult<java.util.List < com.zerody.user.vo.SysComapnyInfoVo>>
+     * @author PengQiang
+     * @description 获取全部企业
+     * @date 2021/3/10 10:40
      */
     @GetMapping("/get/all")
-    public DataResult<List<SysComapnyInfoVo>> getCompanyAll(){
+    public DataResult<List<SysComapnyInfoVo>> getCompanyAll() {
         try {
 
             return R.success(this.sysCompanyInfoService.getCompanyAll());
-        } catch (DefaultException e){
-            log.error("通过地址获取企业错误!", e , e);
+        } catch (DefaultException e) {
+            log.error("通过地址获取企业错误!", e, e);
             return R.error(e.getMessage());
-        } catch (Exception e){
-            log.error("通过地址获取企业错误!", e , e);
+        } catch (Exception e) {
+            log.error("通过地址获取企业错误!", e, e);
             return R.error(e.getMessage());
         }
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          通过id获取企业名称
-     * @date                 2021/4/22 14:08
-     * @param                [name]
-     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     * @param [name]
+     * @return com.zerody.common.api.bean.DataResult<java.lang.String>
+     * @author PengQiang
+     * @description 通过id获取企业名称
+     * @date 2021/4/22 14:08
      */
     @Override
     @GetMapping("/get/com-name")
     public DataResult<String> getNameById(@RequestParam("id") String id) {
         try {
             return R.success(this.sysCompanyInfoService.getNameById(id));
-        } catch (DefaultException e){
-            log.error("查询企业名称错误!", e , e);
+        } catch (DefaultException e) {
+            log.error("查询企业名称错误!", e, e);
             return R.error(e.getMessage());
-        } catch (Exception e){
-            log.error("查询企业名称错误!", e , e);
+        } catch (Exception e) {
+            log.error("查询企业名称错误!", e, e);
             return R.error(e.getMessage());
         }
     }
@@ -301,20 +305,18 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          获取报表
-     * @date                 2021/12/15 11:41
-     * @param                [param]
-     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ReportFormsQueryVo>>
+     * @param [param]
+     * @return com.zerody.common.api.bean.DataResult<java.util.List < com.zerody.user.vo.ReportFormsQueryVo>>
+     * @author PengQiang
+     * @description 获取报表
+     * @date 2021/12/15 11:41
      */
     @GetMapping("/report-forms")
     public DataResult<List<ReportFormsQueryVo>> getReportForms(ReportFormsQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             this.checkUtil.setFiltrateTime(param);
-            List<ReportFormsQueryVo> list =  this.sysCompanyInfoService.getReportForms(param);
+            List<ReportFormsQueryVo> list = this.sysCompanyInfoService.getReportForms(param);
             return R.success(list);
         } catch (Exception e) {
             log.error("获取报表出错：{}", e, e);
@@ -323,13 +325,11 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     }
 
     /**
-     *
-     *
-     * @author               PengQiang
-     * @description          导出报表
-     * @date                 2021/12/15 11:41
-     * @param                [param]
-     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.ReportFormsQueryVo>>
+     * @param [param]
+     * @return com.zerody.common.api.bean.DataResult<java.util.List < com.zerody.user.vo.ReportFormsQueryVo>>
+     * @author PengQiang
+     * @description 导出报表
+     * @date 2021/12/15 11:41
      */
     @PostMapping("/report-forms/export")
     public DataResult<Object> getReportFormsExport(HttpServletResponse response, @RequestBody ReportFormsQueryDto param) {

@@ -583,6 +583,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return this.sysDepartmentInfoMapper.getSubordinateIdsById(departId);
     }
 
+    @Override
+    public List<SysDepartmentInfoVo> getAllDepByDepartId(String companyId, String departId) {
+            List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByDepartId(companyId,departId);
+            List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
+            return getDepChildrens("", deps, jobs);
+    }
+
     private void getStructureChildrens(List<UserStructureVo> list) {
         if (CollectionUtils.isEmpty(list)) {
             return;

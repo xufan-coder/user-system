@@ -60,6 +60,8 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      */
     List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
 
+    List<SysDepartmentInfoVo> getAllDepByDepartId(String companyId,String departId);
+
     /**
      *
      * 根据用户获取部门

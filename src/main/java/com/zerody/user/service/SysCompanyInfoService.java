@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
@@ -35,6 +36,8 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     void  deleteCompanyById(String companyId);
 
     List<SysComapnyInfoVo> getAllCompany(String companyId);
+
+    List<SysComapnyInfoVo> getUserCompany(UserVo userVo);
 
     SysComapnyInfoVo getCompanyInfoById(String id);
 
