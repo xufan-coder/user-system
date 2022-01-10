@@ -522,7 +522,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return;
         }
         this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
-        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT);
+        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT_CUSTOMER);
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
     }
 

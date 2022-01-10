@@ -499,7 +499,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return;
         }
         this.sysUserInfoMapper.updateDepartEditInfo(userMap);
-        this.mqService.send(userMap, MQ.QUEUE_USER_EDIT);
+        this.mqService.send(userMap, MQ.QUEUE_USER_EDIT_CUSTOMER);
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(userMap));
     }
 
