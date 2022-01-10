@@ -32,7 +32,7 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
     /**
      *    部门id 2
      */
-    private String departIds;
+    private String stffDepartId;
 
     /**
      *    岗位id
