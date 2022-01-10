@@ -28,13 +28,13 @@ public class UserMqConfiguration {
 	private static final String USER_NAME_ROUTE = "zerody.user-name.#";
 
 	/** 部门修改同步路由 */
-	private static final String DEPT_EDIT_SYNCHRONIZATION_ROUTE = "zerody.dept-synchronization.edit#";
+	private static final String DEPT_EDIT_SYNCHRONIZATION_ROUTE = "zerody.dept-synchronization.#";
 
 	/** 企业修改同步路由 */
-	private static final String COMPAY_EDIT_SYNCHRONIZATION_ROUTE = "zerody.company-synchronization.edit#";
+	private static final String COMPAY_EDIT_SYNCHRONIZATION_ROUTE = "zerody.company-synchronization.#";
 
 	/** 用户修改同步路由 */
-	private static final String USER_EDIT_SYNCHRONIZATION_ROUTE = "zerody.user-synchronization.edit#";
+	private static final String USER_EDIT_SYNCHRONIZATION_ROUTE = "zerody.user-synchronization.#";
 
 
 	@Bean
