@@ -27,6 +27,15 @@ public class UserMqConfiguration {
 	/** 用户名称修改路由 */
 	private static final String USER_NAME_ROUTE = "zerody.user-name.#";
 
+	/** 部门修改同步路由 */
+	private static final String DEPT_EDIT_SYNCHRONIZATION_ROUTE = "zerody.dept-synchronization.edit#";
+
+	/** 企业修改同步路由 */
+	private static final String COMPAY_EDIT_SYNCHRONIZATION_ROUTE = "zerody.company-synchronization.edit#";
+
+	/** 用户修改同步路由 */
+	private static final String USER_EDIT_SYNCHRONIZATION_ROUTE = "zerody.user-synchronization.edit#";
+
 
 	@Bean
 	public Queue userNameMobile() {
@@ -35,18 +44,34 @@ public class UserMqConfiguration {
 
 
 	@Bean
-	public Queue companyEdit() {
-		return new Queue(MQ.QUEUE_COMPANY_EDIT, true);
+	public Queue companyCustomerEdit() {
+		return new Queue(MQ.QUEUE_COMPANY_EDIT_CUSTOMER, true);
 	}
 
 	@Bean
-	public Queue deptEdit() {
-		return new Queue(MQ.QUEUE_DEPT_EDIT, true);
+	public Queue deptCustomerEdit() {
+		return new Queue(MQ.QUEUE_DEPT_EDIT_CUSTOMER, true);
 	}
 
 	@Bean
-	public Queue userEdit() {
-		return new Queue(MQ.QUEUE_USER_EDIT, true);
+	public Queue userCustomerEdit() {
+		return new Queue(MQ.QUEUE_USER_EDIT_CUSTOMER, true);
+	}
+
+
+	@Bean
+	public Queue companyContractEdit() {
+		return new Queue(MQ.QUEUE_COMPANY_EDIT_CONTRACT, true);
+	}
+
+	@Bean
+	public Queue deptContractEdit() {
+		return new Queue(MQ.QUEUE_DEPT_EDIT_CONTRACT, true);
+	}
+
+	@Bean
+	public Queue userContractEdit() {
+		return new Queue(MQ.QUEUE_USER_EDIT_CONTRACT, true);
 	}
 
 	// 交换机 起名：TestDirectExchange
@@ -60,14 +85,29 @@ public class UserMqConfiguration {
 	}
 
 	@Bean
-	Binding bindingUserEditQueue() {
-		return BindingBuilder.bind(userEdit()).to(exchange()).with(MQ.QUEUE_USER_EDIT);
-	}	@Bean
-	Binding bindingCompanyEditQueue() {
-		return BindingBuilder.bind(companyEdit()).to(exchange()).with(MQ.QUEUE_COMPANY_EDIT);
-	}	@Bean
-	Binding bindingDeptQueue() {
-		return BindingBuilder.bind(deptEdit()).to(exchange()).with(MQ.QUEUE_DEPT_EDIT);
+	Binding bindingUserEditCustomerQueue() {
+		return BindingBuilder.bind(userCustomerEdit()).to(exchange()).with(USER_EDIT_SYNCHRONIZATION_ROUTE);
+	}
+	@Bean
+	Binding bindingCompanyEditCustomerQueue() {
+		return BindingBuilder.bind(companyCustomerEdit()).to(exchange()).with(COMPAY_EDIT_SYNCHRONIZATION_ROUTE);
+	}
+	@Bean
+	Binding bindingDeptCustomerQueue() {
+		return BindingBuilder.bind(deptCustomerEdit()).to(exchange()).with(DEPT_EDIT_SYNCHRONIZATION_ROUTE);
+	}
+
+	@Bean
+	Binding bindingUserEditContractQueue() {
+		return BindingBuilder.bind(userContractEdit()).to(exchange()).with(USER_EDIT_SYNCHRONIZATION_ROUTE);
+	}
+	@Bean
+	Binding bindingCompanyEditContractQueue() {
+		return BindingBuilder.bind(companyContractEdit()).to(exchange()).with(COMPAY_EDIT_SYNCHRONIZATION_ROUTE);
+	}
+	@Bean
+	Binding bindingDeptContractQueue() {
+		return BindingBuilder.bind(deptContractEdit()).to(exchange()).with(DEPT_EDIT_SYNCHRONIZATION_ROUTE);
 	}
 
 

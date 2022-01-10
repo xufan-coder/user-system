@@ -15,7 +15,6 @@ import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.enums.ReportFormsQueryType;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.ReportFormsQueryVo;
@@ -313,9 +312,6 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     @GetMapping("/report-forms")
     public DataResult<List<ReportFormsQueryVo>> getReportForms(ReportFormsQueryDto param) {
         try {
-            if (StringUtils.isNotEmpty(param.getQueryType()) && ReportFormsQueryType.getExist(param.getQueryType())) {
-                return R.error("查看类型错误");
-            }
             this.checkUtil.SetUserPositionInfo(param);
             this.checkUtil.setFiltrateTime(param);
             List<ReportFormsQueryVo> list =  this.sysCompanyInfoService.getReportForms(param);

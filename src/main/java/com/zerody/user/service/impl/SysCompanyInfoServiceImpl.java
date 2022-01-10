@@ -433,7 +433,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             return;
         }
         this.sysCompanyInfoMapper.updateCompanyEdit(companyInfoMap);
-        mqService.send(companyInfoMap, MQ.QUEUE_COMPANY_EDIT);
+        mqService.send(companyInfoMap, MQ.QUEUE_COMPANY_EDIT_CUSTOMER);
         log.info("同步企业表 ————> {}", JSON.toJSONString(companyInfoMap));
     }
 
