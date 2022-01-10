@@ -262,7 +262,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             String regex = "^(1[3-9]\\d{9}$)";
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(data[1]);
-            if (!m.matches()) {
+            if (m.matches()) {
                 QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
                 blacQw.lambda().eq(StaffBlacklist::getMobile, data[1]);
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
