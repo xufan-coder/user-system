@@ -362,10 +362,10 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             List<SalesmanRoleInfoVo> result =  this.sysCompanyInfoService.getSalesmanRole(companyId, departId, userId);
             return R.success(result);
         } catch (DefaultException e) {
-            log.error("获取业务人员出错");
+            log.error("获取业务人员出错:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取业务人员出错");
+            log.error("获取业务人员出错:{}", e, e);
             return R.error(e.getMessage());
         }
     }
