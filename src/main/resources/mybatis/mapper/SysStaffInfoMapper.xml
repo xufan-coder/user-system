@@ -943,7 +943,7 @@
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id AS sui.status IN (0, 3)
         JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>
-            <if test="compnayIds neq null and companyIds.size() gt 0">
+            <if test="companyIds neq null and companyIds.size() gt 0">
                 AND sci.id
                 <foreach collection="compnayIds" item="id" open="IN  (" separator="," close=")">
                     #{id}
