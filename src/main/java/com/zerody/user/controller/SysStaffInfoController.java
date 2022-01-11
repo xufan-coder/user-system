@@ -21,8 +21,10 @@ import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +40,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -82,6 +85,26 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         if ("lower".equals(sysStaffInfoPageDto.getQueryType())) {
             this.checkUtil.SetUserPositionInfo(sysStaffInfoPageDto);
+        }
+        return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询在职员工
+     * @date                 2021/7/21 9:41
+     * @param                sysStaffInfoPageDto
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
+     */
+    @RequestMapping(value = "/page/get/active-duty-depart", method = RequestMethod.GET)
+    public DataResult<IPage<BosStaffInfoVo>> getPageAllActiveDutyDepartStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        if ("lower".equals(sysStaffInfoPageDto.getQueryType())) {
+            this.checkUtil.SetUserPositionInfo(sysStaffInfoPageDto);
+        }
+        if(StringUtils.isNotEmpty(sysStaffInfoPageDto.getUserId())){
+            sysStaffInfoPageDto.setUserId(null);
         }
         return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
     }

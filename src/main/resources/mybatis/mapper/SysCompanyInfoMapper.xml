@@ -247,7 +247,8 @@
             sci.status,
             sci.create_time,
             ssi.user_id AS admin_id,
-            sci.company_name AS `name`
+            sci.company_name AS `name`,
+            sci.company_authorization_img
         FROM
             sys_company_info AS sci
         LEFT JOIN company_admin AS ca ON ca.company_id = sci.id

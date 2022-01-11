@@ -287,4 +287,25 @@
             </if>
         </where>
     </select>
+    <select id="getAllDepByDepartId" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+        SELECT
+        sdi.id,
+        sdi.comp_id,
+        sdi.depart_name,
+        sdi.parent_id,
+        sdi.telephone,
+        sdi.depart_code,
+        sdi.admin_account,
+        ssi.user_name AS adminName,
+        sdi.is_show_business
+        FROM
+        sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        <where>
+            sdi.status = 0 and sdi.comp_id = #{companyId}
+            and (sdi.id LIKE CONCAT(#{departId}, '\_%') or sdi.id=#{departId})
+        </where>
+    </select>
+
 </mapper>
