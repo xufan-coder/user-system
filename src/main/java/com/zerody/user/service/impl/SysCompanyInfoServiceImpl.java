@@ -625,7 +625,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     }
 
-    public void saveCardUser(SysUserInfo userInfo, SysLoginInfo loginInfo, SysCompanyInfo sysCompanyInfo) {
     @Override
     public List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId) {
         DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(null);
