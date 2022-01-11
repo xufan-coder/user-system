@@ -21,9 +21,10 @@ import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +40,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -86,12 +88,13 @@ public class SysStaffInfoController {
         }
         return R.success(sysStaffInfoService.getPageAllActiveDutyStaff(sysStaffInfoPageDto));
     }
+
     /**
      *
      *
-     * @author               zhangpingping
-     * @description          查询在职员工当前部门
-     * @date                 2022/1/10 16:27
+     * @author               PengQiang
+     * @description          查询在职员工
+     * @date                 2021/7/21 9:41
      * @param                sysStaffInfoPageDto
      * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
      */
