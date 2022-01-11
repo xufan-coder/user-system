@@ -391,4 +391,8 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     int getSalesmanNum(@Param("param") ReportFormsQueryDto param);
 
     List<SysUserInfo> getJobUser(@Param("jobId") String parentId);
+
+    List<SalesmanRoleInfoVo> getSalesmanNumCompayList(@Param("companyIds")List<String> companyIds, @Param("roleIds")List<String> roleIds);
+    List<SalesmanRoleInfoVo> getSalesmanNumDepartList(@Param("companyIds")List<String> companyIds, @Param("roleIds")List<String> roleIds);
+    List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("companyIds")List<String> companyIds, @Param("roleIds")List<String> roleIds);
 }

@@ -898,10 +898,17 @@
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
             sci.status = 0 AND sui.status IN(0, 3)
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sci.id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                AND (usd.department_id LIKE CONCAT(#{param.departId}, '\_%') or usd.department_id = #{param.departId})
+            </if>
+            <if test="param.userId neq null and param.userId neq ''">
+                AND sui.id = #{param.userId}
             </if>
             <if test="param.salesmanRoles neq null and param.salesmanRoles.size() gt 0">
                 AND urs.role_id
@@ -922,6 +929,81 @@
         <where>
             <if test="jobId neq null and jobId neq ''">
                 AND usp.position_id = #{jobId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSalesmanNumCompayList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
+        SELECT
+                sci.id,
+                count(sui.id) AS `num`
+        FROM
+            sys_company_info AS sci
+        JOIN sys_staff_info AS ssi ON ssi.comp_id = sci.id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AS sui.status IN (0, 3)
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+            <if test="compnayIds neq null and companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="compnayIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="roleIds neq null and roleIds.size() gt 0">
+                AND urs.roleId
+                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getSalesmanNumDepartList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
+        SELECT
+             sdi.id,
+            count(sui.id) AS `num`
+        FROM
+            sys_department_info AS sdi
+        JOIN union_staff_depart AS usd ON usd.department_id LIKE CONCAT(sdi.id, '\_%')  OR usd.department_id = sdi.id
+        JOIN sys_staff_info AS ssi ON ssi.id = usd.staff_id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AS sui.status IN (0, 3)
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+            <if test="departIds neq null and departIds.size() gt 0">
+                AND sdi.id
+                <foreach collection="departIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="roleIds neq null and roleIds.size() gt 0">
+                AND urs.roleId
+                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getSalesmanNumUserList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
+        SELECT
+            sui.id,
+            count(sui.id) AS `num`
+        FROM
+         sys_staff_info AS ssi
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AS sui.status IN (0, 3)
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+            <if test="userIds neq null and userIds.size() gt 0">
+                AND sui.id
+                <foreach collection="userIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="roleIds neq null and roleIds.size() gt 0">
+                AND urs.roleId
+                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
         </where>
     </select>
