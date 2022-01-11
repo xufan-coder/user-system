@@ -631,13 +631,13 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if (!salesmanRolesResult.isSuccess() || org.apache.commons.collections.CollectionUtils.isEmpty(salesmanRolesResult.getData())) {
             throw new DefaultException("获取角色错误");
         }
-        if (CollectionUtils.isEmpty(companyId)) {
+        if (CollectionUtils.isNotEmpty(companyId)) {
             return this.sysStaffInfoMapper.getSalesmanNumCompayList(companyId,  salesmanRolesResult.getData());
         }
-        if (CollectionUtils.isEmpty(departId)) {
+        if (CollectionUtils.isNotEmpty(departId)) {
             return this.sysStaffInfoMapper.getSalesmanNumDepartList(departId,  salesmanRolesResult.getData());
         }
-        if (CollectionUtils.isEmpty(userId)) {
+        if (CollectionUtils.isNotEmpty(userId)) {
             return this.sysStaffInfoMapper.getSalesmanNumUserList(userId,  salesmanRolesResult.getData());
         }
         return new ArrayList<>();
