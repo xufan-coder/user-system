@@ -37,10 +37,7 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.InviteStateVo;
-import com.zerody.user.vo.ReportFormsQueryVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysUserClewCollectVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
@@ -594,6 +591,24 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         workbook.write(os);
         os.close();
 
+    }
+
+    @Override
+    public List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId) {
+        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(null);
+        if (!salesmanRolesResult.isSuccess() || org.apache.commons.collections.CollectionUtils.isEmpty(salesmanRolesResult.getData())) {
+            throw new DefaultException("获取角色错误");
+        }
+        if (CollectionUtils.isEmpty(companyId)) {
+            return this.sysStaffInfoMapper.getSalesmanNumCompayList(companyId,  salesmanRolesResult.getData());
+        }
+        if (CollectionUtils.isEmpty(departId)) {
+            return this.sysStaffInfoMapper.getSalesmanNumDepartList(departId,  salesmanRolesResult.getData());
+        }
+        if (CollectionUtils.isEmpty(userId)) {
+            return this.sysStaffInfoMapper.getSalesmanNumUserList(userId,  salesmanRolesResult.getData());
+        }
+        return new ArrayList<>();
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

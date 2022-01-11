@@ -18,6 +18,7 @@ import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.ReportFormsQueryVo;
+import com.zerody.user.vo.SalesmanRoleInfoVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -340,6 +342,30 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.success();
         } catch (Exception e) {
             log.error("获取报表出错：{}", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取业务人员数量
+     * @date                 2022/1/11 10:45
+     * @param                [companyId]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Integer>
+     */
+    @GetMapping("/get/salesman-role/inner")
+    public DataResult<List<SalesmanRoleInfoVo>> getSalesmanRole(@RequestParam(value = "companyId", required = false) List<String> companyId, @RequestParam(value = "departId", required = false) List<String> departId, @RequestParam(value = "userId", required = false) List<String> userId) {
+
+        try {
+            List<SalesmanRoleInfoVo> result =  this.sysCompanyInfoService.getSalesmanRole(companyId, departId, userId);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取业务人员出错");
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取业务人员出错");
             return R.error(e.getMessage());
         }
     }

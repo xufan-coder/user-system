@@ -11,11 +11,13 @@ import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.ReportFormsQueryVo;
+import com.zerody.user.vo.SalesmanRoleInfoVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -59,4 +61,6 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param);
 
     void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException;
+
+    List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId);
 }
