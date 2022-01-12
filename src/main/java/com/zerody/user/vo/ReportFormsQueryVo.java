@@ -43,82 +43,82 @@ public class ReportFormsQueryVo {
     private String adminName;
 
     /** 签单金额 */
-    private String signMoney;
+    private String signMoney = "0";
 
     /** 签单笔数 */
-    private Integer signNum;
+    private Integer signNum = 0;
 
     /** 签单总金额 */
-    private String signMoneyTotal;
+    private String signMoneyTotal = "0";
 
     /** 签单总笔数 */
-    private Integer signNumTotal;
+    private Integer signNumTotal = 0;
 
     /** 审批金额 */
-    private String approveMoney;
+    private String approveMoney = "0";
 
     /** 审批笔数 */
-    private Integer approveNum;
+    private Integer approveNum = 0;
 
     /** 审批总金额 */
-    private String approveMoneyTotal;
+    private String approveMoneyTotal = "0";
 
     /** 审批总笔数 */
-    private Integer approveNumTotal;
+    private Integer approveNumTotal = 0;
 
     /** 放款金额 */
-    private String loansMoney;
+    private String loansMoney = "0";
 
     /** 放款笔数 */
-    private Integer loansNum;
+    private Integer loansNum = 0;
 
     /** 放款总金额 */
-    private String loansMoneyTotal;
+    private String loansMoneyTotal = "0";
 
     /** 放款总笔数 */
-    private Integer loansNumTotal;
+    private Integer loansNumTotal = 0;
 
     /** 已放款未回款金额 */
-    private String notProceedsMoney;
+    private String notProceedsMoney = "0";
 
     /** 已放款未回款笔数 */
-    private Integer notProceedsNum;
+    private Integer notProceedsNum = 0;
 
     /** 业绩金额 */
-    private String performanceMoney;
+    private String performanceMoney = "0";
 
     /** 业绩笔数 */
-    private Integer performanceNum;
+    private Integer performanceNum = 0;
 
     /** 业绩总金额 */
-    private String performanceMoneyTotal;
+    private String performanceMoneyTotal = "0";
 
     /** 业绩总笔数 */
-    private Integer performanceNumTotal;
+    private Integer performanceNumTotal = 0;
 
     /** 回款点数 */
-    private String paymentCount;
+    private String paymentCount = "0";
 
     /** 人均业绩 */
-    private String perCapitaPerformance;
+    private String perCapitaPerformance = "0";
 
     /** 人员回款率 */
-    private String staffPaymentRate;
+    private String staffPaymentRate = "0";
 
     /** 邀约人数 */
-    private Integer inviteNum;
+    private Integer inviteNum = 0;
 
 
     /** 上门人数 */
-    private Integer visitNum;
+    private Integer visitNum = 0;
 
     /** 业务员数量 */
     private Integer salesmanNum;
 
     /** 业务员数量 */
-    private Integer paymentUserNum;
+    private Integer paymentUserNum ;
 
-    private String paymentMoney;
+    private String paymentMoney = "0";
 
     public String getSignMoney() {
         if (StringUtils.isEmpty(this.signMoney) || "0.00".equals(this.signMoney)) {
