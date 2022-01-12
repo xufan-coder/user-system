@@ -324,7 +324,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     public List<SysComapnyInfoVo> getUserCompany(UserVo userVo) {
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         AdminVo adminVo=sysStaffInfoService.getIsAdmin(userVo);
-        if (!adminVo.getIsCompanyAdmin()&&!adminVo.getIsDepartAdmin()) {
+        //&&!adminVo.getIsDepartAdmin()
+        if (!adminVo.getIsCompanyAdmin()) {
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
@@ -577,6 +578,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setPerformanceMoneyTotal(new BigDecimal(total.getPerformanceMoneyTotal()).add(new BigDecimal(rfq.getPerformanceMoneyTotal())).toString());
             total.setPerformanceNumTotal(total.getPerformanceNumTotal() + rfq.getPerformanceNumTotal());
             total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
+            total.setSalesmanNum(total.getSalesmanNum() + rfq.getSalesmanNum());
+            total.setPaymentUserNum(total.getPaymentUserNum() + rfq.getPaymentUserNum());
+            total.setPaymentMoney(new BigDecimal(total.getPaymentMoney()).add(new BigDecimal(rfq.getPaymentMoney())).toString());
             total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
             total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
             total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
@@ -641,6 +645,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             rowData[index++] = String.valueOf(info.getVisitNum());
             exportData.add(rowData);
         }
+        exportData.get(exportData.size() - 1)[12] = "-";
+        exportData.get(exportData.size() - 1)[10] = "-";
         HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
         String fileName = "报表_" + System.currentTimeMillis();
 //        response.getContentType("octets/stream");
