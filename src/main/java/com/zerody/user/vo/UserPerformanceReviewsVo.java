@@ -4,6 +4,8 @@ import com.zerody.common.utils.DataUtil;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 业务总结报表分页vo
  * @author PengQiang
@@ -36,7 +38,7 @@ public class UserPerformanceReviewsVo {
     private String performanceIncome;
 
     /** 回款笔数 */
-    private Integer paymentNumber;
+    private BigDecimal paymentNumber;
 
     /** 放款金额 */
     private String  loanMoney;
@@ -63,8 +65,8 @@ public class UserPerformanceReviewsVo {
         return StringUtils.isEmpty(this.performanceIncome) ? "0.00" : this.performanceIncome;
     }
 
-    public Integer getPaymentNumber(){
-        return DataUtil.isEmpty(this.paymentNumber) ? 0 : this.paymentNumber;
+    public BigDecimal getPaymentNumber(){
+        return DataUtil.isEmpty(this.paymentNumber) ? new BigDecimal("0") : this.paymentNumber;
     }
 
     public String getLoanMoney(){
