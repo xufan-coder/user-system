@@ -1021,6 +1021,33 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+//    /**
+//     *
+//     *
+//     * @author               PengQiang
+//     * @description          查询下级用户
+//     * @date                 2021/7/13 11:13
+//     * @param                []
+//     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
+//     */
+//    @GetMapping("/subordinate/all")
+//    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUserPartner() {
+//        try {
+//            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+//            param.setUserId(UserUtils.getUser().getUserId());
+//            param.setDepartId(UserUtils.getUser().getDeptId());
+//            param.setCompanyId(UserUtils.getUser().getCompanyId());
+//            List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUserPartner(param);
+//            return R.success(result);
+//        } catch (DefaultException e){
+//            log.error("获取下级用户出错:{}",e,e);
+//            return R.error(e.getMessage());
+//        }  catch (Exception e) {
+//            log.error("获取下级用户出错:{}",e,e);
+//            return R.error("获取下级用户出错"+ e);
+//        }
+//    }
+
     /**
      * 查询用户信息
      *
