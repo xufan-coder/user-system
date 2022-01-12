@@ -113,10 +113,10 @@ public class ReportFormsQueryVo {
     private Integer visitNum = 0;
 
     /** 业务员数量 */
-    private Integer salesmanNum;
+    private Integer salesmanNum = 0;
 
     /** 业务员数量 */
-    private Integer paymentUserNum ;
+    private Integer paymentUserNum = 0;
 
     private String paymentMoney = "0";
 
