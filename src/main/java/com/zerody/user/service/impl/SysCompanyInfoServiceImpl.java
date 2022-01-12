@@ -577,14 +577,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setPerformanceNum(total.getPerformanceNum() + rfq.getPerformanceNum());
             total.setPerformanceMoneyTotal(new BigDecimal(total.getPerformanceMoneyTotal()).add(new BigDecimal(rfq.getPerformanceMoneyTotal())).toString());
             total.setPerformanceNumTotal(total.getPerformanceNumTotal() + rfq.getPerformanceNumTotal());
-            total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
             total.setSalesmanNum(total.getSalesmanNum() + rfq.getSalesmanNum());
             total.setPaymentUserNum(total.getPaymentUserNum() + rfq.getPaymentUserNum());
             total.setPaymentMoney(new BigDecimal(total.getPaymentMoney()).add(new BigDecimal(rfq.getPaymentMoney())).toString());
-            total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
-            total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
             total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
             total.setVisitNum(total.getVisitNum() + rfq.getVisitNum());
+            rfq.count();
+            total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
+            total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
+            total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
         }
         list.add(total);
         return list;
