@@ -316,8 +316,11 @@ WHERE
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sdi.comp_id = #{param.companyId}
             </if>
-            <if test="!param.isCompanyAdmin">
+            <if test="!param.isCompanyAdmin and param.isDepartAdmin">
                 AND (usd.department_id LIKE CONCAT(#{param.departId},'\_%') or usd.department_id=#{param.departId})
+            </if>
+            <if test="!param.isCompanyAdmin and !param.isDepartAdmin">
+                AND  usd.department_id=#{param.departId}
             </if>
             AND sui.id != #{param.userId}
         </where>
