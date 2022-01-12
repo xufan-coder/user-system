@@ -58,6 +58,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -541,6 +542,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         String id;
         String name;
         Integer num;
+        ReportFormsQueryVo total = new ReportFormsQueryVo();
+        total.setName("合计");
         for (ReportFormsQueryVo rfq : list) {
             id = rfq.getId();
             name = rfq.getName();
@@ -555,7 +558,31 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 rfq.setInviteNum(inviteMap.get(rfq.getId()).getInviteNum());
                 rfq.setVisitNum(inviteMap.get(rfq.getId()).getSignNum());
             }
+            total.setSignMoney(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
+            total.setSignNum(total.getSignNum() + rfq.getSignNum());
+            total.setSignMoneyTotal(new BigDecimal(total.getSignMoneyTotal()).add(new BigDecimal(rfq.getSignMoneyTotal())).toString());
+            total.setSignNumTotal(total.getSignNumTotal() + rfq.getSignNumTotal());
+            total.setApproveMoney(new BigDecimal(total.getApproveMoney()).add(new BigDecimal(rfq.getApproveMoney())).toString());
+            total.setApproveNum(total.getApproveNum() + rfq.getApproveNum());
+            total.setApproveMoneyTotal(new BigDecimal(total.getApproveMoneyTotal()).add(new BigDecimal(rfq.getApproveMoneyTotal())).toString());
+            total.setApproveNumTotal(total.getApproveNumTotal() + rfq.getApproveNumTotal());
+            total.setLoansMoney(new BigDecimal(total.getLoansMoney()).add(new BigDecimal(rfq.getLoansMoney())).toString());
+            total.setLoansNum(total.getLoansNum() + rfq.getLoansNum());
+            total.setLoansMoneyTotal(new BigDecimal(total.getLoansMoneyTotal()).add(new BigDecimal(rfq.getLoansMoneyTotal())).toString());
+            total.setLoansNumTotal(total.getLoansNumTotal() + rfq.getLoansNumTotal());
+            total.setNotProceedsMoney(new BigDecimal(total.getNotProceedsMoney()).add(new BigDecimal(rfq.getNotProceedsMoney())).toString());
+            total.setNotProceedsNum(total.getNotProceedsNum() + rfq.getNotProceedsNum());
+            total.setPerformanceMoney(new BigDecimal(total.getPerformanceMoney()).add(new BigDecimal(rfq.getPerformanceMoney())).toString());
+            total.setPerformanceNum(total.getPerformanceNum() + rfq.getPerformanceNum());
+            total.setPerformanceMoneyTotal(new BigDecimal(total.getPerformanceMoneyTotal()).add(new BigDecimal(rfq.getPerformanceMoneyTotal())).toString());
+            total.setPerformanceNumTotal(total.getPerformanceNumTotal() + rfq.getPerformanceNumTotal());
+            total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
+            total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
+            total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
+            total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
+            total.setVisitNum(total.getVisitNum() + rfq.getVisitNum());
         }
+        list.add(total);
         return list;
     }
 
