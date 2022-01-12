@@ -577,11 +577,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setPerformanceNum(total.getPerformanceNum() + rfq.getPerformanceNum());
             total.setPerformanceMoneyTotal(new BigDecimal(total.getPerformanceMoneyTotal()).add(new BigDecimal(rfq.getPerformanceMoneyTotal())).toString());
             total.setPerformanceNumTotal(total.getPerformanceNumTotal() + rfq.getPerformanceNumTotal());
+            total.setSalesmanNum(total.getSalesmanNum() + rfq.getSalesmanNum());
+            total.setPaymentUserNum(total.getPaymentUserNum() + rfq.getPaymentUserNum());
+            total.setPaymentMoney(new BigDecimal(total.getPaymentMoney()).add(new BigDecimal(rfq.getPaymentMoney())).toString());
+            total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
+            total.setVisitNum(total.getVisitNum() + rfq.getVisitNum());
+            rfq.count();
             total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
             total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
             total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
-            total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
-            total.setVisitNum(total.getVisitNum() + rfq.getVisitNum());
         }
         list.add(total);
         return list;
@@ -642,6 +646,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             rowData[index++] = String.valueOf(info.getVisitNum());
             exportData.add(rowData);
         }
+        exportData.get(exportData.size() - 1)[12] = "-";
+        exportData.get(exportData.size() - 1)[10] = "-";
         HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
         String fileName = "报表_" + System.currentTimeMillis();
 //        response.getContentType("octets/stream");
