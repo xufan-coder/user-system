@@ -324,7 +324,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     public List<SysComapnyInfoVo> getUserCompany(UserVo userVo) {
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         AdminVo adminVo=sysStaffInfoService.getIsAdmin(userVo);
-        if (!adminVo.getIsCompanyAdmin()&&!adminVo.getIsDepartAdmin()) {
+        //&&!adminVo.getIsDepartAdmin()
+        if (!adminVo.getIsCompanyAdmin()) {
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
