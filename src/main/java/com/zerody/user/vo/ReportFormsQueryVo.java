@@ -120,6 +120,17 @@ public class ReportFormsQueryVo {
 
     private String paymentMoney = "0";
 
+    /** 当月业绩金额 */
+    private String monthPerformance = "0";
+    /** 当月业绩笔数 */
+    private Integer monthPerformanceNum = 0;
+
+    /** 当月放款金额 */
+    private String monthLoansMoney = "0";
+
+    /** 当月放款笔数 */
+    private Integer monthLoansNum = 0;
+
     public String getSignMoney() {
         if (StringUtils.isEmpty(this.signMoney) || "0.00".equals(this.signMoney)) {
             return "0";
