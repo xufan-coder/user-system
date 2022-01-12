@@ -239,4 +239,7 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
 
 
     List<SubordinateUserQueryVo> getSubordinateUser(SubordinateUserQueryDto param);
+
+
+    List<SubordinateUserQueryVo> getSubordinateUserPartner(SubordinateUserQueryDto param);
 }

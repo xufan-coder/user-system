@@ -515,6 +515,22 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         userVo.setDeptId(param.getDepartId());
         userVo.setCompanyId(param.getCompanyId());
         AdminVo admin = this.sysStaffInfoService.getIsAdmin(userVo);
+//        if (!admin.getIsCompanyAdmin() && !admin.getIsDepartAdmin()) {
+            //return new ArrayList<>();
+//        }
+        param.setIsCompanyAdmin(admin.getIsCompanyAdmin());
+        param.setIsDepartAdmin(admin.getIsDepartAdmin());
+        List<SubordinateUserQueryVo> result = this.sysUserInfoMapper.getSubordinateUser(param);
+        return result;
+    }
+
+    @Override
+    public List<SubordinateUserQueryVo> getSubordinateUserPartner(SubordinateUserQueryDto param) {
+        UserVo userVo = new UserVo();
+        userVo.setUserId(param.getUserId());
+        userVo.setDeptId(param.getDepartId());
+        userVo.setCompanyId(param.getCompanyId());
+        AdminVo admin = this.sysStaffInfoService.getIsAdmin(userVo);
         if (!admin.getIsCompanyAdmin() && !admin.getIsDepartAdmin()) {
             return new ArrayList<>();
         }
