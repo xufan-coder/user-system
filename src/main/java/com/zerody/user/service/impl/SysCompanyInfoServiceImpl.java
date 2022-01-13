@@ -324,16 +324,28 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     public List<SysComapnyInfoVo> getUserCompany(UserVo userVo) {
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         AdminVo adminVo=sysStaffInfoService.getIsAdmin(userVo);
-        //&&!adminVo.getIsDepartAdmin()
-        if (!adminVo.getIsCompanyAdmin()) {
+        //伙伴
+        if (!adminVo.getIsCompanyAdmin()&&!adminVo.getIsDepartAdmin()) {
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
-                company.setDeparts(departmentInfoService.getAllDepByDepartId(userVo.getCompanyId(),userVo.getDeptId()));
+                company.setDeparts(departmentInfoService.getAllDepByDepartId(company.getId(),userVo.getDeptId(),YesNo.NO));
                 companys.add(company);
                 return companys;
             }
-        } else {
+        }
+        //部门管理员
+        else if (!adminVo.getIsCompanyAdmin()&&adminVo.getIsDepartAdmin()){
+            if (!StringUtils.isEmpty(userVo.getCompanyId())) {
+                SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
+                //获取当前企业下的部门、岗位
+                company.setDeparts(departmentInfoService.getAllDepByDepartId(company.getId(),userVo.getDeptId(),YesNo.YES));
+                companys.add(company);
+                return companys;
+            }
+        }
+        //企业管理员
+        else {
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
