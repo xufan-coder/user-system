@@ -24,83 +24,112 @@ public class ReportFormsQueryVo {
     /** 名称 */
     private String name;
 
+    /** 企业id */
+    private String companyId;
+
+    /** 企业名称 */
+    private String companyName;
+
+    /** 部门id */
+    private String departId;
+
+    /** 部门名称 */
+    private String departName;
+
+    /** 负责人id */
+    private String adminId;
+
+    /** 负责人名称 */
+    private String adminName;
+
     /** 签单金额 */
-    private String signMoney;
+    private String signMoney = "0";
 
     /** 签单笔数 */
-    private Integer signNum;
+    private Integer signNum = 0;
 
     /** 签单总金额 */
-    private String signMoneyTotal;
+    private String signMoneyTotal = "0";
 
     /** 签单总笔数 */
-    private Integer signNumTotal;
+    private Integer signNumTotal = 0;
 
     /** 审批金额 */
-    private String approveMoney;
+    private String approveMoney = "0";
 
     /** 审批笔数 */
-    private Integer approveNum;
+    private Integer approveNum = 0;
 
     /** 审批总金额 */
-    private String approveMoneyTotal;
+    private String approveMoneyTotal = "0";
 
     /** 审批总笔数 */
-    private Integer approveNumTotal;
+    private Integer approveNumTotal = 0;
 
     /** 放款金额 */
-    private String loansMoney;
+    private String loansMoney = "0";
 
     /** 放款笔数 */
-    private Integer loansNum;
+    private Integer loansNum = 0;
 
     /** 放款总金额 */
-    private String loansMoneyTotal;
+    private String loansMoneyTotal = "0";
 
     /** 放款总笔数 */
-    private Integer loansNumTotal;
+    private Integer loansNumTotal = 0;
 
     /** 已放款未回款金额 */
-    private String notProceedsMoney;
+    private String notProceedsMoney = "0";
 
     /** 已放款未回款笔数 */
-    private Integer notProceedsNum;
+    private Integer notProceedsNum = 0;
 
     /** 业绩金额 */
-    private String performanceMoney;
+    private String performanceMoney = "0";
 
     /** 业绩笔数 */
-    private Integer performanceNum;
+    private Integer performanceNum = 0;
 
     /** 业绩总金额 */
-    private String performanceMoneyTotal;
+    private String performanceMoneyTotal = "0";
 
     /** 业绩总笔数 */
-    private Integer performanceNumTotal;
+    private Integer performanceNumTotal = 0;
 
     /** 回款点数 */
-    private String paymentCount;
+    private String paymentCount = "0";
 
     /** 人均业绩 */
-    private String perCapitaPerformance;
+    private String perCapitaPerformance = "0";
 
     /** 人员回款率 */
-    private String staffPaymentRate;
+    private String staffPaymentRate = "0";
 
     /** 邀约人数 */
-    private Integer inviteNum;
+    private Integer inviteNum = 0;
 
 
     /** 上门人数 */
-    private Integer visitNum;
+    private Integer visitNum = 0;
 
     /** 业务员数量 */
-    private Integer salesmanNum;
+    private Integer salesmanNum = 0;
 
     /** 业务员数量 */
-    private Integer paymentUserNum;
+    private Integer paymentUserNum = 0;
 
-    private String paymentMoney;
+    private String paymentMoney = "0";
+
+    /** 当月业绩金额 */
+    private String monthPerformance = "0";
+    /** 当月业绩笔数 */
+    private Integer monthPerformanceNum = 0;
+
+    /** 当月放款金额 */
+    private String monthLoansMoney = "0";
+
+    /** 当月放款笔数 */
+    private Integer monthLoansNum = 0;
 
     public String getSignMoney() {
         if (StringUtils.isEmpty(this.signMoney) || "0.00".equals(this.signMoney)) {
@@ -237,37 +266,24 @@ public class ReportFormsQueryVo {
 
 
     public String getPaymentCount() {
-        BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
-        BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
-        if (lonasMoney.compareTo(new BigDecimal("0")) == 0) {
-            return "0";
+        if (StringUtils.isNotEmpty(this.perCapitaPerformance)) {
+            return this.staffPaymentRate;
         }
-        BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
-        ave = ave.multiply(new BigDecimal("100"));
-        ave = ave.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return ave.toString();
+        return "0";
     }
 
     public String getPerCapitaPerformance() {
-        BigDecimal money = new BigDecimal(StringUtils.isEmpty(this.performanceMoneyTotal) ? "0" :this.performanceMoneyTotal);
-        BigDecimal num  = new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
-        if (num.compareTo(new BigDecimal(0)) == 0) {
-            return "0";
+        if (StringUtils.isNotEmpty(this.perCapitaPerformance)) {
+            return this.staffPaymentRate;
         }
-        BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
-        return ave.toString();
+        return "0";
     }
 
     public String getStaffPaymentRate(){
-        BigDecimal num =  new BigDecimal(this.paymentUserNum == null ? 0 : this.paymentUserNum);
-        BigDecimal numTotal =  new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
-        if (numTotal.compareTo(new BigDecimal(0)) == 0) {
-            return "0";
+        if (StringUtils.isNotEmpty(this.staffPaymentRate)) {
+            return this.staffPaymentRate;
         }
-        BigDecimal rate = num.divide(numTotal, 4, BigDecimal.ROUND_HALF_UP);
-        rate = rate.multiply(new BigDecimal(100));
-        rate = rate.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return rate.toString();
+        return "0";
     }
 
 
@@ -286,5 +302,29 @@ public class ReportFormsQueryVo {
         return this.visitNum;
     }
 
+    public void count() {
+        BigDecimal num =  new BigDecimal(this.paymentUserNum == null ? 0 : this.paymentUserNum);
+        BigDecimal numTotal =  new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
+        BigDecimal money = new BigDecimal(StringUtils.isEmpty(this.performanceMoneyTotal) ? "0" :this.performanceMoneyTotal);
+        if (numTotal.compareTo(new BigDecimal(0)) != 0) {
+            BigDecimal rate = num.divide(numTotal, 4, BigDecimal.ROUND_HALF_UP);
+            rate = rate.multiply(new BigDecimal(100));
+            rate = rate.setScale(2, BigDecimal.ROUND_HALF_UP);
+            this.staffPaymentRate = rate.toString();
+        }
+        if (num.compareTo(new BigDecimal(0)) != 0) {
+            BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
+            this.perCapitaPerformance = ave.toString();
+        }
+
+        BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
+        BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
+        if (lonasMoney.compareTo(new BigDecimal("0")) != 0) {
+            BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
+            ave = ave.multiply(new BigDecimal("100"));
+            ave = ave.setScale(2, BigDecimal.ROUND_HALF_UP);
+            this.paymentCount = ave.toString();
+        }
+    }
 
 }

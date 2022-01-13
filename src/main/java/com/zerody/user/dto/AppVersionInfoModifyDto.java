@@ -35,4 +35,8 @@ public class AppVersionInfoModifyDto {
      * 更新时间
      */
     private String updateTime;
+    /**
+     * 排序
+     */
+    private Integer orderNum;
 }

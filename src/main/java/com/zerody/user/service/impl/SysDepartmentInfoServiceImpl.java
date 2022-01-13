@@ -522,7 +522,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             return;
         }
         this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
-        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT);
+        this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT_CUSTOMER);
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
     }
 
@@ -581,6 +581,13 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     @Override
     public List<String> getSubordinateIdsById(String departId) {
         return this.sysDepartmentInfoMapper.getSubordinateIdsById(departId);
+    }
+
+    @Override
+    public List<SysDepartmentInfoVo> getAllDepByDepartId(String companyId, String departId,Integer isDepartAdmin) {
+            List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByDepartId(companyId,departId,isDepartAdmin);
+            List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
+            return getDepChildrens("", deps, jobs);
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {

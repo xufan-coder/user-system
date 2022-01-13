@@ -247,7 +247,8 @@
             sci.status,
             sci.create_time,
             ssi.user_id AS admin_id,
-            sci.company_name AS `name`
+            sci.company_name AS `name`,
+            sci.company_authorization_img
         FROM
             sys_company_info AS sci
         LEFT JOIN company_admin AS ca ON ca.company_id = sci.id
@@ -276,24 +277,9 @@
     <select id="getCompanyBusiness" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sci.id,
-            sci.company_name AS `name`,
-            COUNT(ssi.id) AS salesman_num
+            sci.company_name AS `name`
         FROM
             sys_company_info AS sci
-        LEFT JOIN (
-            sys_staff_info AS ssi,
-            sys_user_info AS sui,
-            union_role_staff AS urs
-        ) ON sci.id = ssi.comp_id
-        AND sui.id = ssi.user_id
-        AND sui. STATUS IN (0, 3)
-        AND urs.staff_id = ssi.id
-        <if test="roleIds neq null and roleIds.size() gt 0">
-            AND urs.role_id
-            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
-                #{id}
-            </foreach>
-        </if>
         <where>
             sci.status = 0
         </where>

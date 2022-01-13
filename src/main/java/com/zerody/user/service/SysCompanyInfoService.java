@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
@@ -11,11 +12,13 @@ import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.ReportFormsQueryVo;
+import com.zerody.user.vo.SalesmanRoleInfoVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -35,6 +38,8 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     void  deleteCompanyById(String companyId);
 
     List<SysComapnyInfoVo> getAllCompany(String companyId);
+
+    List<SysComapnyInfoVo> getUserCompany(UserVo userVo);
 
     SysComapnyInfoVo getCompanyInfoById(String id);
 
@@ -59,4 +64,6 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param);
 
     void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException;
+
+    List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId);
 }

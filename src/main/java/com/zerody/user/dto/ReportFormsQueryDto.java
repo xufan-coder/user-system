@@ -20,4 +20,7 @@ public class ReportFormsQueryDto extends SetTimePeriodPage {
 
     private String title;
 
+    /** 查询类型 */
+    private String queryType;
+
 }
