@@ -329,7 +329,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
-                company.setDeparts(departmentInfoService.getAllDepByDepartId(company.getId(),userVo.getDeptId()));
+                company.setDeparts(departmentInfoService.getAllDepByDepartId(userVo.getCompanyId(),userVo.getDeptId()));
                 companys.add(company);
                 return companys;
             }
