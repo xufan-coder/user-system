@@ -311,8 +311,6 @@ public class ReportFormsQueryVo {
             rate = rate.multiply(new BigDecimal(100));
             rate = rate.setScale(2, BigDecimal.ROUND_HALF_UP);
             this.staffPaymentRate = rate.toString();
-            BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
-            this.perCapitaPerformance = ave.toString();
         }
         if (num.compareTo(new BigDecimal(0)) != 0) {
             BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
