@@ -93,3 +93,6 @@ sms:
   template:
     public: SMS_210065852
     userTip: SMS_209832463
+#IdGenerator
+workerId: 1
+shardId: 4

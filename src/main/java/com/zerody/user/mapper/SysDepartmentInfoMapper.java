@@ -60,7 +60,7 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      */
     List<SysDepartmentInfoVo> getAllDepByCompanyId(String companyId);
 
-    List<SysDepartmentInfoVo> getAllDepByDepartId(@Param("companyId") String companyId,@Param("departId") String departId);
+    List<SysDepartmentInfoVo> getAllDepByDepartId(@Param("companyId") String companyId,@Param("departId") String departId,@Param("isDepartAdmin")Integer isDepartAdmin);
 
     /**
      *
