@@ -314,6 +314,10 @@ public class ReportFormsQueryVo {
             BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
             this.perCapitaPerformance = ave.toString();
         }
+        if (num.compareTo(new BigDecimal(0)) != 0) {
+            BigDecimal ave = money.divide(num, 2, BigDecimal.ROUND_HALF_UP);
+            this.perCapitaPerformance = ave.toString();
+        }
 
         BigDecimal paymentMoney = new BigDecimal(StringUtils.isEmpty(this.paymentMoney) ? "0" : this.paymentMoney);
         BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.loansMoneyTotal) ? "0" : this.loansMoneyTotal);
