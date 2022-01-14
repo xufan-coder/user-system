@@ -77,7 +77,7 @@ public class UserPerformanceReviewsVo {
     private String month;
 
     public String getPerformanceIncome(){
-        return StringUtils.isEmpty(this.performanceIncome) ? "0.00" : this.performanceIncome;
+        return StringUtils.isEmpty(this.performanceIncome) ? "0.00" : String .valueOf(new BigDecimal(this.performanceIncome).setScale(2,BigDecimal.ROUND_HALF_UP));
     }
 
     public BigDecimal getPaymentNumber(){
