@@ -339,7 +339,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             if (!StringUtils.isEmpty(userVo.getCompanyId())) {
                 SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(userVo.getCompanyId());
                 //获取当前企业下的部门、岗位
-                company.setDeparts(departmentInfoService.getAllDepByDepartId(company.getId(),userVo.getDeptId(),YesNo.YES));
+                company.setDeparts(departmentInfoService.getAllDepByDepartId(company.getId(),userVo.getDeptId(),YesNo.NO));
                 companys.add(company);
                 return companys;
             }
@@ -495,16 +495,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<ReportFormsQueryVo> getReportForms(ReportFormsQueryDto param) {
-        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(param.getCompanyId());
-        if (!salesmanRolesResult.isSuccess()) {
-            throw new DefaultException("获取角色错误");
-        }
-        param.setSalesmanRoles(salesmanRolesResult.getData());
-        int salesmanNum = this.sysStaffInfoMapper.getSalesmanNum(param);
+//        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(param.getCompanyId());
+//        int salesmanNum = this.sysStaffInfoMapper.getSalesmanNum(param);
+        List<SalesmanRoleInfoVo> salesmanNums = new ArrayList<>();
         List<ReportFormsQueryVo> list = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getUserId())) {
             param.setTitle("伙伴");
             list = this.sysUserInfoMapper.getUserById(param.getUserId(), param.getSalesmanRoles());
+            List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+            salesmanNums = this.getSalesmanRole(null, null, userIds);
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
             Boolean lastDepart = this.departService.getDepartIsFinally(param.getDepartId(), Boolean.TRUE);
             if (lastDepart) {
@@ -518,14 +517,21 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             } else {
                 param.setTitle("部门");
                 list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
+                List<String> departIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+                salesmanNums = this.getSalesmanRole(null, departIds, null);
             }
         } else if (DataUtil.isNotEmpty(param.getCompanyId())) {
             param.setTitle("部门");
             list = this.departService.getDepartBusiness(param.getCompanyId(), param.getDepartId(), param.getSalesmanRoles());
+            List<String> departIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+            salesmanNums = this.getSalesmanRole(null, departIds, null);
         } else {
             param.setTitle("公司");
             list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
+            List<String> companyIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+            salesmanNums = this.getSalesmanRole(companyIds, null, null);
         }
+        Map<String, Integer> saleMap = salesmanNums.stream().collect(Collectors.toMap(SalesmanRoleInfoVo::getId, a -> a.getNum(), (k1, k2) -> k1, HashMap::new));
         Map<String, ReportFormsQueryVo> signMap = null;
         Map<String, InviteStateVo> inviteMap = null;
         try {
@@ -554,13 +560,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         String id;
         String name;
-        Integer num;
+        Integer num = 0;
         ReportFormsQueryVo total = new ReportFormsQueryVo();
         total.setName("合计");
         for (ReportFormsQueryVo rfq : list) {
             id = rfq.getId();
             name = rfq.getName();
-            num = salesmanNum;
+            if (DataUtil.isNotEmpty(saleMap.get(rfq.getId()))) {
+                num = saleMap.get(rfq.getId());
+            }
             if (CollectionUtils.isNotEmpty(signMap) && DataUtil.isNotEmpty(signMap.get(rfq.getId()))) {
                 BeanUtils.copyProperties(signMap.get(rfq.getId()), rfq);
                 rfq.setId(id);
@@ -594,11 +602,15 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setPaymentMoney(new BigDecimal(total.getPaymentMoney()).add(new BigDecimal(rfq.getPaymentMoney())).toString());
             total.setInviteNum(total.getInviteNum() + rfq.getInviteNum());
             total.setVisitNum(total.getVisitNum() + rfq.getVisitNum());
+            total.setMonthLoansMoney(new BigDecimal(total.getMonthLoansMoney()).add(new BigDecimal(rfq.getMonthLoansMoney())).toString());
+            total.setMonthLoansNum(total.getMonthLoansNum() + rfq.getMonthLoansNum());
+            total.setMonthPerformance(new BigDecimal(total.getMonthPerformance()).add(new BigDecimal(rfq.getMonthPerformance())).toString());
+            total.setMonthPerformanceNum(total.getMonthPerformanceNum() + rfq.getMonthPerformanceNum());
             rfq.count();
-            total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
-            total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
-            total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
         }
+        total.setPaymentCount("-");
+        total.setPerCapitaPerformance("-");
+        total.setStaffPaymentRate("-");
         list.add(total);
         return list;
     }
@@ -659,6 +671,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             exportData.add(rowData);
         }
         exportData.get(exportData.size() - 1)[12] = "-";
+        exportData.get(exportData.size() - 1)[11] = "-";
         exportData.get(exportData.size() - 1)[10] = "-";
         HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
         String fileName = "报表_" + System.currentTimeMillis();

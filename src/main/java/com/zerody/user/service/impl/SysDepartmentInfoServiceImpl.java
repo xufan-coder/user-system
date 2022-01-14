@@ -451,6 +451,21 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         return childs;
     }
+    private List<SysDepartmentInfoVo> getDepChildrenDepartemt(String parentId, List<SysDepartmentInfoVo> deps, List<SysJobPositionVo> jobs){
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> StringUtils.isEmpty(parentId) ? StringUtils.isEmpty(d.getParentId()) : parentId.equals(d.getParentId())).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(childs)){
+            return deps;
+        }
+        for (SysDepartmentInfoVo dep : childs){
+            //部门下的岗位
+            if(!CollectionUtils.isEmpty(jobs)){
+                List<SysJobPositionVo> jobChilds = jobs.stream().filter(j -> dep.getId().equals(j.getDepartId())).collect(Collectors.toList());
+                dep.setJobChildrens(jobChilds);
+            }
+            dep.setDepartChildrens(getDepChildrens(dep.getId(), deps, jobs));
+        }
+        return childs;
+    }
 
 
     /**
