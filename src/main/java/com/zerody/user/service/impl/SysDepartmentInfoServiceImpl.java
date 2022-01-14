@@ -602,7 +602,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     public List<SysDepartmentInfoVo> getAllDepByDepartId(String companyId, String departId,Integer isDepartAdmin) {
             List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByDepartId(companyId,departId,isDepartAdmin);
             List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
-            return getDepChildrenDepartemt("", deps, jobs);
+            return getDepChildrens("", deps, jobs);
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {
