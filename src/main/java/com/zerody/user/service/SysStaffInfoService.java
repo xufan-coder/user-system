@@ -118,8 +118,9 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
+    List<UserPerformanceReviewsVo> getPagePerformanceReviewsList(UserPerformanceReviewsPageDto param)throws ParseException;
 
-    void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res) throws IOException, ParseException;
+    List<UserPerformanceReviewsVo> doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse res) throws IOException, ParseException;
 
     StaffInfoVo getStaffInfoByCardUserId(String cardUserId);
 
