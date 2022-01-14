@@ -267,14 +267,14 @@ public class ReportFormsQueryVo {
 
     public String getPaymentCount() {
         if (StringUtils.isNotEmpty(this.perCapitaPerformance)) {
-            return this.staffPaymentRate;
+            return this.paymentCount;
         }
         return "0";
     }
 
     public String getPerCapitaPerformance() {
         if (StringUtils.isNotEmpty(this.perCapitaPerformance)) {
-            return this.staffPaymentRate;
+            return this.perCapitaPerformance;
         }
         return "0";
     }

@@ -607,9 +607,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setMonthPerformance(new BigDecimal(total.getMonthPerformance()).add(new BigDecimal(rfq.getMonthPerformance())).toString());
             total.setMonthPerformanceNum(total.getMonthPerformanceNum() + rfq.getMonthPerformanceNum());
             rfq.count();
-            total.setPaymentCount(new BigDecimal(total.getPaymentCount()).add(new BigDecimal(rfq.getPaymentCount())).toString());
-            total.setPerCapitaPerformance(new BigDecimal(total.getPerCapitaPerformance()).add(new BigDecimal(rfq.getPerCapitaPerformance())).toString());
-            total.setStaffPaymentRate(new BigDecimal(total.getSignMoney()).add(new BigDecimal(rfq.getSignMoney())).toString());
         }
         total.setPaymentCount("-");
         total.setPerCapitaPerformance("-");
