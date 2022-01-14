@@ -302,6 +302,13 @@ public class ReportFormsQueryVo {
         return this.visitNum;
     }
 
+    public Integer getPaymentUserNum() {
+        if (DataUtil.isEmpty(this.paymentUserNum)) {
+            return 0;
+        }
+        return this.paymentUserNum;
+    }
+
     public void count() {
         BigDecimal num =  new BigDecimal(this.paymentUserNum == null ? 0 : this.paymentUserNum);
         BigDecimal numTotal =  new BigDecimal(this.salesmanNum == null ? 0 : this.salesmanNum);
