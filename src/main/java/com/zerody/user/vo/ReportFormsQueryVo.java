@@ -266,7 +266,7 @@ public class ReportFormsQueryVo {
 
 
     public String getPaymentCount() {
-        if (StringUtils.isNotEmpty(this.perCapitaPerformance)) {
+        if (StringUtils.isNotEmpty(this.paymentCount)) {
             return this.paymentCount;
         }
         return "0";
@@ -326,7 +326,7 @@ public class ReportFormsQueryVo {
         BigDecimal lonasMoney = new BigDecimal(StringUtils.isEmpty(this.monthLoansMoney) ? "0" : this.monthLoansMoney);
         if (lonasMoney.compareTo(new BigDecimal("0")) != 0) {
             BigDecimal ave = paymentMoney.divide(lonasMoney,4, BigDecimal.ROUND_HALF_UP);
-            ave = ave.multiply(new BigDecimal("100"));
+            ave = ave.multiply(new BigDecimal(100));
             ave = ave.setScale(2, BigDecimal.ROUND_HALF_UP);
             this.paymentCount = ave.toString();
         }
