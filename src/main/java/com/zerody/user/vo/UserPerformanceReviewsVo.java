@@ -30,14 +30,14 @@ public class UserPerformanceReviewsVo {
     private String roleId;
 
     /** 角色名称 */
-    @Excel(name = "角色名称",orderNum = "3",width = 20)
+    @Excel(name = "角色",orderNum = "3",width = 20)
     private String roleName;
 
     /** 用户id */
     private String userId;
 
     /** 用户名称 */
-    @Excel(name = "用户名称",orderNum = "4",width = 20)
+    @Excel(name = "伙伴名称",orderNum = "4",width = 20)
     private String userName;
 
     /** 业绩收入 */
