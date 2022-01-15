@@ -511,6 +511,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 list = this.sysUserInfoMapper.getUserByDepartId(param.getDepartId(), param.getSalesmanRoles());
                 if (CollectionUtils.isNotEmpty(list)) {
                     List<String> userIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
+                    salesmanNums = this.getSalesmanRole(null, null, userIds);
                     param.setUserIds(userIds);
                 }
                 param.setDepartId(null);
@@ -674,9 +675,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             rowData[index++] = String.valueOf(info.getVisitNum());
             exportData.add(rowData);
         }
-        exportData.get(exportData.size() - 1)[12] = "-";
-        exportData.get(exportData.size() - 1)[11] = "-";
-        exportData.get(exportData.size() - 1)[10] = "-";
         HSSFWorkbook workbook = ExcelToolUtil.dataExcel(header, exportData);
         String fileName = "报表_" + System.currentTimeMillis();
 //        response.getContentType("octets/stream");
