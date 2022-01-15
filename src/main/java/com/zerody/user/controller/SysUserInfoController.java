@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
+import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.SubordinateUserQueryDto;
@@ -710,22 +711,20 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     @RequestMapping(value = "/get/page/performance-reviews/collect-export", method = POST)
-    public DataResult<Object> doPerformanceReviewsExport(@RequestBody UserPerformanceReviewsPageDto param, HttpServletResponse res){
+    public void doPerformanceReviewsExport(@RequestBody UserPerformanceReviewsPageDto param, HttpServletResponse res){
         try {
 //            checkUtil.SetUserPositionInfo(param);
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
-            param.setCurrent(1);
-            param.setPageSize(10000);
-            sysStaffInfoService.doPerformanceReviewsExport(param, res);
-            return R.success();
+            List<UserPerformanceReviewsVo> list=sysStaffInfoService.doPerformanceReviewsExport(param, res);
+            ExcelHandlerUtils.exportExcel(list, "业绩总结列表", UserPerformanceReviewsVo.class, "业绩总结列表导出.xls", res);
         } catch (DefaultException e){
             log.error("导出业绩总结列表出错:{}",e,e);
-            return R.error(e.getMessage());
+            throw new DefaultException("导出业绩总结列表出错");
         }  catch (Exception e) {
             log.error("导出业绩总结列表出错:{}",e,e);
-            return R.error("导出业绩总结列表出错"+ e);
+            throw new DefaultException("导出业绩总结列表出错");
         }
     }
 
@@ -1020,6 +1019,33 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取下级用户出错"+ e);
         }
     }
+
+//    /**
+//     *
+//     *
+//     * @author               PengQiang
+//     * @description          查询下级用户
+//     * @date                 2021/7/13 11:13
+//     * @param                []
+//     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
+//     */
+//    @GetMapping("/subordinate/all")
+//    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUserPartner() {
+//        try {
+//            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+//            param.setUserId(UserUtils.getUser().getUserId());
+//            param.setDepartId(UserUtils.getUser().getDeptId());
+//            param.setCompanyId(UserUtils.getUser().getCompanyId());
+//            List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUserPartner(param);
+//            return R.success(result);
+//        } catch (DefaultException e){
+//            log.error("获取下级用户出错:{}",e,e);
+//            return R.error(e.getMessage());
+//        }  catch (Exception e) {
+//            log.error("获取下级用户出错:{}",e,e);
+//            return R.error("获取下级用户出错"+ e);
+//        }
+//    }
 
     /**
      * 查询用户信息

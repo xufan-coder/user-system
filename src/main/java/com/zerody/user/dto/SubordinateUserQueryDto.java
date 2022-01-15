@@ -18,4 +18,6 @@ public class SubordinateUserQueryDto {
     private String companyId;
 
     private Boolean isCompanyAdmin;
+
+    private Boolean isDepartAdmin;
 }

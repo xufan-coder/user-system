@@ -108,6 +108,7 @@
             AND sb.state = #{param.state}
       </if>
     </where>
+      ORDER BY sb.approval_time DESC
   </select>
     <select id="getBlacklistByMobile" resultType="java.lang.String">
         SELECT

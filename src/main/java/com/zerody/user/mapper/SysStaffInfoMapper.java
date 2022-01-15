@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -252,6 +254,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.UserPerformanceReviewsVo>
      */
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(@Param("param") UserPerformanceReviewsPageDto param, IPage<UserPerformanceReviewsVo> iPage);
+    List<UserPerformanceReviewsVo> getPagePerformanceReviews(@Param("param") UserPerformanceReviewsPageDto param);
 
     /**
      *
@@ -385,4 +388,12 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @return
      */
     void updateDateJoin(@Param("id") String id, @Param("dateJoin") Date dateJoin);
+
+    int getSalesmanNum(@Param("param") ReportFormsQueryDto param);
+
+    List<SysUserInfo> getJobUser(@Param("jobId") String parentId);
+
+    List<SalesmanRoleInfoVo> getSalesmanNumCompayList(@Param("companyIds")List<String> companyIds, @Param("roleIds")List<String> roleIds);
+    List<SalesmanRoleInfoVo> getSalesmanNumDepartList(@Param("departIds")List<String> departIds, @Param("roleIds")List<String> roleIds);
+    List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("userIds")List<String> userIds, @Param("roleIds")List<String> roleIds);
 }

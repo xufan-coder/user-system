@@ -278,11 +278,15 @@ WHERE
             usd.department_id AS depart_id,
             sui.user_name AS `name`,
             sui.avatar AS user_avatar,
-            ssi.avatar AS staff_avatar
+            ssi.avatar AS staff_avatar,
+            sjp.id AS `job_id`,
+            sjp.position_name AS `job_name`
         FROM
-            sys_user_info AS sui
+        sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN union_staff_position AS usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position AS sjp ON sjp.id = usp.position_id
         <where>
             sui.is_edit = 1
         </where>
@@ -312,8 +316,11 @@ WHERE
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sdi.comp_id = #{param.companyId}
             </if>
-            <if test="!param.isCompanyAdmin">
+            <if test="!param.isCompanyAdmin and param.isDepartAdmin">
                 AND (usd.department_id LIKE CONCAT(#{param.departId},'\_%') or usd.department_id=#{param.departId})
+            </if>
+            <if test="!param.isCompanyAdmin and !param.isDepartAdmin">
+                AND  usd.department_id=#{param.departId}
             </if>
             AND sui.id != #{param.userId}
         </where>
@@ -354,20 +361,11 @@ WHERE
     <select id="getUserByDepartId" resultType="com.zerody.user.vo.ReportFormsQueryVo">
         SELECT
             sui.id,
-            sui.user_name AS `name`,
-            COUNT(ssi.id) AS salesman_num
+            sui.user_name AS `name`
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
-        LEFT JOIN union_platform_role_staff AS urs ON urs.staff_id = ssi.id
-        <if test="roleIds neq null and roleIds.size() gt 0">
-            AND urs.id
-            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
-                #{id}
-            </foreach>
-        </if>
         <where>
             AND sui.status IN (0, 3)
             <if test="departId neq null and departId neq ''">
@@ -381,11 +379,14 @@ WHERE
         SELECT
             sui.id,
             sui.user_name AS `name`,
+            sci.id AS company_id,
+            sci.company_name,
              COUNT(ssi.id) AS salesman_num
         FROM
             sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
         LEFT JOIN union_platform_role_staff AS urs ON urs.staff_id = ssi.id
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         <if test="roleIds neq null and roleIds.size() gt 0">
             AND urs.id
             <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
@@ -395,7 +396,7 @@ WHERE
         <where>
             AND sui.status IN (0, 3)
             <if test="userId neq null and userId neq ''">
-                AND sui.id = ${userId}
+                AND sui.id = #{userId}
             </if>
         </where>
         ORDER BY sui.create_time DESC;

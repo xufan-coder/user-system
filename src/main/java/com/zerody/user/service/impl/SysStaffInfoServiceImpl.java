@@ -489,6 +489,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        if (DataUtil.isEmpty(setSysUserInfoDto.getRecommendType()) || setSysUserInfoDto.getRecommendType().intValue() == 0) {
+            staff.setRecommendId("");
+        }
         this.saveOrUpdate(staff);
         if(Objects.isNull(setSysUserInfoDto.getDateJoin())){
             if(StringUtils.isNotEmpty(staff.getId())) {
@@ -744,11 +747,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
         RecommendInfoVo recommendInfo = null;
-        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
              recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
              userInfo.setRecommendInfo(recommendInfo);
         }
-        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
             userInfo.setRecommendSecond(recommendInfo);
         }
@@ -1721,11 +1724,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("用户信息不存在");
         }
         RecommendInfoVo recommendInfo = null;
-        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId())) {
+        if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
             userInfo.setRecommendInfo(recommendInfo);
         }
-        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId())) {
+        if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
             userInfo.setRecommendSecond(recommendInfo);
         }
@@ -1930,12 +1933,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.setPerformanceReviews(param, iPage.getRecords());
         return iPage;
     }
+    @Override
+    public List<UserPerformanceReviewsVo> getPagePerformanceReviewsList(UserPerformanceReviewsPageDto param) throws ParseException {
+        String time = null;
+        //限制放款日期条件查询不能超过当前月
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        List<UserPerformanceReviewsVo> list = this.sysStaffInfoMapper.getPagePerformanceReviews(param);
+        if (DataUtil.isEmpty(list)) {
+            return list;
+        }
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())) {
+            param.setTime(sdf.format(new Date()));
+        }
+        String thisDateString = sdf.format(new Date());
+        String[] times = param.getTime().split("-");
+        String[] thisDateStrings = thisDateString.split("-");
+        this.setPerformanceReviews(param, list);
+        return list;
+    }
 
     @Override
-    public void doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse response) throws IOException, ParseException {
+    public List<UserPerformanceReviewsVo> doPerformanceReviewsExport(UserPerformanceReviewsPageDto param, HttpServletResponse response) throws IOException, ParseException {
         List<UserPerformanceReviewsVo> list = null;
         if (CollectionUtils.isEmpty(param.getUserIds())) {
-            list = this.getPagePerformanceReviews(param).getRecords();
+            list = this.getPagePerformanceReviewsList(param);
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
             if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())) {
@@ -1946,37 +1967,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             String[] times = param.getTime().split("-");
             String[] thisDateStrings = thisDateString.split("-");
             if ((Integer.valueOf(times[0]) > Integer.valueOf(thisDateStrings[0])) || (Integer.valueOf(times[0]).equals(Integer.valueOf(thisDateStrings[0])) && Integer.valueOf(times[1]) > Integer.valueOf(thisDateStrings[1]))) {
-
             } else {
                 this.setPerformanceReviews(param, list);
             }
         }
-        List<String[]> rowData = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(list)) {
-            list.stream().forEach(p -> {
-                rowData.add(new String[13]);
-                rowData.get(rowData.size() - 1)[0] = p.getCompanyName();
-                rowData.get(rowData.size() - 1)[1] = p.getDepartmentName();
-                rowData.get(rowData.size() - 1)[2] = p.getRoleName();
-                rowData.get(rowData.size() - 1)[3] = p.getUserName();
-                rowData.get(rowData.size() - 1)[4] = p.getPerformanceIncome();
-                rowData.get(rowData.size() - 1)[5] = p.getPaymentNumber().toString();
-                rowData.get(rowData.size() - 1)[6] = p.getLoanMoney();
-                rowData.get(rowData.size() - 1)[7] = p.getLoanNumber().toString();
-                rowData.get(rowData.size() - 1)[8] = p.getSignOrderMoney();
-                rowData.get(rowData.size() - 1)[9] = p.getSignOrderNumber().toString();
-                rowData.get(rowData.size() - 1)[10] = p.getWaitApprovalMoney();
-                rowData.get(rowData.size() - 1)[11] = p.getWaitApprovalNumber().toString();
-                rowData.get(rowData.size() - 1)[12] = p.getMonth();
-
-            });
-        }
-        HSSFWorkbook workbook = ExcelToolUtil.createExcel(PERFORMANCE_REVIEWS_EXPORT_TITLE, rowData, null);
-//        response.setContentType("octets/stream");
-        response.addHeader("Content-Disposition", "attachment;filename=" + new String("业绩总结报表".getBytes("gb2312"), "ISO8859-1") + ".xls");
-        OutputStream os = response.getOutputStream();
-        workbook.write(os);
-        os.close();
+    return list;
     }
 
     @Override
@@ -2185,6 +2180,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return ids.indexOf(departId) != -1;
         }
         return Boolean.FALSE;
+    }
+
+    @Override
+    public List<SysUserInfo> getJobUser(String parentId) {
+        return this.sysStaffInfoMapper.getJobUser(parentId);
     }
 
     @Override

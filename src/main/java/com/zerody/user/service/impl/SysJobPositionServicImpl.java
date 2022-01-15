@@ -6,6 +6,7 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.user.domain.SysDepartmentInfo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UnionStaffPosition;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
@@ -14,6 +15,8 @@ import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.mapper.UnionStaffPositionMapper;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysJobPositionService;
+import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +42,12 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
 
     @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
 
 
     @Override
@@ -120,6 +129,8 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
         this.saveOrUpdate(sysJobPosition);
+        List<SysUserInfo> jobUser = this.sysStaffInfoService.getJobUser(sysJobPosition.getId());
+        this.sysUserInfoService.updateBatchById(jobUser);
         return new DataResult();
     }
 
