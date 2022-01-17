@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -688,18 +689,17 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId) {
-        DataResult<List<String>> salesmanRolesResult = this.oauthFeignService.getSalesmanRole(null);
-        if (!salesmanRolesResult.isSuccess() || org.apache.commons.collections.CollectionUtils.isEmpty(salesmanRolesResult.getData())) {
-            throw new DefaultException("获取角色错误");
-        }
+        //获取当前年月
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
         if (CollectionUtils.isNotEmpty(companyId)) {
-            return this.sysStaffInfoMapper.getSalesmanNumCompayList(companyId,  salesmanRolesResult.getData());
+            return this.sysStaffInfoMapper.getSalesmanNumCompayList(companyId, year, month);
         }
         if (CollectionUtils.isNotEmpty(departId)) {
-            return this.sysStaffInfoMapper.getSalesmanNumDepartList(departId,  salesmanRolesResult.getData());
+            return this.sysStaffInfoMapper.getSalesmanNumDepartList(departId, year, month);
         }
         if (CollectionUtils.isNotEmpty(userId)) {
-            return this.sysStaffInfoMapper.getSalesmanNumUserList(userId,  salesmanRolesResult.getData());
+            return this.sysStaffInfoMapper.getSalesmanNumUserList(userId);
         }
         return new ArrayList<>();
     }
