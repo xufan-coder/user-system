@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class SetMonthActivityUserTask {
+public class AddMonthActivityUserTask {
 
     @Autowired
     private MonthActivityUserService service;

@@ -940,6 +940,7 @@
         FROM
                 month_activity_user AS mau
         <where>
+            mau.year = #{year}  AND mau.month = #{month} AND mau.type = 'COMPANY'
             <if test="companyIds neq null and companyIds.size() gt 0">
                 AND mau.company_id
                 <foreach collection="companyIds" item="id" open="IN  (" separator="," close=")">
@@ -956,6 +957,7 @@
         FROM
         month_activity_user AS mau
         <where>
+             mau.year = #{year}  AND mau.month = #{month} AND mau.type IN ('DEPART', 'TEAM')
             <if test="companyIds neq null and companyIds.size() gt 0">
                 AND mau.depart_id
                 <foreach collection="companyIds" item="id" open="IN  (" separator="," close=")">
