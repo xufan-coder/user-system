@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.MonthActivityUserMapper">
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.MonthActivityUser">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="depart_id" jdbcType="VARCHAR" property="departId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="year" jdbcType="INTEGER" property="year" />
+    <result column="month" jdbcType="INTEGER" property="month" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, company_id, depart_id, user_id, year, month, type, number, create_time
+  </sql>
+
+  <select id="getComapnyMonthAcitvityUser" resultType="com.zerody.user.domain.MonthActivityUser">
+    SELECT
+            sci.id AS `company_id`,
+            count(sui.id) AS `number`
+    FROM
+        sys_company_info AS sci
+      LEFT JOIN (sys_staff_info AS ssi, union_role_staff AS urs )ON ssi.comp_id = sci.id AND  urs.staff_id = ssi.id
+      <if test="roleIds neq null and roleIds.size() gt 0">
+          AND urs.role_id
+          <foreach collection="roleIds" item="roleId" open="IN (" separator="," close=")">
+              #{roleId}
+          </foreach>
+      </if>
+      LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND  sui. STATUS IN (0, 3)
+    GROUP BY sci.id
+  </select>
+
+  <select id="getDepartMonthAcitvityUser" resultType="com.zerody.user.domain.MonthActivityUser">
+      SELECT
+      sdi.id AS `depart_id`,
+      sdi.comp_id AS `company_id`,
+      count(sui.id) AS `number`
+      FROM
+      sys_department_info AS sdi
+      LEFT JOIN union_staff_depart AS usd ON usd.department_id LIKE CONCAT(sdi.id, '\_%')  OR usd.department_id = sdi.id
+      LEFT JOIN (sys_staff_info AS ssi, union_role_staff AS urs)ON ssi.id = usd.staff_id AND  urs.staff_id = ssi.id
+      <if test="roleIds neq null and roleIds.size() gt 0">
+          AND urs.role_id
+          <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
+              #{id}
+          </foreach>
+      </if>
+      LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
+      GROUP BY sdi.id
+  </select>
+</mapper>
