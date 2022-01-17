@@ -393,7 +393,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     List<SysUserInfo> getJobUser(@Param("jobId") String parentId);
 
-    List<SalesmanRoleInfoVo> getSalesmanNumCompayList(@Param("companyIds")List<String> companyIds, @Param("roleIds")List<String> roleIds);
-    List<SalesmanRoleInfoVo> getSalesmanNumDepartList(@Param("departIds")List<String> departIds, @Param("roleIds")List<String> roleIds);
-    List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("userIds")List<String> userIds, @Param("roleIds")List<String> roleIds);
+    List<SalesmanRoleInfoVo> getSalesmanNumCompayList(@Param("companyIds")List<String> companyIds, @Param("year") Integer year, @Param("month") Integer month);
+    List<SalesmanRoleInfoVo> getSalesmanNumDepartList(@Param("departIds")List<String> departIds, @Param("year") Integer year, @Param("month") Integer month);
+    List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("userIds")List<String> userIds);
 }
