@@ -22,39 +22,33 @@
             count(sui.id) AS `number`
     FROM
         sys_company_info AS sci
-      JOIN sys_staff_info AS ssi ON ssi.comp_id = sci.id
-      JOIN sys_user_info AS sui ON sui.id = ssi.user_id 
-      JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
-    WHERE
-        sui. STATUS IN (0, 3)
-        <if test="roleIds neq null and roleIds.size() gt 0">
-           AND urs.role_id
+      LEFT JOIN (sys_staff_info AS ssi, union_role_staff AS urs )ON ssi.comp_id = sci.id AND  urs.staff_id = ssi.id
+      <if test="roleIds neq null and roleIds.size() gt 0">
+          AND urs.role_id
           <foreach collection="roleIds" item="roleId" open="IN (" separator="," close=")">
-                #{roleId}
+              #{roleId}
           </foreach>
-        </if>
+      </if>
+      LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND  sui. STATUS IN (0, 3)
     GROUP BY sci.id
   </select>
 
-  <select id="getDepartMonthAcitvityUser" resultMap="BaseResultMap">
+  <select id="getDepartMonthAcitvityUser" resultType="com.zerody.user.domain.MonthActivityUser">
       SELECT
       sdi.id AS `depart_id`,
       sdi.comp_id AS `company_id`,
-      count(sui.id) AS `num`
+      count(sui.id) AS `number`
       FROM
       sys_department_info AS sdi
-      JOIN union_staff_depart AS usd ON usd.department_id LIKE CONCAT(sdi.id, '\_%')  OR usd.department_id = sdi.id
-      JOIN sys_staff_info AS ssi ON ssi.id = usd.staff_id
-      JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
-      JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
-      <where>
-          <if test="roleIds neq null and roleIds.size() gt 0">
-              AND urs.role_id
-              <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
-                  #{id}
-              </foreach>
-          </if>
-      </where>
+      LEFT JOIN union_staff_depart AS usd ON usd.department_id LIKE CONCAT(sdi.id, '\_%')  OR usd.department_id = sdi.id
+      LEFT JOIN (sys_staff_info AS ssi, union_role_staff AS urs)ON ssi.id = usd.staff_id AND  urs.staff_id = ssi.id
+      <if test="roleIds neq null and roleIds.size() gt 0">
+          AND urs.role_id
+          <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
+              #{id}
+          </foreach>
+      </if>
+      LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
       GROUP BY sdi.id
   </select>
 </mapper>

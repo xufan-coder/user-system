@@ -935,7 +935,7 @@
 
     <select id="getSalesmanNumCompayList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
         SELECT
-                mau.company_id,
+                mau.company_id AS `id`,
                 mau.number AS `num`
         FROM
                 month_activity_user AS mau
@@ -952,15 +952,15 @@
 
     <select id="getSalesmanNumDepartList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
         SELECT
-            mau.depart_id,
+            mau.depart_id AS `id`,
             mau.number AS `num`
         FROM
         month_activity_user AS mau
         <where>
              mau.year = #{year}  AND mau.month = #{month} AND mau.type IN ('DEPART', 'TEAM')
-            <if test="companyIds neq null and companyIds.size() gt 0">
+            <if test="departIds neq null and departIds.size() gt 0">
                 AND mau.depart_id
-                <foreach collection="companyIds" item="id" open="IN  (" separator="," close=")">
+                <foreach collection="departIds" item="id" open="IN  (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>

@@ -47,7 +47,7 @@ public class MonthActivityUser {
 
     @Override
     public boolean equals(Object o) {
-        if (this != o) {
+        if (!(o instanceof MonthActivityUser)) {
             return Boolean.FALSE;
         }
         MonthActivityUser that = (MonthActivityUser) o;

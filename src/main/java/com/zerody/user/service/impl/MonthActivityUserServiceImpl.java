@@ -76,9 +76,9 @@ public class MonthActivityUserServiceImpl extends ServiceImpl<MonthActivityUserM
         }
         // 查本年 本月 该部门是否已有记录
         QueryWrapper<MonthActivityUser> departActivityQw = new QueryWrapper<>();
-        compActivityQw.lambda().eq(MonthActivityUser::getYear, year);
-        compActivityQw.lambda().eq(MonthActivityUser::getMonth, month);
-        compActivityQw.lambda().and(type ->
+        departActivityQw.lambda().eq(MonthActivityUser::getYear, year);
+        departActivityQw.lambda().eq(MonthActivityUser::getMonth, month);
+        departActivityQw.lambda().and(type ->
                 type.eq(MonthActivityUser::getType, ResultsSummaryQueryType.DEPART.name()).or()
                         .eq(MonthActivityUser::getType, ResultsSummaryQueryType.TEAM.name())
         );
@@ -94,7 +94,7 @@ public class MonthActivityUserServiceImpl extends ServiceImpl<MonthActivityUserM
             if (monthDeaprtUser.getDepartId().indexOf("_") > -1) {
                 monthDeaprtUser.setType(ResultsSummaryQueryType.TEAM.name());
             }
-            int index = compExists.indexOf(monthDeaprtUser);
+            int index = departExists.indexOf(monthDeaprtUser);
             if (index > -1) {
                 departExists.get(index).setNumber(monthDeaprtUser.getNumber());
                 it.remove();
