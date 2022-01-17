@@ -935,65 +935,45 @@
 
     <select id="getSalesmanNumCompayList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
         SELECT
-                sci.id,
-                count(sui.id) AS `num`
+                mau.company_id AS `id`,
+                mau.number AS `num`
         FROM
-            sys_company_info AS sci
-        JOIN sys_staff_info AS ssi ON ssi.comp_id = sci.id
-        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
-        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+                month_activity_user AS mau
         <where>
+            mau.year = #{year}  AND mau.month = #{month} AND mau.type = 'COMPANY'
             <if test="companyIds neq null and companyIds.size() gt 0">
-                AND sci.id
+                AND mau.company_id
                 <foreach collection="companyIds" item="id" open="IN  (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
-            <if test="roleIds neq null and roleIds.size() gt 0">
-                AND urs.role_id
-                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
         </where>
-        GROUP BY sci.id
     </select>
 
     <select id="getSalesmanNumDepartList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
         SELECT
-             sdi.id,
-            count(sui.id) AS `num`
+            mau.depart_id AS `id`,
+            mau.number AS `num`
         FROM
-            sys_department_info AS sdi
-        JOIN union_staff_depart AS usd ON usd.department_id LIKE CONCAT(sdi.id, '\_%')  OR usd.department_id = sdi.id
-        JOIN sys_staff_info AS ssi ON ssi.id = usd.staff_id
-        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
-        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        month_activity_user AS mau
         <where>
+             mau.year = #{year}  AND mau.month = #{month} AND mau.type IN ('DEPART', 'TEAM')
             <if test="departIds neq null and departIds.size() gt 0">
-                AND sdi.id
+                AND mau.depart_id
                 <foreach collection="departIds" item="id" open="IN  (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
-            <if test="roleIds neq null and roleIds.size() gt 0">
-                AND urs.role_id
-                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
         </where>
-        GROUP BY sdi.id
     </select>
 
     <select id="getSalesmanNumUserList" resultType="com.zerody.user.vo.SalesmanRoleInfoVo">
         SELECT
             sui.id,
-            count(sui.id) AS `num`
+            1 AS `num`
         FROM
          sys_staff_info AS ssi
-        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status IN (0, 3)
-        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             <if test="userIds neq null and userIds.size() gt 0">
                 AND sui.id
@@ -1001,13 +981,7 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="roleIds neq null and roleIds.size() gt 0">
-                AND urs.role_id
-                <foreach collection="roleIds" item="id" open="IN  (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
+            AND sui.status IN (0, 3)
         </where>
-        GROUP BY sui.id
     </select>
 </mapper>
