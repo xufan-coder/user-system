@@ -53,6 +53,8 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      */
     void doRelieveByStaffId(String staffId);
 
+    void doRelieve(String id);
+
     /**
      *
      *  根据手机号码查询是否离职

@@ -413,6 +413,14 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //        );
 //        this.userInfoService.update(userUw);
     }
+    @Override
+    public void doRelieve(String id) {
+        UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
+        relieveUw.lambda().eq(StaffBlacklist::getId, id);
+        relieveUw.lambda().set(StaffBlacklist::getState, StaffBlacklistApproveState.RELIEVE.name());
+        relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
+        this.update(relieveUw);
+    }
 
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(String mobile) {
