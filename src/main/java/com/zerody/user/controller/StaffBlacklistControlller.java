@@ -179,6 +179,29 @@ public class StaffBlacklistControlller {
         }
     }
 
+    /**************************************************************************************************
+     **
+     *  原子服务解除黑名单
+     *
+     * @param id【主键id】
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/1/21  14:16
+     */
+    @PostMapping("/emp/relieve/{id}")
+    public DataResult<Object> doRelieve(@PathVariable("id") String id){
+        try {
+            this.service.doRelieve(id);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error("解除黑名单出错" + e.getMessage());
+        }
+    }
+
     /**
      *
      *
