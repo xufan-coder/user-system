@@ -61,4 +61,7 @@ public class StaffBlacklist {
 
     /** 身份证号码 */
     private String identityCard;
+
+    @TableField(exist = false)
+    private String companyName;
 }

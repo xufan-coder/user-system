@@ -80,6 +80,9 @@ public class StaffBlacklistControlller {
                 if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
                     return R.error("请输入手机号码");
                 }
+                if (StringUtils.isEmpty(param.getBlacklist().getCompanyId())) {
+                    return R.error("请选择企业");
+                }
                 if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
                     return R.error("请输入名称");
                 }
