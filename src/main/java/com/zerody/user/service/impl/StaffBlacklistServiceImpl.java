@@ -304,6 +304,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             SysCompanyInfo company = this.sysCompanyInfoService.getOne(companyQw);
             if (DataUtil.isEmpty(company)) {
                 errStr.append("所属企业不存在,");
+            } else {
+                entity.setCompanyId(company.getId());
             }
         }
         if (StringUtils.isEmpty(data[4])) {
@@ -317,6 +319,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         entity.setUserName(data[index++]);
         entity.setMobile(data[index++]);
         entity.setIdentityCard(data[index++]);
+        entity.setCompanyName(data[index++]);
         entity.setReason(data[index++]);
         entity.setCreateTime(new Date());
         entity.setState(String.valueOf(YesNo.NO));
