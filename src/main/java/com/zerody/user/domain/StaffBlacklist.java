@@ -56,6 +56,9 @@ public class StaffBlacklist {
 
     private Integer type;
 
+    /** 是否已审批/能否解除 */
+    private Integer isApprove;
+
     /** 黑名单姓名 */
     private String userName;
 
