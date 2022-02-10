@@ -192,9 +192,9 @@ public class StaffBlacklistControlller {
      * @date 2022/1/21  14:16
      */
     @PostMapping("/emp/relieve/{id}")
-    public DataResult<Object> doRelieve(@PathVariable("id") String id){
+    public DataResult<Object> doRelieve(@PathVariable("id") String id,@RequestParam("state") Integer state){
         try {
-            this.service.doRelieve(id);
+            this.service.doRelieve(id,state);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);

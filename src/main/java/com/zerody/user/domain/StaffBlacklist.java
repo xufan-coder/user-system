@@ -56,7 +56,7 @@ public class StaffBlacklist {
 
     private Integer type;
 
-    /** 是否已审批/能否解除 */
+    /** 是否已审批/能否解除0未审批 -1 审批中，1已审批 */
     private Integer isApprove;
 
     /** 黑名单姓名 */
@@ -64,6 +64,11 @@ public class StaffBlacklist {
 
     /** 身份证号码 */
     private String identityCard;
+
+    /** 解除id */
+    private String relieveId;
+    /** 解除流程key */
+    private String relieveKey;
 
     @TableField(exist = false)
     private String companyName;
