@@ -81,6 +81,7 @@
     LEFT JOIN union_role_staff AS urs2 ON urs2.staff_id = ssi2.id
     LEFT JOIN union_staff_depart AS usd2 ON usd2.staff_id = ssi2.id
     <where>
+        sb.state='BLOCK'
       <if test="param.companyId neq null and param.companyId neq ''">
             AND sb.company_id = #{param.companyId}
       </if>
