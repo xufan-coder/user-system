@@ -432,10 +432,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //        this.userInfoService.update(userUw);
     }
     @Override
-    public void doRelieve(String id) {
+    public void doRelieve(String id,Integer state) {
         UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
         relieveUw.lambda().eq(StaffBlacklist::getId, id);
-        relieveUw.lambda().set(StaffBlacklist::getIsApprove, YesNo.YES);
+        relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
         relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
         this.update(relieveUw);
     }

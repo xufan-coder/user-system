@@ -53,7 +53,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      */
     void doRelieveByStaffId(String staffId);
 
-    void doRelieve(String id);
+    void doRelieve(String id,Integer state);
 
     /**
      *

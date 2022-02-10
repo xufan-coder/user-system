@@ -82,6 +82,10 @@ public class FrameworkBlacListQueryPageVo {
 
     private String blackId;
 
+    /** 解除id */
+    private String relieveId;
+    /** 解除流程key */
+    private String relieveKey;
     private List<String> images;
 
     public String getStateSting() {
