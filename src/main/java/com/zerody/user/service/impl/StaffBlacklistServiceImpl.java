@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 @Service
 public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper, StaffBlacklist> implements StaffBlacklistService {
 
-    private final static String[] BLACKLIST_IMOPRT_TITLE = {"*姓名", "*手机号", "*身份证号码", "*加入原因"};
+    private final static String[] BLACKLIST_IMOPRT_TITLE = {"*姓名", "*手机号", "*身份证号码", "*所属企业", "*加入原因"};
 
     @Autowired
     private ImageService imageService;
@@ -70,6 +70,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private ImportResultInfoService importResultInfoService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
 
     @Autowired
     private CheckUtil checkUtil;
@@ -292,6 +295,20 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             }
         }
         if (StringUtils.isEmpty(data[3])) {
+            errStr.append("所属企业必填,");
+        } else {
+            QueryWrapper<SysCompanyInfo> companyQw = new QueryWrapper<>();
+            companyQw.lambda().eq(SysCompanyInfo::getCompanyName, data[3]);
+            companyQw.lambda().eq(SysCompanyInfo::getStatus, 0);
+            companyQw.lambda().last("limit 0,1");
+            SysCompanyInfo company = this.sysCompanyInfoService.getOne(companyQw);
+            if (DataUtil.isEmpty(company)) {
+                errStr.append("所属企业不存在,");
+            } else {
+                entity.setCompanyId(company.getId());
+            }
+        }
+        if (StringUtils.isEmpty(data[4])) {
             errStr.append("加入原因必填,");
         }
         if (errStr.length() > 0) {
@@ -302,6 +319,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         entity.setUserName(data[index++]);
         entity.setMobile(data[index++]);
         entity.setIdentityCard(data[index++]);
+        entity.setCompanyName(data[index++]);
         entity.setReason(data[index++]);
         entity.setCreateTime(new Date());
         entity.setState(String.valueOf(YesNo.NO));
@@ -347,22 +365,20 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blac.setState(StaffBlacklistApproveState.BLOCK.name());
             blac.setId(UUIDutils.getUUID32());
             this.save(blac);
-        } else {
-            this.updateById(blac);
-        }
+
     //把员工设为离职
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, blac.getUserId());
-        SysStaffInfo  staff = this.staffInfoService.getOne(staffQw);
+        SysStaffInfo  staff1 = this.staffInfoService.getOne(staffQw);
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
         userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
         userUw.lambda().eq(true, SysUserInfo::getId, blac.getUserId());
         this.userInfoService.update(userUw);
-        staff.setStatus(StatusEnum.stop.getValue());
-        staff.setLeaveReason(param.getBlacklist().getReason());
-        this.staffInfoService.updateById(staff);
-        this.checkUtil.removeUserToken(staff.getUserId());
+        staff1.setStatus(StatusEnum.stop.getValue());
+        staff1.setLeaveReason(param.getBlacklist().getReason());
+        this.staffInfoService.updateById(staff1);
+        this.checkUtil.removeUserToken(staff1.getUserId());
         if (CollectionUtils.isEmpty(param.getImages())) {
             return param;
         }
@@ -388,6 +404,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         imageRemoveQw.lambda().eq(Image::getConnectId, blac.getId());
         imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
         this.imageService.addImages(imageRemoveQw, imageAdds);
+        } else {
+            this.updateById(blac);
+        }
         return param;
     }
 
@@ -412,6 +431,14 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //                "SELECT ssi.user_id FROM sys_staff_info AS ssi  WHERE ssi.id = '".concat(staffId).concat("'")
 //        );
 //        this.userInfoService.update(userUw);
+    }
+    @Override
+    public void doRelieve(String id,Integer state) {
+        UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
+        relieveUw.lambda().eq(StaffBlacklist::getId, id);
+        relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
+        relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
+        this.update(relieveUw);
     }
 
     @Override
