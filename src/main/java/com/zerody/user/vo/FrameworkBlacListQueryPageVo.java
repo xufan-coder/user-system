@@ -81,7 +81,8 @@ public class FrameworkBlacListQueryPageVo {
     private String identityCard2;
 
     private String blackId;
-
+    /** 是否已审批/能否解除0未审批 -1 审批中，1已审批 */
+    private String isApprove;
     /** 解除id */
     private String relieveId;
     /** 解除流程key */

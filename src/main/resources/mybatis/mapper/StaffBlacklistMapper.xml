@@ -31,6 +31,7 @@
         <result column="process_id" property="processId" jdbcType="VARCHAR" />
         <result column="process_key" property="processKey" jdbcType="VARCHAR" />
         <result column="identity_card" property="identityCard" jdbcType="VARCHAR" />
+        <result column="is_approve" property="isApprove" jdbcType="VARCHAR" />
         <result column="relieve_id" property="relieveId" jdbcType="VARCHAR" />
         <result column="relieve_key" property="relieveKey" jdbcType="VARCHAR" />
         <result column="identityCard2" property="identityCard2" jdbcType="VARCHAR" />
@@ -64,6 +65,7 @@
         sb.identity_card as identity_card,
         sui.certificate_card as identityCard2,
         sb.id AS sb_id,
+        sb.is_approve,
         sb.relieve_id ,
         sb.relieve_key ,
         'staff-blacklist' AS image_type
