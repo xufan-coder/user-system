@@ -87,6 +87,9 @@ public class FrameworkBlacListQueryPageVo {
     private String relieveId;
     /** 解除流程key */
     private String relieveKey;
+    /** 视频 */
+    private String video;
+
     private List<String> images;
 
     public String getStateSting() {
