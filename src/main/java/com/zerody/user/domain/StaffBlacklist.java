@@ -70,6 +70,9 @@ public class StaffBlacklist {
     /** 解除流程key */
     private String relieveKey;
 
+    /** 视频 */
+    private String video;
+
     @TableField(exist = false)
     private String companyName;
 }
