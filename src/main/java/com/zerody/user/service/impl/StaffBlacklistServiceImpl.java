@@ -365,22 +365,20 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blac.setState(StaffBlacklistApproveState.BLOCK.name());
             blac.setId(UUIDutils.getUUID32());
             this.save(blac);
-        } else {
-            this.updateById(blac);
-        }
+
     //把员工设为离职
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, blac.getUserId());
-        SysStaffInfo  staff = this.staffInfoService.getOne(staffQw);
+        SysStaffInfo  staff1 = this.staffInfoService.getOne(staffQw);
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
         userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
         userUw.lambda().eq(true, SysUserInfo::getId, blac.getUserId());
         this.userInfoService.update(userUw);
-        staff.setStatus(StatusEnum.stop.getValue());
-        staff.setLeaveReason(param.getBlacklist().getReason());
-        this.staffInfoService.updateById(staff);
-        this.checkUtil.removeUserToken(staff.getUserId());
+        staff1.setStatus(StatusEnum.stop.getValue());
+        staff1.setLeaveReason(param.getBlacklist().getReason());
+        this.staffInfoService.updateById(staff1);
+        this.checkUtil.removeUserToken(staff1.getUserId());
         if (CollectionUtils.isEmpty(param.getImages())) {
             return param;
         }
@@ -406,6 +404,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         imageRemoveQw.lambda().eq(Image::getConnectId, blac.getId());
         imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
         this.imageService.addImages(imageRemoveQw, imageAdds);
+        } else {
+            this.updateById(blac);
+        }
         return param;
     }
 
