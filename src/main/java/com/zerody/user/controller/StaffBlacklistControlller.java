@@ -80,6 +80,9 @@ public class StaffBlacklistControlller {
                 if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
                     return R.error("请输入手机号码");
                 }
+                if (StringUtils.isEmpty(param.getBlacklist().getCompanyId())) {
+                    return R.error("请选择企业");
+                }
                 if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
                     return R.error("请输入名称");
                 }
@@ -169,6 +172,29 @@ public class StaffBlacklistControlller {
         try {
 
             this.service.doRelieveByStaffId(id);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error("解除黑名单出错" + e.getMessage());
+        }
+    }
+
+    /**************************************************************************************************
+     **
+     *  原子服务解除黑名单 按钮控制
+     *
+     * @param id【主键id】
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/1/21  14:16
+     */
+    @PostMapping("/emp/relieve/{id}")
+    public DataResult<Object> doRelieve(@PathVariable("id") String id,@RequestParam("state") Integer state){
+        try {
+            this.service.doRelieve(id,state);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);

@@ -31,6 +31,9 @@
         <result column="process_id" property="processId" jdbcType="VARCHAR" />
         <result column="process_key" property="processKey" jdbcType="VARCHAR" />
         <result column="identity_card" property="identityCard" jdbcType="VARCHAR" />
+        <result column="is_approve" property="isApprove" jdbcType="VARCHAR" />
+        <result column="relieve_id" property="relieveId" jdbcType="VARCHAR" />
+        <result column="relieve_key" property="relieveKey" jdbcType="VARCHAR" />
         <result column="identityCard2" property="identityCard2" jdbcType="VARCHAR" />
         <result column="type" property="type" />
         <result column="image_type"  jdbcType="VARCHAR" />
@@ -62,6 +65,9 @@
         sb.identity_card as identity_card,
         sui.certificate_card as identityCard2,
         sb.id AS sb_id,
+        sb.is_approve,
+        sb.relieve_id ,
+        sb.relieve_key ,
         'staff-blacklist' AS image_type
     FROM
         staff_blacklist AS sb
@@ -77,6 +83,7 @@
     LEFT JOIN union_role_staff AS urs2 ON urs2.staff_id = ssi2.id
     LEFT JOIN union_staff_depart AS usd2 ON usd2.staff_id = ssi2.id
     <where>
+        sb.state='BLOCK'
       <if test="param.companyId neq null and param.companyId neq ''">
             AND sb.company_id = #{param.companyId}
       </if>
