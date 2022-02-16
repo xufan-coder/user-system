@@ -30,6 +30,9 @@ public class UserMqConfiguration {
 	/** 部门修改同步路由 */
 	private static final String DEPT_EDIT_SYNCHRONIZATION_ROUTE = "zerody.dept-synchronization.#";
 
+	/** 岗位修改同步路由 */
+	private static final String DEPT_JOB_SYNCHRONIZATION_ROUTE = "zerody.job-synchronization.#";
+
 	/** 企业修改同步路由 */
 	private static final String COMPAY_EDIT_SYNCHRONIZATION_ROUTE = "zerody.company-synchronization.#";
 
@@ -159,6 +162,12 @@ public class UserMqConfiguration {
 	}
 
 
+	@Bean
+	public Queue jobCustomerEdit() {
+		return new Queue(MQ.QUEUE_JOB_EDIT_CUSTOMER, true);
+	}
+
+
 
 
 	@Bean
@@ -189,6 +198,11 @@ public class UserMqConfiguration {
 	@Bean
 	Binding bindingCompanyNameQueueCustomer() {
 		return BindingBuilder.bind(companyNameQueueCustomer()).to(exchange()).with(COMPAY_NAME_ROUTE);
+	}
+
+	@Bean
+	Binding bindingJobEditQueueContract() {
+		return BindingBuilder.bind(jobCustomerEdit()).to(exchange()).with(DEPT_JOB_SYNCHRONIZATION_ROUTE);
 	}
 
 	/** 扇形交换机 */

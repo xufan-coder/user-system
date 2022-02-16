@@ -82,4 +82,6 @@ public interface SysJobPositionService {
      * @date 2021/1/7  16:47
      */
     SysJobPosition getJobByComp(String jobName, String companyId);
+
+    void doJobEditInfo();
 }
