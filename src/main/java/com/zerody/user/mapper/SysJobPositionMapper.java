@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -44,4 +45,8 @@ public interface SysJobPositionMapper extends BaseMapper<SysJobPosition> {
      * @return               java.util.List<com.zerody.user.vo.SysJobPositionVo>
      */
     List<SysJobPositionVo> getAllJobByCompanyId(String companuId);
+
+    List<Map<String, String>> getJobtEditInfo();
+
+    void updateJobEditInfo(@Param("jobs") List<Map<String, String>> jobMap);
 }

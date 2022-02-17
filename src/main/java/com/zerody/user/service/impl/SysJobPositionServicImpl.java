@@ -1,10 +1,15 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.bean.DataResult;
+import com.zerody.common.constant.MQ;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UnionStaffPosition;
@@ -24,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -49,6 +55,9 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     @Autowired
     private SysUserInfoService sysUserInfoService;
 
+    @Autowired
+    private RabbitMqService mqService;
+
 
     @Override
     public DataResult addJob(SysJobPosition job) {
@@ -67,6 +76,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
         job.setStatus(StatusEnum.activity.getValue());
+        job.setIsEdit(YesNo.YES);
         this.saveOrUpdate(job);
         return new DataResult();
     }
@@ -82,6 +92,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         SysJobPosition job = new SysJobPosition();
         job.setStatus(StatusEnum.deleted.getValue());
         job.setId(jobId);
+        job.setIsEdit(YesNo.YES);
         this.updateJob(job);
         return new DataResult();
     }
@@ -115,6 +126,18 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
     }
 
     @Override
+    public void doJobEditInfo() {
+        List<Map<String, String>> jobMap = this.sysJobPositionMapper.getJobtEditInfo();
+        if (CollectionUtils.isEmpty(jobMap)) {
+            return;
+        }
+        this.sysDepartmentInfoMapper.updateDepartEditInfo(jobMap);
+        this.sysJobPositionMapper.updateJobEditInfo(jobMap);
+        this.mqService.send(jobMap, MQ.QUEUE_JOB_EDIT_CUSTOMER);
+        log.info("同步部门信息  ——————> {}", JSON.toJSONString(jobMap));
+    }
+
+    @Override
     public DataResult updateJob(SysJobPosition sysJobPosition) {
 
         //除了被删除的企业的岗位用名称查看数据库有没有这个名称
@@ -128,6 +151,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         if(jobNameCount > 0 ){
             return new DataResult(ResultCodeEnum.RESULT_ERROR, false, "该岗位名称已被占用",null);
         }
+        sysJobPosition.setIsEdit(YesNo.YES);
         this.saveOrUpdate(sysJobPosition);
         List<SysUserInfo> jobUser = this.sysStaffInfoService.getJobUser(sysJobPosition.getId());
         this.sysUserInfoService.updateBatchById(jobUser);
