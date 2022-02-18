@@ -55,4 +55,30 @@
             status = 0 and comp_id = #{companyId}
         </where>
     </select>
+
+  <select id="getJobtEditInfo" resultType="java.util.Map">
+      SELECT
+        sjp.id,
+        sjp.position_name,
+        sjp.comp_id AS `company_id`,
+        sjp.job_scope,
+        sjp.position_desc,
+        sjp.depart_id,
+        sjp.status,
+        sjp.create_time
+     FROM sys_job_position AS sjp
+      WHERE
+          sjp.is_edit = 1
+    </select>
+
+  <update id="updateJobEditInfo">
+      UPDATE sys_job_position
+      SET is_edit = 0
+      <where>
+          id IN
+          <foreach collection="jobs" item="job" open="(" separator="," close=")">
+              #{job.id}
+          </foreach>
+      </where>
+    </update>
 </mapper>

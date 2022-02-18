@@ -38,4 +38,6 @@ public class SysJobPosition  extends BaseModel {
 
     /** 备注/描述 **/
     private String positionDesc;
+
+    private Integer isEdit;
 }
