@@ -25,8 +25,8 @@
         sci.id AS copmId,
         sui.id AS userId
         FROM
-        sys_company_info AS sci
-        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
+        sys_department_info AS sdi
+        LEFT JOIN  sys_company_info AS sci ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
         LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
         LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
