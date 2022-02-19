@@ -760,7 +760,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             getRecord(id, userInfo);
             SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
             sysStaffRelationDto.setRelationStaffId(id);
-            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
 
@@ -772,7 +772,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //查询关系
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
-        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
@@ -1740,7 +1740,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //查询关系
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
-        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+        List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
@@ -1931,6 +1931,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return iPage;
         }
         this.setPerformanceReviews(param, iPage.getRecords());
+//        UserPerformanceReviewsVo userPerformanceReviewsVo=new UserPerformanceReviewsVo();
+//        this.sysStaffInfoMapper.getPagePerformanceReviews(param).forEach(item->{
+//            userPerformanceReviewsVo.setPerformanceIncome(String.valueOf(Double.valueOf(userPerformanceReviewsVo.getPerformanceIncome())+Double.valueOf(item.getPerformanceIncome())));
+//            userPerformanceReviewsVo.setPaymentNumber(userPerformanceReviewsVo.getPaymentNumber().add(item.getPaymentNumber()));
+//            userPerformanceReviewsVo.setLoanMoney(String.valueOf(Double.valueOf(userPerformanceReviewsVo.getLoanMoney())+Double.valueOf(item.getLoanMoney())));
+//            userPerformanceReviewsVo.setLoanNumber(userPerformanceReviewsVo.getLoanNumber()+item.getLoanNumber());
+//            userPerformanceReviewsVo.setSignOrderMoney(String.valueOf(Double.valueOf(userPerformanceReviewsVo.getSignOrderMoney())+Double.valueOf(item.getSignOrderMoney())));
+//            userPerformanceReviewsVo.setSignOrderNumber(userPerformanceReviewsVo.getSignOrderNumber()+item.getSignOrderNumber());
+//            userPerformanceReviewsVo.setWaitApprovalMoney(String.valueOf(Double.valueOf(userPerformanceReviewsVo.getWaitApprovalMoney())+Double.valueOf(item.getWaitApprovalMoney())));
+//            userPerformanceReviewsVo.setWaitApprovalNumber(userPerformanceReviewsVo.getWaitApprovalNumber()+item.getWaitApprovalNumber());
+//        });
+//        userPerformanceReviewsVo.setCompanyName("合计");
+//        iPage.getRecords().add(userPerformanceReviewsVo);
         return iPage;
     }
     @Override

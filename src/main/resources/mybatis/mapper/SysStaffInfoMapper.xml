@@ -840,7 +840,8 @@
             sdi.depart_name AS depart_name,
             sci.id AS company_id,
             sci.company_name AS company_name,
-            ssi.recommend_id
+            ssi.recommend_id,
+            ssi.recommend_type
         FROM
             sys_staff_info AS ssi
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
