@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.SysStaffRelation;
 import com.zerody.user.dto.SysStaffRelationDto;
+import com.zerody.user.vo.SysStaffInfoRelationVo;
 import com.zerody.user.vo.SysStaffRelationVo;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public interface SysStaffRelationService extends IService<SysStaffRelation> {
      * @param [sysStaffRelationDto]
      * @return
      */
-    List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto);
+    SysStaffInfoRelationVo queryRelationList(SysStaffRelationDto sysStaffRelationDto);
 
     /***
      * @description 查询

@@ -35,5 +35,7 @@ public class RecommendInfoVo {
 
     /** 推荐人id */
     private String recommendId;
-
+    
+    /** 推荐人类型*/
+    private Integer recommendType;
 }
