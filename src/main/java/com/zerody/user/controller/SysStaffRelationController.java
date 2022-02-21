@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.user.dto.SysStaffRelationDto;
 import com.zerody.user.service.SysStaffRelationService;
+import com.zerody.user.vo.SysStaffInfoRelationVo;
 import com.zerody.user.vo.SysStaffRelationVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,12 @@ public class SysStaffRelationController {
     }
 
     /**
-     * 根据ID查询关系
+     * 查询关系和推荐人
      */
     @GetMapping(value = "/query")
-    public DataResult<List<SysStaffRelationVo>> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
+    public DataResult<SysStaffInfoRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         try {
-            List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
+            SysStaffInfoRelationVo sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto);
             return R.success(sysStaffRelationVos);
         } catch (DefaultException e) {
             log.error("查询员工关系错误:{}" + JSON.toJSONString(sysStaffRelationDto), e);

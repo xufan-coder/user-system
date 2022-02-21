@@ -77,8 +77,9 @@ public class AppVersionController {
 
     @ApiOperation("查询App版本")
     @GetMapping(value = "/query-detail")
-    public DataResult<List<AppVersion>> queryDetail(AppVersionListDto appVersionDetatilDto) {
+    public DataResult<List<AppVersion>> queryDetail(AppVersionListDto appVersionDetatilDto, HttpServletResponse resp) {
         List<AppVersion> appVersionVo = this.AppVersionervice.queryDetail(appVersionDetatilDto);
+        resp.setDateHeader("Date",1609430400);
         return R.success(appVersionVo);
     }
 
