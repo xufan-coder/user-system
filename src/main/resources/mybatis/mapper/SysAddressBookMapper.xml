@@ -89,8 +89,7 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
-            ssi.deleted = 0
-            and sui.status in (0,3)
+                sui.status in (0,3)
             <if test="param.companyId != null and param.companyId != ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
