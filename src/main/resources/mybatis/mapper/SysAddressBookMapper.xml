@@ -94,7 +94,7 @@
                 and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
-                    and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(param.departmentId, '\_%'))
+                    and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
         </where>
     </select>
