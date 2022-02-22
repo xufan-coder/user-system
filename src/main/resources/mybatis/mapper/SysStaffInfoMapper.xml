@@ -841,12 +841,14 @@
             sci.id AS company_id,
             sci.company_name AS company_name,
             ssi.recommend_id,
-            ssi.recommend_type
+            ssi.recommend_type,
+            sjp.position_name
         FROM
             sys_staff_info AS ssi
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        LEFT JOIN  sys_job_position AS sjp ON sjp.depart_id=sdi.id
         <where>
             <if test="recommendId neq null and recommendId neq ''">
                AND  ssi.id = #{recommendId}
