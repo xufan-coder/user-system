@@ -87,7 +87,7 @@
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-        LEFT JOIN sys_department_info sdi ON (sdi.id = usd.department_id AND )
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
                 sui.status in (0,3)
             <if test="param.companyId != null and param.companyId != ''">
