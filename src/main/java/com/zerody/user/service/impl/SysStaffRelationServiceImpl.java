@@ -8,10 +8,14 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysStaffRelation;
 import com.zerody.user.dto.SysStaffRelationDto;
+import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.SysStaffRelationMapper;
 import com.zerody.user.service.SysStaffRelationService;
+import com.zerody.user.vo.RecommendInfoVo;
+import com.zerody.user.vo.SysStaffInfoRelationVo;
 import com.zerody.user.vo.SysStaffRelationVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,8 @@ import java.util.Objects;
 public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMapper, SysStaffRelation> implements SysStaffRelationService {
     @Autowired
     private SysStaffInfoServiceImpl sysStaffInfoService;
+    @Autowired
+    private SysStaffInfoMapper sysStaffInfoMapper;
 
     @Override
     public void addRelation(SysStaffRelationDto sysStaffRelationDto) {
@@ -77,7 +83,8 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     }
 
     @Override
-    public List<SysStaffRelationVo> queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
+    public SysStaffInfoRelationVo queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
+        SysStaffInfoRelationVo sysStaffInfoRelationVo=new SysStaffInfoRelationVo();
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
         sysStaffRelationVos.forEach(item -> {
             StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());
@@ -93,7 +100,18 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
             item.setRelationCompanyId(staffInfoVo.getCompanyId());
             item.setRelationDepartId(staffInfoVo.getDepartId());
         });
-        return sysStaffRelationVos;
+
+        SysStaffInfo sysStaffInfo = sysStaffInfoService.getById(sysStaffRelationDto.getStaffId());
+        if (Objects.nonNull(sysStaffInfo) &&StringUtils.isNotEmpty(sysStaffInfo.getRecommendId())&& sysStaffInfo.getRecommendType().intValue() == 1) {
+            RecommendInfoVo recommendInfoVo=sysStaffInfoMapper.getRecommendInfo(sysStaffInfo.getRecommendId());
+            sysStaffInfoRelationVo.setRecommendInfoVoOne(recommendInfoVo);
+            if (Objects.nonNull(recommendInfoVo)&&StringUtils.isNotEmpty(recommendInfoVo.getRecommendId()) && recommendInfoVo.getRecommendType().intValue() == 1) {
+                RecommendInfoVo recommendInfoVo1=sysStaffInfoMapper.getRecommendInfo(recommendInfoVo.getRecommendId());
+                sysStaffInfoRelationVo.setRecommendInfoVoTwo(recommendInfoVo1);
+            }
+        }
+        sysStaffInfoRelationVo.setSysStaffRelationVos(sysStaffRelationVos);
+        return sysStaffInfoRelationVo;
     }
 
     @Override

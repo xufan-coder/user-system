@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.vo.DepartInfoVo;
@@ -11,6 +12,7 @@ import com.zerody.user.vo.StaffInfoByAddressBookVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +58,9 @@ public class SysAddressBookController {
     @GetMapping(value = "/depart-info")
     public DataResult<List<DepartInfoVo>> queryDepartInfo(String id) {
         try {
+            if (StringUtils.isEmpty(id)) {
+                id = UserUtils.getUser().getCompanyId();
+            }
             List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryDepartInfo(id);
             return R.success(departInfoVoList);
         } catch (Exception e) {
@@ -74,6 +79,9 @@ public class SysAddressBookController {
     @GetMapping(value = "/team")
     public DataResult<List<DepartInfoVo>> queryTeam(String id, String departmentId) {
         try {
+            if (StringUtils.isEmpty(id)) {
+                id = UserUtils.getUser().getCompanyId();
+            }
             List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(id, departmentId);
             return R.success(departInfoVoList);
         } catch (Exception e) {
