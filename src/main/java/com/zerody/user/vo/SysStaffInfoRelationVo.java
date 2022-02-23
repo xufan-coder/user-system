@@ -15,5 +15,5 @@ public class SysStaffInfoRelationVo {
     /**一级推荐*/
     private RecommendInfoVo recommendInfoVoOne;
     /**二级推荐*/
-    private RecommendInfoVo recommendInfoVoTow;
+    private RecommendInfoVo recommendInfoVoTwo;
 }
