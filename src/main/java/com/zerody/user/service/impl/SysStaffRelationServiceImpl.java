@@ -107,7 +107,7 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
             sysStaffInfoRelationVo.setRecommendInfoVoOne(recommendInfoVo);
             if (Objects.nonNull(recommendInfoVo)&&StringUtils.isNotEmpty(recommendInfoVo.getRecommendId()) && recommendInfoVo.getRecommendType().intValue() == 1) {
                 RecommendInfoVo recommendInfoVo1=sysStaffInfoMapper.getRecommendInfo(recommendInfoVo.getRecommendId());
-                sysStaffInfoRelationVo.setRecommendInfoVoTow(recommendInfoVo1);
+                sysStaffInfoRelationVo.setRecommendInfoVoTwo(recommendInfoVo1);
             }
         }
         sysStaffInfoRelationVo.setSysStaffRelationVos(sysStaffRelationVos);
