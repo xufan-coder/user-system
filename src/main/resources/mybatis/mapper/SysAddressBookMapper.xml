@@ -27,8 +27,8 @@
         FROM
         sys_company_info AS sci
         LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
-        LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
-        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
+        LEFT JOIN union_staff_depart AS usd ON (sdi.id = usd.department_id OR usd.department_id LIKE CONCAT(sdi.id, '\_%'))
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id and ssi.comp_id = sci.id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
@@ -51,8 +51,8 @@
         FROM
         sys_company_info AS sci
         LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
-        LEFT JOIN union_staff_depart AS usd ON sdi.id = usd.department_id
-        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id
+        LEFT JOIN union_staff_depart AS usd ON  (sdi.id = usd.department_id OR usd.department_id LIKE CONCAT(sdi.id, '\_%'))
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id and ssi.comp_id = sci.id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
@@ -89,20 +89,12 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
-            ssi.deleted = 0
-            and sui.status in (0,3)
+                sui.status in (0,3)
             <if test="param.companyId != null and param.companyId != ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.isDepartment!=null">
-                <if test="param.departmentId!=null and param.departmentId neq ''">
-                    <if test="param.isDepartment==0">
-                        and sdi.parent_id=#{param.departmentId}
-                    </if>
-                    <if test="param.isDepartment==1">
-                        and sdi.id=#{param.departmentId}
-                    </if>
-                </if>
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                    and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
         </where>
     </select>
