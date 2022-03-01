@@ -5,7 +5,10 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.EntityUtils;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.service.RestrictRemoteService;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.StaffBlacklistAddDto;
@@ -14,12 +17,16 @@ import com.zerody.user.dto.UsersUseControlPageDto;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.UseControlVo;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 登录限制控制
@@ -29,7 +36,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restrict")
-public class UseControlController {
+public class UseControlController  implements RestrictRemoteService {
 	private static final Logger log=LoggerFactory.getLogger(UseControlController.class);
 	@Autowired
 	private UseControlService useControlService;
@@ -117,4 +124,23 @@ public class UseControlController {
 		}
 	}
 
+	/**
+	* 网关查询是否禁用系统
+	*/
+	@Override
+	@RequestMapping(value = "/get/auth/inner", method = RequestMethod.GET)
+	public DataResult<Boolean> getRestrictAuth(@RequestParam("token") String token) {
+		try {
+			String key = Base64.getEncoder().encodeToString("ZERODY".getBytes());
+			Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+			Object userInfo = claims.get("userInfo");
+			Map<String, Object> map = (Map)userInfo;
+			UserVo vo = EntityUtils.mapToEntity(map, UserVo.class);
+			return R.success(this.useControlService.checkUserAuth(vo));
+		} catch (Exception e) {
+			log.error("校验限制配置出错:{}", e, e);
+			return R.success(Boolean.FALSE);
+		}
+
+	}
 }

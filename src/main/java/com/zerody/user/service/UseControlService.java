@@ -1,6 +1,8 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlDto;
@@ -17,4 +19,6 @@ public interface UseControlService extends IService<UseControl> {
     void addOrUpdate(UseControlDto param);
 
     UseControlVo getByCompany(String companyId);
+
+    Boolean checkUserAuth(UserVo userId);
 }
