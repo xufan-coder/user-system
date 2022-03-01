@@ -48,6 +48,7 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
             usersUseControl.setDeptName(sysUserInfoVo.getDepartName());
             usersUseControl.setUserName(sysUserInfoVo.getUserName());
             usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
+            usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
             this.save(usersUseControl);
         }
     }
