@@ -12,6 +12,8 @@ public class UsersUseControl {
 
     private String userId;
 
+    private String companyId;
+
     private String userName;
 
     private String deptId;

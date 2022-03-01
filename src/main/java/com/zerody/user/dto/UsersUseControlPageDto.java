@@ -17,4 +17,9 @@ public class UsersUseControlPageDto extends PageQueryDto {
     */
     private Integer type;
 
+    /**
+    *   企业ID
+    */
+    private String companyId;
+
 }

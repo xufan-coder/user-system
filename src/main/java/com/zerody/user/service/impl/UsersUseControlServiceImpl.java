@@ -16,6 +16,7 @@ import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,9 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
         page.setSize(pageDto.getPageSize());
         QueryWrapper<UsersUseControl> qw = new QueryWrapper<>();
         qw.lambda().eq(UsersUseControl::getType,pageDto.getType());
+        if(DataUtil.isNotEmpty(pageDto.getCompanyId())){
+            qw.lambda().eq(UsersUseControl::getCompanyId,pageDto.getCompanyId());
+        }
         IPage<UsersUseControl> pageResult = this.page(page,qw);
         return pageResult;
     }
