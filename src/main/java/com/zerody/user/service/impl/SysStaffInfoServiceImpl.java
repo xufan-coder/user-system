@@ -2364,6 +2364,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
                 importInfo.setState(YesNo.YES);
                 errors.add(importInfo);
+                errorStr = new StringBuilder();
                 continue;
             }
             //构建用户信息；
@@ -2467,6 +2468,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
                 importInfo.setState(YesNo.YES);
                 errors.add(importInfo);
+                errorStr = new StringBuilder();
                 continue;
             }
             //构建用户信息；
