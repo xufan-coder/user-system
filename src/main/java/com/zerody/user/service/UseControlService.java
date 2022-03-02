@@ -21,4 +21,6 @@ public interface UseControlService extends IService<UseControl> {
     UseControlVo getByCompany(String companyId);
 
     Boolean checkUserAuth(UserVo userId);
+
+    Boolean checkUserAuth(String userId,String companyId);
 }

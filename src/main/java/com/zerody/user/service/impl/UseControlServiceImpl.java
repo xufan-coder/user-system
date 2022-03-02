@@ -103,6 +103,11 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
 
     @Override
     public Boolean checkUserAuth(UserVo vo) {
+        return this.checkUserAuth(vo.getUserId(),vo.getCompanyId());
+    }
+
+    @Override
+    public Boolean checkUserAuth(String userId,String companyId) {
         //1先判断全局token 是否全局禁用
         String s = this.stringRedisTemplate.opsForValue().get(CommonConstants.SYS_CLOSE);
         if(DataUtil.isNotEmpty(s)){
@@ -110,31 +115,31 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         }
         //2在判断此人是否存在黑名单
         QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
-        qw.lambda().eq(UsersUseControl::getUserId,vo.getUserId()).eq(UsersUseControl::getType,1);
+        qw.lambda().eq(UsersUseControl::getUserId,userId).eq(UsersUseControl::getType,1);
         UsersUseControl one = this.usersUseControlService.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
-            throw new DefaultException("您已被禁止登录系统，请联系管理员！");
+            throw new DefaultException("您已被禁止登录系统，如有疑问请联系公司行政人员！");
         }
         //3再校验此人白名单
         qw.clear();
-        qw.lambda().eq(UsersUseControl::getUserId,vo.getUserId()).eq(UsersUseControl::getType,2);
+        qw.lambda().eq(UsersUseControl::getUserId,userId).eq(UsersUseControl::getType,2);
         UsersUseControl authorize = this.usersUseControlService.getOne(qw);
         if(DataUtil.isNotEmpty(authorize)){
             return false;
         }
         //4.校验企业时间限制
-            //当前周几 中文需要转换
+        //当前周几 中文需要转换
         String week = DateUtil.getWeek();
-            //当前时间 24小时制
+        //当前时间 24小时制
         String hour = DateUtil.getHour();
 
         //查询该用户的企业允许登录的时间
         QueryWrapper<UseControl> UcQw =new QueryWrapper<>();
-        UcQw.lambda().eq(UseControl::getCompanyId,vo.getCompanyId());
+        UcQw.lambda().eq(UseControl::getCompanyId,companyId);
         UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
         UseControl companyAuth = this.getOne(UcQw);
         if(DataUtil.isNotEmpty(companyAuth)){
-               // 大于配置开始时间小于结束时间则允许登录使用
+            // 大于配置开始时间小于结束时间则允许登录使用
             if(Integer.parseInt(hour)>=companyAuth.getStart()
                     ||Integer.parseInt(hour)<=companyAuth.getEnd()){
                 return false;
@@ -142,7 +147,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                 StringBuffer tip = new StringBuffer();
                 tip.append("本时间段禁止登录系统，请在以下时间登录：/r/n");
                 UcQw.clear();
-                UcQw.lambda().eq(UseControl::getCompanyId,vo.getCompanyId());
+                UcQw.lambda().eq(UseControl::getCompanyId,companyId);
                 UcQw.lambda().orderByAsc(UseControl::getWeek);
                 List<UseControl> list = this.list(UcQw);
                 if(DataUtil.isNotEmpty(list)){
