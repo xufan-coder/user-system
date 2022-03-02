@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
@@ -105,14 +106,14 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         //1先判断全局token 是否全局禁用
         String s = this.stringRedisTemplate.opsForValue().get(CommonConstants.SYS_CLOSE);
         if(DataUtil.isNotEmpty(s)){
-            return true;
+            throw new DefaultException("系统禁止登录，请联系管理员！");
         }
         //2在判断此人是否存在黑名单
         QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
         qw.lambda().eq(UsersUseControl::getUserId,vo.getUserId()).eq(UsersUseControl::getType,1);
         UsersUseControl one = this.usersUseControlService.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
-            return true;
+            throw new DefaultException("您已被禁止登录系统，请联系管理员！");
         }
         //3再校验此人白名单
         qw.clear();
@@ -138,7 +139,18 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                     ||Integer.parseInt(hour)<=companyAuth.getEnd()){
                 return false;
             }else {
-                return true;
+                StringBuffer tip = new StringBuffer();
+                tip.append("本时间段禁止登录系统，请在以下时间登录：/r/n");
+                UcQw.clear();
+                UcQw.lambda().eq(UseControl::getCompanyId,vo.getCompanyId());
+                UcQw.lambda().orderByAsc(UseControl::getWeek);
+                List<UseControl> list = this.list(UcQw);
+                if(DataUtil.isNotEmpty(list)){
+                    for (UseControl useControl : list) {
+                        tip.append(WeeKEnum.getTextByNumber(useControl.getWeek())+":"+useControl.getStart()+"时~"+useControl.getEnd()+"时；/r/n");
+                    }
+                }
+                throw new DefaultException(tip.toString());
             }
         }else {
             //如果没有配置，则默认允许登录使用

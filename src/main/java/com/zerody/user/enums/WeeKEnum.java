@@ -49,4 +49,13 @@ public enum WeeKEnum {
         }
         return null;
     }
+
+    public static String getTextByNumber(Integer number){
+        for (WeeKEnum weeKEnum : WeeKEnum.values()){
+            if(number.equals(weeKEnum.getNumber())){
+                return weeKEnum.getText();
+            }
+        }
+        return null;
+    }
 }
