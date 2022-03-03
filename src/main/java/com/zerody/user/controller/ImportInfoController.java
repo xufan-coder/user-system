@@ -50,7 +50,7 @@ public class ImportInfoController {
     public DataResult<IPage<ImportInfoQueryVo>> getPageImportInfo(ImportInfoQueryDto param) {
 
         try {
-            if (UserUtils.getUser().isBackAdmin()) {
+            if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
             if (DataUtil.isEmpty(param.getType())) {
