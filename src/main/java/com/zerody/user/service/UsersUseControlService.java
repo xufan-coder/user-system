@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.UsersUseControl;
+import com.zerody.user.dto.UsersUseControlDto;
 import com.zerody.user.dto.UsersUseControlPageDto;
 
 /**
@@ -13,7 +14,7 @@ import com.zerody.user.dto.UsersUseControlPageDto;
 public interface UsersUseControlService extends IService<UsersUseControl> {
 
 
-    void addNameList(UsersUseControl param);
+    void addNameList(UsersUseControlDto param);
 
     void removeNameList(String id);
 

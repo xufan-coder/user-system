@@ -2,6 +2,8 @@ package com.zerody.user.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author  DaBai
  * @date  2022/3/1 13:57
@@ -9,17 +11,8 @@ import lombok.Data;
 
 @Data
 public class UsersUseControlDto {
-    private String id;
 
-    private String userId;
-
-    private String userName;
-
-    private String deptId;
-
-    private String deptName;
-
-    private String mobile;
+    private List<String> userIds;
 
     /**
     *   禁止1/允许2类型

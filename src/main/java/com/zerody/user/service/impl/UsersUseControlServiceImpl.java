@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
+import com.zerody.user.dto.UsersUseControlDto;
 import com.zerody.user.dto.UsersUseControlPageDto;
 import com.zerody.user.mapper.UsersUseControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
@@ -21,6 +22,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author  DaBai
  * @date  2022/3/1 14:01
@@ -33,23 +36,26 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
     @Override
-    public void addNameList(UsersUseControl param) {
-        QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
-        qw.lambda().eq(UsersUseControl::getUserId,param.getUserId());
-        qw.lambda().eq(UsersUseControl::getType,param.getType());
-        UsersUseControl one = this.getOne(qw);
-        if(DataUtil.isNotEmpty(one)){
-            throw new DefaultException("改伙伴已在名单中！");
-        }else {
-            SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId());
-            UsersUseControl usersUseControl=new UsersUseControl();
-            BeanUtils.copyProperties(param,usersUseControl);
-            usersUseControl.setDeptId(sysUserInfoVo.getDepartId());
-            usersUseControl.setDeptName(sysUserInfoVo.getDepartName());
-            usersUseControl.setUserName(sysUserInfoVo.getUserName());
-            usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
-            usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
-            this.save(usersUseControl);
+    public void addNameList(UsersUseControlDto param) {
+        List<String> userIds = param.getUserIds();
+        for (String userId : userIds) {
+            QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
+            qw.lambda().eq(UsersUseControl::getUserId,userId);
+            qw.lambda().eq(UsersUseControl::getType,param.getType());
+            UsersUseControl one = this.getOne(qw);
+            if(DataUtil.isNotEmpty(one)){
+                throw new DefaultException("伙伴"+one.getUserName()+"已在名单中！");
+            }else {
+                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId);
+                UsersUseControl usersUseControl=new UsersUseControl();
+                BeanUtils.copyProperties(param,usersUseControl);
+                usersUseControl.setDeptId(sysUserInfoVo.getDepartId());
+                usersUseControl.setDeptName(sysUserInfoVo.getDepartName());
+                usersUseControl.setUserName(sysUserInfoVo.getUserName());
+                usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
+                usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
+                this.save(usersUseControl);
+            }
         }
     }
 

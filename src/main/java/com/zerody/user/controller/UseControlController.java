@@ -13,6 +13,7 @@ import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.dto.UseControlDto;
+import com.zerody.user.dto.UsersUseControlDto;
 import com.zerody.user.dto.UsersUseControlPageDto;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
@@ -80,7 +81,7 @@ public class UseControlController  implements RestrictRemoteService {
 	 *   添加黑/白名单
 	 */
 	@PostMapping("/users/name-list/add")
-	public DataResult addNameList(@RequestBody UsersUseControl param){
+	public DataResult addNameList(@RequestBody UsersUseControlDto param){
 		try {
 			this.usesUseControlService.addNameList(param);
 			return R.success();
