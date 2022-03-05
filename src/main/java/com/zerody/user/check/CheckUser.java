@@ -3,9 +3,16 @@ package com.zerody.user.check;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.ResultCodeEnum;
+import com.zerody.common.utils.CollectionUtils;
+import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.util.IdCardUtil;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Description: 检查用户
@@ -17,7 +24,7 @@ public class CheckUser {
     /**
      * 用户操作参数校验
      */
-    public static void checkParam(SysUserInfo SysUserInfo) {
+    public static void checkParam(SysUserInfo SysUserInfo, List<FamilyMember> familyMembers) {
         if (StringUtils.isBlank(SysUserInfo.getPhoneNumber())) {
             throw new DefaultException("手机号码不能为空");
         }
@@ -30,6 +37,28 @@ public class CheckUser {
             }
         } else {
             throw new DefaultException("身份证不能为空");
+        }
+
+        if (CollectionUtils.isNotEmpty(familyMembers)) {
+            Iterator<FamilyMember> iterator = familyMembers.iterator();
+            for (int index = 1; iterator.hasNext(); index++){
+                FamilyMember family = iterator.next();
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(family.getRelationship())) {
+                    throw new DefaultException("家庭成员" + index + "关系为空");
+                }
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(family.getName())) {
+                    throw new DefaultException("家庭成员" + index + "姓名为空");
+                }
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(family.getMobile())) {
+                    throw new DefaultException("家庭成员" + index + "联系电话为空");
+                }
+                String regex = "^(1[3-9]\\d{9}$)";
+                Pattern p = Pattern.compile(regex);
+                Matcher m = p.matcher(family.getMobile());
+                if (!m.matches()) {
+                    throw new DefaultException("家庭成员" + index + "联系电话为空");
+                }
+            }
         }
     }
 

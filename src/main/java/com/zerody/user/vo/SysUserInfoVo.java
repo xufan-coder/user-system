@@ -2,6 +2,7 @@ package com.zerody.user.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.customer.EducationBackgroundEnum;
+import com.zerody.user.domain.FamilyMember;
 import lombok.Data;
 
 import java.util.Date;
@@ -232,6 +233,9 @@ public class SysUserInfoVo {
      * 工作年限
      */
     private Integer workingYears;
+
+    private List<FamilyMember> familyMembers;
+
     /**
      * 入职时间
      **/
