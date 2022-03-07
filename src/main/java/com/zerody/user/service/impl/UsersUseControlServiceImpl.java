@@ -52,6 +52,7 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
                 usersUseControl.setDeptId(sysUserInfoVo.getDepartId());
                 usersUseControl.setDeptName(sysUserInfoVo.getDepartName());
                 usersUseControl.setUserName(sysUserInfoVo.getUserName());
+                usersUseControl.setUserId(sysUserInfoVo.getId());
                 usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
                 usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
                 this.save(usersUseControl);
