@@ -56,7 +56,6 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         qw.lambda().eq(UseControl::getCompanyId,param.getCompanyId());
         List<UseControl> list = this.list(qw);
         if(DataUtil.isNotEmpty(list)){
-            qw.clear();
             this.remove(qw);
         }
         list.clear();
