@@ -7,6 +7,9 @@ import com.zerody.user.dto.ImportInfoQueryDto;
 import com.zerody.user.vo.ImportInfoQueryVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *@ClassName ImportInfoMapper
  *@author    PengQiang
@@ -26,4 +29,6 @@ public interface ImportInfoMapper extends BaseMapper<ImportInfo> {
      * @return               com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.ImportInfoQueryVo>
      */
     IPage<ImportInfoQueryVo> getPageImportInfo(@Param("param") ImportInfoQueryDto param, IPage<ImportInfoQueryVo> iPage);
+
+    List<String> getImportIdByTime(@Param("time") Date delTime);
 }

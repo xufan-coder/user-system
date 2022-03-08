@@ -19,6 +19,7 @@ import com.zerody.user.vo.ImportInfoQueryVo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -29,8 +30,11 @@ import com.zerody.user.service.ImportInfoService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +45,12 @@ import java.util.List;
  */
 @Service
 public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportInfo> implements ImportInfoService{
+
+
+
+    @Value("${import.deleted.day}")
+    private Long deletedDay;
+
 
     @Autowired
     private ImportResultInfoService importResultInfoService;
@@ -91,6 +101,19 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
         OutputStream os = response.getOutputStream();
         workbook.write(os);
         os.close();
+    }
+
+    @Override
+    public void deletedImportTiming() {
+        LocalDate now = LocalDate.now();
+        Date delTime = Date.from(now.atStartOfDay().minusDays(this.deletedDay).toInstant(ZoneOffset.of("+8")));
+        List<String> importIds = this.baseMapper.getImportIdByTime(delTime);
+        QueryWrapper<ImportInfo> delQw = new QueryWrapper<>();
+        delQw.lambda().lt(ImportInfo::getCreateTime, delTime);
+        this.baseMapper.delete(delQw);
+        QueryWrapper<ImportResultInfo> resultDelQw = new QueryWrapper<>();
+        resultDelQw.lambda().in(ImportResultInfo::getImportId, importIds);
+        this.importResultInfoService.remove(resultDelQw);
     }
 
     private List<String[]> getStaffBlacklistLoseRecord(String importId) {
