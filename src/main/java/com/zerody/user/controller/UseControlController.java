@@ -11,10 +11,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.RestrictRemoteService;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
-import com.zerody.user.dto.StaffBlacklistAddDto;
-import com.zerody.user.dto.UseControlDto;
-import com.zerody.user.dto.UsersUseControlDto;
-import com.zerody.user.dto.UsersUseControlPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.UseControlVo;
@@ -122,6 +119,21 @@ public class UseControlController  implements RestrictRemoteService {
 		} catch (Exception e) {
 			log.error("分页查询名单列表出错:{}", e, e);
 			return R.error("分页查询名单列表出错:"+e.getMessage());
+		}
+	}
+
+
+	/**
+	 *   查询名单已存在的伙伴id
+	 */
+	@GetMapping("/list-partner")
+	public DataResult<List<String>> getListUserId(UsersUseControlListDto dto) {
+		try {
+			List<String> data = this.usesUseControlService.getListUserId(dto);
+			return R.success(data);
+		} catch (Exception e) {
+			log.error("查询名单已存在的伙伴id出错:{}", e, e);
+			return R.error("查询伙伴出错:"+e.getMessage());
 		}
 	}
 
