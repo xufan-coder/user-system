@@ -144,14 +144,14 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                 return false;
             }else {
                 StringBuffer tip = new StringBuffer();
-                tip.append("本时间段禁止登录系统，请在以下时间登录：/r/n");
+                tip.append("本时间段禁止登录系统，请在以下时间登录：\r\n");
                 UcQw.clear();
                 UcQw.lambda().eq(UseControl::getCompanyId,companyId);
                 UcQw.lambda().orderByAsc(UseControl::getWeek);
                 List<UseControl> list = this.list(UcQw);
                 if(DataUtil.isNotEmpty(list)){
                     for (UseControl useControl : list) {
-                        tip.append(WeeKEnum.getTextByNumber(useControl.getWeek())+":"+useControl.getStart()+"时~"+useControl.getEnd()+"时；/r/n");
+                        tip.append(WeeKEnum.getTextByNumber(useControl.getWeek())+":"+useControl.getStart()+"时~"+useControl.getEnd()+"时；\r\n");
                     }
                 }
                 throw new DefaultException(tip.toString());
