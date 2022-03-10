@@ -140,7 +140,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         if(DataUtil.isNotEmpty(companyAuth)){
             // 大于配置开始时间小于结束时间则允许登录使用
             if(Integer.parseInt(hour)>=companyAuth.getStart()
-                    ||Integer.parseInt(hour)<=companyAuth.getEnd()){
+                    &&Integer.parseInt(hour)<=companyAuth.getEnd()){
                 return false;
             }else {
                 StringBuffer tip = new StringBuffer();
