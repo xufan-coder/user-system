@@ -2592,6 +2592,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setDepartName(data[index++]);
         bean.setJobName(data[index++]);
         bean.setRoleName(data[index++]);
+        bean.setRecommendMobile(data[index++]);
         bean.setStatus(data[index++]);
         bean.setGender(data[index++]);
         bean.setAncestral(data[index++]);
@@ -2605,5 +2606,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setHighestEducation(data[index++]);
         bean.setGraduatedFrom(data[index++]);
         bean.setMajor(data[index++]);
+        bean.setFamilyName(data[index++]);
+        bean.setFamilyMobile(data[index++]);
+        bean.setRelationship(data[index++]);
+        bean.setProfession(data[index++]);
+        bean.setFamilyContactAddress(data[index++]);
     }
 }

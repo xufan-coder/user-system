@@ -159,6 +159,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getDepartName();
             data[index++] = bean.getJobName();
             data[index++] =  bean.getRoleName();
+            data[index++] = bean.getRecommendMobile();
             data[index++] = bean.getStatus();
             data[index++] =  bean.getGender();
             data[index++] = bean.getAncestral();
@@ -171,7 +172,12 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getEmail();
             data[index++] = bean.getHighestEducation();
             data[index++] = bean.getGraduatedFrom();
-            data[index++] = bean.getMajor();
+            data[index++] = bean.getFamilyName();
+            data[index++] = bean.getFamilyName();
+            data[index++] = bean.getFamilyMobile();
+            data[index++] = bean.getRelationship();
+            data[index++] = bean.getProfession();
+            data[index++] = bean.getFamilyContactAddress();
             data[index++] = ir.getErrorCause();
             result.add(data);
         }
