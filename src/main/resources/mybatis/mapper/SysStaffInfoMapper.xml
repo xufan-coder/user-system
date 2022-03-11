@@ -997,6 +997,6 @@
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         where
             sui.status IN (0, 3)
-            AND sui.phone_number = #{recommendMobile}
+            AND sui.phone_number = #{mobile}
     </select>
 </mapper>
