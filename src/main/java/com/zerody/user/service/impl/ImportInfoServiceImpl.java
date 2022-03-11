@@ -173,7 +173,6 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getHighestEducation();
             data[index++] = bean.getGraduatedFrom();
             data[index++] = bean.getFamilyName();
-            data[index++] = bean.getFamilyName();
             data[index++] = bean.getFamilyMobile();
             data[index++] = bean.getRelationship();
             data[index++] = bean.getProfession();
