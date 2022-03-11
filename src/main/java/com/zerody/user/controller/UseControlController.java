@@ -151,7 +151,7 @@ public class UseControlController  implements RestrictRemoteService {
 			UserVo vo = EntityUtils.mapToEntity(map, UserVo.class);
 			return R.success(this.useControlService.checkUserAuth(vo));
 		} catch (DefaultException e) {
-			log.error("校验限制配置不通过:{}！",e.getMessage());
+			log.error("校验限制配置不通过:{}",e.getMessage());
 			return R.error(e.getMessage());
 		} catch (Exception e) {
 			log.error("校验限制配置异常:{}", e, e);
