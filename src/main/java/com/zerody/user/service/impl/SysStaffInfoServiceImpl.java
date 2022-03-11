@@ -1179,7 +1179,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】, "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[12])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[13])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
@@ -1390,10 +1390,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //当前企业ID
         String companyId = user.getCompanyId();
         //表头对应下标
-        //{"姓名","手机号码","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
+        //{"姓名","手机号码","部门","岗位","角色", "推荐人手机号码","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【17】};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4]) || DataUtil.isEmpty(row[11])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4]) || DataUtil.isEmpty(row[12])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
