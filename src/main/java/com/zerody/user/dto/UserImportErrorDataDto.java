@@ -29,6 +29,9 @@ public class UserImportErrorDataDto {
     /** 角色 */
     private String roleName;
 
+    /** 推荐人手机号码 */
+    private String recommendMobile;
+
     /** 状态 */
     private String status;
 
@@ -67,5 +70,20 @@ public class UserImportErrorDataDto {
 
     /** 所学专业 */
     private String major;
+
+    /** 姓名 */
+    private String familyName;
+
+    /** 号码 */
+    private String familyMobile;
+
+    /** 关系 */
+    private String relationship;
+
+    /** 职位 */
+    private String profession;
+
+    /** 联系地址 */
+    private String familyContactAddress;
 
 }

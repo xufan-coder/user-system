@@ -767,13 +767,15 @@
         sdi.id AS departId,
         sci.id AS companyId,
         sdi.depart_name AS departmentName,
-        sui.phone_number AS mobile
-
+        sui.phone_number AS mobile,
+        sjp.position_name
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        LEFT JOIN  union_staff_position AS usp ON usp.staff_id=ssi.id
+        LEFT JOIN sys_job_position AS sjp ON sjp.id=usp.position_id
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             <foreach collection="ids" item="id" open="sui.id IN (" separator="," close=")">
@@ -987,5 +989,14 @@
             </if>
             AND sui.status IN (0, 3)
         </where>
+    </select>
+    <select id="getStaffInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            ssi.id AS `staff_id`
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        where
+            sui.status IN (0, 3)
+            AND sui.phone_number
     </select>
 </mapper>

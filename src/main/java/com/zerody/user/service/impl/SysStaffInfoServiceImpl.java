@@ -88,8 +88,8 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
-    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业"};
+    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "推荐人手机号码" ,"状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
+    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "推荐人手机号码", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "家庭成员姓名", "家庭成员关系", "家庭成员电话", "从事行业", "联系地址"};
     private static final String[] PERFORMANCE_REVIEWS_EXPORT_TITLE = {"企业名称", "部门", "角色", "姓名", "业绩收入", "回款笔数", "放款金额", "放款笔数", "签单金额", "签单笔数", "在审批金额", "审批笔数", "月份"};
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
@@ -188,6 +188,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private ImportResultInfoService importResultInfoService;
 
+    @Autowired
+    private FamilyMemberService familyMemberService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -204,7 +207,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
-        CheckUser.checkParam(sysUserInfo);
+        CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
         //查看手机号或登录名是否被占用
         Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
         if (flag) {
@@ -277,6 +280,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
+
+        StaffInfoVo staffInfoVo = new StaffInfoVo();
+        staffInfoVo.setStaffId(staff.getId());
+        staffInfoVo.setUserId(sysUserInfo.getId());
+        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
@@ -426,7 +435,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
-        CheckUser.checkParam(sysUserInfo);
+        CheckUser.checkParam(sysUserInfo,setSysUserInfoDto.getFamilyMembers());
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
@@ -498,7 +507,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.sysStaffInfoMapper.updateDateJoin(staff.getId(),null);
             }
         }
-
+        StaffInfoVo staffInfoVo = new StaffInfoVo();
+        staffInfoVo.setStaffId(staff.getId());
+        staffInfoVo.setUserId(sysUserInfo.getId());
+        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
@@ -763,6 +775,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
+        QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
+        fmQw.lambda().eq(FamilyMember::getStaffId, id);
+        fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
+        userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
@@ -1063,27 +1079,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return importInfo.getId();
     }
 
-    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user) {
+    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user, StringBuilder recommendId) {
         //表头对应下标
-        //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
+        //{"姓名","手机号码","企业","部门","岗位","角色", "推荐人手机号码","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
-        Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
-                row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
+        Integer status = StringUtils.isEmpty(row[7]) ? StatusEnum.activity.getValue() : row[7].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
+                row[7].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
-        userInfo.setGender(row[7].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
-        userInfo.setAncestral(row[8]);
-        userInfo.setNation(row[9]);
-        userInfo.setMaritalStatus(StringUtils.isEmpty(row[10]) ? null : MaritalStatusEnum.getCodeByName(row[10]).getCode());
-        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
-        userInfo.setCertificateCard(row[12]);
-        userInfo.setCertificateCardAddress(row[13]);
-        userInfo.setContactAddress(row[14]);
-        userInfo.setEmail(row[15]);
-        userInfo.setHighestEducation(row[16]);
-        userInfo.setGraduatedFrom(row[17]);
-        userInfo.setMajor(row[18]);
+        userInfo.setGender(row[8].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
+        userInfo.setAncestral(row[9]);
+        userInfo.setNation(row[10]);
+        userInfo.setMaritalStatus(StringUtils.isEmpty(row[11]) ? null : MaritalStatusEnum.getCodeByName(row[11]).getCode());
+        userInfo.setBirthday(StringUtils.isEmpty(row[12]) ? null : new Date(row[12]));
+        userInfo.setCertificateCard(row[13]);
+        userInfo.setCertificateCardAddress(row[14]);
+        userInfo.setContactAddress(row[15]);
+        userInfo.setEmail(row[16]);
+        userInfo.setHighestEducation(row[17]);
+        userInfo.setGraduatedFrom(row[18]);
+        userInfo.setMajor(row[19]);
         userInfo.setRegisterTime(new Date());
         userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
@@ -1105,6 +1121,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCreateTime(new Date());
         staff.setCreateId(user.getUserId());
         staff.setCreateUser(user.getUserName());
+        staff.setRecommendId(recommendId.toString());
+        staff.setRecommendType(0);
+        if (StringUtils.isNotEmpty(recommendId.toString())) {
+            staff.setRecommendType(1);
+        }
+
+        FamilyMember family = new FamilyMember();
+        family.setName(row[20]);
+        family.setRelationship(row[21]);
+        family.setMobile(row[22]);
+        family.setProfession(row[23]);
+        family.setContactAddress(row[24]);
+        StaffInfoVo staffInfoVo = new StaffInfoVo();
+        staffInfoVo.setUserId(userInfo.getId());
+        staffInfoVo.setStaffId(staff.getId());
+        this.familyMemberService.addFamilyMember(family, staffInfoVo);
+
         //保存到员工表
         this.save(staff);
         SysLoginInfo loginInfo = new SysLoginInfo();
@@ -1140,11 +1173,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     private String checkCompanyParam(String[] row, StringBuilder errorStr,
-                                     UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff) {
+                                     UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, StringBuilder recommendId) {
         String companyId = null;
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色","状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
-        // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】};
+        // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】, "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
         //必填项校验
         if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[12])) {
             errorStr.append("请填写红色区域必填项,");
@@ -1212,6 +1245,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                         unionRoleStaff.setRoleName(roleName);
                     }
                 }
+
+                String recommendMobile = row[6];
+                if (StringUtils.isNotEmpty(recommendMobile)) {
+                    if (recommendMobile.equals(phone)) {
+                        errorStr.append("推荐人不能是自身");
+                    }
+                    StaffInfoVo staff = this.sysStaffInfoMapper.getStaffInfoByMobile(recommendMobile);
+                    if (DataUtil.isEmpty(staff)) {
+                        errorStr.append("推荐人不存在");
+                    } else {
+                        recommendId.append(staff.getStaffId());
+                    }
+                }
                 //本企业部门是否存在
                 SysDepartmentInfo byName = null;
                 if (DataUtil.isNotEmpty(departName)) {
@@ -1240,35 +1286,35 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
-        if (StringUtils.isNotEmpty(row[10])) {
-            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[10]))) {
+        if (StringUtils.isNotEmpty(row[11])) {
+            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[11]))) {
                 errorStr.append("婚姻状况错误");
             }
         }
         return companyId;
     }
 
-    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user) {
+    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user, StringBuilder recommendId) {
         //表头对应下标
-        //{"姓名","手机号码","部门","岗位","角色","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
+        //{"姓名","手机号码","部门","岗位","角色", "推荐人手机号码","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
-        Integer status = StringUtils.isEmpty(row[5]) ? StatusEnum.activity.getValue() : row[5].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
-                row[5].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
+        Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
+                row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
-        userInfo.setGender(row[6].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
-        userInfo.setAncestral(row[7]);
-        userInfo.setNation(row[8]);
-        userInfo.setMaritalStatus(StringUtils.isEmpty(row[9]) ? null : MaritalStatusEnum.getCodeByName(row[9]).getCode());
-        userInfo.setBirthday(StringUtils.isEmpty(row[10]) ? null : new Date(row[10]));
-        userInfo.setCertificateCard(row[11]);
-        userInfo.setCertificateCardAddress(row[12]);
-        userInfo.setContactAddress(row[13]);
-        userInfo.setEmail(row[14]);
-        userInfo.setHighestEducation(row[15]);
-        userInfo.setGraduatedFrom(row[16]);
-        userInfo.setMajor(row[17]);
+        userInfo.setGender(row[7].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
+        userInfo.setAncestral(row[8]);
+        userInfo.setNation(row[9]);
+        userInfo.setMaritalStatus(StringUtils.isEmpty(row[10]) ? null : MaritalStatusEnum.getCodeByName(row[10]).getCode());
+        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
+        userInfo.setCertificateCard(row[12]);
+        userInfo.setCertificateCardAddress(row[13]);
+        userInfo.setContactAddress(row[14]);
+        userInfo.setEmail(row[15]);
+        userInfo.setHighestEducation(row[16]);
+        userInfo.setGraduatedFrom(row[17]);
+        userInfo.setMajor(row[18]);
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
         userInfo.setIsEdit(YesNo.YES);
@@ -1291,8 +1337,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setCreateTime(new Date());
         staff.setCreateId(user.getUserId());
         staff.setCreateUser(user.getUserName());
+        staff.setRecommendId(recommendId.toString());
+        staff.setRecommendType(0);
+        if (StringUtils.isNotEmpty(recommendId.toString())) {
+            staff.setRecommendType(1);
+        }
+
         //保存到员工表
         this.save(staff);
+
+
+        FamilyMember family = new FamilyMember();
+        family.setName(row[19]);
+        family.setRelationship(row[20]);
+        family.setMobile(row[21]);
+        family.setProfession(row[22]);
+        family.setContactAddress(row[23]);
+        StaffInfoVo staffInfoVo = new StaffInfoVo();
+        staffInfoVo.setUserId(userInfo.getId());
+        staffInfoVo.setStaffId(staff.getId());
+        this.familyMemberService.addFamilyMember(family, staffInfoVo);
+
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
         loginInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
@@ -1321,7 +1386,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     private void checkParam(String[] row, StringBuilder errorStr,
-                            UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user) {
+                            UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user, StringBuilder recommendId) {
         //当前企业ID
         String companyId = user.getCompanyId();
         //表头对应下标
@@ -1383,6 +1448,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     unionRoleStaff.setRoleName(roleName);
                 }
             }
+            String recommendMobile = row[5];
+            if (StringUtils.isNotEmpty(recommendMobile)) {
+                if (recommendMobile.equals(phone)) {
+                    errorStr.append("推荐人不能是自身");
+                }
+                StaffInfoVo staff = this.sysStaffInfoMapper.getStaffInfoByMobile(recommendMobile);
+                if (DataUtil.isEmpty(staff)) {
+                    errorStr.append("推荐人不存在");
+                } else {
+                    recommendId.append(staff.getStaffId());
+                }
+            }
             //本企业部门是否存在
             SysDepartmentInfo byName = null;
             if (DataUtil.isNotEmpty(departName)) {
@@ -1411,8 +1488,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
-        if (StringUtils.isNotEmpty(row[9])) {
-            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[9]))) {
+        if (StringUtils.isNotEmpty(row[10])) {
+            if (DataUtil.isEmpty(MaritalStatusEnum.getCodeByName(row[10]))) {
                 errorStr.append("婚姻状况错误");
             }
         }
@@ -2319,6 +2396,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<SmsDto> smsDtos = new ArrayList<>();
         //错误字符构造
         StringBuilder errorStr = new StringBuilder("");
+        //错误字符构造
+        StringBuilder recommendId = new StringBuilder("");
 
         //循环行
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
@@ -2351,7 +2430,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             mobiles.put(row[1], row[1]);
             idCards.put(row[12], row[12]);
-            String companyId = checkCompanyParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff);
+            String companyId = checkCompanyParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, recommendId);
             if (errorStr.length() > 0) {
                 importInfo = new ImportResultInfo();
                 errorData = new UserImportErrorDataDto();
@@ -2364,10 +2443,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
                 importInfo.setState(YesNo.YES);
                 errors.add(importInfo);
+                errorStr = new StringBuilder();
                 continue;
             }
             //构建用户信息；
-            String staffId = saveCompanyUser(row, smsDtos, companyId, user);
+            String staffId = saveCompanyUser(row, smsDtos, companyId, user, recommendId);
             unionStaffDepart.setStaffId(staffId);
             unionStaffPosition.setStaffId(staffId);
             unionRoleStaff.setStaffId(staffId);
@@ -2418,6 +2498,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //错误字符构造
         StringBuilder errorStr = new StringBuilder("");
 
+        StringBuilder recommendId = new StringBuilder("");
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
         qw.lambda().eq(SysCompanyInfo::getId, user.getCompanyId())
@@ -2454,7 +2535,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             mobiles.put(row[1], row[1]);
             idCards.put(row[11], row[11]);
-            checkParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, user);
+            checkParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, user, recommendId);
             if (errorStr.length() > 0) {
                 importInfo = new ImportResultInfo();
                 errorData = new UserImportErrorDataDto();
@@ -2467,10 +2548,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 importInfo.setType(ImportResultInfoType.STAFF_EXTERNAL);
                 importInfo.setState(YesNo.YES);
                 errors.add(importInfo);
+                errorStr = new StringBuilder();
                 continue;
             }
             //构建用户信息；
-            String staffId = saveUser(row, smsDtos, sysCompanyInfo, user);
+            String staffId = saveUser(row, smsDtos, sysCompanyInfo, user, recommendId);
             unionStaffDepart.setStaffId(staffId);
             unionStaffPosition.setStaffId(staffId);
             unionRoleStaff.setStaffId(staffId);
@@ -2510,6 +2592,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setDepartName(data[index++]);
         bean.setJobName(data[index++]);
         bean.setRoleName(data[index++]);
+        bean.setRecommendMobile(data[index++]);
         bean.setStatus(data[index++]);
         bean.setGender(data[index++]);
         bean.setAncestral(data[index++]);
@@ -2523,5 +2606,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setHighestEducation(data[index++]);
         bean.setGraduatedFrom(data[index++]);
         bean.setMajor(data[index++]);
+        bean.setFamilyName(data[index++]);
+        bean.setFamilyMobile(data[index++]);
+        bean.setRelationship(data[index++]);
+        bean.setProfession(data[index++]);
+        bean.setFamilyContactAddress(data[index++]);
     }
 }

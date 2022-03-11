@@ -38,4 +38,6 @@ public interface ImportInfoService extends IService<ImportInfo> {
      * @return               void
      */
     void doExportImportInfo(HttpServletResponse response, String id) throws IOException;
+
+    void deletedImportTiming();
 }
