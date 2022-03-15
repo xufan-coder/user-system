@@ -1103,6 +1103,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setRegisterTime(new Date());
         userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
+        userInfo.setUrgentName(row[20]);
+        userInfo.setUrgentPhone(row[21]);
+        userInfo.setUrgentRelation(row[22]);
         userInfo.setCreateId(user.getUserId());
         userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
@@ -1128,11 +1131,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         FamilyMember family = new FamilyMember();
-        family.setName(row[20]);
-        family.setRelationship(row[21]);
-        family.setMobile(row[22]);
-        family.setProfession(row[23]);
-        family.setContactAddress(row[24]);
+        family.setName(row[23]);
+        family.setRelationship(row[24]);
+        family.setMobile(row[25]);
+        family.setProfession(row[26]);
+        family.setContactAddress(row[27]);
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setUserId(userInfo.getId());
         staffInfoVo.setStaffId(staff.getId());
