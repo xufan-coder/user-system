@@ -25,9 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author  DaBai
@@ -128,7 +130,8 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         }
         //4.校验企业时间限制
         //当前周几 中文需要转换
-        String week = DateUtil.getWeek();
+        SimpleDateFormat formatter = new SimpleDateFormat("E", Locale.CHINA);
+        String week = formatter.format(new Date());
         //当前时间 24小时制
         String hour = DateUtil.getHour();
 
