@@ -70,6 +70,20 @@ public class UserImportErrorDataDto {
 
     /** 所学专业 */
     private String major;
+    /**
+     *   紧急联系人姓名
+     */
+    private String urgentName;
+
+    /**
+     *   '紧急联系人关系'
+     */
+    private String urgentRelation;
+
+    /**
+     *   '紧急联系人电话'
+     */
+    private String urgentPhone;
 
     /** 姓名 */
     private String familyName;
