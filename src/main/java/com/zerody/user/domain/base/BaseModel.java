@@ -20,7 +20,7 @@ public class BaseModel {
     //主键id
     @TableId(
             value = "id",
-            type = IdType.UUID
+            type = IdType.ASSIGN_UUID
     )
     private String id;
 

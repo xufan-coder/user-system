@@ -776,7 +776,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
         QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
-        fmQw.lambda().eq(FamilyMember::getStaffId, userInfo.getId());
+        fmQw.lambda().eq(FamilyMember::getUserId, userInfo.getId());
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
@@ -1835,7 +1835,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
         QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
-        fmQw.lambda().eq(FamilyMember::getStaffId, userInfo.getId());
+        fmQw.lambda().eq(FamilyMember::getUserId, userInfo.getId());
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
