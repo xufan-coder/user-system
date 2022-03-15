@@ -2,6 +2,7 @@ package com.zerody.user.check;
 
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.PhoneHomeLocationUtils;
 import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.FamilyMember;
@@ -24,21 +25,24 @@ public class CheckUser {
     /**
      * 用户操作参数校验
      */
-    public static void checkParam(SysUserInfo SysUserInfo, List<FamilyMember> familyMembers) {
-        if (StringUtils.isBlank(SysUserInfo.getPhoneNumber())) {
+    public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers) {
+        if (StringUtils.isBlank(sysUserInfo.getPhoneNumber())) {
             throw new DefaultException("手机号码不能为空");
         }
-        if (!SysUserInfo.getPhoneNumber().matches("\\d{11}")) {
+        if (!sysUserInfo.getPhoneNumber().matches("\\d{11}")) {
             throw new DefaultException("手机号码长度不正确");
         }
-        if (StringUtils.isNotEmpty(SysUserInfo.getCertificateCard())) {
-            if (!IdCardUtil.validate18Idcard(SysUserInfo.getCertificateCard())) {
+        if (StringUtils.isNotEmpty(sysUserInfo.getCertificateCard())) {
+            if (!IdCardUtil.validate18Idcard(sysUserInfo.getCertificateCard())) {
                 throw new DefaultException("身份证不合法");
             }
         } else {
             throw new DefaultException("身份证不能为空");
         }
 
+        if (StringUtils.isNotEmpty(sysUserInfo.getUrgentPhone()) && !PhoneHomeLocationUtils.checkPhoneBoolean(sysUserInfo.getUrgentPhone())) {
+            throw new DefaultException("紧急联系人电话不合法");
+        }
         if (CollectionUtils.isNotEmpty(familyMembers)) {
             Iterator<FamilyMember> iterator = familyMembers.iterator();
             for (int index = 1; iterator.hasNext(); index++){
@@ -56,7 +60,7 @@ public class CheckUser {
                 Pattern p = Pattern.compile(regex);
                 Matcher m = p.matcher(family.getMobile());
                 if (!m.matches()) {
-                    throw new DefaultException("家庭成员" + index + "联系电话为空");
+                    throw new DefaultException("家庭成员" + index + "联系电话不合法");
                 }
             }
         }

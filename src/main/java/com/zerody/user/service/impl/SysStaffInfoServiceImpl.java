@@ -776,7 +776,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userInfo.setStaffRelationDtoList(sysStaffRelationVos);
         }
         QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
-        fmQw.lambda().eq(FamilyMember::getStaffId, id);
+        fmQw.lambda().eq(FamilyMember::getStaffId, userInfo.getId());
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
@@ -1198,6 +1198,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 errorStr.append(e.getMessage());
                 fild = !fild;
             }
+            if (StringUtils.isNotEmpty(row[22]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[22])) {
+                errorStr.append("紧急联系人电话不合法,");
+            }
+
+            if (StringUtils.isNotEmpty(row[25]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[25])) {
+                errorStr.append("家庭成员电话,");
+            }
             //手机号码判断是否已注册账户
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
@@ -1414,6 +1421,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             } catch (DefaultException e) {
                 errorStr.append(e.getMessage());
                 fild = !fild;
+            }
+            if (StringUtils.isNotEmpty(row[21]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[21])) {
+                errorStr.append("紧急联系人电话不合法,");
+            }
+
+            if (StringUtils.isNotEmpty(row[24]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[24])) {
+                errorStr.append("家庭成员电话,");
             }
             //手机号码判断是否已注册账户
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
@@ -1818,6 +1832,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
+
+
+        QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
+        fmQw.lambda().eq(FamilyMember::getStaffId, userInfo.getId());
+        fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
+        userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
+
         //获取荣耀和惩罚记录
         getRecord(userInfo.getStaffId(), userInfo);
         //查询关系
