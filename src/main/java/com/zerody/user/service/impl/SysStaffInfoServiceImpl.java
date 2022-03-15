@@ -2428,6 +2428,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
             UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
             UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
+            recommendId = new StringBuilder();
             if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
                 errorStr.append("表格中重复手机号,");
             }
@@ -2533,6 +2534,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             UnionStaffDepart unionStaffDepart = new UnionStaffDepart();
             UnionStaffPosition unionStaffPosition = new UnionStaffPosition();
             UnionRoleStaff unionRoleStaff = new UnionRoleStaff();
+            recommendId = new StringBuilder("");
             if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
                 errorStr.append("表格中重复手机号,");
             }
