@@ -132,14 +132,12 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         //当前周几 中文需要转换
         SimpleDateFormat formatter = new SimpleDateFormat("E", Locale.CHINA);
         String week = formatter.format(new Date());
-        log.info("当日星期数:"+week);
         //当前时间 24小时制
         String hour = DateUtil.getHour();
 
         //查询该用户的企业允许登录的时间
         QueryWrapper<UseControl> UcQw =new QueryWrapper<>();
         UcQw.lambda().eq(UseControl::getCompanyId,companyId);
-        log.info("枚举星期数:"+WeeKEnum.getNumberByText(week));
         UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
         UseControl companyAuth = this.getOne(UcQw);
         if(DataUtil.isNotEmpty(companyAuth)){

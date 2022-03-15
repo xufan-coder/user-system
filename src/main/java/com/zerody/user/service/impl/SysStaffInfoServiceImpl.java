@@ -88,8 +88,8 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "推荐人手机号码" ,"状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
-    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "推荐人手机号码", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "家庭成员姓名", "家庭成员关系", "家庭成员电话", "从事行业", "联系地址"};
+    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "推荐人手机号码" ,"状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
+    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "推荐人手机号码", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话", "从事行业", "联系地址"};
     private static final String[] PERFORMANCE_REVIEWS_EXPORT_TITLE = {"企业名称", "部门", "角色", "姓名", "业绩收入", "回款笔数", "放款金额", "放款笔数", "签单金额", "签单笔数", "在审批金额", "审批笔数", "月份"};
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
@@ -1319,6 +1319,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setStatus(status);
         userInfo.setIsEdit(YesNo.YES);
         userInfo.setCreateId(user.getUserId());
+        userInfo.setUrgentName(row[19]);
+        userInfo.setUrgentPhone(row[20]);
+        userInfo.setUrgentRelation(row[21]);
         userInfo.setCreateUser(user.getUserName());
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
@@ -1348,11 +1351,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
         FamilyMember family = new FamilyMember();
-        family.setName(row[19]);
-        family.setRelationship(row[20]);
-        family.setMobile(row[21]);
-        family.setProfession(row[22]);
-        family.setContactAddress(row[23]);
+        family.setName(row[22]);
+        family.setRelationship(row[23]);
+        family.setMobile(row[24]);
+        family.setProfession(row[25]);
+        family.setContactAddress(row[26]);
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setUserId(userInfo.getId());
         staffInfoVo.setStaffId(staff.getId());
@@ -2606,6 +2609,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setHighestEducation(data[index++]);
         bean.setGraduatedFrom(data[index++]);
         bean.setMajor(data[index++]);
+        bean.setUrgentName(data[index++]);
+        bean.setUrgentPhone(data[index++]);
+        bean.setUrgentRelation(data[index++]);
         bean.setFamilyName(data[index++]);
         bean.setFamilyMobile(data[index++]);
         bean.setRelationship(data[index++]);

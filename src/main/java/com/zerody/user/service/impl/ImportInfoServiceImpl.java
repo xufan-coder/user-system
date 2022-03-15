@@ -147,9 +147,9 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             UserImportErrorDataDto bean = JSONObject.parseObject(ir.getImportContent(), UserImportErrorDataDto.class);
             int index = 0;
             if (StringUtils.isEmpty(companyId)) {
-                data = new String[26];
+                data = new String[29];
             } else {
-                data = new String[25];
+                data = new String[28];
             }
             data[index++] = bean.getName();
             data[index++] = bean.getMobile();
@@ -173,6 +173,9 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getHighestEducation();
             data[index++] = bean.getGraduatedFrom();
             data[index++] = bean.getMajor();
+            data[index++] = bean.getUrgentName();
+            data[index++] = bean.getUrgentPhone();
+            data[index++] = bean.getUrgentRelation();
             data[index++] = bean.getFamilyName();
             data[index++] = bean.getFamilyMobile();
             data[index++] = bean.getRelationship();
