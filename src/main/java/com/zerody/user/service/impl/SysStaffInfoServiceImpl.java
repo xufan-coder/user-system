@@ -1198,7 +1198,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 errorStr.append(e.getMessage());
                 fild = !fild;
             }
-            if (StringUtils.isNotEmpty(row[22]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[22])) {
+            if (StringUtils.isNotEmpty(row[21]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[21])) {
                 errorStr.append("紧急联系人电话不合法,");
             }
 
@@ -1422,7 +1422,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 errorStr.append(e.getMessage());
                 fild = !fild;
             }
-            if (StringUtils.isNotEmpty(row[21]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[21])) {
+            if (StringUtils.isNotEmpty(row[20]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[20])) {
                 errorStr.append("紧急联系人电话不合法,");
             }
 
