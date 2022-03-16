@@ -1203,7 +1203,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             if (StringUtils.isNotEmpty(row[25]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[25])) {
-                errorStr.append("家庭成员电话,");
+                errorStr.append("家庭成员电话不合法,");
             }
             //手机号码判断是否已注册账户
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
@@ -1427,7 +1427,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             if (StringUtils.isNotEmpty(row[24]) && !PhoneHomeLocationUtils.checkPhoneBoolean(row[24])) {
-                errorStr.append("家庭成员电话,");
+                errorStr.append("家庭成员电话不合法,");
             }
             //手机号码判断是否已注册账户
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
