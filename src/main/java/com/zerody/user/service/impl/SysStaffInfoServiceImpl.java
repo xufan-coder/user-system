@@ -873,14 +873,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 删除员工号 去掉企业管理
         QueryWrapper<CompanyAdmin> companyAdminUw = new QueryWrapper<>();
         companyAdminUw.lambda().eq(CompanyAdmin::getStaffId, staffId);
+        companyAdminUw.lambda().eq(CompanyAdmin::getCompanyId, staffId);
+        CompanyAdmin admin = this.companyAdminMapper.selectOne(companyAdminUw);
         // 不管是不是企业负责人 删除就完事了
         companyAdminMapper.delete(companyAdminUw);
 
-        UpdateWrapper<SysCompanyInfo> companyUw = new UpdateWrapper<>();
-        companyUw.lambda().set(SysCompanyInfo::getContactPhone, null);
-        companyUw.lambda().set(SysCompanyInfo::getContactName, null);
-        companyUw.lambda().eq(SysCompanyInfo::getId, staff.getCompId());
-        this.sysCompanyInfoMapper.update(null, companyUw);
+        if (DataUtil.isNotEmpty(admin)) {
+            UpdateWrapper<SysCompanyInfo> companyUw = new UpdateWrapper<>();
+            companyUw.lambda().set(SysCompanyInfo::getContactPhone, null);
+            companyUw.lambda().set(SysCompanyInfo::getContactName, null);
+            companyUw.lambda().eq(SysCompanyInfo::getId, admin.getCompanyId());
+            this.sysCompanyInfoMapper.update(null, companyUw);
+        }
 
 
         // 删除员工时去掉他身上的负责人
