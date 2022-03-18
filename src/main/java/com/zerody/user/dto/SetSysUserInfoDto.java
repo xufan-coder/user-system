@@ -1,5 +1,6 @@
 package com.zerody.user.dto;
 
+import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
 import lombok.Data;
 
@@ -91,6 +92,8 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 关系
      */
     private List<SysStaffRelationDto> staffRelationDtoList;
+
+    private List<FamilyMember> familyMembers;
 
     /**
      * 推荐人id

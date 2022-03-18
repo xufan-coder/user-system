@@ -73,6 +73,9 @@ import lombok.extern.slf4j.Slf4j;
 public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Autowired
+    private UseControlService useControlService;
+
+    @Autowired
     private CheckUtil checkUtil;
 
     @Autowired
@@ -215,6 +218,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             }
             String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
             SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
+//            try {
+//                useControlService.checkUserAuth(checkLoginVo.getUserId(), companyId);
+//            }catch (DefaultException e){
+//                log.error(params.getUserName()+"登录限制：{}",e.getMessage());
+//                return R.error(e.getMessage());
+//            }
             if (DataUtil.isEmpty(company)) {
                 return R.error("数据异常！");
             }
@@ -277,6 +286,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             info.setUserType(UserTypeEnum.CRM_CEO.name());
         }else {
             SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.getUserInfo(userName);
+//            try {
+//                useControlService.checkUserAuth(sysLoginUserInfoVo.getId(), sysLoginUserInfoVo.getCompanyId());
+//            }catch (DefaultException e){
+//                log.error(userName+"短信登录限制：{}",e.getMessage());
+//                return R.error(e.getMessage());
+//            }
             if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }

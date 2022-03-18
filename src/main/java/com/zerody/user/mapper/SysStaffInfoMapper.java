@@ -396,4 +396,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<SalesmanRoleInfoVo> getSalesmanNumCompayList(@Param("companyIds")List<String> companyIds, @Param("year") Integer year, @Param("month") Integer month);
     List<SalesmanRoleInfoVo> getSalesmanNumDepartList(@Param("departIds")List<String> departIds, @Param("year") Integer year, @Param("month") Integer month);
     List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("userIds")List<String> userIds);
+
+    StaffInfoVo getStaffInfoByMobile(@Param("mobile") String recommendMobile);
 }

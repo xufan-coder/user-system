@@ -128,7 +128,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public DataResult addUser(SysUserInfo userInfo) {
         log.info("B端添加用户入参---{}", JSON.toJSONString(userInfo));
         //如果校验不通过提示前端
-        CheckUser.checkParam(userInfo);
+        CheckUser.checkParam(userInfo, null);
         //通过校验 把状态设为正常使用状态
         userInfo.setStatus(StatusEnum.activity.getValue());
         //查看手机号或登录名是否被占用

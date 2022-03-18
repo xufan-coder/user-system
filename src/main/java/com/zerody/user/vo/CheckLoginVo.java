@@ -18,6 +18,12 @@ public class CheckLoginVo {
 
     /**
      *
+     *  userId
+     */
+    private String userId;
+
+    /**
+     *
      * 员工ID
      */
     private String staffId;

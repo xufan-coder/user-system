@@ -26,4 +26,11 @@
         </where>
         ORDER BY ii.create_time DESC
     </select>
+    <select id="getImportIdByTime" resultType="java.lang.String">
+        SELECT
+                ii.id
+        FROM import_info AS ii
+        WHERE
+                ii.create_time &lt; #{time}
+    </select>
 </mapper>
