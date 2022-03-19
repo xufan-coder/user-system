@@ -1214,7 +1214,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 errorStr.append("此手机号码已注册过账户,");
             }
             //身份证号码校验
-            String cardId = row[12];
+            String cardId = row[13];
             //验证身份证
             if (DataUtil.isNotEmpty(cardId)) {
                 if (!IdCardUtil.isValidatedAllIdcard(cardId)) {
@@ -1438,7 +1438,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 errorStr.append("此手机号码已注册过账户,");
             }
             //身份证号码校验
-            String cardId = row[11];
+            String cardId = row[12];
             //验证身份证
             if (DataUtil.isNotEmpty(cardId)) {
                 if (!IdCardUtil.isValidatedAllIdcard(cardId)) {
