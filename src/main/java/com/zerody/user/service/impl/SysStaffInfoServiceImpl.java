@@ -26,6 +26,7 @@ import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
@@ -48,6 +49,7 @@ import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.CommonUtils;
+import com.zerody.user.util.DateUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
 import lombok.Data;
@@ -1083,20 +1085,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return importInfo.getId();
     }
 
-    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user, StringBuilder recommendId) {
+    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user, StringBuilder recommendId) throws ParseException {
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色", "推荐人手机号码","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
         Integer status = StringUtils.isEmpty(row[7]) ? StatusEnum.activity.getValue() : row[7].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
                 row[7].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo = new SysUserInfo();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
         userInfo.setGender(row[8].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[9]);
         userInfo.setNation(row[10]);
         userInfo.setMaritalStatus(StringUtils.isEmpty(row[11]) ? null : MaritalStatusEnum.getCodeByName(row[11]).getCode());
-        userInfo.setBirthday(StringUtils.isEmpty(row[12]) ? null : new Date(row[12]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[12]) ? null : format.parse(row[12]));
         userInfo.setCertificateCard(row[13]);
         userInfo.setCertificateCardAddress(row[14]);
         userInfo.setContactAddress(row[15]);
@@ -1308,20 +1311,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return companyId;
     }
 
-    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user, StringBuilder recommendId) {
+    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user, StringBuilder recommendId) throws ParseException {
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色", "推荐人手机号码","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
         Integer status = StringUtils.isEmpty(row[6]) ? StatusEnum.activity.getValue() : row[6].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
                 row[6].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo = new SysUserInfo();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
         userInfo.setGender(row[7].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[8]);
         userInfo.setNation(row[9]);
         userInfo.setMaritalStatus(StringUtils.isEmpty(row[10]) ? null : MaritalStatusEnum.getCodeByName(row[10]).getCode());
-        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : new Date(row[11]));
+        userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : format.parse(row[11]));
         userInfo.setCertificateCard(row[12]);
         userInfo.setCertificateCardAddress(row[13]);
         userInfo.setContactAddress(row[14]);
@@ -2409,7 +2413,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
     }
 
-    private Map<String, Integer> doBatchImportCompanyUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) {
+    private Map<String, Integer> doBatchImportCompanyUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) throws ParseException {
         Map<String, Integer> result = new HashMap<>();
         List<ImportResultInfo> errors = new ArrayList<>();
         Integer excelRows = 0;
@@ -2509,7 +2513,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return result;
     }
 
-    private Map<String, Integer> doBatchImportUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) {
+    private Map<String, Integer> doBatchImportUserSave(List<String[]> dataList, ImportInfo imp, UserVo user) throws ParseException {
         Map<String, Integer> result = new HashMap<>();
         List<ImportResultInfo> errors = new ArrayList<>();
         Integer excelRows = 0;
