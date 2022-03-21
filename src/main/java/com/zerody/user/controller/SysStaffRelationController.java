@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.SysStaffRelationDto;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysStaffRelationService;
 import com.zerody.user.vo.SysStaffInfoRelationVo;
 import com.zerody.user.vo.SysStaffRelationVo;
@@ -25,6 +27,9 @@ public class SysStaffRelationController {
 
     @Autowired
     private SysStaffRelationService sysStaffRelationService;
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
 
     /**
      * 添加关系
@@ -53,5 +58,11 @@ public class SysStaffRelationController {
             log.error("查询员工关系错误:{}" + JSON.toJSONString(sysStaffRelationDto), e);
             return R.error(e.getMessage());
         }
+    }
+
+    @GetMapping(value = "/query/{staffId}")
+    public DataResult<SysStaffInfo> queryRelationListById(@PathVariable("staffId") String staffId){
+        SysStaffInfo sysStaffRelationVo = this.sysStaffInfoService.getById(staffId);
+        return R.success(sysStaffRelationVo);
     }
 }
