@@ -19,6 +19,7 @@ import com.zerody.user.vo.ImportInfoQueryVo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -29,8 +30,11 @@ import com.zerody.user.service.ImportInfoService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +45,12 @@ import java.util.List;
  */
 @Service
 public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportInfo> implements ImportInfoService{
+
+
+
+    @Value("${import.deleted.day}")
+    private Long deletedDay;
+
 
     @Autowired
     private ImportResultInfoService importResultInfoService;
@@ -74,10 +84,10 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             case ImportResultInfoType.STAFF_EXTERNAL_VICE:
                 if (DataUtil.isNotEmpty(info.getCompanyId())) {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 4, 11};
+                    requiredNum = new Integer[]{0, 1, 4, 12};
                 } else {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 2, 5, 12};
+                    requiredNum = new Integer[]{0, 1, 2, 5, 13};
                 }
                 header[header.length - 1] = "导入失败原因";
                 data = this.getStaffoseRecord(id, info.getCompanyId());
@@ -91,6 +101,19 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
         OutputStream os = response.getOutputStream();
         workbook.write(os);
         os.close();
+    }
+
+    @Override
+    public void deletedImportTiming() {
+        LocalDate now = LocalDate.now();
+        Date delTime = Date.from(now.atStartOfDay().minusDays(this.deletedDay).toInstant(ZoneOffset.of("+8")));
+        List<String> importIds = this.baseMapper.getImportIdByTime(delTime);
+        QueryWrapper<ImportInfo> delQw = new QueryWrapper<>();
+        delQw.lambda().lt(ImportInfo::getCreateTime, delTime);
+        this.baseMapper.delete(delQw);
+        QueryWrapper<ImportResultInfo> resultDelQw = new QueryWrapper<>();
+        resultDelQw.lambda().in(ImportResultInfo::getImportId, importIds);
+        this.importResultInfoService.remove(resultDelQw);
     }
 
     private List<String[]> getStaffBlacklistLoseRecord(String importId) {
@@ -124,9 +147,9 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             UserImportErrorDataDto bean = JSONObject.parseObject(ir.getImportContent(), UserImportErrorDataDto.class);
             int index = 0;
             if (StringUtils.isEmpty(companyId)) {
-                data = new String[20];
+                data = new String[29];
             } else {
-                data = new String[19];
+                data = new String[28];
             }
             data[index++] = bean.getName();
             data[index++] = bean.getMobile();
@@ -136,6 +159,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getDepartName();
             data[index++] = bean.getJobName();
             data[index++] =  bean.getRoleName();
+            data[index++] = bean.getRecommendMobile();
             data[index++] = bean.getStatus();
             data[index++] =  bean.getGender();
             data[index++] = bean.getAncestral();
@@ -149,6 +173,14 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getHighestEducation();
             data[index++] = bean.getGraduatedFrom();
             data[index++] = bean.getMajor();
+            data[index++] = bean.getUrgentName();
+            data[index++] = bean.getUrgentPhone();
+            data[index++] = bean.getUrgentRelation();
+            data[index++] = bean.getFamilyName();
+            data[index++] = bean.getFamilyMobile();
+            data[index++] = bean.getRelationship();
+            data[index++] = bean.getProfession();
+            data[index++] = bean.getFamilyContactAddress();
             data[index++] = ir.getErrorCause();
             result.add(data);
         }

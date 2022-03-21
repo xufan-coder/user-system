@@ -11,10 +11,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.RestrictRemoteService;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
-import com.zerody.user.dto.StaffBlacklistAddDto;
-import com.zerody.user.dto.UseControlDto;
-import com.zerody.user.dto.UsersUseControlDto;
-import com.zerody.user.dto.UsersUseControlPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.UseControlVo;
@@ -125,6 +122,21 @@ public class UseControlController  implements RestrictRemoteService {
 		}
 	}
 
+
+	/**
+	 *   查询名单已存在的伙伴id
+	 */
+	@GetMapping("/list-partner")
+	public DataResult<List<String>> getListUserId(UsersUseControlListDto dto) {
+		try {
+			List<String> data = this.usesUseControlService.getListUserId(dto);
+			return R.success(data);
+		} catch (Exception e) {
+			log.error("查询名单已存在的伙伴id出错:{}", e, e);
+			return R.error("查询伙伴出错:"+e.getMessage());
+		}
+	}
+
 	/**
 	* 网关查询是否禁用系统
 	*/
@@ -139,7 +151,7 @@ public class UseControlController  implements RestrictRemoteService {
 			UserVo vo = EntityUtils.mapToEntity(map, UserVo.class);
 			return R.success(this.useControlService.checkUserAuth(vo));
 		} catch (DefaultException e) {
-			log.error("校验限制配置不通过:{}！",e.getMessage());
+			log.error("校验限制配置不通过:{}",e.getMessage());
 			return R.error(e.getMessage());
 		} catch (Exception e) {
 			log.error("校验限制配置异常:{}", e, e);

@@ -25,9 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author  DaBai
@@ -56,7 +58,6 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         qw.lambda().eq(UseControl::getCompanyId,param.getCompanyId());
         List<UseControl> list = this.list(qw);
         if(DataUtil.isNotEmpty(list)){
-            qw.clear();
             this.remove(qw);
         }
         list.clear();
@@ -129,7 +130,8 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         }
         //4.校验企业时间限制
         //当前周几 中文需要转换
-        String week = DateUtil.getWeek();
+        SimpleDateFormat formatter = new SimpleDateFormat("E", Locale.CHINA);
+        String week = formatter.format(new Date());
         //当前时间 24小时制
         String hour = DateUtil.getHour();
 
@@ -141,18 +143,18 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         if(DataUtil.isNotEmpty(companyAuth)){
             // 大于配置开始时间小于结束时间则允许登录使用
             if(Integer.parseInt(hour)>=companyAuth.getStart()
-                    ||Integer.parseInt(hour)<=companyAuth.getEnd()){
+                    &&Integer.parseInt(hour)<=companyAuth.getEnd()){
                 return false;
             }else {
                 StringBuffer tip = new StringBuffer();
-                tip.append("本时间段禁止登录系统，请在以下时间登录：/r/n");
+                tip.append("本时间段禁止登录系统，请在以下时间登录：\r\n");
                 UcQw.clear();
                 UcQw.lambda().eq(UseControl::getCompanyId,companyId);
                 UcQw.lambda().orderByAsc(UseControl::getWeek);
                 List<UseControl> list = this.list(UcQw);
                 if(DataUtil.isNotEmpty(list)){
                     for (UseControl useControl : list) {
-                        tip.append(WeeKEnum.getTextByNumber(useControl.getWeek())+":"+useControl.getStart()+"时~"+useControl.getEnd()+"时；/r/n");
+                        tip.append(WeeKEnum.getTextByNumber(useControl.getWeek())+":"+useControl.getStart()+"时~"+useControl.getEnd()+"时；\r\n");
                     }
                 }
                 throw new DefaultException(tip.toString());

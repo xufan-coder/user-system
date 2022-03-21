@@ -9,12 +9,14 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UsersUseControlDto;
+import com.zerody.user.dto.UsersUseControlListDto;
 import com.zerody.user.dto.UsersUseControlPageDto;
 import com.zerody.user.mapper.UsersUseControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.LoginUserInfoVo;
+import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author  DaBai
@@ -52,6 +55,7 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
                 usersUseControl.setDeptId(sysUserInfoVo.getDepartId());
                 usersUseControl.setDeptName(sysUserInfoVo.getDepartName());
                 usersUseControl.setUserName(sysUserInfoVo.getUserName());
+                usersUseControl.setUserId(sysUserInfoVo.getId());
                 usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
                 usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
                 this.save(usersUseControl);
@@ -76,5 +80,17 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
         }
         IPage<UsersUseControl> pageResult = this.page(page,qw);
         return pageResult;
+    }
+
+    @Override
+    public List<String> getListUserId(UsersUseControlListDto dto) {
+        QueryWrapper<UsersUseControl> qw = new QueryWrapper<>();
+        qw.lambda().eq(UsersUseControl::getType,dto.getType());
+        if(DataUtil.isNotEmpty(dto.getCompanyId())){
+            qw.lambda().eq(UsersUseControl::getCompanyId,dto.getCompanyId());
+        }
+        List<UsersUseControl> list = this.list(qw);
+        List<String> userIds = list.stream().map(UsersUseControl::getUserId).collect(Collectors.toList());
+        return userIds;
     }
 }

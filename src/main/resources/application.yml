@@ -96,3 +96,8 @@ sms:
 #IdGenerator
 workerId: 1
 shardId: 4
+
+#导入记录
+import:
+  deleted:
+    day: 15
