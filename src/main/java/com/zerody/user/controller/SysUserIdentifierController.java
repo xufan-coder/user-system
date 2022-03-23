@@ -56,21 +56,19 @@ public class SysUserIdentifierController {
     /**
      * @author kuang
      * @description  设备解绑申请/撤销
-     * @param id    设备绑定id
-     * @param approveState    审批状态
      **/
-    @PostMapping("/approve/{id}")
-    public DataResult<Object> addApprove(@PathVariable String id, @RequestParam String approveState){
+    @PostMapping("/approve")
+    public DataResult<Object> addApprove(@RequestBody SysUserIdentifier data){
 
-        if(StringUtils.isEmpty(approveState)){
+        if(StringUtils.isEmpty(data.getApproveState())){
             throw new DefaultException("审批状态不能为空");
         }
 
         try {
-            this.service.addApprove(id, approveState,UserUtils.getUserId());
+            this.service.addApprove(data.getId(), data.getApproveState(),UserUtils.getUserId());
             return R.success();
         } catch (Exception e) {
-            log.error("账号设备申请出错:{}", JSON.toJSONString(approveState), e);
+            log.error("账号设备申请出错:{}", JSON.toJSONString(data), e);
             return R.error("账号设备申请出错:"+e.getMessage());
         }
     }
@@ -96,7 +94,8 @@ public class SysUserIdentifierController {
      * @description 设备申请解绑列表
      **/
     @GetMapping("/page/user-identifier")
-    public DataResult<List<SysUserIdentifier>> getPageUserIdentifier(@RequestBody SysUserIdentifierQueryDto queryDto){
+    public DataResult<List<SysUserIdentifier>> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto){
+        log.info("查询设备审批列表入参:{}", JSON.toJSONString(queryDto));
         try {
             List<SysUserIdentifier> identifierList = this.service.getPageUserIdentifier(queryDto);
             return R.success(identifierList);

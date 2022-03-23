@@ -108,6 +108,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         QueryWrapper<SysUserIdentifier> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysUserIdentifier:: getCompanyId,queryDto.getCompanyId());
         queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
+        queryWrapper.lambda().in(SysUserIdentifier:: getState,YesNo.YES,YesNo.NO);
         return this.list(queryWrapper);
     }
     @Override
@@ -130,13 +131,13 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     @Override
     public SysUserIdentifierVo getUserIdentifierInfo(String userId){
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
-        QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
-        loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
         SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
-
         if(!Objects.isNull(identifier)){
-            BeanUtils.copyProperties(identifierVo,identifierVo);
+            BeanUtils.copyProperties(identifier,identifierVo);
+            identifierVo.setUsername(identifier.getCreateUsername());
         }else {
+            QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
+            loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
             SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
             LoginUserInfoVo user = sysUserInfoMapper.selectLoginUserInfo(userId);
             identifierVo.setUsername(user.getUserName());
