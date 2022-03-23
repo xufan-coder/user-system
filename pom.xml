@@ -82,6 +82,11 @@
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itcoon</groupId>
+            <artifactId>transform-starter</artifactId>
+            <version>1.0.3.RELEASE</version>
+        </dependency>
 
     </dependencies>
     <build>
