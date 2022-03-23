@@ -6,6 +6,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
@@ -98,6 +100,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Autowired
     private SysCompanyInfoService sysCompanyInfoService;
+
+    @Autowired
+    private SysUserIdentifierService sysUserIdentifierService;
 
 	@Override
 	public long getLastModified(HttpServletRequest request) {
@@ -245,6 +250,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
             info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
         }
+        SysUserIdentifier identifier = sysUserIdentifierService.getIdentifierInfo(info.getId());
+        if(!Objects.isNull(identifier)){
+            info.setEquipmentNo(identifier.getEquipmentNo());
+            info.setEquipmentName(identifier.getEquipmentName());
+        }
 		return R.success(info);
 	}
 
@@ -303,6 +313,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                 return R.error("账号被停用！");
             }
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
+        }
+        SysUserIdentifier identifier = sysUserIdentifierService.getIdentifierInfo(info.getId());
+        if(!Objects.isNull(identifier)){
+            info.setEquipmentNo(identifier.getEquipmentNo());
+            info.setEquipmentName(identifier.getEquipmentName());
         }
         return R.success(info);
     }
