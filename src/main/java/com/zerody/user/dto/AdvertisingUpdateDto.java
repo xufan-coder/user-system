@@ -10,6 +10,8 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author yumiaoxia
  * @since 2021-07-07
@@ -45,4 +47,8 @@ public class AdvertisingUpdateDto {
     @Length(max = 500)
     @ApiModelProperty(value = "链接Url")
     private String linkUrl;
+    /**有效时间开始*/
+    private String effectiveStartTime;
+    /**有效时间结束*/
+    private String effectiveEndTime;
 }
