@@ -41,6 +41,13 @@ public class BannerController {
         return R.success(result);
     }
 
+    @ApiOperation("分页查询banner")
+    @GetMapping(value = "/pageApp")
+    public DataResult<IPage<BannerListVo>> pageApp(BannerListDto param, PageQueryDto pageParam){
+        IPage<BannerListVo> result = BannerService.pageApp(param, pageParam);
+        return R.success(result);
+    }
+
     @ApiOperation("查询banner详情")
     @GetMapping("/{id}")
     public DataResult<BannerVo> detail(@PathVariable("id") String id){

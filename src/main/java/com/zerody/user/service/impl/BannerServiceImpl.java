@@ -58,6 +58,22 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
+    public IPage<BannerListVo> pageApp(BannerListDto param, PageQueryDto pageParam) {
+        LambdaQueryWrapper<Banner> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(!StringUtils.isEmpty(param.getName()), Banner::getName, String.format(CommonConstants.QUERY_LIKE_RAW, param.getName()));
+        wrapper.eq(param.getType() != null, Banner::getType, param.getType());
+        wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
+        wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
+        wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
+        wrapper.ge(Banner::getEffectiveStartTime,new Date());
+        wrapper.le(Banner::getEffectiveEndTime,new Date());
+        IPage<Banner> page = this.baseMapper.selectPage(PageUtils.getPageRequest(pageParam, "create_time", PageUtils.OrderType.DESC), wrapper);
+        IPage<BannerListVo> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        resultPage.setRecords(Transformer.toList(BannerListVo.class).apply(page.getRecords()).done());
+        return resultPage;
+    }
+
+    @Override
     public BannerVo detail(String id) {
         Banner Banner = this.baseMapper.selectById(id);
         return Transformer.to(BannerVo.class).apply(Banner).done();

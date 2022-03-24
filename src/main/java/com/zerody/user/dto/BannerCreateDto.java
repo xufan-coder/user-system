@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author yumiaoxia
@@ -55,4 +56,10 @@ public class BannerCreateDto {
     @Range(min = 1, max = 999999)
     @ApiModelProperty(value = "显示排序位（1~999999）, 默认999999", required = true)
     private Integer orderNum = 999999;
+    /**有效时间开始*/
+    @NotBlank
+    private Date effectiveStartTime;
+    /**有效时间结束*/
+    @NotBlank
+    private Date effectiveEndTime;
 }
