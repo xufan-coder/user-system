@@ -1,5 +1,6 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.user.domain.SysUserIdentifier;
@@ -25,7 +26,7 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
 
     void addApprove(String userId);
 
-    List<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto);
+    Page<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto);
 
     SysUserIdentifier getIdentifierInfo(String userId);
 

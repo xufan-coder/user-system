@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
@@ -14,11 +15,13 @@ import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.IdentifierEnum;
 import com.zerody.user.mapper.SysLoginInfoMapper;
+import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.SysUserIdentifierMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.vo.LoginUserInfoVo;
+import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +49,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     private SysLoginInfoMapper sysLoginInfoMapper;
 
     @Autowired
+    private SysStaffInfoMapper sysStaffInfoMapper;
+
+    @Autowired
     private SysUserInfoService sysUserInfoService;
 
     @Override
@@ -59,7 +65,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         LoginUserInfoVo userInfoVo = sysUserInfoMapper.selectLoginUserInfo(data.getUserId());
         data.setMobile(userInfoVo.getPhoneNumber());
         data.setCompanyName(userInfoVo.getCompanyName());
+        data.setDepartId(userInfoVo.getDepartId());
         data.setDepartName(userInfoVo.getDepartName());
+        data.setPositionId(userInfoVo.getPositionId());
         data.setPositionName(userInfoVo.getPositionName());
         data.setCreateTime(new Date());
         data.setCreateUsername(userInfoVo.getUserName());
@@ -104,12 +112,30 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     }
 
     @Override
-    public List<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto){
+    public Page<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto){
         QueryWrapper<SysUserIdentifier> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysUserIdentifier:: getCompanyId,queryDto.getCompanyId());
-        queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
         queryWrapper.lambda().in(SysUserIdentifier:: getState,YesNo.YES,YesNo.NO);
-        return this.list(queryWrapper);
+        if(StringUtils.isNotEmpty(queryDto.getCompanyId())) {
+            queryWrapper.lambda().eq(SysUserIdentifier:: getCompanyId,queryDto.getCompanyId());
+        }
+        if(StringUtils.isNotEmpty(queryDto.getDepartId())) {
+            queryWrapper.lambda().eq(SysUserIdentifier:: getDepartId,queryDto.getDepartId());
+        }
+        if(StringUtils.isNotEmpty(queryDto.getMobile())){
+            queryWrapper.lambda().like(SysUserIdentifier::getMobile,queryDto.getMobile());
+        }
+        if(StringUtils.isNotEmpty(queryDto.getUserName())){
+            queryWrapper.lambda().like(SysUserIdentifier::getMobile,queryDto.getUserName());
+        }
+        if(StringUtils.isNotEmpty(queryDto.getApproveState())){
+            queryWrapper.lambda().eq(SysUserIdentifier::getApproveState,queryDto.getApproveState());
+        }else {
+            queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
+        }
+        Page<SysUserIdentifier> page = new Page<>();
+        page.setCurrent(queryDto.getCurrent());
+        page.setSize(queryDto.getPageSize());
+        return this.page(page,queryWrapper);
     }
     @Override
     public SysUserIdentifier getIdentifierInfo(String userId){
@@ -139,10 +165,11 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
             loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
             SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
-            LoginUserInfoVo user = sysUserInfoMapper.selectLoginUserInfo(userId);
+            SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             identifierVo.setUsername(user.getUserName());
             identifierVo.setMobile(user.getPhoneNumber());
-            identifierVo.setCreateUsername(user.getCompanyName());
+            identifierVo.setCompanyName(user.getCompanyName());
+            identifierVo.setCreateUsername(user.getUserName());
             identifierVo.setLastLoginTime(logInfo.getLoginTime());
         }
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);

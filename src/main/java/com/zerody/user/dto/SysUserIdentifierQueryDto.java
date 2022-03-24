@@ -15,6 +15,11 @@ public class SysUserIdentifierQueryDto extends PageQueryDto {
     private String companyId;
 
     /**
+     * 部门id
+     **/
+    private String departId;
+
+    /**
      * 伙伴名称(用户名称)
      **/
     private String userName;
