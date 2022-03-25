@@ -36,13 +36,13 @@ public class AdvertisingUpdateDto {
     private String name;
 
     @ApiModelProperty(value = "类型")
-    private AdvertType type;
+    private Integer type;
 
     @ApiModelProperty(value = "所属位置")
-    private AdvertLocation location;
+    private Integer location;
 
     @ApiModelProperty(value = "链接类型")
-    private LinkType linkType;
+    private Integer linkType;
 
     @Length(max = 500)
     @ApiModelProperty(value = "链接Url")

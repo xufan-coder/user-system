@@ -9,6 +9,7 @@ import com.itcoon.common.core.enums.DescribedEnum;
  * @author yumiaoxia
  * @since 2021-07-06
  */
+
 public enum LinkType implements CodeEnum, DescribedEnum {
     NONE(1, "无跳转"),
     INNER(2, "内链"),

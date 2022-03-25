@@ -34,15 +34,15 @@ public class BannerCreateDto {
 
     @NotNull
     @ApiModelProperty(value = "类型", required = true)
-    private AdvertType type;
+    private Integer type;
 
     @NotNull
     @ApiModelProperty(value = "所属位置", required = true)
-    private AdvertLocation location;
+    private Integer location;
 
     @NotNull
     @ApiModelProperty(value = "链接类型", required = true)
-    private LinkType linkType;
+    private Integer linkType;
 
     @Length(max = 500)
     @ApiModelProperty(value = "链接Url", required = true)

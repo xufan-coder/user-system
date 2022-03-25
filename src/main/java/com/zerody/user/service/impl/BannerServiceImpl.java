@@ -36,15 +36,12 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
     public void create(BannerCreateDto param) {
-        Assertion.assertTrue(param.getLinkType() == LinkType.NONE || StringUtils.hasText(param.getLinkUrl())).raise(PlatformResponseEnum.LINK_URL_EMPTY);
+        Assertion.assertTrue(param.getLinkType() == LinkType.NONE.code() || StringUtils.hasText(param.getLinkUrl())).raise(PlatformResponseEnum.LINK_URL_EMPTY);
         Banner banner = new Banner();
         BeanUtils.copyProperties(param, banner);
         banner.setCreateTime(new Date());
         banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
         banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
-        banner.setLinkType(param.getLinkType().value());
-        banner.setType(param.getType().value());
-        banner.setLocation(param.getLocation().value());
         this.baseMapper.insert(banner);
     }
 
@@ -96,12 +93,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         if(!StringUtils.isEmpty(param.getEffectiveEndTime())) {
             banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
         }
-        if(!StringUtils.isEmpty(param.getEffectiveStartTime())) {
-            banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
-        }
-        if(!StringUtils.isEmpty(param.getEffectiveEndTime())) {
-            banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
-        }
+
         this.baseMapper.updateById(banner);
     }
 

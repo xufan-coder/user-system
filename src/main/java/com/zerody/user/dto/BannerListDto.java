@@ -22,13 +22,13 @@ public class BannerListDto {
     private String name;
 
     @ApiModelProperty(value = "类型")
-    private AdvertType type;
+    private Integer type;
 
     @ApiModelProperty(value = "位置")
-    private AdvertLocation location;
+    private Integer location;
 
     @ApiModelProperty(value = "链接类型")
-    private LinkType linkType;
+    private Integer linkType;
 
     @ApiModelProperty(value = "状态")
     private Boolean enable;
