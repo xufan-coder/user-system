@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author yumiaoxia
  * @since 2021-07-07
@@ -30,4 +32,8 @@ public class BannerListDto {
 
     @ApiModelProperty(value = "状态")
     private Boolean enable;
+    /**有效时间开始*/
+    private String effectiveStartTime;
+    /**有效时间结束*/
+    private String effectiveEndTime;
 }

@@ -58,8 +58,8 @@ public class BannerCreateDto {
     private Integer orderNum = 999999;
     /**有效时间开始*/
     @NotBlank
-    private Date effectiveStartTime;
+    private String effectiveStartTime;
     /**有效时间结束*/
     @NotBlank
-    private Date effectiveEndTime;
+    private String effectiveEndTime;
 }

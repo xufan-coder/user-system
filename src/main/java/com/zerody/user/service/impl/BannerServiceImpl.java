@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itcoon.common.exception.ex.Assertion;
 import com.itcoon.transform.starter.Transformer;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.utils.DateUtil;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.Banner;
 import com.zerody.user.dto.AdvertisingUpdateDto;
@@ -36,10 +37,12 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     @Override
     public void create(BannerCreateDto param) {
         Assertion.assertTrue(param.getLinkType() == LinkType.NONE || StringUtils.hasText(param.getLinkUrl())).raise(PlatformResponseEnum.LINK_URL_EMPTY);
-        Banner Banner = new Banner();
-        BeanUtils.copyProperties(param, Banner);
-        Banner.setCreateTime(new Date());
-        this.baseMapper.insert(Banner);
+        Banner banner = new Banner();
+        BeanUtils.copyProperties(param, banner);
+        banner.setCreateTime(new Date());
+        banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
+        banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
+        this.baseMapper.insert(banner);
     }
 
     @Override
@@ -50,7 +53,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
         wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
         wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
-
+        wrapper.ge(param.getEffectiveStartTime()!=null,Banner::getEffectiveStartTime,param.getEffectiveStartTime());
+        wrapper.le(param.getEffectiveEndTime()!=null,Banner::getEffectiveEndTime,param.getEffectiveEndTime());
         IPage<Banner> page = this.baseMapper.selectPage(PageUtils.getPageRequest(pageParam, "create_time", PageUtils.OrderType.DESC), wrapper);
         IPage<BannerListVo> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(Transformer.toList(BannerListVo.class).apply(page.getRecords()).done());
@@ -75,15 +79,21 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
     public BannerVo detail(String id) {
-        Banner Banner = this.baseMapper.selectById(id);
-        return Transformer.to(BannerVo.class).apply(Banner).done();
+        Banner banner = this.baseMapper.selectById(id);
+        return Transformer.to(BannerVo.class).apply(banner).done();
     }
 
     @Override
     public void update(String id, AdvertisingUpdateDto param) {
-        Banner Banner = this.baseMapper.selectById(id);
-        LocalBeanUtils.copyNotNullProperties(param, Banner);
-        this.baseMapper.updateById(Banner);
+        Banner banner = this.baseMapper.selectById(id);
+        LocalBeanUtils.copyNotNullProperties(param, banner);
+        if(!StringUtils.isEmpty(param.getEffectiveStartTime())) {
+            banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
+        }
+        if(!StringUtils.isEmpty(param.getEffectiveEndTime())) {
+            banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
+        }
+        this.baseMapper.updateById(banner);
     }
 
     @Override
