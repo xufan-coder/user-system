@@ -2,9 +2,9 @@ package com.zerody.user.enums;
 
 public enum IdentifierEnum {
 
-    // 状态(1有效、-1删除(解除绑定)、0失效(审批已通过、已撤销))
+    // 状态(1有效、-1删除(解除绑定)、0失效(审批已通过、已撤销、拒绝))
     EFFECTIVE(1,"有效"),
-    INVALID(0,"失效(审批已通过、已撤销)"),
+    INVALID(0,"失效(审批已通过、已撤销、拒绝)"),
     DELETE(-1,"删除(解除绑定)");
 
     private Integer value;

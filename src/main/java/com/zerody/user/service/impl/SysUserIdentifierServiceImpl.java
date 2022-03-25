@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
@@ -62,36 +61,82 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             throw new DefaultException("该账号已绑定设备号");
         }
         data.setId(UUIDutils.getUUID32());
-        LoginUserInfoVo userInfoVo = sysUserInfoMapper.selectLoginUserInfo(data.getUserId());
+        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(data.getUserId());
         data.setMobile(userInfoVo.getPhoneNumber());
         data.setCompanyName(userInfoVo.getCompanyName());
         data.setDepartId(userInfoVo.getDepartId());
         data.setDepartName(userInfoVo.getDepartName());
         data.setPositionId(userInfoVo.getPositionId());
         data.setPositionName(userInfoVo.getPositionName());
+        data.setApproveState(null);
         data.setCreateTime(new Date());
         data.setCreateUsername(userInfoVo.getUserName());
         log.info("账号设备绑定  ——> 入参：{}", JSON.toJSONString(data));
         this.save(data);
     }
 
+    private void addIdentifier(SysUserIdentifier data){
+        SysUserIdentifier userIdentifier = new SysUserIdentifier();
+        BeanUtils.copyProperties(data,userIdentifier);
+        userIdentifier.setId(UUIDutils.getUUID32());
+        userIdentifier.setState(null);
+        userIdentifier.setApproveState(null);
+        this.save(userIdentifier);
+    }
+
     @Override
-    public void addApprove(String id, String approveState, String userId) {
+    public void addApply(String id, Integer state, String userId) {
         SysUserIdentifier identifier = this.getIdentifierInfo(userId,id);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
-        if(approveState.equals(ApproveStatusEnum.REVOKE.name()) || approveState.equals(ApproveStatusEnum.SUCCESS.name())) {
-            //设备解绑申请 已撤销/已通过
-            identifier.setState(IdentifierEnum.INVALID.getValue());
+        if(ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState()) && state.equals(YesNo.YES) ){
+            throw new DefaultException("已在审批中");
         }
+        //设备解绑 1申请 / 0 已撤销
+        if(state.equals(YesNo.YES) ) {
+            identifier.setApproveState(ApproveStatusEnum.APPROVAL.name());
+            this.updateById(identifier);
+        }else if(state.equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
+            identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
+            identifier.setState(IdentifierEnum.INVALID.getValue());
+            this.addIdentifier(identifier);
+            this.updateIdentifier(identifier,userId);
+        }else {
+            throw new DefaultException("审批状态错误");
+        }
+        log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
+    }
+
+    @Override
+    public void addApprove(String id, Integer state, String userId) {
+        SysUserIdentifier identifier = this.getIdentifierInfo(userId,id);
+        if(identifier == null) {
+            throw new DefaultException("未找到有效设备绑定数据");
+        }
+        if(!ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
+            throw new DefaultException("未找到有效审批数据");
+        }
+        //设备解绑 1 同意 / 0拒绝
+        if(state.equals(YesNo.YES) ) {
+            identifier.setApproveState(ApproveStatusEnum.SUCCESS.name());
+        }else if(state.equals(YesNo.NO)){
+            identifier.setApproveState(ApproveStatusEnum.FAIL.name());
+            this.addIdentifier(identifier);
+        }else {
+            throw new DefaultException("审批状态错误");
+        }
+
+        identifier.setState(IdentifierEnum.INVALID.getValue());
+        this.updateIdentifier(identifier,userId);
+        log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
+    }
+
+    private void  updateIdentifier(SysUserIdentifier identifier, String userId){
         SysUserInfo user = sysUserInfoService.getById(userId);
-        identifier.setApproveState(approveState);
         identifier.setUpdateUsername(user.getUserName());
         identifier.setUpdateBy(userId);
         identifier.setUpdateTime(new Date());
-
-        log.info("账号设备申请  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateById(identifier);
     }
 
@@ -101,14 +146,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
-        SysUserInfo user = sysUserInfoService.getUserById(updateUserId);
         identifier.setState(IdentifierEnum.DELETE.getValue());
-        identifier.setUpdateUsername(user.getUserName());
-        identifier.setUpdateBy(updateUserId);
-        identifier.setUpdateTime(new Date());
-
+        this.updateIdentifier(identifier,updateUserId);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
-        this.updateById(identifier);
     }
 
     @Override
@@ -137,6 +177,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         page.setSize(queryDto.getPageSize());
         return this.page(page,queryWrapper);
     }
+
     @Override
     public SysUserIdentifier getIdentifierInfo(String userId){
         return  getIdentifierInfo(userId,null);
