@@ -11,8 +11,11 @@ import com.zerody.common.constant.KeyValue;
  * @since 2021-07-06
  */
 public enum AdvertLocation implements CodeEnum, DescribedEnum {
-    HONE(1, "首页")
-    ;
+    HONE(1, "首页"),
+    NORMAL_HOME(2, "普通用户首页"),
+    PARTNER_SELF(3, "合伙人我的"),
+    NORMAL_SELF(4, "普通用户我的"),
+    MY_PARTNERS(5, "我的合伙人");
 
     @EnumValue
     private final int code;
