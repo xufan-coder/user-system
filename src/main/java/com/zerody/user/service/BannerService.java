@@ -21,6 +21,8 @@ public interface BannerService extends IService<Banner> {
 
     IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam);
 
+    IPage<BannerListVo> pageApp(BannerListDto param, PageQueryDto pageParam);
+
     BannerVo  detail(String id);
 
     void update(String id, AdvertisingUpdateDto param);

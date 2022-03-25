@@ -1,12 +1,14 @@
 package com.zerody.user.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.enums.AdvertLocation;
 import com.zerody.user.enums.AdvertType;
 import com.zerody.user.enums.LinkType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -54,5 +56,12 @@ public class BannerListVo {
 
     @ApiModelProperty(value = "创建时间", required = true)
     private Date createTime;
+
+    /**有效时间开始*/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date effectiveStartTime;
+    /**有效时间结束*/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date effectiveEndTime;
 
 }
