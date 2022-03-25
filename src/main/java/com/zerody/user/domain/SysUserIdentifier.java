@@ -76,7 +76,7 @@ public class SysUserIdentifier{
     private String approveState;
 
     /**
-     * 状态(1有效、-1删除(解除绑定、已撤销)、0失效(审批已通过))
+     * 状态(1有效、-1删除(解除绑定)、0失效(审批已通过、已撤销、拒绝))
      */
     private Integer state;
 

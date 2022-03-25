@@ -22,7 +22,9 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
      **/
     void addSysUserIdentifier(SysUserIdentifier data);
 
-    void addApprove(String id, String approveState, String userId);
+    void addApply(String id, Integer state, String userId);
+
+    void addApprove(String id, Integer state, String userId);
 
     void addUnbound(String userId,String updateUserId);
 
@@ -33,4 +35,5 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
     SysUserIdentifier getIdentifierInfo(String userId,String id);
 
     SysUserIdentifierVo getUserIdentifierInfo(String userId);
+
 }
