@@ -35,17 +35,17 @@ public class Banner {
     /**
      *  类型
      */
-    private AdvertType type;
+    private Integer type;
 
     /**
      *  所属位置
      */
-    private AdvertLocation location;
+    private Integer location;
 
     /**
      *  链接类型
      */
-    private LinkType linkType;
+    private Integer linkType;
 
     /**
      * 链接Url

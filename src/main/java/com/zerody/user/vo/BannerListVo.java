@@ -53,7 +53,7 @@ public class BannerListVo {
     @ApiModelProperty(value = "显示排序位（1~999999）", required = true)
     private Integer orderNum;
 
-
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间", required = true)
     private Date createTime;
 

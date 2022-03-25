@@ -42,6 +42,9 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         banner.setCreateTime(new Date());
         banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
         banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
+        banner.setLinkType(param.getLinkType().value());
+        banner.setType(param.getType().value());
+        banner.setLocation(param.getLocation().value());
         this.baseMapper.insert(banner);
     }
 
