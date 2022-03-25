@@ -81,11 +81,11 @@ public class SysUserIdentifierController {
      * @author kuang
      * @description  解除绑定
      **/
-    @PostMapping("/remove")
-    public DataResult<Object> addApprove(){
+    @GetMapping("/remove/{id}")
+    public DataResult<Object> unbound(@PathVariable String id){
 
         try {
-            this.service.addApprove(UserUtils.getUserId());
+            this.service.addUnbound(id,UserUtils.getUserId());
             return R.success();
         } catch (Exception e) {
             return R.error("账号设备申请出错:"+e.getMessage());

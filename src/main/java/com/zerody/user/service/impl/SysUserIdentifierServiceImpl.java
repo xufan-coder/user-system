@@ -96,18 +96,18 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     }
 
     @Override
-    public void addApprove(String userId) {
+    public void addUnbound(String userId,String updateUserId) {
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
-        SysUserInfo user = sysUserInfoService.getUserById(userId);
+        SysUserInfo user = sysUserInfoService.getUserById(updateUserId);
         identifier.setState(IdentifierEnum.DELETE.getValue());
         identifier.setUpdateUsername(user.getUserName());
-        identifier.setUpdateBy(userId);
+        identifier.setUpdateBy(updateUserId);
         identifier.setUpdateTime(new Date());
 
-        log.info("账号设备申请  ——> 入参：{}", JSON.toJSONString(identifier));
+        log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateById(identifier);
     }
 

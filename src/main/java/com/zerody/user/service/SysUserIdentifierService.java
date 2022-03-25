@@ -24,7 +24,7 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
 
     void addApprove(String id, String approveState, String userId);
 
-    void addApprove(String userId);
+    void addUnbound(String userId,String updateUserId);
 
     Page<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto);
 
