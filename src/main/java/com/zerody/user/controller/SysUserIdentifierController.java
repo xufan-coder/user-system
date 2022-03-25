@@ -114,11 +114,11 @@ public class SysUserIdentifierController {
      * @author kuang
      * @description 设备绑定详情信息
      **/
-    @GetMapping("/get/identifier-info/{id}")
-    public DataResult<SysUserIdentifier> getIdentifierInfo(@PathVariable String id){
+    @GetMapping("/get/identifier-info")
+    public DataResult<SysUserIdentifier> getIdentifierInfo(){
         try {
             String userId = UserUtils.getUserId();
-            SysUserIdentifier identifier = this.service.getIdentifierInfo(userId,id);
+            SysUserIdentifier identifier = this.service.getIdentifierInfo(userId);
             if(Objects.isNull(identifier)) {
                 identifier = new SysUserIdentifier();
             }
