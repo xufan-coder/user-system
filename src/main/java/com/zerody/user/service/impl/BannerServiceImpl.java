@@ -72,8 +72,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
         wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
         wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
-        wrapper.ge(Banner::getEffectiveStartTime,new Date());
-        wrapper.le(Banner::getEffectiveEndTime,new Date());
+        wrapper.le(Banner::getEffectiveStartTime,new Date());
+        wrapper.ge(Banner::getEffectiveEndTime,new Date());
         wrapper.orderByDesc(Banner::getCreateTime);
         List<Banner> page = this.baseMapper.selectList(wrapper);
         List<BannerListVo> listVos=new ArrayList<>();
