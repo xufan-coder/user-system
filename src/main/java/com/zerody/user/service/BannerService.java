@@ -11,6 +11,8 @@ import com.zerody.user.dto.BannerListDto;
 import com.zerody.user.vo.BannerListVo;
 import com.zerody.user.vo.BannerVo;
 
+import java.util.List;
+
 /**
  * @author yumiaoxia
  * @since 2021-07-06
@@ -21,7 +23,7 @@ public interface BannerService extends IService<Banner> {
 
     IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam);
 
-    IPage<BannerListVo> pageApp(BannerListDto param, PageQueryDto pageParam);
+    List<BannerListVo> pageApp(BannerListDto param);
 
     BannerVo  detail(String id);
 

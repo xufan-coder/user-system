@@ -35,8 +35,8 @@ public class AdvertisingUpdateDto {
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "类型")
-    private Integer type;
+//    @ApiModelProperty(value = "类型")
+//    private Integer type;
 
     @ApiModelProperty(value = "所属位置")
     private Integer location;
