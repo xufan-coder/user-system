@@ -32,9 +32,9 @@ public class BannerCreateDto {
     @ApiModelProperty(value = "名称", required = true)
     private String name;
 
-    @NotNull
-    @ApiModelProperty(value = "类型", required = true)
-    private Integer type;
+//    @NotNull
+//    @ApiModelProperty(value = "类型", required = true)
+//    private Integer type;
 
     @NotNull
     @ApiModelProperty(value = "所属位置", required = true)
