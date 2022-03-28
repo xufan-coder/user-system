@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itcoon.common.exception.ex.Assertion;
 import com.itcoon.transform.starter.Transformer;
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.enums.util.TimeFormat;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.Banner;
@@ -25,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,20 +70,41 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     public List<BannerListVo> pageApp(BannerListDto param) {
         LambdaQueryWrapper<Banner> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(!StringUtils.isEmpty(param.getName()), Banner::getName, String.format(CommonConstants.QUERY_LIKE_RAW, param.getName()));
-       // wrapper.eq(param.getType() != null, Banner::getType, param.getType());
+        // wrapper.eq(param.getType() != null, Banner::getType, param.getType());
         wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
         wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
         wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
-        wrapper.le(Banner::getEffectiveStartTime,new Date());
-        wrapper.ge(Banner::getEffectiveEndTime,new Date());
         wrapper.orderByDesc(Banner::getCreateTime);
         List<Banner> page = this.baseMapper.selectList(wrapper);
-        List<BannerListVo> listVos=new ArrayList<>();
-        if(Objects.nonNull(page)&&page.size()>0) {
+        List<BannerListVo> listVos = new ArrayList<>();
+        if (Objects.nonNull(page) && page.size() > 0) {
             page.forEach(item -> {
-                BannerListVo bannerListVo=new BannerListVo();
-                BeanUtils.copyProperties(item,bannerListVo);
-                listVos.add(bannerListVo);
+                try {
+                    if (Objects.nonNull(item.getEffectiveStartTime()) &&
+                            DateUtil.timeCompareGtEq(new Date(), item.getEffectiveStartTime(), TimeFormat.YYYY_MM_DD_HH_MM_SS)) {
+                        if (Objects.nonNull(item.getEffectiveEndTime()) &&
+                                DateUtil.timeCompareGtEq(item.getEffectiveEndTime(), new Date(), TimeFormat.YYYY_MM_DD_HH_MM_SS)) {
+                            BannerListVo bannerListVo = new BannerListVo();
+                            BeanUtils.copyProperties(item, bannerListVo);
+                            listVos.add(bannerListVo);
+                        } else if (Objects.isNull(item.getEffectiveEndTime())) {
+                            BannerListVo bannerListVo = new BannerListVo();
+                            BeanUtils.copyProperties(item, bannerListVo);
+                            listVos.add(bannerListVo);
+                        }
+                    } else if (Objects.isNull(item.getEffectiveStartTime()) && Objects.isNull(item.getEffectiveEndTime())) {
+                        BannerListVo bannerListVo = new BannerListVo();
+                        BeanUtils.copyProperties(item, bannerListVo);
+                        listVos.add(bannerListVo);
+                    } else if (Objects.isNull(item.getEffectiveStartTime()) && Objects.nonNull(item.getEffectiveEndTime()) &&
+                            DateUtil.timeCompareGtEq(item.getEffectiveEndTime(), new Date(), TimeFormat.YYYY_MM_DD_HH_MM_SS)) {
+                        BannerListVo bannerListVo = new BannerListVo();
+                        BeanUtils.copyProperties(item, bannerListVo);
+                        listVos.add(bannerListVo);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             });
         }
         return listVos;
