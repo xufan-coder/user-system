@@ -27,19 +27,21 @@ public class BannerVo {
     private String name;
 
     @ApiModelProperty(value = "类型", required = true)
-    private AdvertType type;
+    private Integer type;
 
     @ApiModelProperty(value = "所属位置", required = true)
-    private AdvertLocation location;
+    private Integer location;
 
     @ApiModelProperty(value = "链接类型", required = true)
-    private LinkType linkType;
+    private Integer linkType;
 
     @ApiModelProperty(value = "链接Url", required = true)
     private String linkUrl;
 
     @ApiModelProperty(value = "显示排序位（1~999999）", required = true)
     private Integer orderNum;
+    @ApiModelProperty(value = "状态", required = true)
+    private Boolean enable;
     /**有效时间开始*/
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date effectiveStartTime;
