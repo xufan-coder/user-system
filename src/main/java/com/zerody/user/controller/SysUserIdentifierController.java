@@ -5,21 +5,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.SysUserIdentifierDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
-import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.vo.SysUserIdentifierVo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,7 +38,7 @@ public class SysUserIdentifierController {
     * @Param data 设备绑定参数
     **/
     @PostMapping("/add")
-    public DataResult<Object> addSysUserIdentifier(@RequestBody SysUserIdentifier data) {
+    public DataResult<Object> addSysUserIdentifier(@Validated @RequestBody SysUserIdentifier data) {
         try {
             String userId = UserUtils.getUserId();
             if (userId != null) {
