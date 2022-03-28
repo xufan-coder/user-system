@@ -57,9 +57,7 @@ public class BannerCreateDto {
     @ApiModelProperty(value = "显示排序位（1~999999）, 默认999999", required = true)
     private Integer orderNum = 999999;
     /**有效时间开始*/
-    @NotBlank
     private String effectiveStartTime;
     /**有效时间结束*/
-    @NotBlank
     private String effectiveEndTime;
 }
