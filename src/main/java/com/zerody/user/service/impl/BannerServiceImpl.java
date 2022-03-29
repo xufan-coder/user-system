@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,8 +46,12 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         Banner banner = new Banner();
         BeanUtils.copyProperties(param, banner);
         banner.setCreateTime(new Date());
-        banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
-        banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
+        try {
+            banner.setEffectiveStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveStartTime()));
+            banner.setEffectiveEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveEndTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.baseMapper.insert(banner);
     }
 
