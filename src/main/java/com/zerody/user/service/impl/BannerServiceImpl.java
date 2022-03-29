@@ -125,13 +125,16 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     public void update(String id, AdvertisingUpdateDto param) {
         Banner banner = this.baseMapper.selectById(id);
         LocalBeanUtils.copyNotNullProperties(param, banner);
-        if(!StringUtils.isEmpty(param.getEffectiveStartTime())) {
-            banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
+        try {
+            if (!StringUtils.isEmpty(param.getEffectiveStartTime())) {
+                banner.setEffectiveStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveStartTime()));
+            }
+            if (!StringUtils.isEmpty(param.getEffectiveEndTime())) {
+                banner.setEffectiveEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveEndTime()));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        if(!StringUtils.isEmpty(param.getEffectiveEndTime())) {
-            banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
-        }
-
         this.baseMapper.updateById(banner);
     }
 
