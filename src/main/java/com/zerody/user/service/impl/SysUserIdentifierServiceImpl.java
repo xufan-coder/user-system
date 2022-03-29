@@ -18,6 +18,7 @@ import com.zerody.user.mapper.*;
 import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
@@ -54,6 +55,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Autowired
     private SysUserInfoService sysUserInfoService;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Override
     public void addSysUserIdentifier(SysUserIdentifier data) {
@@ -131,11 +135,14 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             throw new DefaultException("审批状态错误");
         }
         identifier.setState(IdentifierEnum.INVALID.getValue());
+
+        log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateIdentifier(identifier,userId);
         if(state.equals(YesNo.NO)){
             this.addIdentifier(identifier);
+        }else {
+            this.checkUtil.removeUserToken(userId);
         }
-        log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 
     private void  updateIdentifier(SysUserIdentifier identifier, String userId){
@@ -160,6 +167,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }
         identifier.setState(IdentifierEnum.DELETE.getValue());
         this.updateIdentifier(identifier,updateUserId);
+        this.checkUtil.removeUserToken(userId);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 
