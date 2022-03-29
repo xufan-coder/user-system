@@ -191,7 +191,9 @@ WHERE
     sui.phone_number AS phoneNumber,
     sui.email AS email,
     sui.avatar AS avatar,
+    sdi.id AS departId,
     sdi.depart_name AS departName,
+    sjp.id AS positionId,
     sjp.position_name AS positionName
     FROM sys_user_info sui
     LEFT JOIN sys_staff_info ssi ON sui.id=ssi.user_id

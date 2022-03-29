@@ -11,8 +11,8 @@ public enum ApproveStatusEnum {
 
     APPROVAL("审批中"),
     FAIL("审批失败"),
-    SUCCESS("审批成功")
-    ;
+    SUCCESS("审批成功"),
+    REVOKE("已撤销");
 
     private String text;
 
