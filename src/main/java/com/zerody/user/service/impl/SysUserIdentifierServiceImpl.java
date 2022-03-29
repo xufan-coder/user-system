@@ -141,7 +141,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(state.equals(YesNo.NO)){
             this.addIdentifier(identifier);
         }else {
-            this.checkUtil.removeUserToken(userId);
+            this.checkUtil.removeUserToken(identifier.getUserId());
         }
     }
 
