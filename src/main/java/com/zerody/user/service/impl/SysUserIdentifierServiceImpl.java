@@ -192,6 +192,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }else {
             queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
         }
+        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getCreateTime);
         Page<SysUserIdentifier> page = new Page<>();
         page.setCurrent(queryDto.getCurrent());
         page.setSize(queryDto.getPageSize());
