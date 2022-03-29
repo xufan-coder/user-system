@@ -141,7 +141,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(state.equals(YesNo.NO)){
             this.addIdentifier(identifier);
         }else {
-            this.checkUtil.removeUserToken(userId);
+            this.checkUtil.removeUserToken(identifier.getUserId());
         }
     }
 
@@ -222,20 +222,20 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     public SysUserIdentifierVo getUserIdentifierInfo(String userId){
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
         SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
+        QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
+        loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
+        SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
         if(!Objects.isNull(identifier)){
             BeanUtils.copyProperties(identifier,identifierVo);
             identifierVo.setUsername(identifier.getCreateUsername());
         }else {
-            QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
-            loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
-            SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             identifierVo.setUsername(user.getUserName());
             identifierVo.setMobile(user.getPhoneNumber());
             identifierVo.setCompanyName(user.getCompanyName());
             identifierVo.setCreateUsername(user.getUserName());
-            identifierVo.setLastLoginTime(logInfo.getLoginTime());
         }
+        identifierVo.setLastLoginTime(logInfo.getLoginTime());
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
     }
