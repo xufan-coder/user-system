@@ -28,7 +28,7 @@ public class BannerCreateDto {
     private String imageUrl;
 
     @NotBlank
-    @Length(min = 1,max = 10)
+    @Length(min = 1,max = 40)
     @ApiModelProperty(value = "名称", required = true)
     private String name;
 

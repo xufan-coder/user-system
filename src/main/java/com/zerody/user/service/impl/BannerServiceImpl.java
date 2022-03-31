@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,8 +46,12 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         Banner banner = new Banner();
         BeanUtils.copyProperties(param, banner);
         banner.setCreateTime(new Date());
-        banner.setEffectiveStartTime(new Date(param.getEffectiveStartTime()));
-        banner.setEffectiveEndTime(new Date(param.getEffectiveEndTime()));
+        try {
+            banner.setEffectiveStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveStartTime()));
+            banner.setEffectiveEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveEndTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.baseMapper.insert(banner);
     }
 
@@ -60,7 +65,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
         wrapper.ge(param.getEffectiveStartTime()!=null,Banner::getEffectiveStartTime,param.getEffectiveStartTime());
         wrapper.le(param.getEffectiveEndTime()!=null,Banner::getEffectiveEndTime,param.getEffectiveEndTime());
-        IPage<Banner> page = this.baseMapper.selectPage(PageUtils.getPageRequest(pageParam, "create_time", PageUtils.OrderType.DESC), wrapper);
+        IPage<Banner> page = this.baseMapper.selectPage(PageUtils.getPageRequest(pageParam, "order_num", PageUtils.OrderType.DESC), wrapper);
         IPage<BannerListVo> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(Transformer.toList(BannerListVo.class).apply(page.getRecords()).done());
         return resultPage;
@@ -74,7 +79,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
         wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
         wrapper.eq( Banner::getEnable, true);
-        wrapper.orderByDesc(Banner::getCreateTime);
+        wrapper.orderByDesc(Banner::getOrderNum);
         List<Banner> page = this.baseMapper.selectList(wrapper);
         List<BannerListVo> listVos = new ArrayList<>();
         if (Objects.nonNull(page) && page.size() > 0) {
@@ -120,13 +125,16 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     public void update(String id, AdvertisingUpdateDto param) {
         Banner banner = this.baseMapper.selectById(id);
         LocalBeanUtils.copyNotNullProperties(param, banner);
-        if(!StringUtils.isEmpty(param.getEffectiveStartTime())) {
-            banner.setEffectiveStartTime(DateUtil.getyMdHmsDate(param.getEffectiveStartTime()));
+        try {
+            if (!StringUtils.isEmpty(param.getEffectiveStartTime())) {
+                banner.setEffectiveStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveStartTime()));
+            }
+            if (!StringUtils.isEmpty(param.getEffectiveEndTime())) {
+                banner.setEffectiveEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(param.getEffectiveEndTime()));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        if(!StringUtils.isEmpty(param.getEffectiveEndTime())) {
-            banner.setEffectiveEndTime(DateUtil.getyMdHmsDate(param.getEffectiveEndTime()));
-        }
-
         this.baseMapper.updateById(banner);
     }
 
