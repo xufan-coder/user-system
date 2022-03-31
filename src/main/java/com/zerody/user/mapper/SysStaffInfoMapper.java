@@ -127,7 +127,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @author DaBai
      * @date 2021/9/7  14:56
      */
-    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("companyId")String companyId);
+    List<StaffInfoByCompanyVo> getStaffByCompany(@Param("companyId")String companyId, @Param("isShowLeave")Integer isShowLeave);
 
     /**
      *
