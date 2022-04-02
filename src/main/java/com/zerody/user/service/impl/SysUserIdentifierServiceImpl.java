@@ -85,6 +85,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         SysUserIdentifier userIdentifier = new SysUserIdentifier();
         BeanUtils.copyProperties(data,userIdentifier);
         userIdentifier.setId(UUIDutils.getUUID32());
+        userIdentifier.setCreateTime(new Date());
         userIdentifier.setState(null);
         userIdentifier.setApproveState(null);
         userIdentifier.setUpdateTime(null);
