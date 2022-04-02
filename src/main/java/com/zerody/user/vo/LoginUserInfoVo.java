@@ -50,9 +50,19 @@ public class LoginUserInfoVo {
     private Integer status;
 
     /**
+     * 部门id
+     */
+    private String departId;
+
+    /**
     *    部门名称
     */
     private String departName;
+
+    /**
+     * 岗位id
+     */
+    private String positionId;
 
     /**
     *    岗位名称
