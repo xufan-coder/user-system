@@ -85,6 +85,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         SysUserIdentifier userIdentifier = new SysUserIdentifier();
         BeanUtils.copyProperties(data,userIdentifier);
         userIdentifier.setId(UUIDutils.getUUID32());
+        userIdentifier.setCreateTime(new Date());
         userIdentifier.setState(null);
         userIdentifier.setApproveState(null);
         userIdentifier.setUpdateTime(null);
@@ -105,6 +106,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         //设备解绑 1申请 / 0 已撤销
         if(state.equals(YesNo.YES) ) {
             identifier.setApproveState(ApproveStatusEnum.APPROVAL.name());
+            identifier.setCreateTime(new Date());
             this.updateById(identifier);
         }else if(state.equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
@@ -192,7 +194,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }else {
             queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
         }
-        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getCreateTime);
+        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getState,SysUserIdentifier:: getCreateTime);
         Page<SysUserIdentifier> page = new Page<>();
         page.setCurrent(queryDto.getCurrent());
         page.setSize(queryDto.getPageSize());
