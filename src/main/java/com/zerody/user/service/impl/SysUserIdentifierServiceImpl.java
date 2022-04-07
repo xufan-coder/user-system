@@ -7,18 +7,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.SysLoginInfo;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.IdentifierEnum;
-import com.zerody.user.mapper.SysLoginInfoMapper;
-import com.zerody.user.mapper.SysStaffInfoMapper;
-import com.zerody.user.mapper.SysUserIdentifierMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
+import com.zerody.user.mapper.*;
+import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
@@ -51,7 +51,13 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     private SysStaffInfoMapper sysStaffInfoMapper;
 
     @Autowired
+    private AdminUserMapper adminUserMapper;
+
+    @Autowired
     private SysUserInfoService sysUserInfoService;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     @Override
     public void addSysUserIdentifier(SysUserIdentifier data) {
@@ -79,8 +85,12 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         SysUserIdentifier userIdentifier = new SysUserIdentifier();
         BeanUtils.copyProperties(data,userIdentifier);
         userIdentifier.setId(UUIDutils.getUUID32());
+        userIdentifier.setCreateTime(new Date());
         userIdentifier.setState(null);
         userIdentifier.setApproveState(null);
+        userIdentifier.setUpdateTime(null);
+        userIdentifier.setUpdateUsername(null);
+        userIdentifier.setUpdateBy(null);
         this.save(userIdentifier);
     }
 
@@ -96,6 +106,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         //设备解绑 1申请 / 0 已撤销
         if(state.equals(YesNo.YES) ) {
             identifier.setApproveState(ApproveStatusEnum.APPROVAL.name());
+            identifier.setCreateTime(new Date());
             this.updateById(identifier);
         }else if(state.equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
@@ -110,7 +121,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Override
     public void addApprove(String id, Integer state, String userId) {
-        SysUserIdentifier identifier = this.getIdentifierInfo(userId,id);
+        SysUserIdentifier identifier = this.getById(id);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
@@ -122,19 +133,29 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             identifier.setApproveState(ApproveStatusEnum.SUCCESS.name());
         }else if(state.equals(YesNo.NO)){
             identifier.setApproveState(ApproveStatusEnum.FAIL.name());
-            this.addIdentifier(identifier);
         }else {
             throw new DefaultException("审批状态错误");
         }
-
         identifier.setState(IdentifierEnum.INVALID.getValue());
-        this.updateIdentifier(identifier,userId);
+
         log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
+        this.updateIdentifier(identifier,userId);
+        if(state.equals(YesNo.NO)){
+            this.addIdentifier(identifier);
+        }else {
+            this.checkUtil.removeUserToken(identifier.getUserId());
+        }
     }
 
     private void  updateIdentifier(SysUserIdentifier identifier, String userId){
         SysUserInfo user = sysUserInfoService.getById(userId);
-        identifier.setUpdateUsername(user.getUserName());
+        if(Objects.isNull(user)) {
+            AdminUserInfo info = this.adminUserMapper.selectById(userId);
+            identifier.setUpdateUsername(info.getUserName());
+        }else {
+            identifier.setUpdateUsername(user.getUserName());
+        }
+
         identifier.setUpdateBy(userId);
         identifier.setUpdateTime(new Date());
         this.updateById(identifier);
@@ -148,6 +169,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }
         identifier.setState(IdentifierEnum.DELETE.getValue());
         this.updateIdentifier(identifier,updateUserId);
+        this.checkUtil.removeUserToken(userId);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 
@@ -164,14 +186,15 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(StringUtils.isNotEmpty(queryDto.getMobile())){
             queryWrapper.lambda().like(SysUserIdentifier::getMobile,queryDto.getMobile());
         }
-        if(StringUtils.isNotEmpty(queryDto.getUserName())){
-            queryWrapper.lambda().like(SysUserIdentifier::getMobile,queryDto.getUserName());
+        if(StringUtils.isNotEmpty(queryDto.getUserId())){
+            queryWrapper.lambda().like(SysUserIdentifier::getUserId,queryDto.getUserId());
         }
         if(StringUtils.isNotEmpty(queryDto.getApproveState())){
             queryWrapper.lambda().eq(SysUserIdentifier::getApproveState,queryDto.getApproveState());
         }else {
             queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
         }
+        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getState,SysUserIdentifier:: getCreateTime);
         Page<SysUserIdentifier> page = new Page<>();
         page.setCurrent(queryDto.getCurrent());
         page.setSize(queryDto.getPageSize());
@@ -186,8 +209,10 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     @Override
     public SysUserIdentifier getIdentifierInfo(String userId, String id ){
         QueryWrapper<SysUserIdentifier> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysUserIdentifier:: getUserId, userId);
         queryWrapper.lambda().eq(SysUserIdentifier:: getState, YesNo.YES);
+        if(StringUtils.isNotEmpty(userId)) {
+            queryWrapper.lambda().eq(SysUserIdentifier:: getUserId, userId);
+        }
         if(StringUtils.isNotEmpty(id)) {
             queryWrapper.lambda().eq(SysUserIdentifier:: getId, id);
         }
@@ -199,20 +224,20 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     public SysUserIdentifierVo getUserIdentifierInfo(String userId){
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
         SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
+        QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
+        loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
+        SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
         if(!Objects.isNull(identifier)){
             BeanUtils.copyProperties(identifier,identifierVo);
             identifierVo.setUsername(identifier.getCreateUsername());
         }else {
-            QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
-            loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
-            SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             identifierVo.setUsername(user.getUserName());
             identifierVo.setMobile(user.getPhoneNumber());
             identifierVo.setCompanyName(user.getCompanyName());
             identifierVo.setCreateUsername(user.getUserName());
-            identifierVo.setLastLoginTime(logInfo.getLoginTime());
         }
+        identifierVo.setLastLoginTime(logInfo.getLoginTime());
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
     }

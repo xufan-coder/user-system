@@ -134,7 +134,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<String> getSubordinateUserByUserId(String userId);
 
-    List<StaffInfoByCompanyVo> getStaffByCompany(String companyId);
+    List<StaffInfoByCompanyVo> getStaffByCompany(String companyId, Integer isShowLeave);
 
     List<CustomerQueryDimensionalityVo> getCustomerQuerydimensionality(UserVo user);
 

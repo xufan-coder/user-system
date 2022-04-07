@@ -28,13 +28,13 @@ public class BannerCreateDto {
     private String imageUrl;
 
     @NotBlank
-    @Length(min = 1,max = 10)
+    @Length(min = 1,max = 40)
     @ApiModelProperty(value = "名称", required = true)
     private String name;
 
-    @NotNull
-    @ApiModelProperty(value = "类型", required = true)
-    private Integer type;
+//    @NotNull
+//    @ApiModelProperty(value = "类型", required = true)
+//    private Integer type;
 
     @NotNull
     @ApiModelProperty(value = "所属位置", required = true)
@@ -57,9 +57,7 @@ public class BannerCreateDto {
     @ApiModelProperty(value = "显示排序位（1~999999）, 默认999999", required = true)
     private Integer orderNum = 999999;
     /**有效时间开始*/
-    @NotBlank
     private String effectiveStartTime;
     /**有效时间结束*/
-    @NotBlank
     private String effectiveEndTime;
 }

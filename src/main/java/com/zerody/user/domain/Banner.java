@@ -32,10 +32,10 @@ public class Banner {
      */
     private String name;
 
-    /**
-     *  类型
-     */
-    private Integer type;
+//    /**
+//     *  类型
+//     */
+//    private Integer type;
 
     /**
      *  所属位置

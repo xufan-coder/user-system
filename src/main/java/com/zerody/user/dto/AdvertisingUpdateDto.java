@@ -31,12 +31,12 @@ public class AdvertisingUpdateDto {
     @ApiModelProperty(value = "图片URL")
     private String imageUrl;
 
-    @Length(min = 1,max = 10)
+    @Length(min = 1,max = 40)
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "类型")
-    private Integer type;
+//    @ApiModelProperty(value = "类型")
+//    private Integer type;
 
     @ApiModelProperty(value = "所属位置")
     private Integer location;

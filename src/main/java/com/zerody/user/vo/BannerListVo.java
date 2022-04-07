@@ -30,16 +30,12 @@ public class BannerListVo {
     private String name;
 
 
-    @ApiModelProperty(value = "类型", required = true)
-    private AdvertType type;
-
-
     @ApiModelProperty(value = "所属位置", required = true)
-    private AdvertLocation location;
+    private Integer location;
 
 
     @ApiModelProperty(value = "链接类型", required = true)
-    private LinkType linkType;
+    private Integer linkType;
 
 
     @ApiModelProperty(value = "链接Url", required = true)

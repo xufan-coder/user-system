@@ -19,6 +19,8 @@ public class SysUserIdentifierQueryDto extends PageQueryDto {
      **/
     private String departId;
 
+    private String userId;
+
     /**
      * 伙伴名称(用户名称)
      **/

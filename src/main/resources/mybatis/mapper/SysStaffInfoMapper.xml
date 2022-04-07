@@ -330,7 +330,12 @@
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
             ssi.deleted = 0
-            and sui.status in (0,3)
+            <if test="isShowLeave eq null or isShowLeave eq 0">
+                sui.status IN (0, 3)
+            </if>
+            <if test="isShowLeave neq null and isShowLeave eq 1">
+                sui.status IN (0, 1, 3)
+            </if>
             <if test="companyId != null and companyId != ''">
                 and ssi.comp_id = #{companyId}
             </if>

@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author yumiaoxia
  * @since 2021-07-07
@@ -43,8 +45,8 @@ public class BannerController {
 
     @ApiOperation("分页查询banner")
     @GetMapping(value = "/pageApp")
-    public DataResult<IPage<BannerListVo>> pageApp(BannerListDto param, PageQueryDto pageParam){
-        IPage<BannerListVo> result = BannerService.pageApp(param, pageParam);
+    public DataResult<List<BannerListVo>> pageApp(BannerListDto param){
+        List<BannerListVo> result = BannerService.pageApp(param);
         return R.success(result);
     }
 
