@@ -133,9 +133,10 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
         queryWrapper.lambda().orderByDesc(AppVersion::getCreateTime);
         List<AppVersion> appVersion = this.baseMapper.selectList(queryWrapper);
-        //取比参数大的版本
-        appVersion.stream().filter(item -> VersionUtils.compareVersion(item.getVersion(),param.getVersion())>0).collect(Collectors.toList());
-        return appVersion;
+        //取比参数新{后}的版本
+        List<AppVersion> collect = appVersion.stream().filter(item -> VersionUtils.compare(item.getVersion(), param.getVersion())).collect(Collectors.toList());
+        List<AppVersion> collect1 = collect.stream().filter(item -> (!item.getVersion().equals(param.getVersion()))).collect(Collectors.toList());
+        return collect1;
     }
 
     @Override
