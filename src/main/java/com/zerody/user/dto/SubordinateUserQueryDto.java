@@ -20,4 +20,6 @@ public class SubordinateUserQueryDto {
     private Boolean isCompanyAdmin;
 
     private Boolean isDepartAdmin;
+
+    private Integer isShowLeave;
 }

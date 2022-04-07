@@ -316,8 +316,9 @@ public class SysStaffInfoController {
      *   按企业获取员工
      */
     @RequestMapping(value = "/get/by-company", method = RequestMethod.GET)
-    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(@RequestParam(value = "companyId",required = true)String companyId){
-        return R.success(sysStaffInfoService.getStaffByCompany(companyId));
+    public DataResult<List<StaffInfoByCompanyVo>> getStaffByCompany(@RequestParam(value = "companyId",required = true)String companyId,
+                                                                    @RequestParam(value = "isShowLeave", required = false) Integer isShowLeave){
+        return R.success(sysStaffInfoService.getStaffByCompany(companyId, isShowLeave));
     }
 
 
