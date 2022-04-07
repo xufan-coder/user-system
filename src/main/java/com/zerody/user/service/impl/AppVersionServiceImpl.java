@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.VersionUtils;
 import com.google.common.collect.Lists;
 import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.PageQueryDto;
@@ -127,11 +128,13 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
     @Override
     public List<AppVersion> queryDetail(AppVersionListDto param) {
         QueryWrapper<AppVersion> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().gt(StringUtils.isNotEmpty(param.getVersion()), AppVersion::getVersion, param.getVersion());
+//        queryWrapper.lambda().gt(StringUtils.isNotEmpty(param.getVersion()), AppVersion::getVersion, param.getVersion());
         queryWrapper.lambda().eq(Objects.nonNull(param.getOsType()), AppVersion::getOsType, param.getOsType());
         queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
-        queryWrapper.lambda().orderByDesc(AppVersion::getVersion);
+        queryWrapper.lambda().orderByDesc(AppVersion::getCreateTime);
         List<AppVersion> appVersion = this.baseMapper.selectList(queryWrapper);
+        //取比参数大的版本
+        appVersion.stream().filter(item -> VersionUtils.compareVersion(item.getVersion(),param.getVersion())>0).collect(Collectors.toList());
         return appVersion;
     }
 
@@ -154,7 +157,7 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         QueryWrapper<AppVersion> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(Objects.nonNull(param.getOsType()), AppVersion::getOsType, param.getOsType());
         queryWrapper.lambda().eq(Objects.nonNull(param.getSystemType()), AppVersion::getSystemType, param.getSystemType());
-        queryWrapper.lambda().orderByDesc(AppVersion::getVersion);
+        queryWrapper.lambda().orderByDesc(AppVersion::getCreateTime);
         List<AppVersion> appVersion = this.baseMapper.selectList(queryWrapper);
         AppVersion appVersion1 = new AppVersion();
         appVersion.stream().limit(1).collect(Collectors.toList()).forEach(item -> {
@@ -162,6 +165,5 @@ class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVersion> im
         });
         return appVersion1;
     }
-
 
 }
