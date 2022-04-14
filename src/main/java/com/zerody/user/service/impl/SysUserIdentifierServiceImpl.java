@@ -7,15 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
-import com.zerody.user.domain.AdminUserInfo;
-import com.zerody.user.domain.SysLoginInfo;
-import com.zerody.user.domain.SysUserIdentifier;
-import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.IdentifierEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.AdminUserService;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.CheckUtil;
@@ -57,6 +55,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     private SysUserInfoService sysUserInfoService;
 
     @Autowired
+    private CeoUserInfoService ceoUserInfoService;
+
+    @Autowired
     private CheckUtil checkUtil;
 
     @Override
@@ -67,16 +68,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             throw new DefaultException("该账号已绑定设备号");
         }
         data.setId(UUIDutils.getUUID32());
-        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(data.getUserId());
-        data.setMobile(userInfoVo.getPhoneNumber());
-        data.setCompanyName(userInfoVo.getCompanyName());
-        data.setDepartId(userInfoVo.getDepartId());
-        data.setDepartName(userInfoVo.getDepartName());
-        data.setPositionId(userInfoVo.getPositionId());
-        data.setPositionName(userInfoVo.getPositionName());
+        userAssignment(data,data.getUserId());
         data.setApproveState(null);
         data.setCreateTime(new Date());
-        data.setCreateUsername(userInfoVo.getUserName());
         log.info("账号设备绑定  ——> 入参：{}", JSON.toJSONString(data));
         this.save(data);
     }
@@ -93,6 +87,27 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         userIdentifier.setUpdateBy(null);
         this.save(userIdentifier);
     }
+
+    /**赋值user信息  */
+    private void userAssignment(SysUserIdentifier identifier,String userId){
+        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(userId);
+        if(Objects.isNull(userInfoVo)) {
+            CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+            identifier.setMobile(ceo.getPhoneNumber());
+            identifier.setCompanyName(ceo.getCompany());
+            identifier.setPositionName(ceo.getPosition());
+            identifier.setCreateUsername(ceo.getUserName());
+        }else {
+            identifier.setMobile(userInfoVo.getPhoneNumber());
+            identifier.setCompanyName(userInfoVo.getCompanyName());
+            identifier.setDepartId(userInfoVo.getDepartId());
+            identifier.setDepartName(userInfoVo.getDepartName());
+            identifier.setPositionId(userInfoVo.getPositionId());
+            identifier.setPositionName(userInfoVo.getPositionName());
+            identifier.setCreateUsername(userInfoVo.getUserName());
+        }
+    }
+
 
     @Override
     public void addApply(String id, Integer state, String userId) {
@@ -111,8 +126,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }else if(state.equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
             identifier.setState(IdentifierEnum.INVALID.getValue());
-            this.addIdentifier(identifier);
             this.updateIdentifier(identifier,userId);
+            userAssignment(identifier,identifier.getUserId());
+            this.addIdentifier(identifier);
         }else {
             throw new DefaultException("审批状态错误");
         }
@@ -141,6 +157,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateIdentifier(identifier,userId);
         if(state.equals(YesNo.NO)){
+            userAssignment(identifier,identifier.getUserId());
             this.addIdentifier(identifier);
         }else {
             this.checkUtil.removeUserToken(identifier.getUserId());
@@ -150,8 +167,15 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     private void  updateIdentifier(SysUserIdentifier identifier, String userId){
         SysUserInfo user = sysUserInfoService.getById(userId);
         if(Objects.isNull(user)) {
+            // 判断后台账户
             AdminUserInfo info = this.adminUserMapper.selectById(userId);
-            identifier.setUpdateUsername(info.getUserName());
+            if(Objects.isNull(info)) {
+                //判断ceo账户
+                CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                identifier.setUpdateUsername(ceo.getUserName());
+            }else {
+                identifier.setUpdateUsername(info.getUserName());
+            }
         }else {
             identifier.setUpdateUsername(user.getUserName());
         }
@@ -230,14 +254,30 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(!Objects.isNull(identifier)){
             BeanUtils.copyProperties(identifier,identifierVo);
             identifierVo.setUsername(identifier.getCreateUsername());
+            // 获取ceo的最近登录时间
+            if(Objects.isNull(logInfo)) {
+                CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                identifierVo.setLastLoginTime(ceo.getLoginTime());
+            }else {
+                identifierVo.setLastLoginTime(logInfo.getLoginTime());
+            }
         }else {
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
-            identifierVo.setUsername(user.getUserName());
-            identifierVo.setMobile(user.getPhoneNumber());
-            identifierVo.setCompanyName(user.getCompanyName());
-            identifierVo.setCreateUsername(user.getUserName());
+            if(Objects.isNull(user)) {
+                CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                identifierVo.setUsername(ceo.getUserName());
+                identifierVo.setMobile(ceo.getPhoneNumber());
+                identifierVo.setCompanyName(ceo.getCompany());
+                identifierVo.setCreateUsername(ceo.getUserName());
+                identifierVo.setLastLoginTime(ceo.getLoginTime());
+            }else {
+                identifierVo.setUsername(user.getUserName());
+                identifierVo.setMobile(user.getPhoneNumber());
+                identifierVo.setCompanyName(user.getCompanyName());
+                identifierVo.setCreateUsername(user.getUserName());
+                identifierVo.setLastLoginTime(logInfo.getLoginTime());
+            }
         }
-        identifierVo.setLastLoginTime(logInfo.getLoginTime());
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
     }
