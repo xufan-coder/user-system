@@ -254,6 +254,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 identifierVo.setMobile(ceo.getPhoneNumber());
                 identifierVo.setCompanyName(ceo.getCompany());
                 identifierVo.setCreateUsername(ceo.getUserName());
+                identifierVo.setLastLoginTime(ceo.getLoginTime());
             }else {
                 identifierVo.setUsername(user.getUserName());
                 identifierVo.setMobile(user.getPhoneNumber());
@@ -261,7 +262,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 identifierVo.setCreateUsername(user.getUserName());
             }
         }
-        identifierVo.setLastLoginTime(logInfo.getLoginTime());
+        if(Objects.nonNull(logInfo)) {
+            identifierVo.setLastLoginTime(logInfo.getLoginTime());
+        }
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
     }
