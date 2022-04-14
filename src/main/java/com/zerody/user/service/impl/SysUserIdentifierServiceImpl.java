@@ -68,22 +68,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             throw new DefaultException("该账号已绑定设备号");
         }
         data.setId(UUIDutils.getUUID32());
-        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(data.getUserId());
-        if(Objects.isNull(userInfoVo)) {
-            CeoUserInfo ceo = ceoUserInfoService.getUserById(data.getUserId());
-            data.setMobile(ceo.getPhoneNumber());
-            data.setCompanyName(ceo.getCompany());
-            data.setPositionName(ceo.getPosition());
-            data.setCreateUsername(ceo.getUserName());
-        }else {
-            data.setMobile(userInfoVo.getPhoneNumber());
-            data.setCompanyName(userInfoVo.getCompanyName());
-            data.setDepartId(userInfoVo.getDepartId());
-            data.setDepartName(userInfoVo.getDepartName());
-            data.setPositionId(userInfoVo.getPositionId());
-            data.setPositionName(userInfoVo.getPositionName());
-            data.setCreateUsername(userInfoVo.getUserName());
-        }
+        userAssignment(data,data.getUserId());
         data.setApproveState(null);
         data.setCreateTime(new Date());
         log.info("账号设备绑定  ——> 入参：{}", JSON.toJSONString(data));
@@ -103,6 +88,27 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         this.save(userIdentifier);
     }
 
+    /**赋值user信息  */
+    private void userAssignment(SysUserIdentifier identifier,String userId){
+        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(userId);
+        if(Objects.isNull(userInfoVo)) {
+            CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+            identifier.setMobile(ceo.getPhoneNumber());
+            identifier.setCompanyName(ceo.getCompany());
+            identifier.setPositionName(ceo.getPosition());
+            identifier.setCreateUsername(ceo.getUserName());
+        }else {
+            identifier.setMobile(userInfoVo.getPhoneNumber());
+            identifier.setCompanyName(userInfoVo.getCompanyName());
+            identifier.setDepartId(userInfoVo.getDepartId());
+            identifier.setDepartName(userInfoVo.getDepartName());
+            identifier.setPositionId(userInfoVo.getPositionId());
+            identifier.setPositionName(userInfoVo.getPositionName());
+            identifier.setCreateUsername(userInfoVo.getUserName());
+        }
+    }
+
+
     @Override
     public void addApply(String id, Integer state, String userId) {
         SysUserIdentifier identifier = this.getIdentifierInfo(userId,id);
@@ -120,8 +126,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }else if(state.equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
             identifier.setState(IdentifierEnum.INVALID.getValue());
-            this.addIdentifier(identifier);
             this.updateIdentifier(identifier,userId);
+            userAssignment(identifier,userId);
+            this.addIdentifier(identifier);
         }else {
             throw new DefaultException("审批状态错误");
         }
@@ -150,6 +157,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateIdentifier(identifier,userId);
         if(state.equals(YesNo.NO)){
+            userAssignment(identifier,userId);
             this.addIdentifier(identifier);
         }else {
             this.checkUtil.removeUserToken(identifier.getUserId());
