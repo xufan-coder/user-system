@@ -250,6 +250,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             if(Objects.isNull(logInfo)) {
                 CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
                 identifierVo.setLastLoginTime(ceo.getLoginTime());
+            }else {
+                identifierVo.setLastLoginTime(logInfo.getLoginTime());
             }
         }else {
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
