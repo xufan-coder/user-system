@@ -127,7 +127,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
             identifier.setState(IdentifierEnum.INVALID.getValue());
             this.updateIdentifier(identifier,userId);
-            userAssignment(identifier,userId);
+            userAssignment(identifier,identifier.getUserId());
             this.addIdentifier(identifier);
         }else {
             throw new DefaultException("审批状态错误");
@@ -157,7 +157,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateIdentifier(identifier,userId);
         if(state.equals(YesNo.NO)){
-            userAssignment(identifier,userId);
+            userAssignment(identifier,identifier.getUserId());
             this.addIdentifier(identifier);
         }else {
             this.checkUtil.removeUserToken(identifier.getUserId());
