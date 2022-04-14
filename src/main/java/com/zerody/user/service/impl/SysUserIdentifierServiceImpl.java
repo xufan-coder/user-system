@@ -246,6 +246,11 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(!Objects.isNull(identifier)){
             BeanUtils.copyProperties(identifier,identifierVo);
             identifierVo.setUsername(identifier.getCreateUsername());
+            // 获取ceo的最近登录时间
+            if(Objects.isNull(logInfo)) {
+                CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                identifierVo.setLastLoginTime(ceo.getLoginTime());
+            }
         }else {
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             if(Objects.isNull(user)) {
@@ -260,10 +265,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 identifierVo.setMobile(user.getPhoneNumber());
                 identifierVo.setCompanyName(user.getCompanyName());
                 identifierVo.setCreateUsername(user.getUserName());
+                identifierVo.setLastLoginTime(logInfo.getLoginTime());
             }
-        }
-        if(Objects.nonNull(logInfo)) {
-            identifierVo.setLastLoginTime(logInfo.getLoginTime());
         }
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
