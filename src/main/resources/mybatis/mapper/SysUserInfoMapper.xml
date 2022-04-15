@@ -409,4 +409,19 @@ WHERE
         </where>
         ORDER BY sui.create_time DESC;
     </select>
+
+  <select id="getAllBeUserOrceoIds" resultType="java.lang.String">
+      SELECT
+          id from
+          sys_user_info
+      WHERE
+          STATUS IN (0, 3)
+      UNION
+      SELECT
+          id from
+          ceo_user_info
+      WHERE
+          deleted = 0
+        AND STATUS = 0
+    </select>
 </mapper>
