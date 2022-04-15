@@ -11,5 +11,6 @@ import java.util.List;
 @Data
 public class UserReplyVo extends UserReply {
 
+    /**图片列表*/
     private List<String> replyImageList;
 }
