@@ -9,17 +9,16 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.jpush.api.dto.AuroraPushDto;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.SysLoginInfo;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.AuroraPushDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.IdentifierEnum;
 import com.zerody.user.mapper.*;
-import com.zerody.user.service.AdminUserService;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -182,6 +180,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.addIdentifier(identifier);
         }else {
             this.checkUtil.removeUserToken(identifier.getUserId());
+            this.pullMq(identifier.getUserId(),null,null);
         }
     }
 
