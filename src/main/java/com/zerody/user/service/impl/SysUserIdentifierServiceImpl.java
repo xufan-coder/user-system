@@ -82,7 +82,6 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         userAssignment(data,data.getUserId());
         data.setApproveState(null);
         data.setCreateTime(new Date());
-        data.setCreateUsername(userInfoVo.getUserName());
         log.info("账号设备绑定  ——> 入参：{}", JSON.toJSONString(data));
         this.save(data);
         this.pullMq(data.getUserId(),data.getDeviceId(),data.getUserDevice());
