@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.internal.LinkedTreeMap;
-import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.jpush.api.dto.AddJdPushDto;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.UserOpinion;
@@ -26,6 +26,7 @@ import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import com.zerody.user.vo.UserReplyVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Resource
     private JPushFeignService jPushFeignService;
 
+    @Value("${jpush.template.user-system.reply-warn:}")
+    private String replyWarnTemplate;
+
     @Override
     public void addUserOpinion(UserOpinionDto param) {
         UserOpinion opinion = new UserOpinion();
@@ -62,6 +66,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Override
     public void addUserReply(UserReplyDto param) {
+
+        UserOpinion opinion = this.getById(param.getOpinionId());
+        if(Objects.isNull(opinion)){
+            throw new DefaultException("未找到需要回复的意见信息");
+        }
         UserReply reply = new UserReply();
         BeanUtils.copyProperties(param,reply);
         reply.setCreateTime(new Date());
@@ -69,6 +78,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
+
+        AddJdPushDto push = new AddJdPushDto();
+        push.setData(reply);
+        push.setUserId(opinion.getUserId());
+        push.setTemplateCode(this.replyWarnTemplate);
+        push.setType(1);
+        this.jPushFeignService.doAuroraPush(push);
+
     }
 
     private void insertImage(List<String> replyImageList, String contentId, String imageType, String userId, String userName){
