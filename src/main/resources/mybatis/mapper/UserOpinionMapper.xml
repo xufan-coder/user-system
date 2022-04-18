@@ -45,7 +45,12 @@
     LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
     LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
     LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
-    where uo.deleted = 1
+    <where>
+      uo.deleted = 1
+      <if test="query.searchName neq null and query.searchName neq ''">
+        and uo.user_name like concat('%',#{query.searchName},'%')
+      </if>
+    </where>
     order by uo.create_time desc
   </select>
 </mapper>

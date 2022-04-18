@@ -9,6 +9,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.UserOpinionDto;
+import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
 import com.zerody.user.service.UserOpinionService;
 import com.zerody.user.vo.UserOpinionDetailVo;
@@ -109,9 +110,9 @@ public class UserOpinionController {
      * @date 2022/4/14
      */
     @GetMapping("/query-user")
-    public DataResult<List<UserOpinionVo>> queryUserOpinionUser() {
+    public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(PageQueryDto queryDto) {
         try {
-            List<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(UserUtils.getUserId());
+            IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(UserUtils.getUserId(),queryDto);
             return R.success(iPage);
         } catch (DefaultException e) {
             log.error("查询用户反馈异常:{}", e, e);
@@ -128,7 +129,7 @@ public class UserOpinionController {
      * @date 2022/4/14
      */
     @GetMapping("/page")
-    public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(PageQueryDto dto) {
+    public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(UserOpinionQueryDto dto) {
         try {
             IPage<UserOpinionPageVo> iPage = this.userOpinionService.queryUserOpinionPage(dto);
             return R.success(iPage);

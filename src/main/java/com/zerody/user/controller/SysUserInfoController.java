@@ -1151,4 +1151,27 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取当前登录用户是否是上级失败!请求异常");
         }
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询所有在职用户或ceo
+     * @date                 2022/4/15 12:02
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<java.lang.String>>
+     */
+    @Override
+    @GetMapping("/get-ids/all-be/user-ceo/inner")
+    public DataResult<List<String>> getAllBeUserOrceoIdsInner() {
+        try {
+            return R.success(this.sysUserInfoService.getAllBeUserOrceoIdsInner());
+        } catch (DefaultException e){
+            log.error("查询所有的在职用户或总裁错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询所有的在职用户或总裁错误:{}",e,e);
+            return R.error("查询所有的在职用户或总裁错误!请求异常");
+        }
+    }
 }

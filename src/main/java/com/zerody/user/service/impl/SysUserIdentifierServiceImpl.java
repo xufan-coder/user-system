@@ -4,10 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.AdminUserInfo;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysUserIdentifier;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.AuroraPushDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.IdentifierEnum;
@@ -60,6 +67,10 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     @Autowired
     private CheckUtil checkUtil;
 
+    @Autowired
+    private RabbitMqService mqService;
+
+
     @Override
     public void addSysUserIdentifier(SysUserIdentifier data) {
 
@@ -71,9 +82,21 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         userAssignment(data,data.getUserId());
         data.setApproveState(null);
         data.setCreateTime(new Date());
+        data.setCreateUsername(userInfoVo.getUserName());
         log.info("账号设备绑定  ——> 入参：{}", JSON.toJSONString(data));
         this.save(data);
+        this.pullMq(data.getUserId(),data.getDeviceId(),data.getUserDevice());
     }
+
+    private void pullMq(String userId, String deviceId, String userDevice){
+        AuroraPushDto auroraPushDto = new AuroraPushDto();
+        auroraPushDto.setUserId(userId);
+        auroraPushDto.setLoginTime(new Date());
+        auroraPushDto.setDeviceId(deviceId);
+        auroraPushDto.setUserDevice(userDevice);
+        this.mqService.send(auroraPushDto, MQ.QUEUE_USER_DEVICE);
+    }
+
 
     private void addIdentifier(SysUserIdentifier data){
         SysUserIdentifier userIdentifier = new SysUserIdentifier();
@@ -157,7 +180,6 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
         this.updateIdentifier(identifier,userId);
         if(state.equals(YesNo.NO)){
-            userAssignment(identifier,identifier.getUserId());
             this.addIdentifier(identifier);
         }else {
             this.checkUtil.removeUserToken(identifier.getUserId());

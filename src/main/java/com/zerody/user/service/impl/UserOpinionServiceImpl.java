@@ -5,16 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.internal.LinkedTreeMap;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.jpush.api.dto.AddJdPushDto;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
 import com.zerody.user.dto.UserOpinionDto;
+import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
+import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.UserOpinionMapper;
 import com.zerody.user.mapper.UserReplyMapper;
 import com.zerody.user.service.ImageService;
@@ -24,6 +27,8 @@ import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import com.zerody.user.vo.UserReplyVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * @author kuang
  */
+@RefreshScope
 @Service
 public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserOpinion> implements UserOpinionService {
 
@@ -41,6 +47,12 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Resource
     private UserReplyMapper userReplyMapper;
+
+    @Resource
+    private JPushFeignService jPushFeignService;
+
+    @Value("${jpush.template.user-system.reply-warn:}")
+    private String replyWarnTemplate;
 
     @Override
     public void addUserOpinion(UserOpinionDto param) {
@@ -55,6 +67,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Override
     public void addUserReply(UserReplyDto param) {
+
+        UserOpinion opinion = this.getById(param.getOpinionId());
+        if(Objects.isNull(opinion)){
+            throw new DefaultException("未找到需要回复的意见信息");
+        }
         UserReply reply = new UserReply();
         BeanUtils.copyProperties(param,reply);
         reply.setCreateTime(new Date());
@@ -62,6 +79,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
+
+        AddJdPushDto push = new AddJdPushDto();
+        push.setData(reply);
+        push.setUserId(opinion.getUserId());
+        push.setTemplateCode(this.replyWarnTemplate);
+        push.setType(1);
+        this.jPushFeignService.doAuroraPush(push);
+
     }
 
     private void insertImage(List<String> replyImageList, String contentId, String imageType, String userId, String userName){
@@ -87,14 +112,15 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
 
     @Override
-    public List<UserOpinionVo> queryUserOpinionUser(String userId) {
-        return this.baseMapper.queryUserOpinionUser(userId);
+    public IPage<UserOpinionVo> queryUserOpinionUser(String userId, PageQueryDto queryDto) {
+        Page<UserOpinionVo> iPage = new Page<>(queryDto.getCurrent(),queryDto.getPageSize());
+        return this.baseMapper.queryUserOpinionUser(userId,iPage);
     }
 
     @Override
-    public IPage<UserOpinionPageVo> queryUserOpinionPage(PageQueryDto dto) {
+    public IPage<UserOpinionPageVo> queryUserOpinionPage(UserOpinionQueryDto dto) {
         IPage<UserOpinionPageVo> iPage = new Page<>(dto.getCurrent(),dto.getPageSize());
-        return this.baseMapper.queryUserOpinionPage(iPage);
+        return this.baseMapper.queryUserOpinionPage(dto, iPage);
     }
 
     @Override

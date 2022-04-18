@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.dto.UserOpinionDto;
+import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
@@ -21,9 +22,9 @@ public interface UserOpinionService extends IService<UserOpinion> {
 
     void addUserReply(UserReplyDto param);
 
-    List<UserOpinionVo> queryUserOpinionUser(String userId);
+    IPage<UserOpinionVo> queryUserOpinionUser(String userId,PageQueryDto queryDto);
 
-    IPage<UserOpinionPageVo> queryUserOpinionPage(PageQueryDto dto);
+    IPage<UserOpinionPageVo> queryUserOpinionPage(UserOpinionQueryDto dto);
 
     UserOpinionDetailVo getOpinionDetail(String id);
 }
