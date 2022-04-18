@@ -110,9 +110,9 @@ public class UserOpinionController {
      * @date 2022/4/14
      */
     @GetMapping("/query-user")
-    public DataResult<List<UserOpinionVo>> queryUserOpinionUser() {
+    public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(PageQueryDto queryDto) {
         try {
-            List<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(UserUtils.getUserId());
+            IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(UserUtils.getUserId(),queryDto);
             return R.success(iPage);
         } catch (DefaultException e) {
             log.error("查询用户反馈异常:{}", e, e);

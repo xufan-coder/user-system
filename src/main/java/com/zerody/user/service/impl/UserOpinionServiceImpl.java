@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
@@ -111,8 +112,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
 
     @Override
-    public List<UserOpinionVo> queryUserOpinionUser(String userId) {
-        return this.baseMapper.queryUserOpinionUser(userId);
+    public IPage<UserOpinionVo> queryUserOpinionUser(String userId, PageQueryDto queryDto) {
+        Page<UserOpinionVo> iPage = new Page<>(queryDto.getCurrent(),queryDto.getPageSize());
+        return this.baseMapper.queryUserOpinionUser(userId,iPage);
     }
 
     @Override

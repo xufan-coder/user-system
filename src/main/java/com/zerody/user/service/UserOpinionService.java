@@ -22,7 +22,7 @@ public interface UserOpinionService extends IService<UserOpinion> {
 
     void addUserReply(UserReplyDto param);
 
-    List<UserOpinionVo> queryUserOpinionUser(String userId);
+    IPage<UserOpinionVo> queryUserOpinionUser(String userId,PageQueryDto queryDto);
 
     IPage<UserOpinionPageVo> queryUserOpinionPage(UserOpinionQueryDto dto);
 
