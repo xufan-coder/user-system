@@ -14,7 +14,9 @@ import com.zerody.user.domain.Image;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
 import com.zerody.user.dto.UserOpinionDto;
+import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
+import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.UserOpinionMapper;
 import com.zerody.user.mapper.UserReplyMapper;
 import com.zerody.user.service.ImageService;
@@ -24,6 +26,7 @@ import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import com.zerody.user.vo.UserReplyVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
 /**
  * @author kuang
  */
+@RefreshScope
 @Service
 public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserOpinion> implements UserOpinionService {
 
@@ -41,6 +45,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Resource
     private UserReplyMapper userReplyMapper;
+
+    @Resource
+    private JPushFeignService jPushFeignService;
 
     @Override
     public void addUserOpinion(UserOpinionDto param) {
@@ -92,9 +99,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     }
 
     @Override
-    public IPage<UserOpinionPageVo> queryUserOpinionPage(PageQueryDto dto) {
+    public IPage<UserOpinionPageVo> queryUserOpinionPage(UserOpinionQueryDto dto) {
         IPage<UserOpinionPageVo> iPage = new Page<>(dto.getCurrent(),dto.getPageSize());
-        return this.baseMapper.queryUserOpinionPage(iPage);
+        return this.baseMapper.queryUserOpinionPage(dto, iPage);
     }
 
     @Override
