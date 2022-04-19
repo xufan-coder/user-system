@@ -214,6 +214,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         identifier.setState(IdentifierEnum.DELETE.getValue());
         this.updateIdentifier(identifier,updateUserId);
         this.checkUtil.removeUserToken(userId);
+        this.pullMq(identifier.getUserId(),null,null);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 
