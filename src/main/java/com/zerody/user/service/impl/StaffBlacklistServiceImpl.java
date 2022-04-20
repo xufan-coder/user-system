@@ -128,7 +128,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public String doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException {
-        List<String[]> dataList = FileUtil.fileImport(file);
+        List<String[]> dataList = null;
+        try {
+            dataList = FileUtil.fileImport(file);
+        } catch (IOException e) {
+            throw new DefaultException("导入内控用户出错，请按照要求的导入模板格式上传");
+        }
         if (CollectionUtils.isEmpty(dataList) || Arrays.equals(dataList.get(0), BLACKLIST_IMOPRT_TITLE)) {
             throw new DefaultException("您上传的文件中表头不匹配系统最新要求的表头字段，请下载最新模板核对表头并按照要求填写！");
         }
@@ -154,16 +159,17 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         importInfo.setSuccessNum(0);
         importInfo.setErrorNum(0);
         this.importInfoService.save(importInfo);
+        List<String[]> finalDataList = dataList;
         new Thread(() -> {
             try {
                 int saveRow = 500;
 
-                for (int i = titleRow, size = dataList.size(); i < size; i += saveRow) {
+                for (int i = titleRow, size = finalDataList.size(); i < size; i += saveRow) {
                     if (saveRow + i >= size ) {
                         saveRow = size - i;
                     }
                     //校验以及保存伙伴内控名单
-                    Map<String, Integer> result = this.doBlacklistImport(dataList.subList(i, i + saveRow), user, importInfo);
+                    Map<String, Integer> result = this.doBlacklistImport(finalDataList.subList(i, i + saveRow), user, importInfo);
                     importInfo.setExcelRows(importInfo.getExcelRows() + result.get("excelRows"));
                     importInfo.setSuccessNum(importInfo.getSuccessNum() + result.get("successNum"));
                     importInfo.setErrorNum(importInfo.getErrorNum() + result.get("errorNum"));

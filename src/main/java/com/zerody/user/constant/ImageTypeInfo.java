@@ -9,10 +9,13 @@ package com.zerody.user.constant;
  */
 public class ImageTypeInfo {
 
-    public final static String STAFF_BLACKLIST = "staff-blacklist";
+    public final  static  String STAFF_BLACKLIST = "staff-blacklist";
 
     public final  static  String STAFF_HONOR="HONOR";
 
     public final  static  String STAFF_PUNISHMENT="PUNISHMENT";
 
+    public final  static  String USER_OPINION = "USER-OPINION";
+
+    public final  static  String USER_REPLY = "USER-REPLY";
 }

@@ -242,4 +242,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
 
 
     List<SubordinateUserQueryVo> getSubordinateUserPartner(SubordinateUserQueryDto param);
+
+    List<String> getAllBeUserOrceoIdsInner();
 }

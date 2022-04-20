@@ -108,4 +108,16 @@ public class SysUserIdentifier{
      **/
     private String updateUsername;
 
+
+    /**设备号*/
+    private String deviceId;
+
+    /**用户设备*/
+    private String userDevice;
+
+    /**流程id*/
+    private String processId;
+
+    /**流程key*/
+    private String processKey;
 }
