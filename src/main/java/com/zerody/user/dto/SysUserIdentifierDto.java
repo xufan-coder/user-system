@@ -1,5 +1,6 @@
 package com.zerody.user.dto;
 
+import com.zerody.common.vo.UserVo;
 import lombok.Data;
 /**
  * @author kuang
@@ -13,4 +14,6 @@ public class SysUserIdentifierDto {
     private Integer state;
 
     private String userId;
+
+    private UserVo user;
 }
