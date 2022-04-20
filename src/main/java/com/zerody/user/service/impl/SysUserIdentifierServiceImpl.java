@@ -273,7 +273,18 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(!ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             throw new DefaultException("未找到有效审批数据");
         }
-        if(!user.isCEO()&&DataUtil.isNotEmpty(identifier.getProcessId())) {
+        //查看当前设备人事否是ceo
+        Boolean ceoFlag=false;
+        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(identifier.getUserId());
+        if(Objects.isNull(userInfoVo)) {
+            CeoUserInfo ceo = ceoUserInfoService.getUserById(identifier.getUserId());
+                if(DataUtil.isNotEmpty(ceo)){
+                    ceoFlag=true;
+                }else {
+                    throw new DefaultException("错误的绑定信息，无法审批！");
+                }
+        }
+        if(!ceoFlag&&DataUtil.isNotEmpty(identifier.getProcessId())) {
             //设备解绑审批 1同意 / 0 拒绝
             TaskFormDto dto=new TaskFormDto();
             dto.setProcessInstanceId(identifier.getProcessId());
