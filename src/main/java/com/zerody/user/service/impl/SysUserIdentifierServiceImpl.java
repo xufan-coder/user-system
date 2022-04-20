@@ -213,23 +213,22 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 this.updateById(identifier);
                 log.info("账号解绑审批发起  ——> 入参：{}", JSON.toJSONString(dto));
             }else if(dto.getState().equals(YesNo.NO) && ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())) {
-                identifier.setApproveState(ApproveStatusEnum.REVOKE.name());
-                identifier.setState(IdentifierEnum.INVALID.getValue());
-                //撤销的话，直接终止掉流程
+                //撤销
                 if(DataUtil.isNotEmpty(identifier.getProcessId())){
-                    StopProcessDto param= new StopProcessDto();
+                    //设备解绑审批 1同意 / 0 拒绝
+                    TaskFormDto param=new TaskFormDto();
                     param.setProcessInstanceId(identifier.getProcessId());
                     param.setUserId(user.getUserId());
+                    param.setTenantId(user.getCompanyId());
                     param.setUserName(user.getUserName());
-                    com.zerody.flow.api.dto.base.DataResult<?> dataResult = processServerFeignService.terminateProcessInner(param);
+                    param.setRoleId(user.getRoleId());
+                    param.setGroupId(user.getDeptId());
+                    com.zerody.flow.api.dto.base.DataResult<?> dataResult = processServerFeignService.cancelProcess(param);
                     if(!dataResult.isSuccess()){
                         log.error("撤销流程错误——：{}", dataResult.getMessage());
                         throw new DefaultException(dataResult.getMessage());
                     }
                 }
-                this.updateIdentifier(identifier, user.getUserId());
-                userAssignment(identifier, identifier.getUserId());
-                this.addIdentifier(identifier);
             }
         }else {
             this.addApply(dto.getId(), dto.getState(), dto.getUserId());
