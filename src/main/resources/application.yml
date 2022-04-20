@@ -104,6 +104,7 @@ import:
 
 flow:
   client:
+    clientId: user
     secret: aaa
   message-queue: message-queue
   clientId: bonade
