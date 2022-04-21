@@ -41,15 +41,14 @@ import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -198,6 +197,10 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 //查询详情作为流程变量
                 SysUserIdentifierVo userIdentifierInfo = this.getUserIdentifierInfo(identifier.getUserId());
                 Map<String, Object> map = EntityUtils.entityToMap(userIdentifierInfo);
+                String lastLoginTime =DateUtil.formatYyyyMMddmmssString(userIdentifierInfo.getLastLoginTime());
+                String createTime = DateUtil.formatYyyyMMddmmssString(userIdentifierInfo.getCreateTime());
+                map.put("lastLoginTime",lastLoginTime);
+                map.put("createTime",createTime);
                 params.setVariables(map);
                 params.setBusinessKey(identifier.getId());
                 com.zerody.flow.api.dto.base.DataResult<ProcessStartResultDto> dataResult = processServerFeignService.startProcessByKey(params);
