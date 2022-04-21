@@ -197,8 +197,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 //查询详情作为流程变量
                 SysUserIdentifierVo userIdentifierInfo = this.getUserIdentifierInfo(identifier.getUserId());
                 Map<String, Object> map = EntityUtils.entityToMap(userIdentifierInfo);
-                String lastLoginTime =DateUtil.formatYyyyMMddmmssString(userIdentifierInfo.getLastLoginTime());
-                String createTime = DateUtil.formatYyyyMMddmmssString(userIdentifierInfo.getCreateTime());
+                String lastLoginTime = com.zerody.common.util.DateUtil.getDateTime(userIdentifierInfo.getLastLoginTime(),"yyyy-MM-dd HH:mm:ss");
+                String createTime = com.zerody.common.util.DateUtil.getDateTime(userIdentifierInfo.getCreateTime(),"yyyy-MM-dd HH:mm:ss");
                 map.put("lastLoginTime",lastLoginTime);
                 map.put("createTime",createTime);
                 params.setVariables(map);
