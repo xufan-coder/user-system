@@ -338,8 +338,8 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             }
             userStructureVos.add(departInfo);
         } else {
-            UserStructureVo companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId());
-            userStructureVos.add(companyInfo);
+            List<UserStructureVo> companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId());
+            userStructureVos.addAll(companyInfo);
         }
         this.getStructureChildrens(userStructureVos);
 //        if (!DataUtil.isEmpty(user)) {
