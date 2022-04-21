@@ -273,51 +273,37 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(!ApproveStatusEnum.APPROVAL.name().equals(identifier.getApproveState())){
             throw new DefaultException("未找到有效审批数据");
         }
-        //查看当前设备人事否是ceo
-        Boolean ceoFlag=false;
-        LoginUserInfoVo userInfoVo = this.sysUserInfoMapper.selectLoginUserInfo(identifier.getUserId());
-        if(Objects.isNull(userInfoVo)) {
-            CeoUserInfo ceo = ceoUserInfoService.getUserById(identifier.getUserId());
-                if(DataUtil.isNotEmpty(ceo)){
-                    ceoFlag=true;
-                }else {
-                    throw new DefaultException("错误的绑定信息，无法审批！");
-                }
-        }
-        if(!ceoFlag&&DataUtil.isNotEmpty(identifier.getProcessId())) {
-            //设备解绑审批 1同意 / 0 拒绝
-            TaskFormDto dto=new TaskFormDto();
-            dto.setProcessInstanceId(identifier.getProcessId());
-            dto.setTaskAction(YesNo.YES==state?"check":"reject");
-            dto.setUserId(user.getUserId());
-            dto.setTenantId(user.getCompanyId());
-            dto.setUserName(user.getUserName());
-            DataResult<?> dataResult = processServerFeignService.approveProcess(dto);
-            if(!dataResult.isSuccess()){
-                log.error(dataResult.getMessage());
-                throw new DefaultException("审批状态错误");
-            }
+
+        //设备解绑 1 同意 / 0拒绝
+        if(state.equals(YesNo.YES) ) {
+            identifier.setApproveState(ApproveStatusEnum.SUCCESS.name());
+        }else if(state.equals(YesNo.NO)){
+            identifier.setApproveState(ApproveStatusEnum.FAIL.name());
         }else {
-            //设备解绑 1 同意 / 0拒绝
-            if(state.equals(YesNo.YES) ) {
-                identifier.setApproveState(ApproveStatusEnum.SUCCESS.name());
-            }else if(state.equals(YesNo.NO)){
-                identifier.setApproveState(ApproveStatusEnum.FAIL.name());
-            }else {
-                throw new DefaultException("审批状态错误");
-            }
-            identifier.setState(IdentifierEnum.INVALID.getValue());
+            throw new DefaultException("审批状态错误");
+        }
+        identifier.setState(IdentifierEnum.INVALID.getValue());
 
-            log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
-            this.updateIdentifier(identifier,user.getUserId());
-            if(state.equals(YesNo.NO)){
-                this.addIdentifier(identifier);
-            }else {
-                this.checkUtil.removeUserToken(identifier.getUserId());
-                this.pullMq(identifier.getUserId(),null,null);
+        log.info("账号设备审批  ——> 入参：{}", JSON.toJSONString(identifier));
+        this.updateIdentifier(identifier,user.getUserId());
+        if(state.equals(YesNo.NO)){
+            this.addIdentifier(identifier);
+        }else {
+            this.checkUtil.removeUserToken(identifier.getUserId());
+            this.pullMq(identifier.getUserId(),null,null);
+        }
+        //同意或者拒绝后，终止掉流程
+        if(DataUtil.isNotEmpty(identifier.getProcessId())){
+            StopProcessDto param= new StopProcessDto();
+            param.setProcessInstanceId(identifier.getProcessId());
+            param.setUserId(user.getUserId());
+            param.setUserName(identifier.getUpdateUsername());
+            com.zerody.flow.api.dto.base.DataResult<?> dataResult = processServerFeignService.terminateProcessInner(param);
+            if(!dataResult.isSuccess()){
+                log.error("审核错误——：{}", dataResult.getMessage());
+                throw new DefaultException(dataResult.getMessage());
             }
         }
-
     }
     private void  updateIdentifier(SysUserIdentifier identifier, String userId){
         SysUserInfo user = sysUserInfoService.getById(userId);
