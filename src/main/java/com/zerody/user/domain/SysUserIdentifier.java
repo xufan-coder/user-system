@@ -114,4 +114,10 @@ public class SysUserIdentifier{
 
     /**用户设备*/
     private String userDevice;
+
+    /**流程id*/
+    private String processId;
+
+    /**流程key*/
+    private String processKey;
 }

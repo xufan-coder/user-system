@@ -3,7 +3,9 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.SysUserIdentifier;
+import com.zerody.user.dto.SysUserIdentifierDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.vo.SysUserIdentifierVo;
 
@@ -22,9 +24,14 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
      **/
     void addSysUserIdentifier(SysUserIdentifier data);
 
-    void addApply(String id, Integer state, String userId);
+    void addIdentifier(SysUserIdentifier data);
 
-    void addApprove(String id, Integer state, String userId);
+    void addApply(String id, Integer state, String userId);
+    void addApplyV2(SysUserIdentifierDto dto);
+
+    void addApprove(String id, Integer state, UserVo userVo);
+
+    void addApproveByProcess(String id, Integer state);
 
     void addUnbound(String userId,String updateUserId);
 

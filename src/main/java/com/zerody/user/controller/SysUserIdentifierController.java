@@ -3,9 +3,11 @@ package com.zerody.user.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.SysUserIdentifierDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
@@ -54,10 +56,31 @@ public class SysUserIdentifierController {
     }
 
     /**
+     * 申请解绑设备-发起流程
+     * 设备解绑申请 1申请/0撤销
+     * @author  DaBai
+     * @date  2022/4/19 15:25
+     */
+    @PostMapping("/apply")
+    public DataResult<Object> addApplyV2(@RequestBody SysUserIdentifierDto data){
+        try {
+            data.setUserId(UserUtils.getUserId());
+            data.setUser(UserUtils.getUser());
+            this.service.addApplyV2(data);
+            return R.success();
+        } catch (Exception e) {
+            log.error("解绑设备申请出错:{}", JSON.toJSONString(data), e);
+            return R.error("解绑设备申请出错:"+e.getMessage());
+        }
+    }
+
+
+    /**
+     * 4-19作废  替换为流程申请 -invalid
      * @author kuang
      * @description  设备解绑申请 1申请/0撤销
      **/
-    @PostMapping("/apply")
+    @PostMapping("/apply-invalid")
     public DataResult<Object> addApply(@RequestBody SysUserIdentifierDto data){
 
         if(Objects.isNull(data.getState())){
@@ -89,11 +112,11 @@ public class SysUserIdentifierController {
             return R.error("审批状态错误");
         }
         try {
-            this.service.addApprove(data.getId(), data.getState(),UserUtils.getUserId());
+            this.service.addApprove(data.getId(), data.getState(),UserUtils.getUser());
             return R.success();
         } catch (Exception e) {
-            log.error("账号设备申请出错:{}", JSON.toJSONString(data), e);
-            return R.error("账号设备申请出错:"+e.getMessage());
+            log.error("解绑审批出错:{}", JSON.toJSONString(data), e);
+            return R.error("解绑审批出错:"+e.getMessage());
         }
     }
 
