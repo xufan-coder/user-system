@@ -211,6 +211,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 ProcessStartResultDto data = dataResult.getData();
                 identifier.setApproveState(ApproveStatusEnum.APPROVAL.name());
                 identifier.setUpdateTime(new Date());
+                identifier.setApplyTime(new Date());
                 identifier.setProcessId(data.getProcInstId());
                 identifier.setProcessKey("UnbindDevice");
                 this.updateById(identifier);
@@ -375,11 +376,18 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }else {
             queryWrapper.lambda().isNotNull(SysUserIdentifier:: getApproveState);
         }
-        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getState,SysUserIdentifier:: getCreateTime);
+        queryWrapper.lambda().orderByDesc(SysUserIdentifier :: getState,SysUserIdentifier:: getApplyTime);
         Page<SysUserIdentifier> page = new Page<>();
         page.setCurrent(queryDto.getCurrent());
         page.setSize(queryDto.getPageSize());
-        return this.page(page,queryWrapper);
+        Page<SysUserIdentifier> identifierPage = this.page(page,queryWrapper);
+        // 4/22 之前使用的是创建时间 兼容之前的数据 所以目前需要将申请时间赋值给创建时间字段
+        identifierPage.getRecords().forEach( i -> {
+            if(Objects.nonNull(i.getApplyTime())) {
+                i.setCreateTime(i.getApplyTime());
+            }
+        });
+        return identifierPage;
     }
 
     @Override
