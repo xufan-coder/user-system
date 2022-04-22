@@ -258,6 +258,33 @@ public class SysDepartmentInfoController implements DepartRemoteService {
         }
     }
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取下级直属部门和用户
+     * @date                 2020/12/31 9:57
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysComapnyInfoVo>>
+     */
+    @RequestMapping(value = "/get/directly-depart-user/all", method = RequestMethod.GET)
+    public DataResult<List<UserStructureVo>> getDirectLyDepartOrUserAll(DirectLyDepartOrUserQueryDto param){
+
+        try {
+            if (!UserUtils.getUser().isBackAdmin()) {
+                param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }
+            List<UserStructureVo> departs = this.sysDepartmentInfoService.getDirectLyDepartOrUser(param);
+            return R.success(departs);
+        } catch (DefaultException e) {
+            log.error("获取部门以及用户错误:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("获取部门以及用户错误:{}", e.getMessage(),e);
+            return R.error("获取部门用户错误,请求异常");
+        }
+    }
+
 
     /**
      *

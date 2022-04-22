@@ -229,8 +229,12 @@
             1 AS type
         FROM
             sys_company_info
-        WHERE
-            id = #{companyId}
+        <where>
+            status = 0
+            <if test="companyId neq null and companyId neq ''">
+                AND id = #{companyId}
+            </if>
+        </where>
     </select>
     <select id="getHaveUpdateCompanyName" resultType="com.zerody.user.api.vo.CompanyInfoVo">
         SELECT
