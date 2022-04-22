@@ -131,6 +131,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         QueryWrapper<UserReply> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(UserReply:: getOpinionId,id);
         queryWrapper.lambda().eq(UserReply:: getDeleted,YesNo.YES);
+        queryWrapper.lambda().orderByDesc(UserReply :: getCreateTime);
         List<UserReply> replyList = this.userReplyMapper.selectList(queryWrapper);
         List<UserReplyVo> replyVos = new ArrayList<>();
         List<String> contentIds = replyList.stream().map(UserReply::getId).collect(Collectors.toList());
