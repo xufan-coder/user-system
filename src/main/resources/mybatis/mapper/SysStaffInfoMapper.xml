@@ -773,7 +773,10 @@
         sci.id AS companyId,
         sdi.depart_name AS departmentName,
         sui.phone_number AS mobile,
-        sjp.position_name
+        sjp.position_name,
+        urs.role_id,
+        urs.role_name,
+        ssi.id AS `staff_id`
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
@@ -781,6 +784,7 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         LEFT JOIN  union_staff_position AS usp ON usp.staff_id=ssi.id
         LEFT JOIN sys_job_position AS sjp ON sjp.id=usp.position_id
+        JOIN union_role_staff AS urs on urs.staff_id = ssi.id
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             <foreach collection="ids" item="id" open="sui.id IN (" separator="," close=")">

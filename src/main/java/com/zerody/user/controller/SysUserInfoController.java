@@ -1101,6 +1101,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
 
     }
+
+    /**
+     * 批量查询用户信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @RequestMapping(value = "/get/batch-staff-info", method = RequestMethod.GET)
+    public DataResult<List<StaffInfoVo>> getBatchStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+        try {
+            return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
+        } catch (DefaultException e){
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error("获取员工信息失败"+ e);
+        }
+
+    }
     /**
      * 查询用户信息
      *
