@@ -42,6 +42,8 @@ public class SysUserInfoVo {
     //手机号
     private String phoneNumber;
 
+    private String sensitivePhone;
+
     //邮箱
     private String email;
 
