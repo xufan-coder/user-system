@@ -247,4 +247,8 @@ public class SysUserInfoVo {
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
+
+    private String imState;
+
+    private String imStateName;
 }

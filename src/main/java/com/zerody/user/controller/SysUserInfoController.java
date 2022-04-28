@@ -18,22 +18,14 @@ import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysUserIdentifier;
-import com.zerody.user.dto.SubordinateUserQueryDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -55,9 +47,6 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.api.vo.UserTypeInfoInnerVo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.SetUpdateAvatarDto;
-import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.service.base.CheckUtil;
 
 import io.micrometer.core.instrument.util.StringUtils;
@@ -1195,6 +1184,30 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }  catch (Exception e) {
             log.error("查询所有的在职用户或总裁错误:{}",e,e);
             return R.error("查询所有的在职用户或总裁错误!请求异常");
+        }
+    }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          修改im状态
+     * @date                 2022/4/28 13:31
+     * @param                param
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Void>
+     */
+    @PutMapping("/update/im-state")
+    public DataResult<Void> updateImState(@RequestBody @Validated UserImStateUpdateDto param) {
+        try {
+            this.sysUserInfoService.updateImState(param);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("修改im状态出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("修改im状态出错:{}", e, e);
+            return R.error("修改状态出错!请联系管理员");
         }
     }
 }

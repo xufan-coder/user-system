@@ -186,7 +186,8 @@
         sb.id is not null AS is_block,
         ssi.integral,
         ssi.date_join,
-        ssi.working_years
+        ssi.working_years,
+        sui.im_state
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -250,7 +251,8 @@
         sb.id is not null AS is_block,
         ssi.integral,
         ssi.working_years,
-        ssi.date_join
+        ssi.date_join,
+        sui.im_state
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id

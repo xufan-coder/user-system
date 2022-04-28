@@ -10,6 +10,7 @@ import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.UserImStateUpdateDto;
 import com.zerody.user.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -244,4 +245,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     List<SubordinateUserQueryVo> getSubordinateUserPartner(SubordinateUserQueryDto param);
 
     List<String> getAllBeUserOrceoIdsInner();
+
+    void updateImState(UserImStateUpdateDto param);
 }

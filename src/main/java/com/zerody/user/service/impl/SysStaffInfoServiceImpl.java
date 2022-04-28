@@ -52,6 +52,7 @@ import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.DateUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
@@ -192,6 +193,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private FamilyMemberService familyMemberService;
+
+    @Autowired
+    private DictService dictService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -760,6 +764,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
+        if (DataUtil.isEmpty(userInfo)) {
+            throw new DefaultException("找不到用户");
+        }
+        if (StringUtils.isNotEmpty(userInfo.getImState())) {
+            DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
+            if (DataUtil.isNotEmpty(imState)) {
+                userInfo.setImStateName(imState.getDictName());
+            }
+        }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
              recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
@@ -1841,6 +1854,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
             throw new DefaultException("用户信息不存在");
+        }
+        if (StringUtils.isNotEmpty(userInfo.getImState())) {
+            DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
+            if (DataUtil.isNotEmpty(imState)) {
+               userInfo.setImStateName(imState.getDictName());
+            }
         }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {

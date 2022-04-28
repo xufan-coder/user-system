@@ -25,6 +25,7 @@ import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.SetUpdateAvatarDto;
 import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.dto.UserImStateUpdateDto;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
@@ -543,5 +544,14 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public List<String> getAllBeUserOrceoIdsInner() {
         return this.sysUserInfoMapper.getAllBeUserOrceoIds();
+    }
+
+    @Override
+    public void updateImState(UserImStateUpdateDto param) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, param.getId());
+        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+        userUw.lambda().set(SysUserInfo::getImState, param.getImState());
+        this.update(userUw);
     }
 }
