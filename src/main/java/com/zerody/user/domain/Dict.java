@@ -26,8 +26,4 @@ public class Dict {
     */
     private String dictType;
 
-    /**
-    * icon
-    */
-    private String icon;
 }
