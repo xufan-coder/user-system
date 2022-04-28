@@ -81,7 +81,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
 
         AddJdPushDto push = new AddJdPushDto();
-        push.setData(reply);
+        push.setData(opinion);
         push.setUserId(opinion.getUserId());
         push.setTemplateCode(this.replyWarnTemplate);
         push.setType(1);
@@ -126,7 +126,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Override
     public UserOpinionDetailVo getOpinionDetail(String id) {
         UserOpinionDetailVo detailVo =this.baseMapper.getOpinionDetail(id);
-
+        if(Objects.isNull(detailVo)) {
+            throw new DefaultException("问题信息错误");
+        }
         // 获取回复列表
         QueryWrapper<UserReply> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(UserReply:: getOpinionId,id);
