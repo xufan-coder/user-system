@@ -1210,4 +1210,28 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("修改状态出错!请联系管理员");
         }
     }
+
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取所有用户(在职) im搜索
+     * @date                 2022/4/29 16:08
+     * @param                [param]
+     * @return               com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.BosStaffInfoVo>>
+     */
+    @GetMapping("/page/get/system-all")
+    public DataResult<IPage<BosStaffInfoVo>>  getPgaeSystemAllUser(SysStaffInfoPageDto param) {
+        try {
+            IPage<BosStaffInfoVo> iPage = this.sysUserInfoService.getPgaeSystemAllUser(param);
+            return R.success(iPage);
+        } catch (DefaultException e) {
+            log.error("查询系统所有用户出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("查询系统所有用户出错：{}", e, e);
+            return R.error("获取所有用户异常!请联系管理员");
+        }
+    }
 }

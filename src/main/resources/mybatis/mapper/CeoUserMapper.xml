@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.CeoUserInfoMapper">
+
+<select id="getCeoPage" resultType="com.zerody.user.vo.BosStaffInfoVo">
+	SELECT
+		cui.id,
+		cui.role_id,
+		cui.role_name,
+		cui.user_name,
+		cui.phone_number AS phone
+	FROM ceo_user_info AS cui
+	<where>
+		cui.status = 0 AND cui.deleted = 0
+		<if test="param.staffName neq null and param.staffName neq ''">
+			AND cui.user_name LIKE CONCAT('%', #{param1.staffName}, '%')
+		</if>
+		<if test="param.phoneNumber neq null and param.phoneNumber neq ''">
+			AND cui.phone_number LIKE CONCAT('%', #{param.phoneNumber}, '%')
+		</if>
+	</where>
+	ORDER BY cui.create_time DESC
+	</select>
+</mapper>

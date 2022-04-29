@@ -24,6 +24,7 @@ import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.CeoUserInfoPageDto;
+import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.feign.CardFeignService;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserInfoMapper;
@@ -33,6 +34,7 @@ import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.BosStaffInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -234,6 +236,12 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         return  ceoUserInfoIPage;
     }
 
+    @Override
+    public IPage<BosStaffInfoVo> getCeoPage(SysStaffInfoPageDto param) {
+        IPage<BosStaffInfoVo> iPage = new Page<>(param.getCurrent(), param.getPageSize());
+        iPage = this.ceoUserInfoMapper.getCeoPage(param, iPage);
+        return iPage;
+    }
 
 
     public void saveCard(CeoUserInfo ceoUserInfo, CardUserInfo cardUserInfo){
