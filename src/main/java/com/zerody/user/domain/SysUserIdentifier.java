@@ -87,6 +87,13 @@ public class SysUserIdentifier{
     private Date createTime;
 
     /**
+     * 申请时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date applyTime;
+
+
+    /**
      * 创建人名称
      **/
     private String createUsername;
@@ -108,4 +115,16 @@ public class SysUserIdentifier{
      **/
     private String updateUsername;
 
+
+    /**设备号*/
+    private String deviceId;
+
+    /**用户设备*/
+    private String userDevice;
+
+    /**流程id*/
+    private String processId;
+
+    /**流程key*/
+    private String processKey;
 }

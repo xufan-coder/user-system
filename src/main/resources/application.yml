@@ -101,3 +101,23 @@ shardId: 4
 import:
   deleted:
     day: 15
+
+flow:
+  client:
+    clientId: user
+    secret: aaa
+  message-queue: message-queue
+  clientId: bonade
+  # 二版审批系统服务地址：提供审批相关服务
+  server:
+    host: http://192.168.100.15:9009
+    gateway: /workflow
+  #休眠时间：单位毫秒 （不配置，则默认是 30秒）
+  registry:
+    sleep-time: 10000
+  # MQ地址
+  rabbitmq:
+    host: 172.16.209.104
+    port: 5672
+    username: zerody_admin
+    password: zerody_test

@@ -1101,6 +1101,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
 
     }
+
+    /**
+     * 批量查询用户信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @RequestMapping(value = "/get/batch-staff-info", method = RequestMethod.GET)
+    public DataResult<List<StaffInfoVo>> getBatchStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+        try {
+            return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
+        } catch (DefaultException e){
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error("获取员工信息失败"+ e);
+        }
+
+    }
     /**
      * 查询用户信息
      *
@@ -1149,6 +1172,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }  catch (Exception e) {
             log.error("当前登录用户是否是上级失败:{}",e,e);
             return R.error("获取当前登录用户是否是上级失败!请求异常");
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询所有在职用户或ceo
+     * @date                 2022/4/15 12:02
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<java.lang.String>>
+     */
+    @Override
+    @GetMapping("/get-ids/all-be/user-ceo/inner")
+    public DataResult<List<String>> getAllBeUserOrceoIdsInner() {
+        try {
+            return R.success(this.sysUserInfoService.getAllBeUserOrceoIdsInner());
+        } catch (DefaultException e){
+            log.error("查询所有的在职用户或总裁错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询所有的在职用户或总裁错误:{}",e,e);
+            return R.error("查询所有的在职用户或总裁错误!请求异常");
         }
     }
 }

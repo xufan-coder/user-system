@@ -51,4 +51,10 @@ public class AppVersionListVo {
     @ApiModelProperty(value = "平台系统类型", required = true)
     private Integer systemType;
 
+    /**
+     * 版本信息
+     */
+    @ApiModelProperty(value = "版本信息Id", required = true)
+    private String versionInfoId;
+
 }

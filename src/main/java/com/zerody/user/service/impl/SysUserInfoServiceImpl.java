@@ -539,4 +539,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         List<SubordinateUserQueryVo> result = this.sysUserInfoMapper.getSubordinateUser(param);
         return result;
     }
+
+    @Override
+    public List<String> getAllBeUserOrceoIdsInner() {
+        return this.sysUserInfoMapper.getAllBeUserOrceoIds();
+    }
 }
