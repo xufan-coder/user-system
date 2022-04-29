@@ -40,5 +40,7 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
 
     IPage<CeoUserInfo> selectCeoUserPage(CeoUserInfoPageDto ceoUserInfoPageDto);
 
+    List<SubordinateUserQueryVo> getList();
+
     IPage<BosStaffInfoVo> getCeoPage(SysStaffInfoPageDto param);
 }

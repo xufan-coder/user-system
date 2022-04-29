@@ -35,17 +35,18 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.SubordinateUserQueryVo;
+import com.zerody.user.vo.UserPerformanceReviewsVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author  DaBai
@@ -241,6 +242,27 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         IPage<BosStaffInfoVo> iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.ceoUserInfoMapper.getCeoPage(param, iPage);
         return iPage;
+    }
+    @Override
+    public List<SubordinateUserQueryVo> getList() {
+        QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
+        qw.lambda().eq(CeoUserInfo::getDeleted, YesNo.NO)
+                .eq(BaseModel::getStatus,YesNo.NO);
+        List<CeoUserInfo> list = this.list(qw);
+        if(DataUtil.isEmpty(list)){
+            return null;
+        }
+        List<SubordinateUserQueryVo> collect = list.stream().map(item -> {
+            SubordinateUserQueryVo vo = new SubordinateUserQueryVo();
+            BeanUtils.copyProperties(item, vo);
+            vo.setUserId(item.getId());
+            vo.setMobile(item.getPhoneNumber());
+            vo.setPositionName(item.getPosition());
+            vo.setCompanyName(item.getCompany());
+            return vo;
+        }).collect(Collectors.toList());
+
+        return collect;
     }
 
 
