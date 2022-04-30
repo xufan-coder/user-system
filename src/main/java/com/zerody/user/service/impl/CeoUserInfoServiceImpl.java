@@ -36,6 +36,7 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.SubordinateUserQueryVo;
+import com.zerody.user.vo.SysUserInfoVo;
 import com.zerody.user.vo.UserPerformanceReviewsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -243,6 +244,12 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         iPage = this.ceoUserInfoMapper.getCeoPage(param, iPage);
         return iPage;
     }
+
+    @Override
+    public SysUserInfoVo getCeoInfoByUserId(String userId) {
+        return this.ceoUserInfoMapper.getCeoInfoByUserId(userId);
+    }
+
     @Override
     public List<SubordinateUserQueryVo> getList() {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();

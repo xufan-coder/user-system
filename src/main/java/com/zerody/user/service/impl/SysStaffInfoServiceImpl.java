@@ -193,6 +193,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private FamilyMemberService familyMemberService;
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
 
     @Autowired
     private DictService dictService;
@@ -1850,6 +1852,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public SysUserInfoVo selectStaffByUserId(String userId) {
+        SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
+        if (DataUtil.isNotEmpty(ceoInfo)) {
+            return ceoInfo;
+        }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
