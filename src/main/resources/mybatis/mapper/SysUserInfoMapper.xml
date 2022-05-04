@@ -306,8 +306,12 @@
 
 
 
+
+
             </if>
             <if test="param.companyId neq null and param.companyId neq ''">
+
+
 
 
 
@@ -428,11 +432,12 @@
                  LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
                  LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
         where sui.status IN (0, 3)
-        <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
-            AND sui.phone_number LIKE CONCAT('%', #{param.phoneNumber}, '%')
-        </if>
-        <if test="param.staffName neq null and param.staffName neq ''">
-            AND sui.user_name LIKE CONCAT('%', #{param.staffName}, '%')
+        <if test="param.keyword neq null and param.keyword neq ''">
+            AND (
+                    sui.phone_number LIKE CONCAT('%', #{param1.keyword}, '%')
+                    OR
+                    sui.user_name LIKE CONCAT('%', #{param1.keyword}, '%')
+                )
         </if>
         ORDER BY sui.create_time DESC
     </select>
