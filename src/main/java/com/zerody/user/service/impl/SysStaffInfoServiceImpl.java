@@ -1099,7 +1099,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return importInfo.getId();
     }
 
-    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user, StringBuilder recommendId) throws ParseException {
+    private String saveCompanyUser(String[] row, List<SmsDto> smsDtos, String companyId, UserVo user, StringBuilder recommendId, List<SysUserInfo> userInfos) throws ParseException {
         //表头对应下标
         //{"姓名","手机号码","企业","部门","岗位","角色", "推荐人手机号码","状态","性别【7】","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址[14]","电子邮箱","最高学历","毕业院校","所学专业"【18】};
@@ -1122,7 +1122,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setGraduatedFrom(row[18]);
         userInfo.setMajor(row[19]);
         userInfo.setRegisterTime(new Date());
-        userInfo.setIsEdit(YesNo.YES);
         userInfo.setStatus(status);
         userInfo.setUrgentName(row[20]);
         userInfo.setUrgentPhone(row[21]);
@@ -1132,6 +1131,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
+        SysUserInfo userInfo1 = new SysUserInfo();
+        userInfo1.setIsEdit(YesNo.YES);
+        userInfo1.setId(userInfo.getId());
+        userInfos.add(userInfo1);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String initPwd = SysStaffInfoService.getInitPwd();
@@ -1325,7 +1328,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return companyId;
     }
 
-    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user, StringBuilder recommendId) throws ParseException {
+    private String saveUser(String[] row, List<SmsDto> smsDtos, SysCompanyInfo sysCompanyInfo, UserVo user, StringBuilder recommendId, List<SysUserInfo> userInfos) throws ParseException {
         //表头对应下标
         //{"姓名","手机号码","部门","岗位","角色", "推荐人手机号码","状态","性别【6】","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址[13]","电子邮箱","最高学历","毕业院校","所学专业"【17】};
@@ -1349,7 +1352,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setMajor(row[18]);
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
-        userInfo.setIsEdit(YesNo.YES);
         userInfo.setCreateId(user.getUserId());
         userInfo.setUrgentName(row[19]);
         userInfo.setUrgentPhone(row[20]);
@@ -1358,6 +1360,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCreateTime(new Date());
         //因为员工表跟登录表都要用到用户所有先保存用户
         sysUserInfoMapper.insert(userInfo);
+
+        SysUserInfo userInfo1 = new SysUserInfo();
+        userInfo1.setIsEdit(YesNo.YES);
+        userInfo1.setId(userInfo.getId());
+        userInfos.add(userInfo1);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();;
         String initPwd = SysStaffInfoService.getInitPwd();
@@ -2448,7 +2455,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StringBuilder errorStr = new StringBuilder("");
         //错误字符构造
         StringBuilder recommendId = new StringBuilder("");
-
+        List<SysUserInfo> sysUserInfos = new ArrayList<>();
         //循环行
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             //这一行的数据
@@ -2499,7 +2506,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     continue;
                 }
                 //构建用户信息；
-                String staffId = saveCompanyUser(row, smsDtos, companyId, user, recommendId);
+                String staffId = saveCompanyUser(row, smsDtos, companyId, user, recommendId, sysUserInfos);
                 unionStaffDepart.setStaffId(staffId);
                 unionStaffPosition.setStaffId(staffId);
                 unionRoleStaff.setStaffId(staffId);
@@ -2549,6 +2556,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isNotEmpty(unionStaffPositionList)) {
             unionStaffPositionService.saveBatch(unionStaffPositionList);
         }
+        if (DataUtil.isNotEmpty(sysUserInfos)) {
+            this.sysUserInfoService.updateBatchById(sysUserInfos);
+        }
         unionRoleStaffService.saveBatch(unionRoleStaffList);
         this.importResultInfoService.saveBatch(errors);
         //数据总条数
@@ -2587,6 +2597,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         qw.lambda().eq(SysCompanyInfo::getId, user.getCompanyId())
                 .ne(BaseModel::getStatus, StatusEnum.deleted.getValue()).last("limit 0,1");
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
+        List<SysUserInfo> sysUserInfos = new ArrayList<>();
         //循环行
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             //这一行的数据
@@ -2637,7 +2648,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     continue;
                 }
                 //构建用户信息；
-                String staffId = saveUser(row, smsDtos, sysCompanyInfo, user, recommendId);
+                String staffId = saveUser(row, smsDtos, sysCompanyInfo, user, recommendId, sysUserInfos);
                 unionStaffDepart.setStaffId(staffId);
                 unionStaffPosition.setStaffId(staffId);
                 unionRoleStaff.setStaffId(staffId);
@@ -2686,6 +2697,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         if (DataUtil.isNotEmpty(unionStaffPositionList)) {
             unionStaffPositionService.saveBatch(unionStaffPositionList);
+        }
+        if (DataUtil.isNotEmpty(sysUserInfos)) {
+            this.sysUserInfoService.updateBatchById(sysUserInfos);
         }
         unionRoleStaffService.saveBatch(unionRoleStaffList);
         this.importResultInfoService.saveBatch(errors);
