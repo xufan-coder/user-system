@@ -37,4 +37,6 @@ public interface DictService extends IService<Dict> {
      * @return               java.util.List<com.zerody.user.vo.dict.DictQuseryVo>
      */
     DictQuseryVo getListById(String id);
+
+    void addDict(List<Dict> entity);
 }

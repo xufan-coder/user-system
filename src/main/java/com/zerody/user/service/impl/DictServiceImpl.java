@@ -37,4 +37,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         BeanUtils.copyProperties(dict, result);
         return result;
     }
+
+    @Override
+    public void addDict(List<Dict> entity) {
+     this.saveBatch(entity);
+    }
 }
