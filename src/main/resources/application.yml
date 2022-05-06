@@ -23,7 +23,7 @@ spring:
     username: root
     password: zerody!@#456
     host: 192.168.100.201:3306
-    url: jdbc:mysql://${spring.datasource.host}/zero_user?characterEncoding=utf8mb4&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://${spring.datasource.host}/zero_user?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     maxActive: 20
     initialSize: 1
     maxWait: 60000
