@@ -157,7 +157,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             throw new DefaultException("企业名称已被占用");
         }
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
-        userQw.lambda().ne(SysUserInfo::getStatus, StatusEnum.deleted.getValue());
+        userQw.lambda().in(SysUserInfo::getStatus, StatusEnum.teamwork.getValue(), StatusEnum.activity.getValue());
         userQw.lambda().eq(SysUserInfo::getPhoneNumber, sysCompanyInfo.getContactPhone());
         //查询该手机号码是否存在
         SysUserInfo user = this.sysUserInfoMapper.selectOne(userQw);
