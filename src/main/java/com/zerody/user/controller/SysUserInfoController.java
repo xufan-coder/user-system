@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -1100,9 +1101,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @param                userId
      * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
      */
-    @RequestMapping(value = "/get/batch-staff-info", method = RequestMethod.GET)
-    public DataResult<List<StaffInfoVo>> getBatchStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+    @RequestMapping(value = "/get/batch-staff-info", method = POST)
+    public DataResult<List<StaffInfoVo>> getBatchStaffInfoByIds(@RequestBody List<String> userId){
         try {
+            if (CollectionUtils.isEmpty(userId)) {
+                return R.error("用户id不能为空");
+            }
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
         } catch (DefaultException e){
             log.error("获取员工信息失败:{}",e,e);
