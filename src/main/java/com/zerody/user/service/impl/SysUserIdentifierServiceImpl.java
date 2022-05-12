@@ -348,8 +348,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             param.setUserName(identifier.getUpdateUsername());
             com.zerody.flow.api.dto.base.DataResult<?> dataResult = processServerFeignService.terminateProcessInner(param);
             if(!dataResult.isSuccess()){
-                log.error("解绑流程错误——：{}", dataResult.getMessage());
-                throw new DefaultException(dataResult.getMessage());
+                log.error("终止流程错误—：{}", dataResult.getMessage());
+//                throw new DefaultException(dataResult.getMessage());
             }
         }
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
