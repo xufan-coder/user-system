@@ -1854,6 +1854,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public SysUserInfoVo selectStaffByUserId(String userId) {
         SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
         if (DataUtil.isNotEmpty(ceoInfo)) {
+            ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
+            ceoInfo.setPhoneNumber(CommonUtils.mobileEncrypt(ceoInfo.getPhoneNumber()));
+            ceoInfo.setCertificateCard(CommonUtils.idEncrypt( ceoInfo.getCertificateCard()));
             return ceoInfo;
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
@@ -1896,6 +1899,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
+        userInfo.setSensitivePhone(userInfo.getPhoneNumber());
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
             return userInfo;
@@ -1926,9 +1932,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
-        userInfo.setSensitivePhone(userInfo.getPhoneNumber());
-        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
-        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
