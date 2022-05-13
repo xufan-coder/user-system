@@ -251,4 +251,6 @@ public class SysUserInfoVo {
     private String imState;
 
     private String imStateName;
+
+    private String userAvatar;
 }

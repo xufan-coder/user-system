@@ -252,7 +252,8 @@
         ssi.integral,
         ssi.working_years,
         ssi.date_join,
-        sui.im_state
+        sui.im_state,
+        sui.avatar AS user_avatar
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
