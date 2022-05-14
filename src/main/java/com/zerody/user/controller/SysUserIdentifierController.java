@@ -131,7 +131,7 @@ public class SysUserIdentifierController {
             this.service.addUnbound(id,UserUtils.getUserId());
             return R.success();
         } catch (Exception e) {
-            return R.error("账号设备申请出错:"+e.getMessage());
+            return R.error("解除绑定出错:"+e.getMessage());
         }
     }
 

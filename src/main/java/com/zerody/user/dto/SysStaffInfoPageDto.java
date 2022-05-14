@@ -61,4 +61,6 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
     /** 是否黑名单 */
     private Integer isBlock;
 
+    private String keyword;
+
 }
