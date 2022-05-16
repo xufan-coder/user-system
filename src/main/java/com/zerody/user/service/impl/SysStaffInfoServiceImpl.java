@@ -1864,6 +1864,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
             ceoInfo.setPhoneNumber(CommonUtils.mobileEncrypt(ceoInfo.getPhoneNumber()));
             ceoInfo.setCertificateCard(CommonUtils.idEncrypt( ceoInfo.getCertificateCard()));
+            if (StringUtils.isNotEmpty(ceoInfo.getImState())) {
+                DictQuseryVo imState = this.dictService.getListById(ceoInfo.getImState());
+                if (DataUtil.isNotEmpty(imState)) {
+                    ceoInfo.setImStateName(imState.getDictName());
+                }
+            }
             return ceoInfo;
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
