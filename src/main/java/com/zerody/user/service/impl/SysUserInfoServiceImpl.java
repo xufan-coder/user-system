@@ -552,6 +552,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
         userUw.lambda().set(SysUserInfo::getImState, param.getImState());
         this.update(userUw);
+
+        UpdateWrapper<CeoUserInfo> ceoUw = new UpdateWrapper<>();
+        ceoUw.lambda().eq(CeoUserInfo::getId, param.getId());
+        ceoUw.lambda().set(CeoUserInfo::getImState, param.getImState());
+        this.ceoUserInfoService.update(ceoUw);
+
     }
 
     @Override
