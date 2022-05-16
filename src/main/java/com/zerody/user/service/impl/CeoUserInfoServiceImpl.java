@@ -19,6 +19,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.oauth.api.vo.SysAuthRoleInfoVo;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.domain.CeoUserInfo;
@@ -248,6 +249,11 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     @Override
     public SysUserInfoVo getCeoInfoByUserId(String userId) {
         return this.ceoUserInfoMapper.getCeoInfoByUserId(userId);
+    }
+
+    @Override
+    public List<StaffInfoVo> getStaffInfoByIds(List<String> userId) {
+        return this.ceoUserInfoMapper.getStaffInfoByIds(userId);
     }
 
     @Override

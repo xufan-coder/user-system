@@ -53,4 +53,39 @@
             cui.id = #{userId}
         </where>
     </select>
+
+    <select id="getStaffInfoByIds" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+        cui.id,
+        cui.user_name,
+        cui.role_id,
+        cui.role_name,
+        cui.phone_number,
+        cui.avatar,
+        cui.nation,
+        cui.highest_education,
+        cui.graduated_from,
+        cui.graduated_from,
+        cui.major,
+        cui.marital_status,
+        cui.status,
+        cui.birthday,
+        cui.create_time,
+        cui.certificate_card,
+        cui.certificate_card_address,
+        cui.contact_address,
+        cui.prov_city_district,
+        cui.ancestral,
+        cui.email,
+        cui.photo,
+        cui.position,
+        cui.company,
+        cui.remark
+        FROM ceo_user_info AS cui
+        <where>
+            <foreach collection="userIds" item="id" open="cui.id IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
 </mapper>

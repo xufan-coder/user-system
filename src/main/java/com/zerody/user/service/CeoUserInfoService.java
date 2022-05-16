@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.CeoUserInfoVo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.CeoUserInfoPageDto;
@@ -45,4 +46,6 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     IPage<BosStaffInfoVo> getCeoPage(SysStaffInfoPageDto param);
 
     SysUserInfoVo getCeoInfoByUserId(String userId);
+
+    List<StaffInfoVo> getStaffInfoByIds(List<String> userId);
 }
