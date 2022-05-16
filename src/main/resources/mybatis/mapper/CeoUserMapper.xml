@@ -47,7 +47,8 @@
                cui.photo,
                cui.position,
                cui.company,
-               cui.remark
+               cui.remark,
+                cui.im_state
         FROM ceo_user_info AS cui
         <where>
             cui.id = #{userId}
@@ -80,7 +81,8 @@
         cui.photo,
         cui.position,
         cui.company,
-        cui.remark
+        cui.remark,
+        cui.im_state
         FROM ceo_user_info AS cui
         <where>
             <foreach collection="userIds" item="id" open="cui.id IN (" separator="," close=")">
