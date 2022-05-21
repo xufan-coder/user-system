@@ -1,18 +1,21 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
-import com.zerody.user.domain.CardUserInfo;
+import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
+import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.CeoUserInfo;
-import com.zerody.user.domain.SysJobPosition;
 import com.zerody.user.dto.CeoUserInfoPageDto;
-import com.zerody.user.dto.SysUserInfoPageDto;
 import com.zerody.user.service.CeoUserInfoService;
+import com.zerody.user.vo.SubordinateUserQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author  DaBai
@@ -36,6 +39,25 @@ public class CeoUserInfoController {
     public DataResult selectCeoUserPage(CeoUserInfoPageDto ceoUserInfoPageDto){
         IPage<CeoUserInfo> ceoUserInfoIPage = ceoUserInfoService.selectCeoUserPage(ceoUserInfoPageDto);
         return R.success(ceoUserInfoIPage);
+    }
+
+    /**
+     * 获取通讯录集团总经办（boss账户）
+     * @author  DaBai
+     * @date  2022/4/29 11:37
+     */
+    @RequestMapping(value = "/get/list", method = RequestMethod.GET)
+    public DataResult<List<SubordinateUserQueryVo>> getList(){
+        try {
+            List<SubordinateUserQueryVo> list = this.ceoUserInfoService.getList();
+            return R.success(list);
+        } catch (DefaultException e){
+            log.error("获取列表错误:{}" +  e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取列表错误:{}" +  e.getMessage());
+            return R.error("获取列表错误,请求异常");
+        }
     }
 
     /**

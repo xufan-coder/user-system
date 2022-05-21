@@ -68,4 +68,6 @@ public class CeoUserInfo extends BaseModel {
     private Integer deleted;
 
     private String remark;
+
+    private String imState;
 }

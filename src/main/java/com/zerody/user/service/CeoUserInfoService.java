@@ -6,15 +6,14 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.CeoUserInfoVo;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.dto.SetUpdateAvatarDto;
+import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.dto.SysUserInfoPageDto;
-import com.zerody.user.vo.CheckLoginVo;
-import com.zerody.user.vo.LoginUserInfoVo;
-import com.zerody.user.vo.SysLoginUserInfoVo;
-import com.zerody.user.vo.UserTypeInfoVo;
+import com.zerody.user.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,4 +40,12 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     void deleteCeoUserById(String id);
 
     IPage<CeoUserInfo> selectCeoUserPage(CeoUserInfoPageDto ceoUserInfoPageDto);
+
+    List<SubordinateUserQueryVo> getList();
+
+    IPage<BosStaffInfoVo> getCeoPage(SysStaffInfoPageDto param);
+
+    SysUserInfoVo getCeoInfoByUserId(String userId);
+
+    List<StaffInfoVo> getStaffInfoByIds(List<String> userId);
 }
