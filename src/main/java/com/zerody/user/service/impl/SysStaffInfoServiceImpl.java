@@ -52,6 +52,7 @@ import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.DateUtils;
 import com.zerody.user.util.SetSuperiorIdUtil;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
@@ -192,6 +193,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private FamilyMemberService familyMemberService;
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
+
+    @Autowired
+    private DictService dictService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -760,6 +766,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("id不能为空");
         }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
+        if (DataUtil.isEmpty(userInfo)) {
+            throw new DefaultException("找不到用户");
+        }
+        if (StringUtils.isNotEmpty(userInfo.getImState())) {
+            DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
+            if (DataUtil.isNotEmpty(imState)) {
+                userInfo.setImStateName(imState.getDictName());
+            }
+        }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
              recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
@@ -1844,10 +1859,29 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public SysUserInfoVo selectStaffByUserId(String userId) {
+        SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
+        if (DataUtil.isNotEmpty(ceoInfo)) {
+            ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
+            ceoInfo.setPhoneNumber(CommonUtils.mobileEncrypt(ceoInfo.getPhoneNumber()));
+            ceoInfo.setCertificateCard(CommonUtils.idEncrypt( ceoInfo.getCertificateCard()));
+            if (StringUtils.isNotEmpty(ceoInfo.getImState())) {
+                DictQuseryVo imState = this.dictService.getListById(ceoInfo.getImState());
+                if (DataUtil.isNotEmpty(imState)) {
+                    ceoInfo.setImStateName(imState.getDictName());
+                }
+            }
+            return ceoInfo;
+        }
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
             throw new DefaultException("用户信息不存在");
+        }
+        if (StringUtils.isNotEmpty(userInfo.getImState())) {
+            DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
+            if (DataUtil.isNotEmpty(imState)) {
+               userInfo.setImStateName(imState.getDictName());
+            }
         }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
@@ -1878,6 +1912,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
+        userInfo.setSensitivePhone(userInfo.getPhoneNumber());
+        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
             return userInfo;
@@ -1908,9 +1945,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
-        userInfo.setSensitivePhone(userInfo.getPhoneNumber());
-        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
-        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
     }
 
@@ -2164,8 +2198,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public List<StaffInfoVo> getStaffInfoByIds(List<String> userId) {
-
-        return this.sysStaffInfoMapper.getStaffInfoByIds(userId);
+        if (CollectionUtils.isEmpty(userId)) {
+            return new ArrayList<>();
+        }
+        List<StaffInfoVo> user = this.sysStaffInfoMapper.getStaffInfoByIds(userId);
+        if (user == null) {
+            user = new ArrayList<>();
+        }
+        List<StaffInfoVo> ceoUser = this.ceoUserInfoService.getStaffInfoByIds(userId);
+        if (CollectionUtils.isEmpty(ceoUser)) {
+            return user;
+        }
+        user.addAll(ceoUser);
+        return user;
     }
 
     @Override

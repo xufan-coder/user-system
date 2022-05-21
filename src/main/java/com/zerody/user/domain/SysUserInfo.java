@@ -155,4 +155,6 @@ public class  SysUserInfo extends BaseModel {
     private Integer isUpdateName;
 
     private Integer isEdit;
+
+    private String imState;
 }

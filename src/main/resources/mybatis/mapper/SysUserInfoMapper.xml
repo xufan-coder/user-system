@@ -1,52 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zerody.user.mapper.SysUserInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysUserInfo" >
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="user_name" property="userName" jdbcType="VARCHAR" />
-    <result column="gender" property="gender" jdbcType="TINYINT" />
-    <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
-    <result column="email" property="email" jdbcType="VARCHAR" />
-    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
-    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
-    <result column="birthday" property="birthday" jdbcType="DATE" />
-    <result column="certificate_card" property="certificateCard" jdbcType="VARCHAR" />
-    <result column="certificate_card_address" property="certificateCardAddress" jdbcType="VARCHAR" />
-    <result column="prov_city_district" property="provCityDistrict" jdbcType="VARCHAR" />
-    <result column="contact_address" property="contactAddress" jdbcType="VARCHAR" />
-    <result column="register_time" property="registerTime" jdbcType="TIMESTAMP" />
-    <result column="highest_education" property="highestEducation" jdbcType="TIMESTAMP" />
-    <result column="graduated_from" property="graduatedFrom" jdbcType="TIMESTAMP" />
-    <result column="major" property="major" jdbcType="TIMESTAMP" />
-    <result column="marital_status" property="maritalStatus" jdbcType="TINYINT" />
-    <result column="create_id" property="createId" jdbcType="VARCHAR" />
-    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_id" property="updateId" jdbcType="VARCHAR" />
-    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="nation" property="nation" jdbcType="VARCHAR" />
-    <result column="ancestral" property="ancestral" jdbcType="VARCHAR" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysUserInfo" extends="BaseResultMap" >
-    <result column="description" property="description" jdbcType="LONGVARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, user_name, gender, phone_number, email, nickname, avatar, birthday,
-     certificate_card,
-    certificate_card_address, prov_city_district, contact_address, highest_education, graduated_from, major,
-    marital_status,
-    register_time, create_id, create_user, create_time, update_id, update_user, update_time,
-    status, nation, ancestral,description
-  </sql>
-  <sql id="Blob_Column_List" >
-
-  </sql>
+<mapper namespace="com.zerody.user.mapper.SysUserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.zerody.user.domain.SysUserInfo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="TINYINT"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="DATE"/>
+        <result column="certificate_card" property="certificateCard" jdbcType="VARCHAR"/>
+        <result column="certificate_card_address" property="certificateCardAddress" jdbcType="VARCHAR"/>
+        <result column="prov_city_district" property="provCityDistrict" jdbcType="VARCHAR"/>
+        <result column="contact_address" property="contactAddress" jdbcType="VARCHAR"/>
+        <result column="register_time" property="registerTime" jdbcType="TIMESTAMP"/>
+        <result column="highest_education" property="highestEducation" jdbcType="TIMESTAMP"/>
+        <result column="graduated_from" property="graduatedFrom" jdbcType="TIMESTAMP"/>
+        <result column="major" property="major" jdbcType="TIMESTAMP"/>
+        <result column="marital_status" property="maritalStatus" jdbcType="TINYINT"/>
+        <result column="create_id" property="createId" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_id" property="updateId" jdbcType="VARCHAR"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="nation" property="nation" jdbcType="VARCHAR"/>
+        <result column="ancestral" property="ancestral" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysUserInfo" extends="BaseResultMap">
+        <result column="description" property="description" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,
+        user_name,
+        gender,
+        phone_number,
+        email,
+        nickname,
+        avatar,
+        birthday,
+        certificate_card,
+        certificate_card_address,
+        prov_city_district,
+        contact_address,
+        highest_education,
+        graduated_from,
+        major,
+        marital_status,
+        register_time,
+        create_id,
+        create_user,
+        create_time,
+        update_id,
+        update_user,
+        update_time,
+        status,
+        nation,
+        ancestral,
+        description
+    </sql>
+    <sql id="Blob_Column_List">
+    </sql>
     <update id="updateUserStatusAndIsDeleted">
         UPDATE sys_user_info
         <set>
-            is_deleted = 0, status = -1
+            is_deleted = 0,
+            status     = -1
         </set>
         <where>
             id IN
@@ -60,9 +81,9 @@
         SET is_update_name = 0
         WHERE
             id IN
-            <foreach collection="users" item="user" open="(" separator="," close=")">
-                #{user.userId}
-            </foreach>
+        <foreach collection="users" item="user" open="(" separator="," close=")">
+            #{user.userId}
+        </foreach>
     </update>
     <update id="updateDepartEditInfo">
         UPDATE sys_user_info
@@ -75,305 +96,274 @@
         </where>
     </update>
     <select id="selectUserByPhoneOrLogName" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"/>
-    from sys_user_info
-    <where>
-      status in (0, 3)
-      <if test="userInfo.id != null and userInfo.id != ''">
-        and id != #{userInfo.id}
-      </if>
-      <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
-          and phone_number = #{userInfo.phoneNumber}
-      </if>
-    </where>
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_info
+        <where>
+            status in (0, 3)
+            <if test="userInfo.id != null and userInfo.id != ''">
+                and id != #{userInfo.id}
+            </if>
+            <if test="userInfo.phoneNumber != null and userInfo.phoneNumber != ''">
+                and phone_number = #{userInfo.phoneNumber}
+            </if>
+        </where>
+    </select>
 
-  </select>
-
-  <select id="selectUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
-SELECT
-	ui.id,
-	ui.user_name AS userName,
-	ui.gender,
-	li.mobile_number AS phoneNumber,
-	ui.email,
-	ui.avatar,
-	ui.nickname,
-	ui.crm_open_id AS crmOpenId,
-	ui.scrm_open_id AS scrmOpenId,
-	li.last_check_sms AS lastCheckSms,
-	ssi.comp_id AS companyId,
-	ssi.id AS staffId,
-	urs.role_id AS roleId,
-	usd.department_id AS deptId,
-	sdi.depart_name AS deptName
-FROM
-	sys_user_info ui
-JOIN (
-	SELECT
-		user_id,
-		user_pwd,
-		last_check_sms,
-		mobile_number
-	FROM
-		sys_login_info
-	WHERE
-		login_name = #{userName}
-		and status=0
-	UNION
-		SELECT
-			user_id,
-			user_pwd,
-			last_check_sms,
-			mobile_number
-		FROM
-			sys_login_info
-		WHERE
-			mobile_number = #{userName}
-			and status=0
-) li ON ui.id = li.user_id
-LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status` in (0, 3)
-LEFT JOIN union_staff_depart usd ON usd.staff_id=ssi.id
-LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
-LEFT JOIN sys_department_info sdi ON usd.department_id=sdi.id
-WHERE
-	ui. STATUS in (0,3)
-	limit 1
-  </select>
+    <select id="selectUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
+        SELECT ui.id,
+               ui.user_name      AS userName,
+               ui.gender,
+               li.mobile_number  AS phoneNumber,
+               ui.email,
+               ui.avatar,
+               ui.nickname,
+               ui.crm_open_id    AS crmOpenId,
+               ui.scrm_open_id   AS scrmOpenId,
+               li.last_check_sms AS lastCheckSms,
+               ssi.comp_id       AS companyId,
+               ssi.id            AS staffId,
+               urs.role_id       AS roleId,
+               usd.department_id AS deptId,
+               sdi.depart_name   AS deptName
+        FROM sys_user_info ui
+                 JOIN (
+            SELECT user_id,
+                   user_pwd,
+                   last_check_sms,
+                   mobile_number
+            FROM sys_login_info
+            WHERE login_name = #{userName}
+              and status = 0
+            UNION
+            SELECT user_id,
+                   user_pwd,
+                   last_check_sms,
+                   mobile_number
+            FROM sys_login_info
+            WHERE mobile_number = #{userName}
+              and status = 0
+        ) li ON ui.id = li.user_id
+                 LEFT JOIN sys_staff_info ssi ON ssi.user_id = ui.id and ssi.`status` in (0, 3)
+                 LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+                 LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+                 LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+        WHERE ui.STATUS in (0, 3)
+        limit 1
+    </select>
 
     <select id="selectByUserNameOrPhone" resultType="com.zerody.user.vo.CheckLoginVo">
-SELECT
-    li.user_pwd AS userPwd,
-    ssi.id AS staffId,
-    ui.id AS userId
-FROM
-	sys_user_info ui
-JOIN (
-	SELECT
-		user_pwd,
-		user_id
-	FROM
-		sys_login_info
-	WHERE
-		login_name = #{userName}
-		and status=0
-	UNION
-		SELECT
-			user_pwd,
-			user_id
-		FROM
-			sys_login_info
-		WHERE
-			mobile_number = #{userName}
-			and status=0
-) li ON ui.id = li.user_id
-LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id
-WHERE
-	ui. STATUS in (0, 3)
-	limit 1
-  </select>
+        SELECT li.user_pwd AS userPwd,
+               ssi.id      AS staffId,
+               ui.id       AS userId
+        FROM sys_user_info ui
+                 JOIN (
+            SELECT user_pwd,
+                   user_id
+            FROM sys_login_info
+            WHERE login_name = #{userName}
+              and status = 0
+            UNION
+            SELECT user_pwd,
+                   user_id
+            FROM sys_login_info
+            WHERE mobile_number = #{userName}
+              and status = 0
+        ) li ON ui.id = li.user_id
+                 LEFT JOIN sys_staff_info ssi ON ssi.user_id = ui.id
+        WHERE ui.STATUS in (0, 3)
+        limit 1
+    </select>
 
     <select id="selectUserByPhone" resultType="Boolean">
-    SELECT
-        count(1)>0
-    FROM
-        sys_user_info
-        WHERE
-			phone_number = #{phoneNumber}
-			and `status` in (0,3)
-  </select>
+        SELECT count(1) > 0
+        FROM sys_user_info
+        WHERE phone_number = #{phoneNumber}
+          and `status` in (0, 3)
+    </select>
 
     <select id="selectLoginUserInfo" resultType="com.zerody.user.vo.LoginUserInfoVo">
-    SELECT
-    sci.company_name AS companyName,
-    ssi.id AS staffId,
-    ssi.STATUS AS status,
-    sui.user_name AS userName,
-    sui.phone_number AS phoneNumber,
-    sui.email AS email,
-    sui.avatar AS avatar,
-    sdi.id AS departId,
-    sdi.depart_name AS departName,
-    sjp.id AS positionId,
-    sjp.position_name AS positionName
-    FROM sys_user_info sui
-    LEFT JOIN sys_staff_info ssi ON sui.id=ssi.user_id
-    LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
-    LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-    LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
-    LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
-    LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
-    WHERE
-	sui.`status` in (0, 3)
-	AND sui.id=#{id}
-  </select>
+        SELECT sci.company_name  AS companyName,
+               ssi.id            AS staffId,
+               ssi.STATUS        AS status,
+               sui.user_name     AS userName,
+               sui.phone_number  AS phoneNumber,
+               sui.email         AS email,
+               sui.avatar        AS avatar,
+               sdi.id            AS departId,
+               sdi.depart_name   AS departName,
+               sjp.id            AS positionId,
+               sjp.position_name AS positionName
+        FROM sys_user_info sui
+                 LEFT JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+                 LEFT JOIN sys_company_info sci ON ssi.comp_id = sci.id
+                 LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+                 LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+                 LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+                 LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        WHERE sui.`status` in (0, 3)
+          AND sui.id = #{id}
+    </select>
     <select id="getUserSubordinates" resultType="java.lang.String">
-        SELECT
-            ssi.user_id
-        FROM
-            sys_staff_info AS ssi
-        JOIN union_staff_depart AS usd ON ssi.id = usd.staff_id
-        JOIN union_staff_position AS usp ON ssi.id = usp.staff_id
-        JOIN sys_jop_position AS sjp ON sjp.id = usp.position_id and sjp.status = 1
-        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+        SELECT ssi.user_id
+        FROM sys_staff_info AS ssi
+                 JOIN union_staff_depart AS usd ON ssi.id = usd.staff_id
+                 JOIN union_staff_position AS usp ON ssi.id = usp.staff_id
+                 JOIN sys_jop_position AS sjp ON sjp.id = usp.position_id and sjp.status = 1
+                 JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            <if test="deps != null and deps.size >0 ">
+            <if test="deps != null and deps.size > 0">
                 sdi.id IN
-                    <foreach collection="deps" item="dep" open="(" separator="," close=")">
-                        #{dep.id}
-                    </foreach>
+                <foreach collection="deps" item="dep" open="(" separator="," close=")">
+                    #{dep.id}
+                </foreach>
             </if>
         </where>
     </select>
 
     <select id="checkUserAdmin" resultType="Boolean">
-        SELECT
-        count(1)>0
-        FROM
-        sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON ssi.user_id=sui.id
-        JOIN company_admin AS ca ON ca.staff_id=ssi.id
+        SELECT count(1) > 0
+        FROM sys_user_info AS sui
+                 JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+                 JOIN company_admin AS ca ON ca.staff_id = ssi.id
         <where>
             ssi.deleted = 0
-            and sui.status in (0,3)
-            and sui.id=#{userId}
+              and sui.status in (0, 3)
+              and sui.id = #{userId}
         </where>
     </select>
 
     <select id="checkBackAdminUser" resultType="Boolean">
-        SELECT
-        count(1)>0
-        FROM
-        admin_user_info AS aui
+        SELECT count(1) > 0
+        FROM admin_user_info AS aui
         <where>
-        aui.deleted=0
-        and  aui.id=#{userId}
-        and  aui.user_name='admin'
+            aui.deleted = 0
+              and aui.id = #{userId}
+              and aui.user_name = 'admin'
         </where>
     </select>
 
     <select id="selectAllUserId" resultType="map">
-        SELECT
-        sui.id,
-        ssi.comp_id AS companyId
-        FROM
-        sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        SELECT sui.id,
+               ssi.comp_id AS companyId
+        FROM sys_user_info AS sui
+                 JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         <where>
             sui.status in (0, 3)
         </where>
     </select>
     <select id="getUserMobilyNameInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
-        SELECT
-            id AS userId,
-            user_name AS userName
-        FROM
-            sys_user_info
-        WHERE
-            is_update_name = 1
+        SELECT id        AS userId,
+               user_name AS userName
+        FROM sys_user_info
+        WHERE is_update_name = 1
     </select>
     <select id="getDepartmentEditInfo" resultType="java.util.Map">
-        SELECT
-            sui.id,
-            sui.phone_number AS mobile,
-            sui.status,
-            ssi.comp_id AS company_id,
-            sui.create_time,
-            usd.department_id AS depart_id,
-            sui.user_name AS `name`,
-            sui.avatar AS user_avatar,
-            ssi.avatar AS staff_avatar,
-            sjp.id AS `job_id`,
-            sjp.position_name AS `job_name`
-        FROM
-        sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        LEFT JOIN union_staff_position AS usp ON usp.staff_id = ssi.id
-        LEFT JOIN sys_job_position AS sjp ON sjp.id = usp.position_id
+        SELECT sui.id,
+               sui.phone_number  AS mobile,
+               sui.status,
+               ssi.comp_id       AS company_id,
+               sui.create_time,
+               usd.department_id AS depart_id,
+               sui.user_name     AS `name`,
+               sui.avatar        AS user_avatar,
+               ssi.avatar        AS staff_avatar,
+               sjp.id            AS `job_id`,
+               sjp.position_name AS `job_name`
+        FROM sys_user_info AS sui
+                 JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+                 LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+                 LEFT JOIN union_staff_position AS usp ON usp.staff_id = ssi.id
+                 LEFT JOIN sys_job_position AS sjp ON sjp.id = usp.position_id
         <where>
             sui.is_edit = 1
         </where>
     </select>
 
     <select id="getSubordinateUser" resultType="com.zerody.user.vo.SubordinateUserQueryVo">
-        SELECT
-        sui.id AS user_id,
-        sui.user_name,
-        sui.phone_number AS mobile,
-        sdi.depart_name,
-        sjp.position_name AS positionName,
-        urs.role_name AS roleName,
-        sci.company_name AS companyName,
-        ssi.avatar
-        FROM
-        sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
-        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
-        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
-        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
-        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        SELECT sui.id            AS user_id,
+               sui.user_name,
+               sui.phone_number  AS mobile,
+               sdi.depart_name,
+               sjp.position_name AS positionName,
+               urs.role_name     AS roleName,
+               sci.company_name  AS companyName,
+               ssi.avatar
+        FROM sys_user_info AS sui
+                 JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+                 JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+                 JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+                 LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+                 LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+                 LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+                 LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         <where>
             <if test="param.isShowLeave eq null or param.isShowLeave eq 0">
                 sui.status IN (0, 3)
             </if>
             <if test="param.isShowLeave neq null and param.isShowLeave eq 1">
                 sui.status IN (0, 1, 3)
+
+
+
+
+
             </if>
             <if test="param.companyId neq null and param.companyId neq ''">
+
+
+
+
+
                 AND sdi.comp_id = #{param.companyId}
             </if>
             <if test="!param.isCompanyAdmin and param.isDepartAdmin">
-                AND (usd.department_id LIKE CONCAT(#{param.departId},'\_%') or usd.department_id=#{param.departId})
+                AND (usd.department_id LIKE CONCAT(#{param.departId}
+                  , '\_%')
+                 or usd.department_id=#{param.departId})
             </if>
             <if test="!param.isCompanyAdmin and !param.isDepartAdmin">
-                AND  usd.department_id=#{param.departId}
+                AND usd.department_id=#{param.departId}
             </if>
             AND sui.id != #{param.userId}
         </where>
     </select>
 
     <select id="selectTransUserInfo" resultType="com.zerody.user.vo.SysLoginUserInfoVo">
-SELECT
-	ui.id,
-	ui.user_name AS userName,
-	ui.gender,
-	li.mobile_number AS phoneNumber,
-	li.user_pwd AS userPwd,
-	ui.email,
-	ui.avatar,
-	ui.nickname,
-	ui.crm_open_id AS crmOpenId,
-	ui.scrm_open_id AS scrmOpenId,
-	li.last_check_sms AS lastCheckSms,
-	ssi.comp_id AS companyId,
-	ssi.id AS staffId,
-	urs.role_id AS roleId,
-	usd.department_id AS deptId,
-	sci.company_name AS companyName,
-	sdi.depart_name AS deptName
-FROM
-	sys_user_info ui
-JOIN sys_login_info li ON ui.id = li.user_id
-LEFT JOIN sys_staff_info ssi ON ssi.user_id=ui.id and ssi.`status` in (0, 3)
-LEFT JOIN union_staff_depart usd ON usd.staff_id=ssi.id
-LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
-LEFT JOIN sys_department_info sdi ON usd.department_id=sdi.id
-LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
-WHERE
-	ui. STATUS in (0,3)
-	AND ui.id=#{userId}
-	limit 1
-  </select>
+        SELECT ui.id,
+               ui.user_name      AS userName,
+               ui.gender,
+               li.mobile_number  AS phoneNumber,
+               li.user_pwd       AS userPwd,
+               ui.email,
+               ui.avatar,
+               ui.nickname,
+               ui.crm_open_id    AS crmOpenId,
+               ui.scrm_open_id   AS scrmOpenId,
+               li.last_check_sms AS lastCheckSms,
+               ssi.comp_id       AS companyId,
+               ssi.id            AS staffId,
+               urs.role_id       AS roleId,
+               usd.department_id AS deptId,
+               sci.company_name  AS companyName,
+               sdi.depart_name   AS deptName
+        FROM sys_user_info ui
+                 JOIN sys_login_info li ON ui.id = li.user_id
+                 LEFT JOIN sys_staff_info ssi ON ssi.user_id = ui.id and ssi.`status` in (0, 3)
+                 LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+                 LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+                 LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
+                 LEFT JOIN sys_company_info sci ON ssi.comp_id = sci.id
+        WHERE ui.STATUS in (0, 3)
+          AND ui.id = #{userId}
+        limit 1
+    </select>
     <select id="getUserByDepartId" resultType="com.zerody.user.vo.ReportFormsQueryVo">
-        SELECT
-            sui.id,
-            sui.user_name AS `name`
-        FROM
-            sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
-        JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        SELECT sui.id,
+               sui.user_name AS `name`
+        FROM sys_user_info AS sui
+                 JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
+                 JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
             AND sui.status IN (0, 3)
             <if test="departId neq null and departId neq ''">
@@ -384,20 +374,19 @@ WHERE
         ORDER BY sui.create_time DESC;
     </select>
     <select id="getUserById" resultType="com.zerody.user.vo.ReportFormsQueryVo">
-        SELECT
-            sui.id,
-            sui.user_name AS `name`,
-            sci.id AS company_id,
-            sci.company_name,
-             COUNT(ssi.id) AS salesman_num
+        SELECT sui.id,
+               sui.user_name AS `name`,
+               sci.id        AS company_id,
+               sci.company_name,
+               COUNT(ssi.id) AS salesman_num
         FROM
-            sys_user_info AS sui
-        JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
-        LEFT JOIN union_platform_role_staff AS urs ON urs.staff_id = ssi.id
-        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        sys_user_info AS sui
+            JOIN sys_staff_info AS ssi ON sui.id = ssi.user_id
+            LEFT JOIN union_platform_role_staff AS urs ON urs.staff_id = ssi.id
+            LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         <if test="roleIds neq null and roleIds.size() gt 0">
             AND urs.id
-            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")" >
+            <foreach collection="roleIds" item="id" open="IN (" separator="," close=")">
                 #{id}
             </foreach>
         </if>
@@ -410,18 +399,46 @@ WHERE
         ORDER BY sui.create_time DESC;
     </select>
 
-  <select id="getAllBeUserOrceoIds" resultType="java.lang.String">
-      SELECT
-          id from
-          sys_user_info
-      WHERE
-          STATUS IN (0, 3)
-      UNION
-      SELECT
-          id from
-          ceo_user_info
-      WHERE
-          deleted = 0
-        AND STATUS = 0
+    <select id="getAllBeUserOrceoIds" resultType="java.lang.String">
+        SELECT id
+        from sys_user_info
+        WHERE STATUS IN (0, 3)
+        UNION
+        SELECT id
+        from ceo_user_info
+        WHERE deleted = 0
+          AND STATUS = 0
+    </select>
+
+    <select id="getUserPage" resultType="com.zerody.user.vo.BosStaffInfoVo">
+        SELECT sui.id            AS id,
+               ssi.comp_id       AS compId,
+               ssi.user_name     AS userName,
+               sci.company_name  AS companyName,
+               sui.phone_number  AS phone,
+               sjp.position_name AS positionName,
+               sdi.depart_name   AS departName,
+               ssi.id            AS staffId,
+               urs.role_name     AS roleName,
+               sui.status        AS staffStatus,
+               ssi.evaluate,
+               ssi.resume_url
+        FROM sys_user_info sui
+                 JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+                 LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+                 LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+                 LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+                 LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+                 LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+                 LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
+        where sui.status IN (0, 3)
+        <if test="param.keyword neq null and param.keyword neq ''">
+            AND (
+                    sui.phone_number LIKE CONCAT('%', #{param1.keyword}, '%')
+                    OR
+                    sui.user_name LIKE CONCAT('%', #{param1.keyword}, '%')
+                )
+        </if>
+        ORDER BY sui.create_time DESC
     </select>
 </mapper>

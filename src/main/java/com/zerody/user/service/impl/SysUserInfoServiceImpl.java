@@ -3,6 +3,8 @@ package com.zerody.user.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
@@ -22,9 +24,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
-import com.zerody.user.dto.SetUpdateAvatarDto;
-import com.zerody.user.dto.SubordinateUserQueryDto;
-import com.zerody.user.dto.SysUserInfoPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
@@ -543,5 +543,72 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public List<String> getAllBeUserOrceoIdsInner() {
         return this.sysUserInfoMapper.getAllBeUserOrceoIds();
+    }
+
+    @Override
+    public void updateImState(UserImStateUpdateDto param) {
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().eq(SysUserInfo::getId, param.getId());
+        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+        userUw.lambda().set(SysUserInfo::getImState, param.getImState());
+        this.update(userUw);
+
+        UpdateWrapper<CeoUserInfo> ceoUw = new UpdateWrapper<>();
+        ceoUw.lambda().eq(CeoUserInfo::getId, param.getId());
+        ceoUw.lambda().set(CeoUserInfo::getImState, param.getImState());
+        this.ceoUserInfoService.update(ceoUw);
+
+    }
+
+    @Override
+    public IPage<BosStaffInfoVo> getPgaeSystemAllUser(SysStaffInfoPageDto param) {
+        IPage<BosStaffInfoVo> userPage = new Page<>(param.getCurrent(), param.getPageSize());
+        userPage = this.sysUserInfoMapper.getUserPage(param, userPage);
+        if (userPage.getPages() > param.getCurrent()) {
+            param.setCurrent(1);
+            param.setPageSize(1);
+        }
+        if (userPage.getPages() == param.getCurrent()) {
+            param.setCurrent(1);
+            param.setPageSize((int)(userPage.getSize() - ((long) userPage.getRecords().size())));
+        }
+        if (userPage.getPages() < param.getCurrent()) {
+            param.setCurrent((int)(param.getCurrent() - userPage.getPages()));
+        }
+        IPage<BosStaffInfoVo> ceoPage = this.ceoUserInfoService.getCeoPage(param);
+        List<BosStaffInfoVo> addlist = new ArrayList<>();
+        //删除第一个分页最后一页数据不够第二个分页补充的数据
+        if (CollectionUtils.isEmpty(userPage.getRecords()) ) {
+            int size = (int)(userPage.getSize() - (userPage.getTotal() % userPage.getSize()));
+            if (size > ceoPage.getRecords().size()) {
+                size = ceoPage.getRecords().size();
+            }
+            for (int i = 0; i < size; i++) {
+                ceoPage.getRecords().remove(0);
+            }
+            if (size > 0) {
+                //从上一页获得等量数据填充本页
+                param.setCurrent(param.getCurrent() + 1);
+                IPage<BosStaffInfoVo> ceoPage2  = this.ceoUserInfoService.getCeoPage(param);
+                if (ceoPage2.getRecords().size() > 0) {
+                    size = ceoPage2.getRecords().size() > size ? size : ceoPage2.getRecords().size();
+                    addlist = ceoPage2.getRecords().subList(0, size);
+                }
+            }
+        }
+        //填充第一个分页缺少的数据
+        if (userPage.getRecords().size() < userPage.getSize()) {
+            userPage.getRecords().addAll(ceoPage.getRecords());
+        }
+        if (CollectionUtils.isNotEmpty(addlist)) {
+            userPage.getRecords().addAll(addlist);
+        }
+        // 计算总条数
+        userPage.setTotal(ceoPage.getTotal() + userPage.getTotal());
+        userPage.setPages(userPage.getTotal() / userPage.getSize());
+        if (userPage.getTotal() % userPage.getSize() > 0) {
+            userPage.setPages(userPage.getPages() + 1);
+        }
+        return userPage;
     }
 }
