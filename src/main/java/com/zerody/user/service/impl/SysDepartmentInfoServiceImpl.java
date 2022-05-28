@@ -269,6 +269,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         UpdateWrapper<SysDepartmentInfo> depAdminRmoveUw = new UpdateWrapper<>();
         depAdminRmoveUw.lambda().eq(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
         depAdminRmoveUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+        depAdminRmoveUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
         this.update(depAdminRmoveUw);
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
