@@ -640,6 +640,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (!r.isSuccess()) {
                 throw new DefaultException("修改线索负责人名称失败!");
             }
+            UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
+            departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
+            departEditUw.lambda().in(SysDepartmentInfo::getId, dep.getDepartmentId(), setSysUserInfoDto.getDepartId());
+            this.sysDepartmentInfoService.update(departEditUw);
         }
         if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
