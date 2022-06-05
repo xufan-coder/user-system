@@ -21,6 +21,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserIdentifierQueryVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
@@ -610,5 +611,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             userPage.setPages(userPage.getPages() + 1);
         }
         return userPage;
+    }
+
+    @Override
+    public List<UserIdentifierQueryVo> getUserIdentifierByIds(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        return this.sysUserInfoMapper.getUserIdentifierByIds(ids);
     }
 }
