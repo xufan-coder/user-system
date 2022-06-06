@@ -169,4 +169,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     IPage<BosStaffInfoVo> getUserPage(@Param("param") SysStaffInfoPageDto param, IPage<BosStaffInfoVo> ceoPage);
 
     List<UserIdentifierQueryVo> getUserIdentifierByIds(@Param("ids") List<String> ids);
+
+
+    StaffInfoVo getUserInfoByMobile(@Param("mobile") String mobile);
 }

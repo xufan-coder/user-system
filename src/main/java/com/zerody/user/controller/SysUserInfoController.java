@@ -1265,4 +1265,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取用户设备信息");
         }
     }
+
+
+    /**
+     *
+     *
+     * @author               luolujin
+     * @description          根据手机号码查询在职用户id
+     * @date                 2022/6/6
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @GetMapping("/get/by-mobile")
+    public DataResult<StaffInfoVo> getUserInfoByMobile(@RequestParam("mobile") String mobile){
+        try {
+            if(StringUtils.isEmpty(mobile)){
+                R.error("电话号码不能为空！");
+            }
+            return R.success(this.sysUserInfoService.getUserInfoByMobile(mobile));
+        } catch (DefaultException e) {
+            log.error("查询用户信息出错：{}", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
 }

@@ -620,4 +620,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         }
         return this.sysUserInfoMapper.getUserIdentifierByIds(ids);
     }
+
+    @Override
+    public StaffInfoVo getUserInfoByMobile(String mobile) {
+        StaffInfoVo sysUserInfo = sysUserInfoMapper.getUserInfoByMobile(mobile);
+        return sysUserInfo;
+    }
+
 }

@@ -249,4 +249,9 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     IPage<BosStaffInfoVo> getPgaeSystemAllUser(SysStaffInfoPageDto param);
 
     List<UserIdentifierQueryVo> getUserIdentifierByIds(List<String> ids);
+
+
+    StaffInfoVo getUserInfoByMobile(String mobile);
+
+
 }
