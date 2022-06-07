@@ -172,4 +172,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
 
     StaffInfoVo getUserInfoByMobile(@Param("mobile") String mobile);
+
+    List<AppUserNotPushVo> getNotPushAppUser();
 }

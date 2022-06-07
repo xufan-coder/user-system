@@ -7,6 +7,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserIdentifierQueryVo;
+import com.zerody.user.domain.AppUserPush;
 import com.zerody.user.dto.*;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.*;
@@ -254,4 +255,5 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     StaffInfoVo getUserInfoByMobile(String mobile);
 
 
+    List<AppUserNotPushVo> getNotPushAppUser();
 }
