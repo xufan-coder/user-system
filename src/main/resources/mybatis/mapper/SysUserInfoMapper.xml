@@ -457,4 +457,16 @@
     <select id="getUserInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
         select id AS user_id from sys_user_info where phone_number=#{mobile} AND( `status`=0 or `status`=3) limit 0,1
     </select>
+
+    <select id="getNotPushAppUser" resultType="com.zerody.user.vo.AppUserNotPushVo">
+        SELECT
+            sui.id AS `user_id`,
+            ssi.comp_id AS `company_id`
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN app_user_push AS aup ON aup.user_id = aup.user_id
+        WHERE
+            sui.status IN (0, 3) AND aup.id IS NULL
+        LIMIT 0, 200
+    </select>
 </mapper>

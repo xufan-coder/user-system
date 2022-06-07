@@ -627,4 +627,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return sysUserInfo;
     }
 
+    @Override
+    public List<AppUserNotPushVo> getNotPushAppUser() {
+        return this.sysUserInfoMapper.getNotPushAppUser();
+    }
+
 }
