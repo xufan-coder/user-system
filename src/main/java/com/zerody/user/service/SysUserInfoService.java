@@ -6,6 +6,7 @@ import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserIdentifierQueryVo;
 import com.zerody.user.dto.*;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.vo.*;
@@ -246,4 +247,11 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     void updateImState(UserImStateUpdateDto param);
 
     IPage<BosStaffInfoVo> getPgaeSystemAllUser(SysStaffInfoPageDto param);
+
+    List<UserIdentifierQueryVo> getUserIdentifierByIds(List<String> ids);
+
+
+    StaffInfoVo getUserInfoByMobile(String mobile);
+
+
 }

@@ -3,6 +3,7 @@ package com.zerody.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserIdentifierQueryVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.SubordinateUserQueryDto;
@@ -166,4 +167,9 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<String> getAllBeUserOrceoIds();
 
     IPage<BosStaffInfoVo> getUserPage(@Param("param") SysStaffInfoPageDto param, IPage<BosStaffInfoVo> ceoPage);
+
+    List<UserIdentifierQueryVo> getUserIdentifierByIds(@Param("ids") List<String> ids);
+
+
+    StaffInfoVo getUserInfoByMobile(@Param("mobile") String mobile);
 }

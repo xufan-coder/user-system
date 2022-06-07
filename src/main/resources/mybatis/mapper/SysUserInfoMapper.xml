@@ -441,4 +441,20 @@
         </if>
         ORDER BY sui.create_time DESC
     </select>
+
+    <select id="getUserIdentifierByIds" resultType="com.zerody.user.api.vo.UserIdentifierQueryVo">
+        <foreach collection="ids" item="id" index="index" >
+            <if test="index > 0">
+                UNION
+            </if>
+            SELECT user_id,equipment_no AS identifier FROM sys_user_identifier WHERE id = #{id} AND state = 1
+        </foreach>
+    </select>
+
+
+
+
+    <select id="getUserInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        select id AS user_id from sys_user_info where phone_number=#{mobile} AND( `status`=0 or `status`=3) limit 0,1
+    </select>
 </mapper>

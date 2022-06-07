@@ -16,12 +16,14 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.export.util.ExcelHandlerUtils;
+import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.SysLoginUserInfoVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,12 +43,6 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.CardUserDto;
 import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.api.vo.AdminUserInfo;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.CardUserInfoVo;
-import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.api.vo.UserTypeInfoInnerVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.base.CheckUtil;
 
@@ -1246,4 +1242,52 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取所有用户异常!请联系管理员");
         }
     }
+
+    /**
+     *
+     * 根据用户id获取用户设备
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2022/6/5 10:07
+     * @param                [ids]
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<java.lang.String>>
+     */
+    @GetMapping("/get/user-identifier/by-ids/inner")
+    public DataResult<List<UserIdentifierQueryVo>> getUserIdentifierByIds(@RequestParam("ids") List<String> ids) {
+        try {
+            List<UserIdentifierQueryVo> result = this.sysUserInfoService.getUserIdentifierByIds(ids);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.info("获取用户设备信息异常:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.info("获取用户设备信息异常:{}", e, e);
+            return R.error("获取用户设备信息");
+        }
+    }
+
+
+    /**
+     *
+     *
+     * @author               luolujin
+     * @description          根据手机号码查询在职用户id
+     * @date                 2022/6/6
+     * @param
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @Override
+    @GetMapping("/get/by-mobile")
+    public DataResult<StaffInfoVo> getUserInfoByMobile(@RequestParam("mobile") String mobile){
+        try {
+            if(StringUtils.isEmpty(mobile)){
+                R.error("电话号码不能为空！");
+            }
+            return R.success(this.sysUserInfoService.getUserInfoByMobile(mobile));
+        } catch (DefaultException e) {
+            log.error("查询用户信息出错：{}", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
 }
