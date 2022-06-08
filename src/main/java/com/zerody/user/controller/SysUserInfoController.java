@@ -4,6 +4,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +25,7 @@ import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.SysLoginUserInfoVo;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -1083,8 +1085,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      */
     @Override
     @RequestMapping(value = "/get/batch-staff-info/inner", method = RequestMethod.GET)
-    public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam("userIds") List<String> userId){
+    public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam(value = "userIds", required = false) List<String> userId){
         try {
+            if (Collections.isEmpty(userId)) {
+                return R.success(new ArrayList<>());
+            }
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
         } catch (DefaultException e){
             log.error("获取员工信息失败:{}",e,e);
