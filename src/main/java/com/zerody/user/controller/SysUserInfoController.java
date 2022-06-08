@@ -1087,9 +1087,6 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/get/batch-staff-info/inner", method = RequestMethod.GET)
     public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam(value = "userIds", required = false) List<String> userId){
         try {
-            if (Collections.isEmpty(userId)) {
-                return R.success(new ArrayList<>());
-            }
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
         } catch (DefaultException e){
             log.error("获取员工信息失败:{}",e,e);
@@ -1113,8 +1110,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/get/batch-staff-info", method = POST)
     public DataResult<List<StaffInfoVo>> getBatchStaffInfoByIds(@RequestBody List<String> userId){
         try {
-            if (CollectionUtils.isEmpty(userId)) {
-                return R.error("用户id不能为空");
+            if (Collections.isEmpty(userId)) {
+                return R.success(new ArrayList<>());
             }
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
         } catch (DefaultException e){
