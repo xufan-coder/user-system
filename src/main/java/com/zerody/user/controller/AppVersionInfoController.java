@@ -90,9 +90,9 @@ public class AppVersionInfoController {
      * @return
      */
     @GetMapping("/query")
-    public DataResult<List<AppVersionInfoPageVo>> queryAppVersionInfoList(AppVersionInfoListDto param) {
-        List<AppVersionInfoPageVo> appVersionInfoeVos = this.appVersionInfoService.queryAppVersionInfoList(param);
-        return R.success(appVersionInfoeVos);
+    public DataResult<IPage<AppVersionInfoPageVo>> queryAppVersionInfoList(AppVersionInfoListDto param) {
+        IPage<AppVersionInfoPageVo> appVersionInfoPageVoIPage = this.appVersionInfoService.queryAppVersionInfoList(param);
+        return R.success(appVersionInfoPageVoIPage);
     }
 
     /***
