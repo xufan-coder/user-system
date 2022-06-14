@@ -1,5 +1,6 @@
 package com.zerody.user.dto;
 
+import com.zerody.common.api.bean.PageQueryDto;
 import lombok.Data;
 
 /**
@@ -7,7 +8,7 @@ import lombok.Data;
  * @date 2021年12月16日 16:32
  */
 @Data
-public class AppVersionInfoListDto {
+public class AppVersionInfoListDto  extends PageQueryDto {
     /***/
     private String id;
     /**

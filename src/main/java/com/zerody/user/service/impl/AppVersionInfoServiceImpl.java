@@ -96,19 +96,27 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
     }
 
     @Override
-    public List<AppVersionInfoPageVo> queryAppVersionInfoList(AppVersionInfoListDto param) {
+    public IPage<AppVersionInfoPageVo> queryAppVersionInfoList(AppVersionInfoListDto param) {
+        IPage<AppVersionInfo> iPage = new Page<>(param.getCurrent(), param.getSize());
         List<AppVersionInfoPageVo> voList = Lists.newArrayList();
         QueryWrapper<AppVersionInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getId()), AppVersionInfo::getId, param.getId());
         queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
         queryWrapper.lambda().eq(AppVersionInfo::getStatus, YesNo.YES);
         queryWrapper.lambda().orderByDesc(AppVersionInfo::getOrderNum,AppVersionInfo::getCreateTime);
-        this.list(queryWrapper).forEach(item -> {
+        IPage<AppVersionInfo> page = this.page(iPage, queryWrapper);
+        List<AppVersionInfo> records = page.getRecords();
+        records.forEach(item -> {
             AppVersionInfoPageVo appVersionInfo = new AppVersionInfoPageVo();
             BeanUtils.copyProperties(item, appVersionInfo);
             voList.add(appVersionInfo);
         });
-        return voList;
+        IPage<AppVersionInfoPageVo> vo=new Page<>();
+        vo.setRecords(voList);
+        vo.setTotal(page.getTotal());
+        vo.setSize(page.getSize());
+        vo.setPages(page.getPages());
+        return vo;
     }
 
     @Override
