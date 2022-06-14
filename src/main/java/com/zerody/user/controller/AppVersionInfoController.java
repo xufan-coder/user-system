@@ -95,6 +95,21 @@ public class AppVersionInfoController {
         return R.success(appVersionInfoPageVoIPage);
     }
 
+
+    /***
+     * @description 查询
+     * @author zhangpingping
+     * @date 2021/12/16
+     * @param [param]
+     * @return
+     */
+    @GetMapping("/query/list")
+    public DataResult<List<AppVersionInfoPageVo>> queryAppVersionInfoArrayList(AppVersionInfoListDto param) {
+        List<AppVersionInfoPageVo> appVersionInfoPageVoIPage = this.appVersionInfoService.queryAppVersionInfoArrayList(param);
+        return R.success(appVersionInfoPageVoIPage);
+    }
+
+
     /***
      * @description 查询App
      * @author zhangpingping

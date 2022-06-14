@@ -72,4 +72,5 @@ public interface AppVersionInfoService extends IService<AppVersionInfo> {
      */
     AppVersionInfoVo queryAppVersionInfoDetail(AppVersionInfoListDto appVersionInfoListDto);
 
+    List<AppVersionInfoPageVo> queryAppVersionInfoArrayList(AppVersionInfoListDto param);
 }
