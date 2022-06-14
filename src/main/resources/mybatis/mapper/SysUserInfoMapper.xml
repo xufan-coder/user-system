@@ -464,7 +464,7 @@
             ssi.comp_id AS `company_id`
         FROM sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        LEFT JOIN app_user_push AS aup ON aup.user_id = aup.user_id
+        LEFT JOIN app_user_push AS aup ON sui.id = aup.user_id
         WHERE
             sui.status IN (0, 3) AND aup.id IS NULL
         LIMIT 0, 200
