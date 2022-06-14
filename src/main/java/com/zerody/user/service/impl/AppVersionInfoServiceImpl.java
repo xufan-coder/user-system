@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.CollectionUtils;
 import com.zerody.user.domain.AppVersionInfo;
 import com.zerody.user.dto.AppVersionInfoAddDto;
 import com.zerody.user.dto.AppVersionInfoListDto;
@@ -23,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -130,6 +132,26 @@ public class AppVersionInfoServiceImpl extends ServiceImpl<AppVersionInfoMapper,
         AppVersionInfo appVersionInfo = this.getOne(queryWrapper);
         BeanUtils.copyProperties(appVersionInfo, appVersionInfoVo);
         return appVersionInfoVo;
+    }
+
+    @Override
+    public List<AppVersionInfoPageVo> queryAppVersionInfoArrayList(AppVersionInfoListDto param) {
+        List<AppVersionInfoPageVo> voList = Lists.newArrayList();
+        QueryWrapper<AppVersionInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(StringUtils.isNotEmpty(param.getId()), AppVersionInfo::getId, param.getId());
+        queryWrapper.lambda().eq(AppVersionInfo::getDeleted, YesNo.NO);
+        queryWrapper.lambda().eq(AppVersionInfo::getStatus, YesNo.YES);
+        queryWrapper.lambda().orderByDesc(AppVersionInfo::getOrderNum,AppVersionInfo::getCreateTime);
+        List<AppVersionInfo> records  = this.list(queryWrapper);
+        if (CollectionUtils.isEmpty(records)) {
+            return new ArrayList<>();
+        }
+        records.forEach(item -> {
+            AppVersionInfoPageVo appVersionInfo = new AppVersionInfoPageVo();
+            BeanUtils.copyProperties(item, appVersionInfo);
+            voList.add(appVersionInfo);
+        });
+        return voList;
     }
 
 
