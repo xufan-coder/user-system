@@ -26,6 +26,7 @@ import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.BackUserRefVo;
 import com.zerody.user.vo.CeoRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
@@ -1044,6 +1045,20 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
         com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
         BeanUtils.copyProperties(vo,ceoRef);
+        return R.success(vo);
+    }
+
+    /**
+     * 据后台管理员用户id获取关联企业；
+     * @author  DaBai
+     * @date  2022/6/20 10:26
+     */
+    @Override
+    @RequestMapping(value = "/get-back-company/inner",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.BackUserRefVo> getBackCompanyById(@RequestParam String id){
+        BackUserRefVo backRef = ceoCompanyRefService.getBackRef(id);
+        com.zerody.user.api.vo.BackUserRefVo vo=new com.zerody.user.api.vo.BackUserRefVo();
+        BeanUtils.copyProperties(vo,backRef);
         return R.success(vo);
     }
 
