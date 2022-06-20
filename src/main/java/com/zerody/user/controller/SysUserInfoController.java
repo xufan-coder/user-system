@@ -12,11 +12,13 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.export.util.ExcelHandlerUtils;
+import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -24,6 +26,7 @@ import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.CeoRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.BeanUtils;
@@ -92,6 +95,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @Autowired
     private SysUserIdentifierService sysUserIdentifierService;
 
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
+
 	@Override
 	public long getLastModified(HttpServletRequest request) {
 		return System.currentTimeMillis();
@@ -120,6 +126,31 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
         return sysUserInfoService.addUser(userInfo);
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          内部接口复制用户
+     * @date                 2022/6/18 15:48
+     * @param                [setSysUserInfoDto]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @PostMapping(value = "/copy/inner")
+    @Override
+    public DataResult<UserCopyResultVo> doCopyStaffInner(@Validated @RequestBody UserCopyDto param){
+        try {
+            log.info("copy用户入参:{}", JSON.toJSONString(param));
+            return R.success(sysStaffInfoService.doCopyStaffInner(param));
+        } catch (DefaultException e){
+            log.error("内部接口复制员工错误:{}" + JSON.toJSONString(param), e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("内部接口复制员工错误:{} "+ JSON.toJSONString(param), e);
+            return R.error("内部接口复制员工错误,请求异常");
+        }
+    }
+
 
     //修改用户
     @PostMapping("/updateUser")
@@ -999,6 +1030,21 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         com.zerody.user.api.vo.CeoUserInfo ceo=new com.zerody.user.api.vo.CeoUserInfo();
         BeanUtils.copyProperties(userById,ceo);
         return R.success(ceo);
+    }
+
+
+    /**
+     * 据CEO用户id获取关联企业；
+     * @author  DaBai
+     * @date  2022/6/20 10:26
+     */
+    @Override
+    @RequestMapping(value = "/get-ceo-company/inner",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.CeoRefVo> getCeoCompanyById(@RequestParam String id){
+        CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
+        com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
+        BeanUtils.copyProperties(vo,ceoRef);
+        return R.success(vo);
     }
 
     /**

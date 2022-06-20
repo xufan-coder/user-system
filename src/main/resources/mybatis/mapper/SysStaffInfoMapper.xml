@@ -1012,4 +1012,52 @@
             sui.status IN (0, 3)
             AND sui.phone_number = #{mobile}
     </select>
+    <select id="getUserInfoByUserId" resultType="com.zerody.user.dto.SetSysUserInfoDto">
+        SELECT
+            sui.avatar,
+            ssi.avatar AS staff_avatar,
+            sui.user_name,
+            sui.gender,
+            sui.phone_number,
+            sui.email,
+            sui.nickname,
+            sui.birthday,
+            sui.certificate_card,
+            sui.certificate_card_address,
+            sui.contact_address,
+            sui.prov_city_district,
+            sui.nation,
+            sui.ancestral,
+            sui.highest_education,
+            sui.graduated_from,
+            sui.major,
+            sui.marital_status,
+            sui.register_time,
+            sui.urgent_name,
+            sui.urgent_relation,
+            sui.urgent_phone,
+            sui.family_name,
+            sui.family_relation,
+            sui.family_phone,
+            sui.family_job,
+            sui.family_addr,
+            sui.personal_experience,
+            sui.sign_name,
+            sui.english_name,
+            sui.mobile,
+            ssi.work_place,
+            ssi.job_number,
+            ssi.date_join,
+            ssi.conversion_date,
+            ssi.evaluate,
+            ssi.resume_url,
+            ssi.recommend_type,
+            ssi.recommend_id,
+            ssi.integral,
+            ssi.working_years
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        WHERE
+            sui.id = #{userId}
+    </select>
 </mapper>

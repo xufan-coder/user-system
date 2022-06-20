@@ -6,6 +6,8 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.vo.BosStaffInfoVo;
+import com.zerody.user.vo.CeoRefVo;
+import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.apache.ibatis.annotations.Param;
 

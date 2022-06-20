@@ -85,7 +85,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private List<StaffHistoryDto> staffHistoryHonor;
     /**
-     * 惩罚
+         * 惩罚
      */
     private List<StaffHistoryDto> staffHistoryPunishment;
     /**
