@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserCopyResultVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -44,6 +46,10 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     }
 
     SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
+
+
+
+    UserCopyResultVo doCopyStaffInner(UserCopyDto param);
 
     IPage<BosStaffInfoVo> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 

@@ -12,11 +12,13 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.export.util.ExcelHandlerUtils;
+import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -120,6 +122,31 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
         return sysUserInfoService.addUser(userInfo);
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          内部接口复制用户
+     * @date                 2022/6/18 15:48
+     * @param                [setSysUserInfoDto]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @PostMapping(value = "/copy/inner")
+    @Override
+    public DataResult<UserCopyResultVo> doCopyStaffInner(@Validated @RequestBody UserCopyDto param){
+        try {
+            log.info("copy用户入参:{}", JSON.toJSONString(param));
+            return R.success(sysStaffInfoService.doCopyStaffInner(param));
+        } catch (DefaultException e){
+            log.error("内部接口复制员工错误:{}" + JSON.toJSONString(param), e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("内部接口复制员工错误:{} "+ JSON.toJSONString(param), e);
+            return R.error("内部接口复制员工错误,请求异常");
+        }
+    }
+
 
     //修改用户
     @PostMapping("/updateUser")
