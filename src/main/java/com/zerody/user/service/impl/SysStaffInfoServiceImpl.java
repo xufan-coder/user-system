@@ -201,6 +201,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private DictService dictService;
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1875,7 +1877,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public IPage<BosStaffInfoVo> getAdmins(AdminsPageDto dto) {
         IPage<BosStaffInfoVo> voIPage = new Page<>(dto.getCurrent(), dto.getPageSize());
-        return sysStaffInfoMapper.selectAdmins(dto, voIPage);
+        IPage<BosStaffInfoVo> page= sysStaffInfoMapper.selectAdmins(dto, voIPage);
+        List<BosStaffInfoVo> records = page.getRecords();
+        if(DataUtil.isNotEmpty(records)){
+            records.stream().forEach(item->{
+                BackUserRefVo backRef = ceoCompanyRefService.getBackRef(item.getId());
+                if(DataUtil.isNotEmpty(backRef)&&DataUtil.isNotEmpty(backRef.getCompanys())){
+                    List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(Collectors.toList());
+                    item.setCompanys(collect);
+                }
+            });
+        }
+        return page;
     }
 
     /**

@@ -30,4 +30,9 @@ public class CeoCompanyRef {
     * 创建时间
     */
     private Date createTime;
+
+    /**
+    *   类型 0 后台账户，1 CEO账户
+    */
+    private Integer type;
 }
