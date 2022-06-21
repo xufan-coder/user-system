@@ -209,4 +209,6 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
     List<String> getSubordinateIdsById(String departId);
 
     List<SysDepartmentInfoVo>  getAllDepByDepartId(String companyId,String departId,Integer isDepartAdmin);
+
+    List<SysDepartmentInfoVo> getAllDepPersonByCompanyId(String companyId);
 }

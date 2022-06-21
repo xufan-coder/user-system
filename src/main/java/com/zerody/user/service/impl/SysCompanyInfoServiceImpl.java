@@ -704,6 +704,34 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         return new ArrayList<>();
     }
 
+    @Override
+    public List<SysComapnyInfoVo> getAllCompanyPersons(String companyId) {
+        List<SysComapnyInfoVo> companys = new ArrayList<>();
+        //如果是crm系统就只查当前登录企业
+        if (!StringUtils.isEmpty(companyId)) {
+            SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(companyId);
+            //获取当前企业下的部门、岗位
+            company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
+
+            // 设置企业总人数
+            int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
+            company.setUserCount(userCount);
+            companys.add(company);
+            return companys;
+        }
+
+        //如果不是crm系统就查全部企业
+        companys = sysCompanyInfoMapper.getAllCompnay();
+        for (SysComapnyInfoVo company : companys) {
+            company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
+
+            // 设置企业总人数
+            int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
+            company.setUserCount(userCount);
+        }
+        return companys;
+    }
+
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
         //添加员工即为内部员工需要生成名片小程序用户账号
         CardUserInfo cardUserInfo = new CardUserInfo();
