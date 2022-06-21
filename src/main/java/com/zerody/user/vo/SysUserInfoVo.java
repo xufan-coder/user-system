@@ -253,4 +253,7 @@ public class SysUserInfoVo {
     private String imStateName;
 
     private String userAvatar;
+
+    /** 离职时间 */
+    private Date dateLeft;
 }

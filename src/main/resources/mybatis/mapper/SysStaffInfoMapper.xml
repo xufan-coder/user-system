@@ -252,6 +252,7 @@
         ssi.integral,
         ssi.working_years,
         ssi.date_join,
+        ssi.date_left,
         sui.im_state,
         sui.avatar AS user_avatar
         FROM

@@ -687,8 +687,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
-        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
-        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
+        staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
         if (DataUtil.isEmpty(setSysUserInfoDto.getRecommendType()) || setSysUserInfoDto.getRecommendType().intValue() == 0) {
             staff.setRecommendId("");
         }
