@@ -178,6 +178,19 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         return R.success(sysComapnyInfoVos);
     }
 
+
+    /**
+     * @param
+     * @author kuang
+     * @description 获取组织树形结构 -包含部门人数
+     * @date 2020/12/31 9:57
+     */
+    @RequestMapping(value = "/structure/persons", method = RequestMethod.GET)
+    public DataResult<List<SysComapnyInfoVo>> getAllCompanyPersons(String companyId) {
+        return R.success(sysCompanyInfoService.getAllCompanyPersons(companyId));
+    }
+
+
     /**
      * 获取企业详情
      *

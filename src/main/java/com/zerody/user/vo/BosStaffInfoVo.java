@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.enums.StaffStatusEnum;
@@ -7,6 +8,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author DaBai
@@ -82,6 +84,11 @@ public class BosStaffInfoVo {
     private String userAvatar;
     private String evaluate;
     private String resumeUrl;
+
+    @TableField(exist = false)
+    private List<String> companys;
+
+
 
     public String getStaffStatusString() {
         if (DataUtil.isEmpty(this.staffStatus)) {
