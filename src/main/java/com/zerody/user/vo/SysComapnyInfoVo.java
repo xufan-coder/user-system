@@ -98,4 +98,7 @@ public class SysComapnyInfoVo {
      * 身份证号
      */
     private String certificateCard;
+
+    /**部门总人数*/
+    private Integer userCount;
 }

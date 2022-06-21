@@ -91,4 +91,7 @@ public class SysDepartmentInfoVo {
     private String adminName;
 
     private Integer isShowBusiness;
+
+    /**部门总人数*/
+    private Integer userCount;
 }
