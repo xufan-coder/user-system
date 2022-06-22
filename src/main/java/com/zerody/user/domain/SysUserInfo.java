@@ -1,6 +1,7 @@
 package com.zerody.user.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -43,6 +44,7 @@ public class  SysUserInfo extends BaseModel {
     private String avatar;
 
     /** 出生日期 **/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
 
 
