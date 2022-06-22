@@ -1,7 +1,9 @@
 package com.zerody.user.service.base;
 
 import com.alibaba.druid.util.StringUtils;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.TimeDimensionality;
+import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.enums.util.TimeFormat;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
@@ -10,6 +12,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.BackUserRefVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.dto.bean.SetTimePeriod;
@@ -17,9 +20,11 @@ import com.zerody.user.dto.bean.SetTimePeriodPage;
 import com.zerody.user.dto.bean.UserPositionPageParam;
 import com.zerody.user.dto.bean.UserPositionParam;
 import com.zerody.user.feign.OauthFeignService;
+import com.zerody.user.service.CeoCompanyRefService;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.util.DateUtils;
+import com.zerody.user.vo.CompanyRefVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +33,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -48,8 +54,19 @@ public class CheckUtil {
     @Autowired
     private SysDepartmentInfoService departmentInfoService;
 
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
+
     public <T extends UserPositionPageParam>  void SetUserPositionInfo(T  param){
+        // isBackAdmin为后台管理  CRM_CE为总裁登录
         if (UserUtils.getUser().isBackAdmin()){
+            List<String> list = setBackCompany(UserUtils.getUserId());
+            param.setCompanyIds(list);
+            return;
+        }
+        if (UserUtils.getUser().getUserType().equals(UserTypeEnum.CRM_CEO.getValue())){
+            List<String> list = setCeoCompany(UserUtils.getUserId());
+            param.setCompanyIds(list);
             return;
         }
 
@@ -80,7 +97,15 @@ public class CheckUtil {
     }
 
     public <T extends UserPositionParam>  void SetUserPositionInfo(T  param){
+        // isBackAdmin为后台管理  CRM_CE为总裁登录
         if (UserUtils.getUser().isBackAdmin()){
+            List<String> list = setBackCompany(UserUtils.getUserId());
+            param.setCompanyIds(list);
+            return;
+        }
+        if (UserUtils.getUser().getUserType().equals(UserTypeEnum.CRM_CEO.getValue())){
+            List<String> list = setCeoCompany(UserUtils.getUserId());
+            param.setCompanyIds(list);
             return;
         }
         UserVo user = UserUtils.getUser();
@@ -210,5 +235,34 @@ public class CheckUtil {
         if (images.size() > 9) {
             throw new DefaultException("相关图片最多9张");
         }
+    }
+
+    public  List<String> setCeoCompany(String userId){
+        List<String> companyIds=null;
+        com.zerody.user.vo.CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(userId);
+        if(DataUtil.isNotEmpty(ceoRef)) {
+            List<CompanyRefVo> companys= ceoRef.getCompanys();
+            if (CollectionUtils.isNotEmpty(ceoRef.getCompanys())) {
+                companyIds = companys.stream().map(s -> s.getId()).collect(Collectors.toList());
+            }else {
+                companyIds = new ArrayList<>();
+            }
+        }
+        return companyIds;
+    }
+
+
+    public  List<String> setBackCompany(String userId){
+        List<String> companyIds=null;
+        com.zerody.user.vo.BackUserRefVo backRef = ceoCompanyRefService.getBackRef(userId);
+        if(DataUtil.isNotEmpty(backRef)) {
+            List<CompanyRefVo> companys= backRef.getCompanys();
+            if (CollectionUtils.isNotEmpty(backRef.getCompanys())) {
+                companyIds = companys.stream().map(s -> s.getId()).collect(Collectors.toList());
+            }else {
+                companyIds = new ArrayList<>();
+            }
+        }
+        return companyIds;
     }
 }
