@@ -1356,14 +1356,28 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     /**
      *
      *
-     * @author               luolujin
-     * @description          获取该用户所有上级除了总经理
-     * @date                 2022/6/18 16:28
-     * @param                id
+     * @author               PengQiang
+     * @description          获取上级 不包含企业管理员
+     * @date                 2022/6/22 9:53
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.StaffInfoVo>
      */
-    @GetMapping("/get/superior/{id}")
-    public DataResult<StaffInfoVo> getSuperiorBytUserId(@PathVariable("id") String id) {
-        return null;
+    @GetMapping("/get/superior/not-company-admin/{id}")
+    public DataResult<StaffInfoVo> getSuperiorNotCompanyAdmin(@PathVariable(value = "id") String userId) {
+        try {
+            StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
+            if (DataUtil.isNotEmpty(staffInfoVo)) {
+                staffInfoVo.setIdentityCard(null);
+                staffInfoVo.setMobile(null);
+            }
+            return R.success(staffInfoVo);
+        } catch (DefaultException e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error("获取上级出错!请联系管理员");
+        }
     }
 
 }
