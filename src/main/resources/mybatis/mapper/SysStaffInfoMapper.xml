@@ -588,6 +588,12 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sci.id = #{param.companyId}
             </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="param.departId neq null and param.departId neq ''">
                 AND sdi.id = #{param.departId}
             </if>
@@ -736,6 +742,13 @@
             <if test="staff.companyId != null and staff.companyId != ''">
                 and sci.id = #{staff.companyId}
             </if>
+            <if test="staff.companyIds neq null and staff.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="staff.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
             <if test="staff.departId != null and staff.departId != ''">
                 and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>

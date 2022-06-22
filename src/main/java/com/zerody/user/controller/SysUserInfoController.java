@@ -757,6 +757,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
 			if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
@@ -774,6 +776,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             List<UserPerformanceReviewsVo> list=sysStaffInfoService.doPerformanceReviewsExport(param, res);
             ExcelHandlerUtils.exportExcel(list, "业绩总结列表", UserPerformanceReviewsVo.class, "业绩总结列表导出.xls", res);

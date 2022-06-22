@@ -286,6 +286,12 @@
             sys_company_info AS sci
         <where>
             sci.status = 0
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
         </where>
         GROUP BY sci.id
     </select>
