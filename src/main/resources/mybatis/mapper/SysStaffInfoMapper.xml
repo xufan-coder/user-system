@@ -187,6 +187,7 @@
         ssi.integral,
         ssi.date_join,
         ssi.working_years,
+        ssi.date_left,
         sui.im_state
         FROM
         sys_user_info sui
