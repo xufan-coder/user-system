@@ -702,15 +702,10 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return this.sysStaffInfoService.getStaffInfo(userInfo.getId());
         }
 
-        //寻找上级部门的负责人
-        QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
-        departQw.lambda().eq(SysDepartmentInfo::getId, depart.getParentId());
-        departQw.last("limit 0,1");
-        depart = this.sysDepartmentInfoMapper.selectOne(departQw);
-        if (DataUtil.isEmpty(depart)) {
+        if (DataUtil.isEmpty(depart.getParentId())) {
             return null;
         }
-        return this.getDepartAdminInfo(depart.getId());
+        return this.getDepartAdminInfo(depart.getParentId());
     }
 
 
