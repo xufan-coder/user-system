@@ -1353,4 +1353,17 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+     *
+     *
+     * @author               luolujin
+     * @description          获取该用户所有上级除了总经理
+     * @date                 2022/6/18 16:28
+     * @param                id
+     */
+    @GetMapping("/get/superior/{id}")
+    public DataResult<StaffInfoVo> getSuperiorBytUserId(@PathVariable("id") String id) {
+        return null;
+    }
+
 }
