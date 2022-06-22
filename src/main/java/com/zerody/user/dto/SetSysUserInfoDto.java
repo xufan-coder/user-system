@@ -111,5 +111,8 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private Integer integral;
 
-
+    /**
+     * 离职时间
+     */
+    private Date dateLeft;
 }
