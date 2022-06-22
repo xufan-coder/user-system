@@ -4,7 +4,6 @@ import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
