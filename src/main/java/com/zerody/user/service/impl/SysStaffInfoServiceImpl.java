@@ -1889,6 +1889,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             });
         }
+        page.setRecords(records);
         return page;
     }
 

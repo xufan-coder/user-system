@@ -49,7 +49,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @param
      * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
      */
-    List<SysComapnyInfoVo> getAllCompnay();
+    List<SysComapnyInfoVo> getAllCompnay(@Param("companyIds") List<String> companyIds);
 
     /**
      *

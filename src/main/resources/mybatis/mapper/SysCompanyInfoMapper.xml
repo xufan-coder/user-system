@@ -136,6 +136,12 @@
       where
         sci.status = 0
         and sci.is_pro_data=1
+      <if test="companyIds neq null and companyIds.size() gt 0">
+          AND
+          <foreach collection="companyIds" item="id" open=" IN (" separator="," close=")">
+              #{id}
+          </foreach>
+      </if>
   </select>
     <select id="selectCompanyInfoById" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
