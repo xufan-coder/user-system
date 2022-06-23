@@ -69,6 +69,9 @@ public class SysStaffInfoController {
     */
     @RequestMapping(value = "/page/get", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        //增加后台账户过滤
+        List<String> list = this.checkUtil.setBackCompany(UserUtils.getUserId());
+        sysStaffInfoPageDto.setCompanyIds(list);
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
 
