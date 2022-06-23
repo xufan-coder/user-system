@@ -298,4 +298,13 @@
         </where>
         GROUP BY sci.id
     </select>
+    <select id="getSysCompanyAll" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+            id,
+            company_name AS companyName
+        FROM
+            sys_company_info
+        WHERE
+            status = 0
+    </select>
 </mapper>
