@@ -312,9 +312,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             companys.add(company);
             return companys;
         }
-
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
         //如果不是crm系统就查全部企业
-        companys = sysCompanyInfoMapper.getAllCompnay();
+        companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
         for (SysComapnyInfoVo company : companys) {
             company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
         }
@@ -323,6 +326,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SysComapnyInfoVo> getUserCompany(UserVo userVo) {
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         AdminVo adminVo=sysStaffInfoService.getIsAdmin(userVo);
         //伙伴
@@ -355,7 +362,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 return companys;
             }
             //如果不是crm系统就查全部企业
-            companys = sysCompanyInfoMapper.getAllCompnay();
+            companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
             for (SysComapnyInfoVo company : companys) {
                 company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
             }
@@ -706,6 +713,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SysComapnyInfoVo> getAllCompanyPersons(String companyId) {
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         //如果是crm系统就只查当前登录企业
         if (!StringUtils.isEmpty(companyId)) {
@@ -721,7 +732,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
 
         //如果不是crm系统就查全部企业
-        companys = sysCompanyInfoMapper.getAllCompnay();
+        companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
         for (SysComapnyInfoVo company : companys) {
             company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
 
