@@ -101,4 +101,10 @@ public class SysComapnyInfoVo {
 
     /**部门总人数*/
     private Integer userCount;
+
+    /**
+     *
+     *企业1正式数据0测试数据
+     */
+    private Integer isProData;
 }
