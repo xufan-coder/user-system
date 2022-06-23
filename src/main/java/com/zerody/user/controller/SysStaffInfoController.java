@@ -71,7 +71,7 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         //增加后台账户过滤
         List<String> list = null;
-        if (!UserUtils.getUser().isBack()) {
+        if (UserUtils.getUser().isBack()) {
             list = this.checkUtil.setBackCompany(UserUtils.getUserId());
         }
         sysStaffInfoPageDto.setCompanyIds(list);
