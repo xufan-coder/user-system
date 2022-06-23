@@ -689,7 +689,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
-        staff.setDateLeft(setSysUserInfoDto.getDateJoin());//离职时间
+        staff.setDateLeft(setSysUserInfoDto.getDateLeft());//离职时间
         if (DataUtil.isEmpty(setSysUserInfoDto.getRecommendType()) || setSysUserInfoDto.getRecommendType().intValue() == 0) {
             staff.setRecommendId("");
         }
