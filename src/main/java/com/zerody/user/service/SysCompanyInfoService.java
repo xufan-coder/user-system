@@ -68,4 +68,6 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId);
 
     List<SysComapnyInfoVo> getAllCompanyPersons(String companyId);
+
+    List<SysComapnyInfoVo> getSysCompanyAll();
 }
