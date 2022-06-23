@@ -205,4 +205,10 @@ public class SysCompanyInfo extends BaseModel {
 
     private Integer isNotSms;
 
+    /**
+     *
+     *企业1正式数据0测试数据
+     */
+    private Integer isProData;
+
 }
