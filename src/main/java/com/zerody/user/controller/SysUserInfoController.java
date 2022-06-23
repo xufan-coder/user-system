@@ -757,6 +757,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
 			if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
@@ -774,6 +776,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             List<UserPerformanceReviewsVo> list=sysStaffInfoService.doPerformanceReviewsExport(param, res);
             ExcelHandlerUtils.exportExcel(list, "业绩总结列表", UserPerformanceReviewsVo.class, "业绩总结列表导出.xls", res);
@@ -1350,6 +1354,33 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         } catch (DefaultException e) {
             log.error("查询用户信息出错：{}", e, e);
             return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取上级 不包含企业管理员
+     * @date                 2022/6/22 9:53
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    @GetMapping("/get/superior/not-company-admin/{id}")
+    public DataResult<StaffInfoVo> getSuperiorNotCompanyAdmin(@PathVariable(value = "id") String userId) {
+        try {
+            StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
+            if (DataUtil.isNotEmpty(staffInfoVo)) {
+                staffInfoVo.setIdentityCard(null);
+                staffInfoVo.setMobile(null);
+            }
+            return R.success(staffInfoVo);
+        } catch (DefaultException e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error("获取上级出错!请联系管理员");
         }
     }
 

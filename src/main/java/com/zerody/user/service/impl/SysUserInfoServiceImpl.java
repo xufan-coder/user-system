@@ -632,4 +632,81 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return this.sysUserInfoMapper.getNotPushAppUser();
     }
 
+    @Override
+    public StaffInfoVo getSuperiorNotCompanyAdmin(String userId) {
+        UserVo user = new UserVo();
+        user.setUserId(userId);
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getUserId, userId);
+        staffQw.lambda().last("limit 0,1");
+        SysStaffInfo staff = this.sysStaffInfoService.getOne(staffQw);
+        if (DataUtil.isEmpty(staff)) {
+            throw new DefaultException("获取用户信息失败");
+        }
+        user.setCompanyId(staff.getCompId());
+        //查询该用户权限
+        AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
+        //企业管理员没有上级(不包含ceo)
+        if (admin.getIsCompanyAdmin()) {
+            return null;
+        }
+        if (admin.getIsDepartAdmin()) {
+            StaffInfoVo staffInfo = this.sysStaffInfoService.getStaffInfo(userId);
+            if (DataUtil.isEmpty(staffInfo)) {
+                throw new DefaultException("获取用户信息失败");
+            }
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(staffInfo.getDepartId());
+            //找不到部门 或者 没有上级 返回null 不去查询企业管理员
+            if (DataUtil.isEmpty(departInfo)) {
+                return null;
+            }
+            return this.getDepartAdminInfo(departInfo.getParentId());
+        }
+        //没有部门返回空
+        String departId = this.sysUserInfoMapper.getDepartIdByUserId(userId);
+        return this.getDepartAdminInfo(departId);
+    }
+
+    //递归获取上级 不包含企业管理员
+    private StaffInfoVo getDepartAdminInfo(String departId) {
+        if (StringUtils.isEmpty(departId)) {
+            return null;
+        }
+        SysDepartmentInfo depart = this.sysDepartmentInfoMapper.selectById(departId);
+        //部门没有负责人或找不到部分返回null
+        if (DataUtil.isEmpty(depart) ) {
+            return null;
+        }
+        //没有负责人往上查找
+        if (DataUtil.isEmpty(depart.getAdminAccount())) {
+            QueryWrapper<SysDepartmentInfo> departQw = new QueryWrapper<>();
+            departQw.lambda().eq(SysDepartmentInfo::getId, depart.getParentId());
+            departQw.last("limit 0,1");
+            depart = this.sysDepartmentInfoMapper.selectOne(departQw);
+            if (DataUtil.isEmpty(depart)) {
+                return null;
+            }
+            return this.getDepartAdminInfo(depart.getId());
+        }
+        SysStaffInfo staffInfo = this.sysStaffInfoService.getById(depart.getAdminAccount());
+        if (DataUtil.isEmpty(staffInfo.getUserId())) {
+            throw new DefaultException("获取用户信息失败");
+        }
+        SysUserInfo userInfo = this.getById(staffInfo.getUserId());
+        if (DataUtil.isEmpty(userInfo)) {
+            throw new DefaultException("获取用户信息失败");
+        }
+        // 如果是在职或者合作状态 返回上级信息(均为在职状态)
+        if (StatusEnum.activity.getValue().intValue() == userInfo.getStatus().intValue() ||
+                StatusEnum.teamwork.getValue().intValue() == userInfo.getStatus().intValue()) {
+            return this.sysStaffInfoService.getStaffInfo(userInfo.getId());
+        }
+
+        if (DataUtil.isEmpty(depart.getParentId())) {
+            return null;
+        }
+        return this.getDepartAdminInfo(depart.getParentId());
+    }
+
+
 }

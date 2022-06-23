@@ -529,7 +529,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             salesmanNums = this.getSalesmanRole(null, departIds, null);
         } else {
             param.setTitle("公司");
-            list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
+            list = this.sysCompanyInfoMapper.getCompanyBusiness(param);
             List<String> companyIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
             salesmanNums = this.getSalesmanRole(companyIds, null, null);
         }

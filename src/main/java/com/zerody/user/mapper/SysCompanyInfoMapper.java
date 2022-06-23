@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.CustomerQueryDimensionalityVo;
@@ -157,5 +158,5 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      */
     List<String> getNotSmsCompany();
 
-    List<ReportFormsQueryVo> getCompanyBusiness(@Param("roleIds") List<String> roleIds);
+    List<ReportFormsQueryVo> getCompanyBusiness(@Param("param") ReportFormsQueryDto param);
 }
