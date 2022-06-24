@@ -72,7 +72,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /**
      * 入职时间
      */
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateJoin;
 
     /**
@@ -115,6 +115,6 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /**
      * 离职时间
      */
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateLeft;
 }
