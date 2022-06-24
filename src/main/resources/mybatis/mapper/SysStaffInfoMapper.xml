@@ -1064,7 +1064,6 @@
             sui.family_phone,
             sui.family_job,
             sui.family_addr,
-            sui.personal_experience,
             sui.sign_name,
             sui.english_name,
             sui.mobile,
