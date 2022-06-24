@@ -241,7 +241,7 @@ public class SysUserInfoVo {
     /**
      * 入职时间
      **/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateJoin;
 
     public String getHighestEducationString() {
@@ -255,6 +255,6 @@ public class SysUserInfoVo {
     private String userAvatar;
 
     /** 离职时间 */
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateLeft;
 }
