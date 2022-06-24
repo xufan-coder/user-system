@@ -59,7 +59,7 @@ public class CheckUtil {
 
     public <T extends UserPositionPageParam>  void SetUserPositionInfo(T  param){
         // isBackAdmin为后台管理  CRM_CE为总裁登录
-        if (UserUtils.getUser().isBackAdmin()){
+        if (UserUtils.getUser().isBack()){
             List<String> list = setBackCompany(UserUtils.getUserId());
             param.setCompanyIds(list);
             return;
@@ -98,7 +98,7 @@ public class CheckUtil {
 
     public <T extends UserPositionParam>  void SetUserPositionInfo(T  param){
         // isBackAdmin为后台管理  CRM_CE为总裁登录
-        if (UserUtils.getUser().isBackAdmin()){
+        if (UserUtils.getUser().isBack()){
             List<String> list = setBackCompany(UserUtils.getUserId());
             param.setCompanyIds(list);
             return;
