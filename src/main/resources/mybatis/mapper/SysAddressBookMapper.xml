@@ -105,14 +105,14 @@
             <if test="param.departmentId neq null and param.departmentId neq ''">
                     and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
-            <if test="companyIds neq null and companyIds.size() gt 0">
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND sci.id
-                <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
-            <if test="isProData neq null and isProData neq ''">
-                AND sci.is_pro_data=#{isProData}
+            <if test="param.isProData neq null and param.isProData neq ''">
+                AND sci.is_pro_data=#{param.isProData}
             </if>
         </where>
     </select>
