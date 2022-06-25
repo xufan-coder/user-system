@@ -3,10 +3,12 @@ package com.zerody.user.controller;
 import com.alibaba.fastjson.JSON;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.service.SysAddressBookService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
@@ -30,6 +32,9 @@ public class SysAddressBookController {
     @Autowired
     private SysAddressBookService sysAddressBookService;
 
+    @Autowired
+    private CheckUtil checkUtil;
+
     /***
      * @description 获取公司
      * @author zhangpingping
@@ -39,8 +44,15 @@ public class SysAddressBookController {
      */
     @GetMapping(value = "/address-book")
     public DataResult<List<SysAddressBookVo>> queryAddressBook() {
+        List<String> companyIds=null;
         try {
-            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook();
+            if (UserUtils.getUser().isBack()){
+                companyIds =this.checkUtil.setBackCompany(UserUtils.getUserId());
+            }
+            if (UserUtils.getUser().isCEO()){
+                companyIds = this.checkUtil.setCeoCompany(UserUtils.getUserId());
+            }
+            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(companyIds);
             return R.success(sysAddressBookVos);
         } catch (Exception e) {
             log.error("获取公司错误:{}", e);
