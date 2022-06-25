@@ -51,6 +51,7 @@ public class SysAddressBookController {
     @GetMapping(value = "/address-book")
     public DataResult<List<SysAddressBookVo>> queryAddressBook() {
         List<String> companyIds=null;
+        Integer isProData=null;
         SysCompanyInfo byId=null;
         try {
             if (UserUtils.getUser().isBack()){
@@ -66,8 +67,9 @@ public class SysAddressBookController {
                 if(DataUtil.isEmpty(byId)){
                     return R.error("获取公司失败,请求企业错误！");
                 }
+                isProData=byId.getIsProData();
             }
-            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(companyIds,byId.getIsProData());
+            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(companyIds,isProData);
             return R.success(sysAddressBookVos);
         } catch (Exception e) {
             log.error("获取公司错误:{}", e);
