@@ -18,6 +18,9 @@
                 #{id}
             </foreach>
         </if>
+        <if test="isProData neq null and isProData neq ''">
+            AND sci.is_pro_data=#{isProData}
+        </if>
          GROUP BY
               sci.id;
   </select>
