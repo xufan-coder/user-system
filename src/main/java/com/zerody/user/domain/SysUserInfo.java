@@ -44,7 +44,7 @@ public class  SysUserInfo extends BaseModel {
     private String avatar;
 
     /** 出生日期 **/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date birthday;
 
 
