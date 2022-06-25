@@ -397,4 +397,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     StaffInfoVo getStaffInfoByMobile(@Param("mobile") String recommendMobile);
 
     SetSysUserInfoDto getUserInfoByUserId(@Param("userId") String userId);
+
+    /**获取企业总人数*/
+    Integer getCompanyUserCountById(@Param("companyId") String companyId);
 }

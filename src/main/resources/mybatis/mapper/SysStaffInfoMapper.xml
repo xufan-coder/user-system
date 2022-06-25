@@ -1079,4 +1079,9 @@
         WHERE
             sui.id = #{userId}
     </select>
+
+    <select id="getCompanyUserCountById" resultType="integer">
+        select count(1)  as 'userCount'
+        from sys_staff_info where status in (0, 3) and comp_id = #{companyId}
+    </select>
 </mapper>
