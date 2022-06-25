@@ -331,7 +331,7 @@
     <select id="getDepartUserCountById" resultType="integer">
         select count(1)  as 'userCount'
         from sys_staff_info ssi
-        left join sys_user_info  ON sui.id = ssi.user_id AND sui.status in (0, 3)
+        left join sys_user_info sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
         left join  union_staff_depart usd on ssi.id = usd.staff_id
         where sui.status in (0, 3) and usd.department_id = #{departId}
     </select>
