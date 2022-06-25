@@ -740,8 +740,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
 
             // 获取企业总人数 (包含没有部门的人员)
-            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(companyId);
-
+            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(company.getId());
 
             // 设置企业总人数 (根据部门人数累加)
             int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
