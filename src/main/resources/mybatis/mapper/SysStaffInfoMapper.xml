@@ -1079,4 +1079,15 @@
         WHERE
             sui.id = #{userId}
     </select>
+
+    <select id="getCompanyUserCountById" resultType="integer">
+        select count(1)  as 'userCount'
+        from sys_staff_info ssi
+        join sys_user_info AS sui on ssi.user_id = sui.id
+        where sui.status in (0, 3) and comp_id = #{companyId}
+    </select>
+
+    <update id="updateStatus">
+        update sys_staff_info set status = #{status} where id = #{staffId}
+    </update>
 </mapper>

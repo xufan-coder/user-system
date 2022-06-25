@@ -331,8 +331,9 @@
     <select id="getDepartUserCountById" resultType="integer">
         select count(1)  as 'userCount'
         from sys_staff_info ssi
+        left join sys_user_info sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
         left join  union_staff_depart usd on ssi.id = usd.staff_id
-        where ssi.status in (0, 3) and usd.department_id = #{departId}
+        where sui.status in (0, 3) and usd.department_id = #{departId}
     </select>
 
     <select id="getAllDepPersonByCompanyId" resultMap="DepartmentInfoResultMap">
@@ -348,10 +349,10 @@
         sdi.is_show_business
         FROM
         sys_department_info AS sdi
-        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
-        LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+         JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
-            sdi.status = 0 and sdi.comp_id = #{companyId}
+            sdi.status = 0 and sdi.comp_id = #{companyId} AND sui.status in (0, 3)
         </where>
     </select>
 </mapper>

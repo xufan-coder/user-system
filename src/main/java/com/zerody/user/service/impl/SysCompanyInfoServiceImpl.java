@@ -724,9 +724,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             //获取当前企业下的部门、岗位
             company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
 
-            // 设置企业总人数
-            int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
-            company.setUserCount(userCount);
+            // 获取企业总人数 (包含没有部门的人员)
+            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(companyId);
+
+            // 设置企业总人数 (根据部门人数累加)
+            // int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
+            company.setUserCount(companyUserCount);
             companys.add(company);
             return companys;
         }
@@ -736,9 +739,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         for (SysComapnyInfoVo company : companys) {
             company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
 
-            // 设置企业总人数
+            // 获取企业总人数 (包含没有部门的人员)
+            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(company.getId());
+
+            // 设置企业总人数 (根据部门人数累加)
             int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
-            company.setUserCount(userCount);
+            company.setUserCount(companyUserCount);
         }
         return companys;
     }
