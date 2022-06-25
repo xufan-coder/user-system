@@ -18,7 +18,7 @@
                 #{id}
             </foreach>
         </if>
-        <if test="isProData neq null and isProData neq ''">
+        <if test="isProData neq null">
             AND sci.is_pro_data=#{isProData}
         </if>
          GROUP BY
@@ -111,7 +111,7 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="param.isProData neq null and param.isProData neq ''">
+            <if test="param.isProData neq null">
                 AND sci.is_pro_data=#{param.isProData}
             </if>
         </where>
