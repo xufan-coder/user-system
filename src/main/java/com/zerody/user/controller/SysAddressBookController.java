@@ -100,9 +100,9 @@ public class SysAddressBookController {
                     return R.error("获取公司失败,请求企业错误！");
                 }
                 byId = sysCompanyInfoService.getById(companyId);
-            }
-            if(DataUtil.isEmpty(byId)){
-                return R.error("获取公司失败,请求企业错误！");
+                if(DataUtil.isEmpty(byId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
             }
             isProData=byId.getIsProData();
             List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(null,isProData);
