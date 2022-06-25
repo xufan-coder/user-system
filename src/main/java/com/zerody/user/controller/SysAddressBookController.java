@@ -6,8 +6,11 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.service.SysAddressBookService;
+import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
@@ -30,6 +33,8 @@ import java.util.List;
 public class SysAddressBookController {
 
     @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
+    @Autowired
     private SysAddressBookService sysAddressBookService;
 
     @Autowired
@@ -45,14 +50,23 @@ public class SysAddressBookController {
     @GetMapping(value = "/address-book")
     public DataResult<List<SysAddressBookVo>> queryAddressBook() {
         List<String> companyIds=null;
+        SysCompanyInfo byId=null;
         try {
             if (UserUtils.getUser().isBack()){
                 companyIds =this.checkUtil.setBackCompany(UserUtils.getUserId());
-            }
-            if (UserUtils.getUser().isCEO()){
+            }else if (UserUtils.getUser().isCEO()){
                 companyIds = this.checkUtil.setCeoCompany(UserUtils.getUserId());
+            }else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                if(DataUtil.isEmpty(companyId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                byId = sysCompanyInfoService.getById(companyId);
             }
-            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(companyIds);
+           if(DataUtil.isEmpty(byId)){
+               return R.error("获取公司失败,请求企业错误！");
+           }
+            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(companyIds,byId.getIsProData());
             return R.success(sysAddressBookVos);
         } catch (Exception e) {
             log.error("获取公司错误:{}", e);
@@ -108,6 +122,22 @@ public class SysAddressBookController {
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         try {
+            if (UserUtils.getUser().isBack()){
+                staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            }else if (UserUtils.getUser().isCEO()){
+                staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            }else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                if(DataUtil.isEmpty(companyId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                SysCompanyInfo byId = sysCompanyInfoService.getById(companyId);
+                if(DataUtil.isEmpty(byId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                staffByCompanyDto.setIsProData(byId.getIsProData());
+            }
+
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (Exception e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e);

@@ -1,6 +1,9 @@
 package com.zerody.user.dto;
 
+import com.zerody.user.domain.SysCompanyInfo;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author zhangpingping
@@ -20,4 +23,15 @@ public class StaffByCompanyDto {
      * 是否部门（0 是部门 1团队）
      */
     private Integer isDepartment;
+
+    /**
+    *    关联企业隔离数据
+    */
+    private List<String> companyIds;
+    /**
+    *   标记企业
+    */
+    private Integer isProData;
+
+
 }

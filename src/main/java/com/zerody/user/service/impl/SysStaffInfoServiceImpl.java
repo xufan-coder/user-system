@@ -3007,6 +3007,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
         userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
         this.sysUserInfoService.update(userUw);
+        // 修改员工档案为离职
+        this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.stop.getValue());
         this.checkUtil.removeUserToken(staff1.getUserId());
         return userInfoDto;
     }

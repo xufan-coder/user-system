@@ -22,7 +22,7 @@ public interface SysAddressBookService {
      * @param []
      * @return
      */
-    List<SysAddressBookVo> queryAddressBook(List<String> list);
+    List<SysAddressBookVo> queryAddressBook(List<String> list,Integer isProData);
 
     /***
      * @description 部门
