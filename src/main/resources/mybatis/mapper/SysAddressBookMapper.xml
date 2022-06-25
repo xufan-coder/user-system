@@ -12,6 +12,12 @@
 	     LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
          LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id  and ( sui.`status` = 0 OR sui.`status` = 3 )
          where sci.status=0
+        <if test="companyIds neq null and companyIds.size() gt 0">
+            AND sci.id
+            <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
          GROUP BY
               sci.id;
   </select>

@@ -283,10 +283,25 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
             return R.success(this.sysCompanyInfoService.getCompanyAll());
         } catch (DefaultException e) {
-            log.error("通过地址获取企业错误!", e, e);
+            log.error("获取全部企业错误!", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("通过地址获取企业错误!", e, e);
+            log.error("获取全部企业错误!", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get/sys-all")
+    public DataResult<List<SysComapnyInfoVo>> getSysCompanyAll() {
+        try {
+
+            List<SysComapnyInfoVo> result =  this.sysCompanyInfoService.getSysCompanyAll();
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("获取系统所有企业错误!", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取系统所有企业错误!", e, e);
             return R.error(e.getMessage());
         }
     }

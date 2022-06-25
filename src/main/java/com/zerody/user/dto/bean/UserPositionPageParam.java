@@ -26,4 +26,8 @@ public class UserPositionPageParam extends PageQueryDto {
     /** 部门集合 */
     private List<String> departIds;
 
+
+    /** CEO关联企业IDS */
+    private List<String> companyIds;
+
 }

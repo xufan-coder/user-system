@@ -23,7 +23,7 @@ public interface SysAddressBookMapper {
      * @param []
      * @return
      */
-    List<SysAddressBookVo> queryAddressBook();
+    List<SysAddressBookVo> queryAddressBook(@Param("companyIds")List<String> companyIds);
 
     /***
      * @description 部门

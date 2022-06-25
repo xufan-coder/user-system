@@ -24,8 +24,8 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     private SysAddressBookMapper sysMailListMapper;
 
     @Override
-    public List<SysAddressBookVo> queryAddressBook() {
-        List<SysAddressBookVo> sysMailListVos = this.sysMailListMapper.queryAddressBook();
+    public List<SysAddressBookVo> queryAddressBook(List<String> list) {
+        List<SysAddressBookVo> sysMailListVos = this.sysMailListMapper.queryAddressBook(list);
         return sysMailListVos;
     }
 

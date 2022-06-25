@@ -135,6 +135,13 @@
       LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
       where
         sci.status = 0
+        and sci.is_pro_data=1
+      <if test="companyIds neq null and companyIds.size() gt 0">
+          AND  sci.id
+          <foreach collection="companyIds" item="id" open=" IN (" separator="," close=")">
+              #{id}
+          </foreach>
+      </if>
   </select>
     <select id="selectCompanyInfoById" resultType="com.zerody.user.vo.SysComapnyInfoVo">
       SELECT
@@ -152,7 +159,8 @@
         ssi.user_id AS admin_user_id,
         sci.status,
         sui.certificate_card,
-        sci.company_logo
+        sci.company_logo,
+        sci.is_pro_data
       FROM
             sys_company_info AS sci
       LEFT JOIN  company_admin AS ca ON ca.company_id = sci.id
@@ -221,6 +229,7 @@
             sys_company_info
         WHERE
             status = 0
+            and is_pro_data=1
     </select>
     <select id="getCompanyNameById" resultType="com.zerody.user.vo.UserStructureVo">
         SELECT
@@ -286,7 +295,22 @@
             sys_company_info AS sci
         <where>
             sci.status = 0
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
         </where>
         GROUP BY sci.id
+    </select>
+    <select id="getSysCompanyAll" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+        SELECT
+            id,
+            company_name AS companyName
+        FROM
+            sys_company_info
+        WHERE
+            status = 0
     </select>
 </mapper>

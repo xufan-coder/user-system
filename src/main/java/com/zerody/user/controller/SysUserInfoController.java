@@ -757,6 +757,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
 			if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
@@ -774,6 +776,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             List<UserPerformanceReviewsVo> list=sysStaffInfoService.doPerformanceReviewsExport(param, res);
             ExcelHandlerUtils.exportExcel(list, "业绩总结列表", UserPerformanceReviewsVo.class, "业绩总结列表导出.xls", res);
@@ -1044,7 +1048,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<com.zerody.user.api.vo.CeoRefVo> getCeoCompanyById(@RequestParam String id){
         CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
         com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
-        BeanUtils.copyProperties(vo,ceoRef);
+        BeanUtils.copyProperties(ceoRef,vo);
         return R.success(vo);
     }
 
@@ -1058,7 +1062,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<com.zerody.user.api.vo.BackUserRefVo> getBackCompanyById(@RequestParam String id){
         BackUserRefVo backRef = ceoCompanyRefService.getBackRef(id);
         com.zerody.user.api.vo.BackUserRefVo vo=new com.zerody.user.api.vo.BackUserRefVo();
-        BeanUtils.copyProperties(vo,backRef);
+        BeanUtils.copyProperties(backRef,vo);
         return R.success(vo);
     }
 
