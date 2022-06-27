@@ -187,8 +187,10 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.selectStaffById(staffId));
         } catch (DefaultException e){
+            log.error("根据员工id查询员工信息:{}", e, e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
+            log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
     }
