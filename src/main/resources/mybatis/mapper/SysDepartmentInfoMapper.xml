@@ -349,9 +349,8 @@
         sdi.is_show_business
         FROM
         sys_department_info AS sdi
-        JOIN union_staff_depart usd ON  usd.department_id=sdi.id
-        JOIN sys_staff_info AS ssi ON ssi.id = usd.staff_id AND ssi.status in (0, 3)
-        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
+        left JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        left JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
         <where>
             sdi.status = 0 and sdi.comp_id = #{companyId}
         </where>
