@@ -384,7 +384,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
-        if (DataUtil.isNotEmpty(param.getRoleId())) {
+        if (DataUtil.isNotEmpty(param.getReinstateId())) {
             SysUserInfo user = new SysUserInfo();
             user.setId(param.getReinstateId());
             user.setStatus(YesNo.NO);
