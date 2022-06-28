@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysStaffRelation;
@@ -86,19 +88,24 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     public SysStaffInfoRelationVo queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         SysStaffInfoRelationVo sysStaffInfoRelationVo=new SysStaffInfoRelationVo();
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
+        log.info("关系查询:{}", JSON.toJSONString(sysStaffRelationVos));
         sysStaffRelationVos.forEach(item -> {
-            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());
-            item.setCompanyName(staffInfo.getCompanyName());
-            item.setDepartName(staffInfo.getDepartmentName());
-            item.setPositionName(staffInfo.getPositionName());
-            item.setCompanyId(staffInfo.getCompanyId());
-            item.setDepartId(staffInfo.getDepartId());
-            StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
-            item.setRelationCompanyName(staffInfoVo.getCompanyName());
-            item.setRelationDepartName(staffInfoVo.getDepartmentName());
-            item.setRelationPositionName(staffInfoVo.getPositionName());
-            item.setRelationCompanyId(staffInfoVo.getCompanyId());
-            item.setRelationDepartId(staffInfoVo.getDepartId());
+            if (DataUtil.isNotEmpty(item.getStaffUserId())) {
+                StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());
+                item.setCompanyName(staffInfo.getCompanyName());
+                item.setDepartName(staffInfo.getDepartmentName());
+                item.setPositionName(staffInfo.getPositionName());
+                item.setCompanyId(staffInfo.getCompanyId());
+                item.setDepartId(staffInfo.getDepartId());
+            }
+            if (DataUtil.isNotEmpty(item.getRelationUserId())) {
+                StaffInfoVo staffInfoVo = sysStaffInfoService.getStaffInfo(item.getRelationUserId());
+                item.setRelationCompanyName(staffInfoVo.getCompanyName());
+                item.setRelationDepartName(staffInfoVo.getDepartmentName());
+                item.setRelationPositionName(staffInfoVo.getPositionName());
+                item.setRelationCompanyId(staffInfoVo.getCompanyId());
+                item.setRelationDepartId(staffInfoVo.getDepartId());
+            }
         });
 
         SysStaffInfo sysStaffInfo = sysStaffInfoService.getById(sysStaffRelationDto.getStaffId());
