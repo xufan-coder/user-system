@@ -384,6 +384,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
+        if (DataUtil.isNotEmpty(param.getRoleId())) {
+            SysUserInfo user = new SysUserInfo();
+            user.setId(param.getReinstateId());
+            user.setStatus(YesNo.NO);
+            this.sysUserInfoService.updateById(user);
+            UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
+            staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
+            staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
+            this.update(staffUw);
+            UserCopyResultVo result = new UserCopyResultVo();
+            result.setUserId(param.getReinstateId());
+            //删除token
+            this.checkUtil.removeUserToken(param.getOldUserId());
+            return result;
+        }
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
@@ -552,7 +567,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
         UserCopyResultVo copyResult = new UserCopyResultVo();
         copyResult.setUserId(sysUserInfo.getId());
-
+        this.checkUtil.removeUserToken(param.getOldUserId());
         return copyResult;
     }
 
