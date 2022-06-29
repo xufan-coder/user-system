@@ -392,6 +392,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
+            staffUw.lambda().set(SysStaffInfo::getDateLeft, null);
             this.update(staffUw);
             UserCopyResultVo result = new UserCopyResultVo();
             result.setUserId(param.getReinstateId());
@@ -693,6 +694,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (setSysUserInfoDto.getRecommendType().intValue() == 1 && setSysUserInfoDto.getRecommendId().equals(staff.getId())) {
             throw new DefaultException("不能选择自己为推荐人");
         }
+        //  员工为离职状态时 清除token
+        if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus()) && DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())) {
+            setSysUserInfoDto.setDateLeft(new Date());
+        }
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
         staff.setRecommendType(setSysUserInfoDto.getRecommendType());
         staff.setIntegral(setSysUserInfoDto.getIntegral());
@@ -709,6 +714,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staff.setRecommendId("");
         }
         this.saveOrUpdate(staff);
+        if (StatusEnum.activity.getValue().equals(setSysUserInfoDto.getStatus()) || StatusEnum.teamwork.getValue().equals(setSysUserInfoDto.getStatus())) {
+
+            UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
+            staffUw.lambda().set(SysStaffInfo::getDateLeft, null);
+            staffUw.lambda().eq(SysStaffInfo::getId, staff.getId());
+            this.update(staffUw);
+        }
         if(Objects.isNull(setSysUserInfoDto.getDateJoin())){
             if(StringUtils.isNotEmpty(staff.getId())) {
                 this.sysStaffInfoMapper.updateDateJoin(staff.getId(),null);
