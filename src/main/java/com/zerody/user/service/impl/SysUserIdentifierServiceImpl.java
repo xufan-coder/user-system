@@ -362,6 +362,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         if(StringUtils.isNotEmpty(queryDto.getCompanyId())) {
             queryWrapper.lambda().eq(SysUserIdentifier:: getCompanyId,queryDto.getCompanyId());
         }
+        if(DataUtil.isNotEmpty(queryDto.getCompanyIds())) {
+            queryWrapper.lambda().in(SysUserIdentifier:: getCompanyId,queryDto.getCompanyIds());
+        }
         if(StringUtils.isNotEmpty(queryDto.getDepartId())) {
             queryWrapper.lambda().eq(SysUserIdentifier:: getDepartId,queryDto.getDepartId());
         }
