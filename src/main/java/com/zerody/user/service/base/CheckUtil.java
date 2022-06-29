@@ -246,6 +246,7 @@ public class CheckUtil {
                 companyIds = companys.stream().map(s -> s.getId()).collect(Collectors.toList());
             }else {
                 companyIds = new ArrayList<>();
+                companyIds.add("NOT_COMPANY");
             }
         }
         return companyIds;
@@ -261,6 +262,7 @@ public class CheckUtil {
                 companyIds = companys.stream().map(s -> s.getId()).collect(Collectors.toList());
             }else {
                 companyIds = new ArrayList<>();
+                companyIds.add("NOT_COMPANY");
             }
         }
         return companyIds;
