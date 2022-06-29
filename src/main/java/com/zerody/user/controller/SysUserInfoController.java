@@ -28,6 +28,7 @@ import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BackUserRefVo;
 import com.zerody.user.vo.CeoRefVo;
+import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.BeanUtils;
@@ -1050,6 +1051,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
         com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
         BeanUtils.copyProperties(ceoRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
         return R.success(vo);
     }
 
@@ -1064,6 +1071,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         BackUserRefVo backRef = ceoCompanyRefService.getBackRef(id);
         com.zerody.user.api.vo.BackUserRefVo vo=new com.zerody.user.api.vo.BackUserRefVo();
         BeanUtils.copyProperties(backRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
         return R.success(vo);
     }
 
