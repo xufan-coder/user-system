@@ -280,8 +280,14 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     @GetMapping("/get/all")
     public DataResult<List<SysComapnyInfoVo>> getCompanyAll() {
         try {
-
-            return R.success(this.sysCompanyInfoService.getCompanyAll());
+                List<String> companyIds = null;
+                if (UserUtils.getUser().isBack()) {
+                    companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+                }
+                if (UserUtils.getUser().isCEO()) {
+                    companyIds = this.checkUtil.setCeoCompany(UserUtils.getUser().getUserId());
+                }
+            return R.success(this.sysCompanyInfoService.getCompanyAll(companyIds));
         } catch (DefaultException e) {
             log.error("获取全部企业错误!", e, e);
             return R.error(e.getMessage());

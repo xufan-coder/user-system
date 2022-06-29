@@ -95,7 +95,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      */
     List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
 
-    List<SysComapnyInfoVo> getCompanyAll();
+    List<SysComapnyInfoVo> getCompanyAll(@Param("companyIds")List<String> companyIds);
 
     /**
      *

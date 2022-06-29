@@ -49,7 +49,7 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
 
     List<CompanyInfoVo> getCompanyInfoByIds(List<String> ids);
 
-    List<SysComapnyInfoVo> getCompanyAll();
+    List<SysComapnyInfoVo> getCompanyAll(List<String> companyIds);
 
     String getNameById(String id);
 
