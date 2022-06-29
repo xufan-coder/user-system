@@ -398,6 +398,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             result.setUserId(param.getReinstateId());
             //删除token
             this.checkUtil.removeUserToken(param.getOldUserId());
+            //转移后原公司伙伴的客户给上级
+            StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+            staffDimissionInfo.setUserId(param.getOldUserId());
+            staffDimissionInfo.setOperationUserId("系统");
+            staffDimissionInfo.setOperationUserName("系统");
+            //mq发送离职客户转移
+            this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
             return result;
         }
         SysUserInfo sysUserInfo = new SysUserInfo();
