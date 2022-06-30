@@ -249,6 +249,12 @@
             <if test="companyId neq null and companyId neq ''">
                 AND id = #{companyId}
             </if>
+            <if test="companyIds neq null and companyIds.size() gt 0">
+                AND id
+                <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
         </where>
     </select>
     <select id="getHaveUpdateCompanyName" resultType="com.zerody.user.api.vo.CompanyInfoVo">
