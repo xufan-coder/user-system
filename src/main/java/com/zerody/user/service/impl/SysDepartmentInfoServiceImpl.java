@@ -339,7 +339,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             }
             userStructureVos.add(departInfo);
         } else {
-            List<UserStructureVo> companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId());
+            List<UserStructureVo> companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId(), param.getCompanyIds());
             userStructureVos.addAll(companyInfo);
         }
         this.getStructureChildrens(userStructureVos);

@@ -106,7 +106,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @param                companyId
      * @return               com.zerody.user.vo.UserStructureVo
      */
-    List<UserStructureVo> getCompanyNameById(@Param("companyId") String companyId);
+    List<UserStructureVo> getCompanyNameById(@Param("companyId") String companyId, @Param("companyIds") List<String> companyIds);
 
     /**
      *
