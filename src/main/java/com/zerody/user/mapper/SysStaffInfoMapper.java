@@ -401,5 +401,5 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     /**获取企业总人数*/
     Integer getCompanyUserCountById(@Param("companyId") String companyId);
 
-    void updateStatus(@Param("staffId")String staffId, @Param("status")  Integer status);
+    void updateStatus(@Param("staffId")String staffId, @Param("status")  Integer status, @Param("leaveReason") String leaveReason);
 }

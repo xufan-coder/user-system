@@ -1088,6 +1088,11 @@
     </select>
 
     <update id="updateStatus">
-        update sys_staff_info set status = #{status} where id = #{staffId}
+        update sys_staff_info set status = #{status}, date_left = now()
+        <if test="leaveReason neq null and leaveReason neq ''">
+            ,leave_reason = #{leaveReason}
+        </if>
+
+        where id = #{staffId}
     </update>
 </mapper>
