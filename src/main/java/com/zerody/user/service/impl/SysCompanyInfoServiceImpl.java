@@ -312,9 +312,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             companys.add(company);
             return companys;
         }
-
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
         //如果不是crm系统就查全部企业
-        companys = sysCompanyInfoMapper.getAllCompnay();
+        companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
         for (SysComapnyInfoVo company : companys) {
             company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
         }
@@ -323,6 +326,10 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SysComapnyInfoVo> getUserCompany(UserVo userVo) {
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
         List<SysComapnyInfoVo> companys = new ArrayList<>();
         AdminVo adminVo=sysStaffInfoService.getIsAdmin(userVo);
         //伙伴
@@ -355,7 +362,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
                 return companys;
             }
             //如果不是crm系统就查全部企业
-            companys = sysCompanyInfoMapper.getAllCompnay();
+            companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
             for (SysComapnyInfoVo company : companys) {
                 company.setDeparts(departmentInfoService.getAllDepByCompanyId(company.getId()));
             }
@@ -436,8 +443,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<SysComapnyInfoVo> getCompanyAll() {
-        return this.sysCompanyInfoMapper.getCompanyAll();
+    public List<SysComapnyInfoVo> getCompanyAll(List<String> companyIds) {
+        return this.sysCompanyInfoMapper.getCompanyAll(companyIds);
     }
 
     @Override
@@ -529,7 +536,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             salesmanNums = this.getSalesmanRole(null, departIds, null);
         } else {
             param.setTitle("公司");
-            list = this.sysCompanyInfoMapper.getCompanyBusiness(param.getSalesmanRoles());
+            list = this.sysCompanyInfoMapper.getCompanyBusiness(param);
             List<String> companyIds = list.stream().map(ReportFormsQueryVo::getId).collect(Collectors.toList());
             salesmanNums = this.getSalesmanRole(companyIds, null, null);
         }
@@ -702,6 +709,49 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             return this.sysStaffInfoMapper.getSalesmanNumUserList(userId);
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<SysComapnyInfoVo> getAllCompanyPersons(String companyId) {
+        List<String> companyIds = null;
+        if (UserUtils.getUser().isBackAdmin()) {
+            companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
+        List<SysComapnyInfoVo> companys = new ArrayList<>();
+        //如果是crm系统就只查当前登录企业
+        if (!StringUtils.isEmpty(companyId)) {
+            SysComapnyInfoVo company = sysCompanyInfoMapper.selectCompanyInfoById(companyId);
+            //获取当前企业下的部门、岗位
+            company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
+
+            // 获取企业总人数 (包含没有部门的人员)
+            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(companyId);
+
+            // 设置企业总人数 (根据部门人数累加)
+            // int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
+            company.setUserCount(companyUserCount);
+            companys.add(company);
+            return companys;
+        }
+
+        //如果不是crm系统就查全部企业
+        companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
+        for (SysComapnyInfoVo company : companys) {
+            company.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(company.getId()));
+
+            // 获取企业总人数 (包含没有部门的人员)
+            int companyUserCount = sysStaffInfoMapper.getCompanyUserCountById(company.getId());
+
+            // 设置企业总人数 (根据部门人数累加)
+            int userCount = company.getDeparts().stream().mapToInt(SysDepartmentInfoVo::getUserCount).sum();
+            company.setUserCount(companyUserCount);
+        }
+        return companys;
+    }
+
+    @Override
+    public List<SysComapnyInfoVo> getSysCompanyAll() {
+        return this.sysCompanyInfoMapper.getSysCompanyAll();
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

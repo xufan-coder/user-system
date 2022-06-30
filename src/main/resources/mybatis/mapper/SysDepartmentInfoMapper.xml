@@ -20,6 +20,20 @@
   <resultMap id="ResultMapWithBLOBs" type="com.zerody.user.domain.SysDepartmentInfo" extends="BaseResultMap" >
     <result column="depart_desc" property="departDesc" jdbcType="LONGVARCHAR" />
   </resultMap>
+
+  <resultMap id="DepartmentInfoResultMap" type="com.zerody.user.vo.SysDepartmentInfoVo" >
+      <id column="id" property="id" jdbcType="VARCHAR" />
+      <result column="comp_id" property="compId" jdbcType="VARCHAR" />
+      <result column="depart_name" property="departName" jdbcType="VARCHAR" />
+      <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+      <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+      <result column="depart_code" property="departCode" jdbcType="VARCHAR" />
+      <result column="admin_account" property="adminAccount" jdbcType="VARCHAR" />
+      <result column="user_name" property="adminName" jdbcType="VARCHAR" />
+      <result column="is_show_business" property="isShowBusiness"/>
+      <collection property="userCount" column="{departId = id}" select="getDepartUserCountById" />
+  </resultMap>
+
   <sql id="Base_Column_List" >
     id, comp_id, depart_name, parent_id, telephone, creat_time, create_id, create_user,
     create_time, update_id, update_user, update_time, status, depart_code
@@ -314,4 +328,31 @@
         </where>
     </select>
 
+    <select id="getDepartUserCountById" resultType="integer">
+        select count(1)  as 'userCount'
+        from sys_staff_info ssi
+        left join sys_user_info sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
+        left join  union_staff_depart usd on ssi.id = usd.staff_id
+        where sui.status in (0, 3) and usd.department_id = #{departId}
+    </select>
+
+    <select id="getAllDepPersonByCompanyId" resultMap="DepartmentInfoResultMap">
+        SELECT
+        sdi.id,
+        sdi.comp_id,
+        sdi.depart_name,
+        sdi.parent_id,
+        sdi.telephone,
+        sdi.depart_code,
+        sdi.admin_account,
+        ssi.user_name,
+        sdi.is_show_business
+        FROM
+        sys_department_info AS sdi
+        left JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        left JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status in (0, 3)
+        <where>
+            sdi.status = 0 and sdi.comp_id = #{companyId}
+        </where>
+    </select>
 </mapper>

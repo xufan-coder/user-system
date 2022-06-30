@@ -80,6 +80,12 @@
             <if test="staff.companyId != null and staff.companyId != ''">
                 and sci.id = #{staff.companyId}
             </if>
+            <if test="staff.companyIds neq null and staff.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="staff.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="staff.departId != null and staff.departId != ''">
                 and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
@@ -154,7 +160,7 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        ssi.STATUS,
+        sui.STATUS,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -187,6 +193,7 @@
         ssi.integral,
         ssi.date_join,
         ssi.working_years,
+        ssi.date_left,
         sui.im_state
         FROM
         sys_user_info sui
@@ -252,6 +259,7 @@
         ssi.integral,
         ssi.working_years,
         ssi.date_join,
+        ssi.date_left,
         sui.im_state,
         sui.avatar AS user_avatar
         FROM
@@ -587,6 +595,12 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sci.id = #{param.companyId}
             </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="param.departId neq null and param.departId neq ''">
                 AND sdi.id = #{param.departId}
             </if>
@@ -611,7 +625,8 @@
         sui.phone_number AS mobile,
         sui.certificate_card AS identity_card,
         sjp.position_name,
-        sui.status
+        sui.status,
+        urs.role_name
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
@@ -619,6 +634,7 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         LEFT JOIN  union_staff_position AS usp ON usp.staff_id=ssi.id
         LEFT JOIN sys_job_position AS sjp ON sjp.id=usp.position_id
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             sui.id = #{id}
@@ -735,6 +751,13 @@
             <if test="staff.companyId != null and staff.companyId != ''">
                 and sci.id = #{staff.companyId}
             </if>
+            <if test="staff.companyIds neq null and staff.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="staff.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
             <if test="staff.departId != null and staff.departId != ''">
                 and (sdi.id like concat('', #{staff.departId}, '\_%') or sdi.id=#{staff.departId} )
             </if>
@@ -1012,4 +1035,64 @@
             sui.status IN (0, 3)
             AND sui.phone_number = #{mobile}
     </select>
+    <select id="getUserInfoByUserId" resultType="com.zerody.user.dto.SetSysUserInfoDto">
+        SELECT
+            sui.avatar,
+            ssi.avatar AS staff_avatar,
+            sui.user_name,
+            sui.gender,
+            sui.phone_number,
+            sui.email,
+            sui.nickname,
+            sui.birthday,
+            sui.certificate_card,
+            sui.certificate_card_address,
+            sui.contact_address,
+            sui.prov_city_district,
+            sui.nation,
+            sui.ancestral,
+            sui.highest_education,
+            sui.graduated_from,
+            sui.major,
+            sui.marital_status,
+            sui.register_time,
+            sui.urgent_name,
+            sui.urgent_relation,
+            sui.urgent_phone,
+            sui.family_name,
+            sui.family_relation,
+            sui.family_phone,
+            sui.family_job,
+            sui.family_addr,
+            ssi.work_place,
+            ssi.job_number,
+            ssi.date_join,
+            ssi.conversion_date,
+            ssi.evaluate,
+            ssi.resume_url,
+            ssi.recommend_type,
+            ssi.recommend_id,
+            ssi.integral,
+            ssi.working_years
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        WHERE
+            sui.id = #{userId}
+    </select>
+
+    <select id="getCompanyUserCountById" resultType="integer">
+        select count(1)  as 'userCount'
+        from sys_staff_info ssi
+        join sys_user_info AS sui on ssi.user_id = sui.id
+        where sui.status in (0, 3) and comp_id = #{companyId}
+    </select>
+
+    <update id="updateStatus">
+        update sys_staff_info set status = #{status}, date_left = now()
+        <if test="leaveReason neq null and leaveReason neq ''">
+            ,leave_reason = #{leaveReason}
+        </if>
+
+        where id = #{staffId}
+    </update>
 </mapper>

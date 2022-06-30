@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.CompanyInfoVo;
+import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.vo.CustomerQueryDimensionalityVo;
@@ -48,7 +49,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @param
      * @return               java.util.List<com.zerody.user.vo.SysComapnyInfoVo>
      */
-    List<SysComapnyInfoVo> getAllCompnay();
+    List<SysComapnyInfoVo> getAllCompnay(@Param("companyIds") List<String> companyIds);
 
     /**
      *
@@ -94,7 +95,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      */
     List<CompanyInfoVo> getCompanyInfoByIds(@Param("ids")List<String> ids);
 
-    List<SysComapnyInfoVo> getCompanyAll();
+    List<SysComapnyInfoVo> getCompanyAll(@Param("companyIds")List<String> companyIds);
 
     /**
      *
@@ -105,7 +106,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      * @param                companyId
      * @return               com.zerody.user.vo.UserStructureVo
      */
-    List<UserStructureVo> getCompanyNameById(@Param("companyId") String companyId);
+    List<UserStructureVo> getCompanyNameById(@Param("companyId") String companyId, @Param("companyIds") List<String> companyIds);
 
     /**
      *
@@ -157,5 +158,7 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
      */
     List<String> getNotSmsCompany();
 
-    List<ReportFormsQueryVo> getCompanyBusiness(@Param("roleIds") List<String> roleIds);
+    List<ReportFormsQueryVo> getCompanyBusiness(@Param("param") ReportFormsQueryDto param);
+
+    List<SysComapnyInfoVo> getSysCompanyAll();
 }

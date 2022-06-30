@@ -339,7 +339,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             }
             userStructureVos.add(departInfo);
         } else {
-            List<UserStructureVo> companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId());
+            List<UserStructureVo> companyInfo =  this.companyMapper.getCompanyNameById(param.getCompanyId(), param.getCompanyIds());
             userStructureVos.addAll(companyInfo);
         }
         this.getStructureChildrens(userStructureVos);
@@ -604,6 +604,20 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByDepartId(companyId,departId,isDepartAdmin);
             List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
             return getDepChildrens("", deps, jobs);
+    }
+
+    @Override
+    public List<SysDepartmentInfoVo> getAllDepPersonByCompanyId(String companyId) {
+        List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepPersonByCompanyId(companyId);
+        List<SysJobPositionVo> jobs = sysJobPositionMapper.getAllJobByCompanyId(companyId);
+        List<SysDepartmentInfoVo> depPersons = getDepChildrens("", deps, jobs);
+        // 计算每个部门的人数
+        for(SysDepartmentInfoVo dep : depPersons) {
+            int sumCount = dep.getUserCount() == null ? 0 :dep.getUserCount();
+            int depCount = dep.getDepartChildrens().stream().mapToInt(SysDepartmentInfoVo :: getUserCount).sum();
+            dep.setUserCount((sumCount + depCount));
+        }
+        return depPersons;
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {

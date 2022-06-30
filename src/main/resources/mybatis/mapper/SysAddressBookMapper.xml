@@ -12,6 +12,15 @@
 	     LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
          LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id  and ( sui.`status` = 0 OR sui.`status` = 3 )
          where sci.status=0
+        <if test="companyIds neq null and companyIds.size() gt 0">
+            AND sci.id
+            <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="isProData neq null">
+            AND sci.is_pro_data=#{isProData}
+        </if>
          GROUP BY
               sci.id;
   </select>
@@ -95,6 +104,15 @@
             </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
                     and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.isProData neq null">
+                AND sci.is_pro_data=#{param.isProData}
             </if>
         </where>
     </select>

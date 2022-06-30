@@ -274,6 +274,12 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
             }
+            if (UserUtils.getUser().isBack()) {
+                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUser().getUserId()));
+            }
+            if (UserUtils.getUser().isCEO()) {
+                param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUser().getUserId()));
+            }
             List<UserStructureVo> departs = this.sysDepartmentInfoService.getDirectLyDepartOrUser(param);
             return R.success(departs);
         } catch (DefaultException e) {

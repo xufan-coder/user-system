@@ -12,12 +12,14 @@ import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.SysUserIdentifierDto;
 import com.zerody.user.dto.SysUserIdentifierQueryDto;
 import com.zerody.user.service.SysUserIdentifierService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.SysUserIdentifierVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,6 +35,8 @@ public class SysUserIdentifierController {
     @Autowired
     private SysUserIdentifierService service;
 
+    @Autowired
+    private CheckUtil checkUtil;
    /**
     * @author kuang
     * @description 账号添加设备绑定
@@ -144,6 +148,9 @@ public class SysUserIdentifierController {
     public DataResult<Page<SysUserIdentifier>> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto){
         log.info("查询设备审批列表入参:{}", JSON.toJSONString(queryDto));
         try {
+            if(UserUtils.getUser().isBack()){
+                queryDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            }
             Page<SysUserIdentifier> identifierList = this.service.getPageUserIdentifier(queryDto);
             return R.success(identifierList);
         } catch (Exception e) {

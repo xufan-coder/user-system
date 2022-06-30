@@ -7,6 +7,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
@@ -68,6 +69,12 @@ public class SysStaffInfoController {
     */
     @RequestMapping(value = "/page/get", method = RequestMethod.GET)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
+        //增加后台账户过滤
+        List<String> list = null;
+        if (UserUtils.getUser().isBack()) {
+            list = this.checkUtil.setBackCompany(UserUtils.getUserId());
+        }
+        sysStaffInfoPageDto.setCompanyIds(list);
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
 
@@ -180,8 +187,10 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.selectStaffById(staffId));
         } catch (DefaultException e){
+            log.error("根据员工id查询员工信息:{}", e, e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
+            log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
     }
