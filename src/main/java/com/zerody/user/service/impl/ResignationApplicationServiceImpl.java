@@ -74,6 +74,9 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
         qw.lambda().eq(DataUtil.isNotEmpty(dto.getCompanyId()),ResignationApplication::getCompanyId,dto.getCompanyId())
                 .eq(DataUtil.isNotEmpty(dto.getDepartId()),ResignationApplication::getDepartId,dto.getDepartId())
                 .eq(DataUtil.isNotEmpty(dto.getUserId()),ResignationApplication::getUserId,dto.getUserId());
+        //过滤ceo和后台企业关联
+        qw.lambda().in(DataUtil.isNotEmpty(dto.getCompanyIds()),ResignationApplication::getCompanyId,dto.getCompanyIds());
+
         IPage<ResignationApplication> pageResult = this.page(page,qw);
         return pageResult;
     }

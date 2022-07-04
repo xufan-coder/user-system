@@ -49,7 +49,7 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
 
     List<CompanyInfoVo> getCompanyInfoByIds(List<String> ids);
 
-    List<SysComapnyInfoVo> getCompanyAll();
+    List<SysComapnyInfoVo> getCompanyAll(List<String> companyIds);
 
     String getNameById(String id);
 
@@ -66,4 +66,8 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     void getReportFormsExport(HttpServletResponse response, ReportFormsQueryDto param) throws IOException;
 
     List<SalesmanRoleInfoVo> getSalesmanRole(List<String> companyId, List<String> departId, List<String> userId);
+
+    List<SysComapnyInfoVo> getAllCompanyPersons(String companyId);
+
+    List<SysComapnyInfoVo> getSysCompanyAll();
 }

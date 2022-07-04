@@ -6,8 +6,7 @@ import java.util.List;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.ReportFormsQueryDto;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -16,8 +15,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
 
 /**
  * @author DELL
@@ -398,4 +395,11 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<SalesmanRoleInfoVo> getSalesmanNumUserList(@Param("userIds")List<String> userIds);
 
     StaffInfoVo getStaffInfoByMobile(@Param("mobile") String recommendMobile);
+
+    SetSysUserInfoDto getUserInfoByUserId(@Param("userId") String userId);
+
+    /**获取企业总人数*/
+    Integer getCompanyUserCountById(@Param("companyId") String companyId);
+
+    void updateStatus(@Param("staffId")String staffId, @Param("status")  Integer status, @Param("leaveReason") String leaveReason);
 }

@@ -24,4 +24,7 @@ public class UserPositionParam {
 
     /** 部门id */
     private List<String> departIds;
+
+    /** CEO关联企业IDS */
+    private List<String> companyIds;
 }

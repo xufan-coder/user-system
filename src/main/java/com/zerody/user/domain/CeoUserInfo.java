@@ -1,9 +1,12 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+
 /**
  * @author  DaBai
  * @date  2021/4/20 14:25
@@ -70,4 +73,7 @@ public class CeoUserInfo extends BaseModel {
     private String remark;
 
     private String imState;
+
+    @TableField(exist = false)
+    private List<String> companys;
 }

@@ -31,14 +31,12 @@ import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CardUserInfoMapper;
 import com.zerody.user.mapper.CardUserUnionCrmUserMapper;
 import com.zerody.user.mapper.CeoUserInfoMapper;
+import com.zerody.user.service.CeoCompanyRefService;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.BosStaffInfoVo;
-import com.zerody.user.vo.SubordinateUserQueryVo;
-import com.zerody.user.vo.SysUserInfoVo;
-import com.zerody.user.vo.UserPerformanceReviewsVo;
+import com.zerody.user.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +75,8 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     private OauthFeignService oauthFeignService;
     @Autowired
     private CheckUtil checkUtil;
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
 
     @Override
     public CeoUserInfo getByPhone(String phone) {
@@ -236,6 +236,16 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
             qw.lambda().like(CeoUserInfo::getUserName,ceoUserInfoPageDto.getUserName());
         }
         IPage<CeoUserInfo> ceoUserInfoIPage = ceoUserInfoMapper.selectPage(infoVoIPage, qw);
+        List<CeoUserInfo> records = ceoUserInfoIPage.getRecords();
+        if(DataUtil.isNotEmpty(records)){
+            records.stream().forEach(item->{
+                CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(item.getId());
+                if(DataUtil.isNotEmpty(ceoRef)&&DataUtil.isNotEmpty(ceoRef.getCompanys())){
+                    List<String> collect = ceoRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(Collectors.toList());
+                    item.setCompanys(collect);
+                }
+            });
+        }
         return  ceoUserInfoIPage;
     }
 

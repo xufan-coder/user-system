@@ -20,6 +20,7 @@ import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
@@ -40,7 +41,8 @@ public class UseControlController  implements RestrictRemoteService {
 	private UseControlService useControlService;
 	@Autowired
 	private UsersUseControlService usesUseControlService;
-
+	@Value("${jwt.privateKey:ZERODY}")
+	private String privateKey;
 
 	/**
 	*   添加或修改时间限制
@@ -144,7 +146,7 @@ public class UseControlController  implements RestrictRemoteService {
 	@RequestMapping(value = "/get/auth/inner", method = RequestMethod.GET)
 	public DataResult<Boolean> getRestrictAuth(@RequestParam("token") String token) {
 		try {
-			String key = Base64.getEncoder().encodeToString("ZERODY".getBytes());
+			String key = Base64.getEncoder().encodeToString(privateKey.getBytes());
 			Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
 			Object userInfo = claims.get("userInfo");
 			Map<String, Object> map = (Map)userInfo;

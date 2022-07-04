@@ -3,6 +3,8 @@ package com.zerody.user.dto;
 import com.zerody.common.api.bean.PageQueryDto;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author kuang
  **/
@@ -37,4 +39,8 @@ public class SysUserIdentifierQueryDto extends PageQueryDto {
      **/
     private String approveState;
 
+    /**
+    *   boss后台隔离数据
+    */
+    private List<String> companyIds;
 }

@@ -469,4 +469,11 @@
             sui.status IN (0, 3) AND aup.id IS NULL
         LIMIT 0, 200
     </select>
+    <select id="getDepartIdByUserId" resultType="java.lang.String">
+        SELECT
+            usd.department_id
+        FROM sys_staff_info AS ssi
+        JOIN  union_staff_depart AS usd ON usd.staff_id = ssi.id
+        WHERE ssi.user_id = #{userId}
+    </select>
 </mapper>

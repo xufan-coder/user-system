@@ -12,11 +12,13 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.export.util.ExcelHandlerUtils;
+import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -24,6 +26,9 @@ import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.BackUserRefVo;
+import com.zerody.user.vo.CeoRefVo;
+import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.BeanUtils;
@@ -92,6 +97,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @Autowired
     private SysUserIdentifierService sysUserIdentifierService;
 
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
+
 	@Override
 	public long getLastModified(HttpServletRequest request) {
 		return System.currentTimeMillis();
@@ -120,6 +128,31 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
         return sysUserInfoService.addUser(userInfo);
     }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          内部接口复制用户
+     * @date                 2022/6/18 15:48
+     * @param                [setSysUserInfoDto]
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
+     */
+    @PostMapping(value = "/copy/inner")
+    @Override
+    public DataResult<UserCopyResultVo> doCopyStaffInner(@Validated @RequestBody UserCopyDto param){
+        try {
+            log.info("copy用户入参:{}", JSON.toJSONString(param));
+            return R.success(sysStaffInfoService.doCopyStaffInner(param));
+        } catch (DefaultException e){
+            log.error("内部接口复制员工错误:{}" + JSON.toJSONString(param), e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("内部接口复制员工错误:{} "+ JSON.toJSONString(param), e);
+            return R.error("内部接口复制员工错误,请求异常");
+        }
+    }
+
 
     //修改用户
     @PostMapping("/updateUser")
@@ -217,7 +250,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (DataUtil.isEmpty(checkLoginVo)) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
-            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            String companyId= sysStaffInfoService.getById(checkLoginVo.getStaffId()).getCompId();
+//            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
             SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
 //            try {
 //                useControlService.checkUserAuth(checkLoginVo.getUserId(), companyId);
@@ -725,6 +759,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
 			if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             return R.success(sysStaffInfoService.getPagePerformanceReviews(param));
         } catch (DefaultException e){
@@ -742,6 +778,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 //            checkUtil.SetUserPositionInfo(param);
             if (!UserUtils.getUser().isBackAdmin()) {
                 param.setCompanyId(UserUtils.getUser().getCompanyId());
+            }else {
+                checkUtil.SetUserPositionInfo(param);
             }
             List<UserPerformanceReviewsVo> list=sysStaffInfoService.doPerformanceReviewsExport(param, res);
             ExcelHandlerUtils.exportExcel(list, "业绩总结列表", UserPerformanceReviewsVo.class, "业绩总结列表导出.xls", res);
@@ -999,6 +1037,47 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         com.zerody.user.api.vo.CeoUserInfo ceo=new com.zerody.user.api.vo.CeoUserInfo();
         BeanUtils.copyProperties(userById,ceo);
         return R.success(ceo);
+    }
+
+
+    /**
+     * 据CEO用户id获取关联企业；
+     * @author  DaBai
+     * @date  2022/6/20 10:26
+     */
+    @Override
+    @RequestMapping(value = "/get-ceo-company/inner",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.CeoRefVo> getCeoCompanyById(@RequestParam String id){
+        CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
+        com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
+        BeanUtils.copyProperties(ceoRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
+        return R.success(vo);
+    }
+
+    /**
+     * 据后台管理员用户id获取关联企业；
+     * @author  DaBai
+     * @date  2022/6/20 10:26
+     */
+    @Override
+    @RequestMapping(value = "/get-back-company/inner",method = GET, produces = "application/json")
+    public DataResult<com.zerody.user.api.vo.BackUserRefVo> getBackCompanyById(@RequestParam String id){
+        BackUserRefVo backRef = ceoCompanyRefService.getBackRef(id);
+        com.zerody.user.api.vo.BackUserRefVo vo=new com.zerody.user.api.vo.BackUserRefVo();
+        BeanUtils.copyProperties(backRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
+        return R.success(vo);
     }
 
     /**
@@ -1289,6 +1368,33 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         } catch (DefaultException e) {
             log.error("查询用户信息出错：{}", e, e);
             return R.error(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          获取上级 不包含企业管理员
+     * @date                 2022/6/22 9:53
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    @GetMapping("/get/superior/not-company-admin/{id}")
+    public DataResult<StaffInfoVo> getSuperiorNotCompanyAdmin(@PathVariable(value = "id") String userId) {
+        try {
+            StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
+            if (DataUtil.isNotEmpty(staffInfoVo)) {
+                staffInfoVo.setIdentityCard(null);
+                staffInfoVo.setMobile(null);
+            }
+            return R.success(staffInfoVo);
+        } catch (DefaultException e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error("获取上级出错!请联系管理员");
         }
     }
 
