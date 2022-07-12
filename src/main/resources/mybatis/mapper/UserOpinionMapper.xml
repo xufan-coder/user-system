@@ -23,7 +23,11 @@
   <select id="queryUserOpinionUser" resultMap="BaseResultMapVo">
     select o.*,
     (SELECT content from user_reply r where r.opinion_id = o.id ORDER BY r.create_time desc limit 1 ) as reply_content
-    from user_opinion o where o.user_id = #{userId} and o.deleted = 1
+    from user_opinion o
+    where o.user_id = #{query.userId} and o.deleted = 1
+    <if test="query.typeId neq null and query.typeId neq ''">
+      and o.type_id = #{query.typeId}
+    </if>
     order by o.create_time desc
   </select>
 
@@ -41,14 +45,18 @@
     select uo.*,sci.company_name, sdi.depart_name,
     (SELECT content from user_reply r where r.opinion_id = uo.id ORDER BY r.create_time desc limit 1 ) as reply_content
     from user_opinion uo
+    LEFT JOIN user_opinion_ref uor on uor.opinion_id = uo.id
     LEFT JOIN sys_staff_info ssi ON uo.user_id=ssi.user_id
     LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
     LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
     LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
     <where>
-      uo.deleted = 1
+      uo.deleted = 1 and uor.user_id = #{query.userId}
       <if test="query.searchName neq null and query.searchName neq ''">
         and uo.user_name like concat('%',#{query.searchName},'%')
+      </if>
+      <if test="query.typeId neq null and query.typeId neq ''">
+        and uo.type_id = #{query.typeId}
       </if>
     </where>
     order by uo.create_time desc
