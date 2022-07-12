@@ -230,6 +230,12 @@
         WHERE
             status = 0
             and is_pro_data=1
+        <if test="companyIds neq null and companyIds.size() gt 0">
+            AND id IN
+            <foreach collection="companyIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
     </select>
     <select id="getCompanyNameById" resultType="com.zerody.user.vo.UserStructureVo">
         SELECT
@@ -242,6 +248,12 @@
             status = 0
             <if test="companyId neq null and companyId neq ''">
                 AND id = #{companyId}
+            </if>
+            <if test="companyIds neq null and companyIds.size() gt 0">
+                AND id
+                <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
         </where>
     </select>

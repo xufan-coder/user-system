@@ -443,8 +443,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<SysComapnyInfoVo> getCompanyAll() {
-        return this.sysCompanyInfoMapper.getCompanyAll();
+    public List<SysComapnyInfoVo> getCompanyAll(List<String> companyIds) {
+        return this.sysCompanyInfoMapper.getCompanyAll(companyIds);
     }
 
     @Override

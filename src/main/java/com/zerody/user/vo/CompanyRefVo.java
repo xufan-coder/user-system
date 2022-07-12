@@ -11,6 +11,13 @@ import java.util.List;
 
 @Data
 public class CompanyRefVo {
+    public CompanyRefVo() {
+     super();
+    }
+    public CompanyRefVo(String id, String companyName) {
+        this.id = id;
+        this.companyName = companyName;
+    }
 
     /**
      *

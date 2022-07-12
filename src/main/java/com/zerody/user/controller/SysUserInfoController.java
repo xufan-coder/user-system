@@ -28,6 +28,7 @@ import com.zerody.user.service.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BackUserRefVo;
 import com.zerody.user.vo.CeoRefVo;
+import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.BeanUtils;
@@ -249,7 +250,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (DataUtil.isEmpty(checkLoginVo)) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
-            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            String companyId= sysStaffInfoService.getById(checkLoginVo.getStaffId()).getCompId();
+//            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
             SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
 //            try {
 //                useControlService.checkUserAuth(checkLoginVo.getUserId(), companyId);
@@ -1049,6 +1051,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         CeoRefVo ceoRef = ceoCompanyRefService.getCeoRef(id);
         com.zerody.user.api.vo.CeoRefVo vo=new com.zerody.user.api.vo.CeoRefVo();
         BeanUtils.copyProperties(ceoRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
         return R.success(vo);
     }
 
@@ -1063,6 +1071,12 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         BackUserRefVo backRef = ceoCompanyRefService.getBackRef(id);
         com.zerody.user.api.vo.BackUserRefVo vo=new com.zerody.user.api.vo.BackUserRefVo();
         BeanUtils.copyProperties(backRef,vo);
+        if(DataUtil.isEmpty(vo.getCompanys())){
+            com.zerody.user.api.vo.CompanyRefVo companyRefVo=new com.zerody.user.api.vo.CompanyRefVo();
+            companyRefVo.setId("NOT_COMPANY");
+            companyRefVo.setCompanyName("NOT_COMPANY");
+            vo.getCompanys().add(companyRefVo);
+        }
         return R.success(vo);
     }
 
