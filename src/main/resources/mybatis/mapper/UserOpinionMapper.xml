@@ -14,6 +14,7 @@
   <resultMap id="BaseResultMapVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMap">
     <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
     <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+    <association property="seeUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
   </resultMap>
 
   <resultMap id="BaseResultMapPageVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMapVo">
@@ -43,7 +44,7 @@
     where uo.deleted = 1 and uo.id = #{id}
   </select>
 
-  <select id="queryUserOpinionPage" resultMap="BaseResultMapVo" >
+  <select id="queryUserOpinionPage" resultMap="BaseResultMapPageVo" >
     select uo.*,sci.company_name, sdi.depart_name,uop.name as 'type_name',
     (SELECT content from user_reply r where r.opinion_id = uo.id ORDER BY r.create_time desc limit 1 ) as reply_content
     from user_opinion uo
@@ -66,5 +67,11 @@
       </if>
     </where>
     order by uo.create_time desc
+  </select>
+
+  <select id="getSeeUserNameByOpinionId" resultType="string">
+     select GROUP_CONCAT(ui.user_name) from user_opinion_ref  uor
+     left join sys_user_info ui on uor.user_id = ui.id
+     where uor.opinion_id = #{opinionId}
   </select>
 </mapper>

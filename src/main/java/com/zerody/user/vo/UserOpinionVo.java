@@ -18,4 +18,7 @@ public class UserOpinionVo extends UserOpinion {
     /**分类名称*/
     private String typeName;
 
+    /**查看人名称*/
+    private String seeUserName;
+
 }

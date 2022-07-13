@@ -20,4 +20,6 @@ public class UserOpinionPageVo extends UserOpinionVo {
     /**分类名称*/
     private String typeName;
 
+
+    private String seeUserName;
 }
