@@ -6,11 +6,13 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.UserOpinionType;
 import com.zerody.user.service.UserOpinionTypeService;
+import com.zerody.user.vo.UserOpinionTypeNameVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -73,10 +75,20 @@ public class UserOpinionTypeController {
      * @date 2022-07-11
      **/
     @GetMapping("/list")
-    public DataResult<List<UserOpinionType>> getTypeAll(){
+    public DataResult<List<UserOpinionTypeNameVo>> getTypeAll(){
         try {
             List<UserOpinionType> page = userOpinionTypeService.getTypeAll();
-            return R.success(page);
+            List<UserOpinionTypeNameVo> list = new ArrayList<>();
+            if(page !=null && page.size() > 0) {
+                //更改成APP所需要的字段名称进行返回
+                page.forEach(t->{
+                    UserOpinionTypeNameVo vo = new UserOpinionTypeNameVo();
+                    vo.setCode(t.getId());
+                    vo.setText(t.getName());
+                    list.add(vo);
+                });
+            }
+            return R.success(list);
         } catch (Exception e) {
             log.error("获取问题反馈出错:{}", e, e);
             return R.error("获取问题反馈出错:" + e.getMessage());
