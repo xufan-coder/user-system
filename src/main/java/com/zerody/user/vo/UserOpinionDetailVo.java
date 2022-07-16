@@ -20,6 +20,9 @@ public class UserOpinionDetailVo extends UserOpinion {
     /**分类名称*/
     private String typeName;
 
+    /**查看人名称*/
+    private String seeUserName;
+
     /**回复列表*/
     private List<UserReplyVo> replyList;
 
