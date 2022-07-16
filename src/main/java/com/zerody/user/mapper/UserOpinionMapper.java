@@ -24,4 +24,6 @@ public interface UserOpinionMapper extends BaseMapper<UserOpinion> {
     UserOpinionDetailVo getOpinionDetail(@Param("id") String id);
 
     String getSeeUserNameByOpinionId(@Param("opinionId") String opinionId);
+
+    Integer getOpinionReplyTotal(@Param("query") UserOpinionQueryDto query);
 }

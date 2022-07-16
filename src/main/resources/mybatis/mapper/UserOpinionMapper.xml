@@ -69,6 +69,24 @@
     order by uo.create_time desc
   </select>
 
+  <select id="getOpinionReplyTotal" resultType="integer">
+    select count(1) from user_opinion uo
+    LEFT JOIN user_opinion_ref uor on uor.opinion_id = uo.id
+    <where>
+      uo.deleted = 1
+      <if test="query.userId neq null and query.userId neq ''">
+        and uor.user_id = #{query.userId}
+      </if>
+      <if test="query.searchName neq null and query.searchName neq ''">
+        and uo.user_name like concat('%',#{query.searchName},'%')
+      </if>
+      <if test="query.typeId neq null and query.typeId neq ''">
+        and uo.type_id = #{query.typeId}
+      </if>
+    </where>
+
+  </select>
+
   <select id="getSeeUserNameByOpinionId" resultType="string">
      select GROUP_CONCAT(ui.user_name) from user_opinion_ref  uor
      left join sys_user_info ui on uor.user_id = ui.id

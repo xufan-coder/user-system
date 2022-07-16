@@ -145,4 +145,23 @@ public class UserOpinionController {
         }
     }
 
+    /**
+     * @author kuang
+     * @description 获取意见总数
+     **/
+    @GetMapping("/get/summary")
+    public DataResult<Object> getOpinionAndReplySum(UserOpinionQueryDto dto){
+        try {
+            dto.setUserId(UserUtils.getUserId());
+            Object summary = this.userOpinionService.getOpinionAndReplySum(dto);
+            return R.success(summary);
+        } catch (DefaultException e) {
+            log.error("获取意见总数异常:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取意见总数出错:{}", e, e);
+            return R.error("获取意见总数出错" + e);
+        }
+    }
+
 }

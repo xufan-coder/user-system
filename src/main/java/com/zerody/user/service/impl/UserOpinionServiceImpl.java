@@ -35,6 +35,7 @@ import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import com.zerody.user.vo.UserReplyVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -236,6 +237,18 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         List<String> list = imageList.get(id);
         detailVo.setReplyImageList(list);
         return detailVo;
+    }
+
+    @Override
+    public Object getOpinionAndReplySum(UserOpinionQueryDto dto) {
+
+        Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
+        Integer opinionSum = (int)queryUserOpinionUser(dto).getTotal();
+        Map<String,Object> orderStatusMap = new HashedMap<>();
+        orderStatusMap.put("replySum",replySum);
+        orderStatusMap.put("opinionSum",opinionSum);
+
+        return orderStatusMap;
     }
 
 }

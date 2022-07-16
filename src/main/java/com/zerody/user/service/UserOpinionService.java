@@ -26,4 +26,6 @@ public interface UserOpinionService extends IService<UserOpinion> {
     IPage<UserOpinionPageVo> queryUserOpinionPage(UserOpinionQueryDto dto);
 
     UserOpinionDetailVo getOpinionDetail(String id);
+
+    Object getOpinionAndReplySum(UserOpinionQueryDto dto);
 }
