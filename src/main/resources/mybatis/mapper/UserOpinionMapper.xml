@@ -35,8 +35,9 @@
   </select>
 
   <select id="getOpinionDetail" resultType="com.zerody.user.vo.UserOpinionDetailVo">
-    select uo.*,sci.company_name, sdi.depart_name
+    select uo.*,uop.name as 'type_name',sci.company_name, sdi.depart_name
     from user_opinion uo
+    LEFT JOIN user_opinion_type uop on uo.type_id = uop.id
     LEFT JOIN sys_staff_info ssi ON uo.user_id=ssi.user_id
     LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
     LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
