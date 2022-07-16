@@ -22,6 +22,10 @@
     <result column="depart_name" property="departName" jdbcType="VARCHAR"/>
   </resultMap>
 
+  <resultMap id="BaseResultInfoMapVo" type="com.zerody.user.vo.UserOpinionDetailVo" extends="BaseResultMapPageVo">
+
+  </resultMap>
+
   <select id="queryUserOpinionUser" resultMap="BaseResultMapVo">
     select o.*,uop.name as 'type_name',
     (SELECT content from user_reply r where r.opinion_id = o.id ORDER BY r.create_time desc limit 1 ) as reply_content
@@ -34,7 +38,7 @@
     order by o.create_time desc
   </select>
 
-  <select id="getOpinionDetail" resultType="com.zerody.user.vo.UserOpinionDetailVo">
+  <select id="getOpinionDetail" resultMap="BaseResultInfoMapVo">
     select uo.*,uop.name as 'type_name',sci.company_name, sdi.depart_name
     from user_opinion uo
     LEFT JOIN user_opinion_type uop on uo.type_id = uop.id
