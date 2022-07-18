@@ -21,6 +21,10 @@ public class UserOpinion {
 
     /**视频*/
     private String video;
+
+    /**分类id*/
+    private String typeId;
+
     /**
      * 用户ID
      */
