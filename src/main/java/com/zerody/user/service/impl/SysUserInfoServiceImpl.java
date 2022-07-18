@@ -667,6 +667,14 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return this.getDepartAdminInfo(departId);
     }
 
+    @Override
+    public List<String> getUserIdsByRoleNames(String[] roleNames) {
+        if (roleNames == null || roleNames.length == 0) {
+            return new ArrayList<>();
+        }
+        return this.sysUserInfoMapper.getUserIdsByRoleNames(roleNames);
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

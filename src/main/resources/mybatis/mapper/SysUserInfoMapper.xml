@@ -476,4 +476,20 @@
         JOIN  union_staff_depart AS usd ON usd.staff_id = ssi.id
         WHERE ssi.user_id = #{userId}
     </select>
+    <select id="getUserIdsByRoleNames" resultType="java.lang.String">
+        SELECT
+            sui.user_id
+        FROM sys_user_info AS sui
+            JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
+            JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+            sui.status IN (0, 3)
+            <if test="roleNames neq null and roleNames.length gt 0">
+                AND urs.role_name
+                <foreach collection="roleNames" item="roleName" open="IN (" separator="," close=")">
+                    #{roleName}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>
