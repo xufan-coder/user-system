@@ -155,9 +155,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Override
     @GetMapping("/get/user-ids/by-role-name/inner")
-    public DataResult<List<String>> getUserIdsByRoleNames(@RequestParam("roleNames") String... roleNames) {
+    public DataResult<List<String>> getUserIdsByRoleNames(@RequestParam("userType") Integer userType) {
         try {
-            return R.success(this.sysUserInfoService.getUserIdsByRoleNames(roleNames));
+            return R.success(this.sysUserInfoService.getUserIdsByRoleNames(userType));
         } catch (Exception e) {
             log.error("通过角色名称查询用户失败：{}",e ,e);
             return R.error(e.getMessage());

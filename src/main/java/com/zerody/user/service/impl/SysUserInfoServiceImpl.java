@@ -32,7 +32,9 @@ import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
+import io.lettuce.core.ScanIterator;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +50,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -668,11 +668,37 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public List<String> getUserIdsByRoleNames(String[] roleNames) {
-        if (roleNames == null || roleNames.length == 0) {
-            return new ArrayList<>();
+    public List<String> getUserIdsByRoleNames(Integer userType) {
+        // 根据角色 查询用户id
+        List<String> userIds = this.sysUserInfoMapper.getUserIdsByRoleNames(UserTypeUtil.getRoleName(userType));
+        //伙伴不做其他判断
+        if (DataUtil.isEmpty(userIds) || userType.intValue() == UserTypeInfo.PARTNER) {
+            return userIds;
         }
-        return this.sysUserInfoMapper.getUserIdsByRoleNames(roleNames);
+        List<String> companyAdminIds = new ArrayList<>(),departAdminIds = new ArrayList<>();
+        if (userType == UserTypeInfo.COMPANY_ADMIN ) {
+            //当查询企业管理员时 查询出所有企业管理
+            companyAdminIds =  this.sysUserInfoMapper.getAllCompanyAdmin();
+        }
+        if (userType == UserTypeInfo.DEPUTY_GENERAL_MANAGERv || userType == UserTypeInfo.LONG_TEAM) {
+            //当查询副总、团队长时 查询出所有部门
+            departAdminIds = this.sysUserInfoMapper.getAllDepartAdmin();
+        }
+        Map<String, String> companyAdminMap = companyAdminIds.stream().collect(Collectors.toMap(a -> a, a -> a, (k1, k2) -> k1, HashMap::new));
+        Map<String, String> departAdminMap = departAdminIds.stream().collect(Collectors.toMap( a -> a, a -> a, (k1, k2) -> k1, HashMap::new));
+        Iterator<String> iterator = userIds.iterator();
+        while (iterator.hasNext()) {
+            String userId = iterator.next();
+            if (userType == UserTypeInfo.COMPANY_ADMIN && DataUtil.isEmpty(companyAdminMap.get(userId))) {
+                // 是总经理角色 但是不是企业管理员 --删除
+                iterator.remove();
+            }
+            if ((userType == UserTypeInfo.DEPUTY_GENERAL_MANAGERv || userType == UserTypeInfo.LONG_TEAM) && DataUtil.isEmpty(departAdminMap.get(userId))) {
+                // 是副总、团队长角色 但是不是部门管理员 --删除
+                iterator.remove();
+            }
+        }
+        return userIds;
     }
 
     //递归获取上级 不包含企业管理员

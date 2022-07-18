@@ -259,5 +259,5 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
 
     StaffInfoVo getSuperiorNotCompanyAdmin(String userId);
 
-    List<String> getUserIdsByRoleNames(String[] roleNames);
+    List<String> getUserIdsByRoleNames(Integer userType);
 }

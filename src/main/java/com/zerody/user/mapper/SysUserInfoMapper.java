@@ -177,5 +177,9 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
     String getDepartIdByUserId(@Param("userId") String userId);
 
-    List<String> getUserIdsByRoleNames(@Param("roleNames") String[] roleNames);
+    List<String> getUserIdsByRoleNames(@Param("roleName") String roleNames);
+
+    List<String> getAllCompanyAdmin();
+
+    List<String> getAllDepartAdmin();
 }
