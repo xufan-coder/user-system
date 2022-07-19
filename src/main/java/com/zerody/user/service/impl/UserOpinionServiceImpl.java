@@ -93,9 +93,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
         userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds());
-
+        log.info("数据参数-1{}",opinion);
         new Thread(() -> {
             for(String userId : param.getSeeUserIds()){
+                log.info("数据参数-2{}",opinion);
                 jdPush(this.replyWarnTemplate2,userId,opinion);
                 pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
             }
@@ -117,8 +118,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
-
+        log.info("数据参数-1{}",opinion);
         new Thread(() -> {
+            log.info("数据参数-1{}",opinion);
             jdPush(this.replyWarnTemplate,opinion.getUserId(),opinion);
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();
