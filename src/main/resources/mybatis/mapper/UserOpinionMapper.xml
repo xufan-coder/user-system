@@ -93,8 +93,9 @@
   </select>
 
   <select id="getSeeUserNameByOpinionId" resultType="string">
-     select GROUP_CONCAT(ui.user_name) from user_opinion_ref  uor
+     select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
      left join sys_user_info ui on uor.user_id = ui.id
+	 left join ceo_user_info ceo on ceo.id = uor.user_id
      where uor.opinion_id = #{opinionId}
   </select>
 </mapper>

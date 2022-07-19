@@ -10,13 +10,11 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
-import com.zerody.user.mapper.UserOpinionRefMapper;
 import com.zerody.user.service.UserOpinionService;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
