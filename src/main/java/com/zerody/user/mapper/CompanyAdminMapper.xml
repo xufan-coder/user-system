@@ -26,11 +26,11 @@
 		sci.company_name  AS companyName,
 		ssi.avatar
 		FROM company_admin AS ca
-		JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-		join sys_user_info sui as ssi ON ssi.user_id = ui.id and ssi.`status` in (0, 3)
+		JOIN sys_staff_info AS ssi  ON ssi.id =ca.staff_id
+		join sys_user_info sui ON ssi.user_id = sui.id and ssi.`status` in (0, 3)
 		LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
 		where
-			sui.status IN (0, 3) AND sdi.comp_id = #{companyId}
+			sui.status IN (0, 3) AND ca.company_id = #{companyId}
 	</select>
 </mapper>
