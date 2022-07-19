@@ -153,6 +153,7 @@ public class UserOpinionController {
     public DataResult<Object> getOpinionAndReplySum(UserOpinionQueryDto dto){
         try {
             dto.setUserId(UserUtils.getUserId());
+            dto.setCEO(UserUtils.getUser().isCEO());
             Object summary = this.userOpinionService.getOpinionAndReplySum(dto);
             return R.success(summary);
         } catch (DefaultException e) {
