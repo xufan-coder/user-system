@@ -121,3 +121,12 @@ flow:
     port: 5672
     username: zerody_admin
     password: zerody_test
+msg:
+  opinion:
+    url: /home/suggestion/detail
+    query: {"fromPage":"suggestion"}
+    arguments: '{"id":"${id}"}'
+    title: '意见查看提醒'
+    title2: '意见提交回复提醒'
+    content: '${userName}向你提出了一个意见或建议，请及时查看!'
+    content2: '${userName}已经回复了你提出的已经或建议，请及时查看!'
