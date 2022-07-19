@@ -131,7 +131,9 @@ public class UserOpinionController {
     @GetMapping("/page")
     public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(UserOpinionQueryDto dto) {
         try {
-            dto.setUserId(UserUtils.getUserId());
+            if(!UserUtils.getUser().isCEO()){
+                dto.setUserId(UserUtils.getUserId());
+            }
             IPage<UserOpinionPageVo> iPage = this.userOpinionService.queryUserOpinionPage(dto);
             return R.success(iPage);
         } catch (DefaultException e) {
