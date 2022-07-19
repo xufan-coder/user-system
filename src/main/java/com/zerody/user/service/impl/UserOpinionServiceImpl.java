@@ -165,6 +165,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         data.setContentPush(msg);
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
+        log.info("小藏推送:{}",com.zerody.flow.client.util.JsonUtils.toString(data));
         com.zerody.common.api.bean.DataResult<Object> result = this.sendMsgFeignService.send(data);
         log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
@@ -242,8 +243,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Override
     public Object getOpinionAndReplySum(UserOpinionQueryDto dto) {
 
-        Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
         Integer opinionSum = (int)queryUserOpinionUser(dto).getTotal();
+        if(dto.isCEO()){
+            dto.setUserId(null);
+        }
+        Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
         Map<String,Object> orderStatusMap = new HashedMap<>();
         orderStatusMap.put("replySum",replySum);
         orderStatusMap.put("opinionSum",opinionSum);

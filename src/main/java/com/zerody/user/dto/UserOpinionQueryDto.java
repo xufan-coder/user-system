@@ -18,5 +18,8 @@ public class UserOpinionQueryDto extends PageQueryDto {
     /**分类id*/
     private String typeId;
 
+    /**是否是boos账号*/
+    private boolean isCEO;
+
 
 }
