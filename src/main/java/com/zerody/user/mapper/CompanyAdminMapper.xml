@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.zerody.user.domain.CompanyAdmin">
   		 <id column="id" property="id"/>
-		<result column="user_id" property="userId"/>
+		<result column="staff_id" property="staffId"/>
 		<result column="state" property="state"/>
 		<result column="role_id" property="roleId"/>
 		<result column="update_by" property="updateBy"/>
@@ -18,74 +18,19 @@
 		<result column="company_id" property="companyId"/>
     </resultMap>
 
-    <insert id="saveData" >
-        INSERT INTO company_admin(
-			id,
-			user_id,
-			state,
-			role_id,
-			update_by,
-			update_username,
-			update_time,
-			create_username,
-			create_by,
-			create_time,
-			deleted,
-			company_id
-        ) VALUES (
-			#{data.id}
-			#{data.userId}
-			#{data.state}
-			#{data.roleId}
-			#{data.updateBy}
-			#{data.updateUsername}
-			#{data.updateTime}
-			#{data.createUsername}
-			#{data.createBy}
-			#{data.createTime}
-			#{data.deleted}
-			#{data.companyId}
-        )
-    </insert>
-
-    <update id="updateData">
-        UPDATE company_admin SET 
-			id= #{data.id},
-			user_id= #{data.userId},
-			state= #{data.state},
-			role_id= #{data.roleId},
-			update_by= #{data.updateBy},
-			update_username= #{data.updateUsername},
-			update_time= #{data.updateTime},
-			create_username= #{data.createUsername},
-			create_by= #{data.createBy},
-			create_time= #{data.createTime},
-			deleted= #{data.deleted},
-			company_id= #{data.companyId}
-        WHERE id= #{data.id}
-    </update>
-
-    <delete id="deleteData">
-        DELETE FROM company_admin WHERE id= #{data.id}
-    </delete>
-
-    <select id="selectDataById" resultMap="BaseResultMap">
-        SELECT 
-			id,
-			user_id,
-			state,
-			role_id,
-			update_by,
-			update_username,
-			update_time,
-			create_username,
-			create_by,
-			create_time,
-			deleted,
-			company_id
-        FROM company_admin 
-        WHERE id= #{data.id}
-    </select>
-
-
+	<select id="getAdminList" resultType="com.zerody.user.vo.SubordinateUserQueryVo">
+		SELECT sui.id            AS user_id,
+		sui.user_name,
+		sui.phone_number  AS mobile,
+		urs.role_name     AS roleName,
+		sci.company_name  AS companyName,
+		ssi.avatar
+		FROM company_admin AS ca
+		JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+		join sys_user_info sui as ssi ON ssi.user_id = ui.id and ssi.`status` in (0, 3)
+		LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+		where
+			sui.status IN (0, 3) AND sdi.comp_id = #{companyId}
+	</select>
 </mapper>

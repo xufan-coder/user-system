@@ -48,10 +48,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -665,6 +662,46 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         //没有部门返回空
         String departId = this.sysUserInfoMapper.getDepartIdByUserId(userId);
         return this.getDepartAdminInfo(departId);
+    }
+
+    @Override
+    public List<SubordinateUserQueryVo> getSuperiorList(UserVo user) {
+        List<SubordinateUserQueryVo> superiorList;
+
+        // 查询ceo账户
+        superiorList = this.ceoUserInfoService.getList();
+        if(user.isCEO()) {
+            // 移除自己
+            for (SubordinateUserQueryVo suv : superiorList){
+                if (suv.getUserId().equals(user.getUserId())) {
+                    superiorList.remove(suv);
+                    break;
+                }
+            }
+            return superiorList;
+        }
+        // 企业管理员(总经理)
+        if(user.isCompanyAdmin()){
+            return superiorList;
+        }
+        // 团队长
+        // 获取总经理账户信息
+        List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(user.getCompanyId());
+        superiorList.addAll(managerList);
+        if(user.isDeptAdmin()) {
+            return superiorList;
+        }
+        //  副总 伙伴
+        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
+        // 移除自己
+        for (SubordinateUserQueryVo suv : departList){
+            if (suv.getUserId().equals(user.getUserId())) {
+                departList.remove(suv);
+                break;
+            }
+        }
+        superiorList.addAll(departList);
+        return superiorList;
     }
 
     //递归获取上级 不包含企业管理员

@@ -1398,4 +1398,23 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+     * @author kuang
+     * @description 查询上级所有人
+     * @date  2022-7-18
+     **/
+    @GetMapping("/get/superior/all")
+    public DataResult<List<SubordinateUserQueryVo>> getSuperiorList() {
+        try {
+            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(UserUtils.getUser());
+            return R.success(getSuperiorList);
+        } catch (DefaultException e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error("获取所有上级出错!请联系管理员");
+        }
+    }
+
 }
