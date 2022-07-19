@@ -124,7 +124,7 @@ flow:
 msg:
   opinion:
     url: /home/suggestion/detail
-    query: '{"id":"${id}"}'
+    query: '{"fromPage":"boxSuggestion","id":"${id}"}'
     arguments:
     title: '意见查看提醒'
     title2: '意见提交回复提醒'
