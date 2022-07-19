@@ -176,4 +176,10 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<AppUserNotPushVo> getNotPushAppUser();
 
     String getDepartIdByUserId(@Param("userId") String userId);
+
+    List<String> getUserIdsByRoleNames(@Param("roleName") String roleNames);
+
+    List<String> getAllCompanyAdmin();
+
+    List<String> getAllDepartAdmin();
 }
