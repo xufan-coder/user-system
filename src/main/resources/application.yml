@@ -124,9 +124,9 @@ flow:
 msg:
   opinion:
     url: /home/suggestion/detail
-    query: {"fromPage":"suggestion"}
-    arguments: {"id":"${id}"}
+    query: {"id":"${id}"}
+    arguments:
     title: '意见查看提醒'
     title2: '意见提交回复提醒'
     content: '${userName}向你提出了一个意见或建议，请及时查看!'
-    content2: '${userName}已经回复了你提出的已经或建议，请及时查看!'
+    content2: '${userName}已经回复了你提出的意见或建议，请及时查看!'
