@@ -1122,13 +1122,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(@RequestParam(value = "isShowLeave", required = false ) Integer isShowLeave) {
         try {
             SubordinateUserQueryDto param = new SubordinateUserQueryDto();
-            System.out.println(UserUtils.getUser().isCEO());
-            if(!UserUtils.getUser().isCEO()){
-                param.setDepartId(UserUtils.getUser().getDeptId());
-                param.setCompanyId(UserUtils.getUser().getCompanyId());
-            }
+            UserVo userVo = UserUtils.getUser();
+            param.setDepartId(UserUtils.getUser().getDeptId());
+            param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
             param.setIsShowLeave(isShowLeave);
+            // 合作伙伴不返回下级
+            if(!userVo.isCEO() && !userVo.isCompanyAdmin() && !userVo.isDeptAdmin()){
+                return R.success(new ArrayList<>());
+            }
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
             return R.success(result);
         } catch (DefaultException e){
