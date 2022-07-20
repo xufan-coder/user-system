@@ -1126,11 +1126,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             param.setDepartId(UserUtils.getUser().getDeptId());
             param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
+            param.setIsCEO(UserUtils.getUser().isCEO());
             param.setIsShowLeave(isShowLeave);
-            // 合作伙伴不返回下级
-            if(!userVo.isCEO() && !userVo.isCompanyAdmin() && !userVo.isDeptAdmin()){
-                return R.success(new ArrayList<>());
-            }
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
             return R.success(result);
         } catch (DefaultException e){
