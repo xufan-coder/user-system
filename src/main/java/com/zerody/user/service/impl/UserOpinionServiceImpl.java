@@ -118,10 +118,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
-        log.info("数据参数-1{}",opinion);
         new Thread(() -> {
-            log.info("数据参数-1{}",opinion);
-            jdPush(this.replyWarnTemplate2,opinion.getUserId(),reply);
+            opinion.setUserName(param.getUserName());
+            jdPush(this.replyWarnTemplate2,opinion.getUserId(),opinion);
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();
 
