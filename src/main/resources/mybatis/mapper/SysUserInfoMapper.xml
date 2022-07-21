@@ -478,7 +478,7 @@
     </select>
     <select id="getUserIdsByRoleNames" resultType="java.lang.String">
         SELECT
-            sui.user_id
+            sui.id
         FROM sys_user_info AS sui
             JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
             JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
