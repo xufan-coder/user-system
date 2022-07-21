@@ -472,7 +472,7 @@
         <where>
             sui.status IN (0, 3)
             <if test="roleName neq null and roleName neq ''">
-                AND urs.role_name
+                AND urs.role_name = #{roleName}
             </if>
         </where>
     </select>
