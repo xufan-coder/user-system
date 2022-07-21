@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.expression.Expression;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
@@ -93,11 +94,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
         userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds());
-        log.info("数据参数-1{}",opinion);
         new Thread(() -> {
             for(String userId : param.getSeeUserIds()){
-                log.info("数据参数-2{}",opinion);
-                jdPush(this.replyWarnTemplate2,userId,opinion);
+                jdPush(this.replyWarnTemplate,userId,opinion);
                 pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
             }
         }).start();
@@ -118,10 +117,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
-        log.info("数据参数-1{}",opinion);
         new Thread(() -> {
-            log.info("数据参数-1{}",opinion);
-            jdPush(this.replyWarnTemplate,opinion.getUserId(),opinion);
+            opinion.setUserName(param.getUserName());
+            jdPush(this.replyWarnTemplate2,opinion.getUserId(),opinion);
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();
 
@@ -135,7 +133,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         push.setUserId(userId);
         push.setTemplateCode(code);
         push.setType(MESSAGE_TYPE_FLOW);
-        this.jPushFeignService.doAuroraPush(push);
+
+        log.info("推送极光参数---:{}", com.zerody.flow.client.util.JsonUtils.toString(push));
+        DataResult<Object> result = this.jPushFeignService.doAuroraPush(push);
+        log.info("推送极光结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
     }
 
     private void pushIm(String title,String id, String userId, String userName,String content){
@@ -167,7 +168,6 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         data.setContentPush(msg);
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
-        log.info("小藏推送:{}",com.zerody.flow.client.util.JsonUtils.toString(data));
         com.zerody.common.api.bean.DataResult<Object> result = this.sendMsgFeignService.send(data);
         log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
