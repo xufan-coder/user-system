@@ -668,6 +668,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/get/staff-info/inner", method = RequestMethod.GET)
     public DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
         try {
+            CeoUserInfo ceo =  this.ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceo)) {
+                StaffInfoVo staffInfoVo = new StaffInfoVo();
+                BeanUtils.copyProperties(ceo, staffInfoVo);
+                staffInfoVo.setUserId(ceo.getId());
+                staffInfoVo.setMobile(ceo.getPhoneNumber());
+                staffInfoVo.setUserAvatar(ceo.getAvatar());
+                return R.success(staffInfoVo);
+            }
             return R.success(sysStaffInfoService.getStaffInfo(userId));
         } catch (DefaultException e){
             log.error("获取员工id错误:{}",e,e);
