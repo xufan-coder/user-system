@@ -267,6 +267,11 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     }
 
     @Override
+    public List<String> getAllCeo() {
+        return this.ceoUserInfoMapper.getAllCeoIds();
+    }
+
+    @Override
     public List<SubordinateUserQueryVo> getList() {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
         qw.lambda().eq(CeoUserInfo::getDeleted, YesNo.NO)
