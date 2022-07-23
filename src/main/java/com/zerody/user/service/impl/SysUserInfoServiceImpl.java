@@ -669,8 +669,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public List<String> getUserIdsByRoleNames(Integer userType) {
+        List<String> userIds = null;
+        if (UserTypeInfo.CRM_CEO == userType) {
+            userIds = this.ceoUserInfoService.getAllCeo();
+            return userIds;
+        }
         // 根据角色 查询用户id
-        List<String> userIds = this.sysUserInfoMapper.getUserIdsByRoleNames(UserTypeUtil.getRoleName(userType));
+        userIds = this.sysUserInfoMapper.getUserIdsByRoleNames(UserTypeUtil.getRoleName(userType));
         //伙伴不做其他判断
         if (DataUtil.isEmpty(userIds) || userType.intValue() == UserTypeInfo.PARTNER) {
             return userIds;
