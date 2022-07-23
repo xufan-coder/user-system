@@ -674,6 +674,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                 BeanUtils.copyProperties(ceo, staffInfoVo);
                 staffInfoVo.setUserId(ceo.getId());
                 staffInfoVo.setMobile(ceo.getPhoneNumber());
+                staffInfoVo.setUserAvatar(ceo.getAvatar());
                 return R.success(staffInfoVo);
             }
             return R.success(sysStaffInfoService.getStaffInfo(userId));
