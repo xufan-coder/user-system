@@ -481,7 +481,8 @@
             sui.id
         FROM sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
-        JOIN sys_company_info AS sci ON sci.admin_account = ssi.id
+        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        JOIN company_admin AS ca ON ca.company_id = sci.id and ca.staff_id = ssi.id
         WHERE sui.status IN (0, 3) AND sci.status = 0
     </select>
     <select id="getAllDepartAdmin" resultType="java.lang.String">
