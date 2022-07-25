@@ -847,7 +847,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
         UnionStaffDepart dep = this.unionStaffDepartMapper.selectOne(usdQW);
-        if (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId())) {
+        if ((DataUtil.isEmpty(dep) && DataUtil.isNotEmpty(setSysUserInfoDto.getDepartId())) ||
+                (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId()))) {
             log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
