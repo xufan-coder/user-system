@@ -847,8 +847,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
         UnionStaffDepart dep = this.unionStaffDepartMapper.selectOne(usdQW);
-        if ((DataUtil.isEmpty(dep) && DataUtil.isNotEmpty(setSysUserInfoDto.getDepartId())) ||
-                (DataUtil.isNotEmpty(dep) && !dep.getDepartmentId().equals(setSysUserInfoDto.getDepartId()))) {
+        String oldDepart = null;
+        if (DataUtil.isNotEmpty(dep)) {
+            oldDepart = dep.getDepartmentId();
+        }
+        if (!Objects.equals(oldDepart, setSysUserInfoDto.getDepartId())) {
             log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
@@ -862,10 +865,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (!r.isSuccess()) {
                 throw new DefaultException("修改线索负责人名称失败!");
             }
-            UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
-            departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
-            departEditUw.lambda().in(SysDepartmentInfo::getId, dep.getDepartmentId(), setSysUserInfoDto.getDepartId());
-            this.sysDepartmentInfoService.update(departEditUw);
+            List<String> departIds = new ArrayList<>();
+            if (DataUtil.isNotEmpty(oldDepart)) {
+                departIds.add(oldDepart);
+            }
+            if (DataUtil.isNotEmpty(setSysUserInfoDto.getDepartId())) {
+                departIds.add(setSysUserInfoDto.getDepartId());
+            }
+            if (DataUtil.isNotEmpty(departIds)) {
+                UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
+                departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
+                departEditUw.lambda().in(SysDepartmentInfo::getId, departIds);
+                this.sysDepartmentInfoService.update(departEditUw);
+            }
         }
         if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
