@@ -3,7 +3,6 @@ package com.zerody.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
-import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
@@ -41,7 +40,7 @@ public class UserOpinionController {
      * @date 2022/4/14
      */
     @PostMapping(value = "/add")
-    public DataResult<Object> addUserOpinion(@RequestBody UserOpinionDto param) {
+    public DataResult<Object> addUserOpinion(@RequestBody @Validated UserOpinionDto param) {
         try {
             UserVo userVo = UserUtils.getUser();
             if (Objects.nonNull(userVo)) {
@@ -110,9 +109,10 @@ public class UserOpinionController {
      * @date 2022/4/14
      */
     @GetMapping("/query-user")
-    public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(PageQueryDto queryDto) {
+    public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(UserOpinionQueryDto queryDto) {
         try {
-            IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(UserUtils.getUserId(),queryDto);
+            queryDto.setUserId(UserUtils.getUserId());
+            IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(queryDto);
             return R.success(iPage);
         } catch (DefaultException e) {
             log.error("查询用户反馈异常:{}", e, e);
@@ -131,6 +131,9 @@ public class UserOpinionController {
     @GetMapping("/page")
     public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(UserOpinionQueryDto dto) {
         try {
+            if(!UserUtils.getUser().isCEO()){
+                dto.setUserId(UserUtils.getUserId());
+            }
             IPage<UserOpinionPageVo> iPage = this.userOpinionService.queryUserOpinionPage(dto);
             return R.success(iPage);
         } catch (DefaultException e) {
@@ -139,6 +142,26 @@ public class UserOpinionController {
         } catch (Exception e) {
             log.error("分页查询意见箱出错:{}", e, e);
             return R.error("分页查询意见箱出错" + e);
+        }
+    }
+
+    /**
+     * @author kuang
+     * @description 获取意见总数
+     **/
+    @GetMapping("/get/summary")
+    public DataResult<Object> getOpinionAndReplySum(UserOpinionQueryDto dto){
+        try {
+            dto.setUserId(UserUtils.getUserId());
+            dto.setCEO(UserUtils.getUser().isCEO());
+            Object summary = this.userOpinionService.getOpinionAndReplySum(dto);
+            return R.success(summary);
+        } catch (DefaultException e) {
+            log.error("获取意见总数异常:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取意见总数出错:{}", e, e);
+            return R.error("获取意见总数出错" + e);
         }
     }
 

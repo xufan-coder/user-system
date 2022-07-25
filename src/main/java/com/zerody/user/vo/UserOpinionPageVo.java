@@ -15,4 +15,11 @@ public class UserOpinionPageVo extends UserOpinionVo {
 
     /**部门名称*/
     private String departName;
+
+
+    /**分类名称*/
+    private String typeName;
+
+
+    private String seeUserName;
 }

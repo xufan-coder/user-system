@@ -153,6 +153,17 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    @Override
+    @GetMapping("/get/user-ids/by-role-name/inner")
+    public DataResult<List<String>> getUserIdsByRoleNames(@RequestParam("userType") Integer userType) {
+        try {
+            return R.success(this.sysUserInfoService.getUserIdsByRoleNames(userType));
+        } catch (Exception e) {
+            log.error("通过角色名称查询用户失败：{}",e ,e);
+            return R.error(e.getMessage());
+        }
+    }
+
 
     //修改用户
     @PostMapping("/updateUser")
@@ -657,6 +668,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/get/staff-info/inner", method = RequestMethod.GET)
     public DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
         try {
+            CeoUserInfo ceo =  this.ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceo)) {
+                StaffInfoVo staffInfoVo = new StaffInfoVo();
+                BeanUtils.copyProperties(ceo, staffInfoVo);
+                staffInfoVo.setUserId(ceo.getId());
+                staffInfoVo.setMobile(ceo.getPhoneNumber());
+                staffInfoVo.setUserAvatar(ceo.getAvatar());
+                return R.success(staffInfoVo);
+            }
             return R.success(sysStaffInfoService.getStaffInfo(userId));
         } catch (DefaultException e){
             log.error("获取员工id错误:{}",e,e);
@@ -1111,9 +1131,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(@RequestParam(value = "isShowLeave", required = false ) Integer isShowLeave) {
         try {
             SubordinateUserQueryDto param = new SubordinateUserQueryDto();
-            param.setUserId(UserUtils.getUser().getUserId());
+            UserVo userVo = UserUtils.getUser();
             param.setDepartId(UserUtils.getUser().getDeptId());
             param.setCompanyId(UserUtils.getUser().getCompanyId());
+            param.setUserId(UserUtils.getUser().getUserId());
+            param.setIsCEO(UserUtils.getUser().isCEO());
             param.setIsShowLeave(isShowLeave);
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
             return R.success(result);
@@ -1395,6 +1417,25 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         } catch (Exception e) {
             log.error("获取上级-不包含企业管理员出错:{}", e, e);
             return R.error("获取上级出错!请联系管理员");
+        }
+    }
+
+    /**
+     * @author kuang
+     * @description 查询上级所有人
+     * @date  2022-7-18
+     **/
+    @GetMapping("/get/superior/all")
+    public DataResult<List<SubordinateUserQueryVo>> getSuperiorList() {
+        try {
+            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(UserUtils.getUser());
+            return R.success(getSuperiorList);
+        } catch (DefaultException e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error("获取所有上级出错!请联系管理员");
         }
     }
 

@@ -355,4 +355,23 @@
             sdi.status = 0 and sdi.comp_id = #{companyId}
         </where>
     </select>
+
+    <select id="getSuperiorParentList" resultType="com.zerody.user.vo.SubordinateUserQueryVo">
+         SELECT sui.id        AS user_id,
+            sui.user_name,
+            sui.phone_number  AS mobile,
+            sdi.depart_name,
+            sjp.position_name AS positionName,
+            urs.role_name     AS roleName,
+            sci.company_name  AS companyName,
+            ssi.avatar
+        from sys_department_info sdi
+        join sys_staff_info ssi on ssi.id = sdi.admin_account
+        JOIN sys_user_info AS sui ON ssi.user_id = sui.id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+			where sui.status IN (0, 3)  and FIND_IN_SET(sdi.id,get_parent_list(#{departId}))
+    </select>
 </mapper>

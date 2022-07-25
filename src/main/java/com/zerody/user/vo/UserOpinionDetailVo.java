@@ -17,6 +17,12 @@ public class UserOpinionDetailVo extends UserOpinion {
     /**部门名称*/
     private String departName;
 
+    /**分类名称*/
+    private String typeName;
+
+    /**查看人名称*/
+    private String seeUserName;
+
     /**回复列表*/
     private List<UserReplyVo> replyList;
 

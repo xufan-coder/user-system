@@ -90,4 +90,11 @@
             </foreach>
         </where>
     </select>
+
+    <select id="getAllCeoIds" resultType="java.lang.String">
+        SELECT
+            id
+        from ceo_user_info
+        where deleted = 0 and status = 0
+    </select>
 </mapper>
