@@ -57,7 +57,7 @@ public class CheckUtil {
     @Autowired
     private CeoCompanyRefService ceoCompanyRefService;
 
-    public <T extends UserPositionPageParam>  void SetUserPositionInfo(T  param){
+    public <T extends UserPositionPageParam>  void  SetUserPositionInfo(T  param){
         // isBackAdmin为后台管理  CRM_CE为总裁登录
         if (UserUtils.getUser().isBack()){
             List<String> list = setBackCompany(UserUtils.getUserId());
