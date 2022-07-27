@@ -307,6 +307,12 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sdi.comp_id = #{param.companyId}
             </if>
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                AND usd.department_id  = #{param.departmentId}
+            </if>
+            <if test="param.departName neq null and param.departName neq ''">
+                and sdi.depart_name = #{param.departName}
+            </if>
             <if test="!param.isCompanyAdmin and param.isDepartAdmin">
                 AND (usd.department_id LIKE CONCAT(#{param.departId}
                   , '\_%')
