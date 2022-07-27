@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
@@ -1010,7 +1011,13 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
-            user.setUserType(-1);
+            user.setUserType(UserTypeInfo.CRM_CEO);
+            UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
+            CeoUserInfo ceoUserInfo = this.ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceoUserInfo)) {
+                innerVo.setUserType(user.getUserType());
+                return R.success(innerVo);
+            }
             if (StringUtils.isNotEmpty(userId) && (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId))) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
@@ -1019,7 +1026,6 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                 user.setDeptId(departId);
                 user.setCompanyId(companyId);
             }
-            UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
             UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
             BeanUtils.copyProperties(departs, innerVo);
             return R.success(innerVo);
