@@ -1134,15 +1134,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
      */
     @GetMapping("/subordinate/all")
-    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(@RequestParam(value = "isShowLeave", required = false ) Integer isShowLeave) {
+    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(SubordinateUserQueryDto param) {
         try {
-            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+            // SubordinateUserQueryDto param = new SubordinateUserQueryDto();
             UserVo userVo = UserUtils.getUser();
             param.setDepartId(UserUtils.getUser().getDeptId());
             param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
             param.setIsCEO(UserUtils.getUser().isCEO());
-            param.setIsShowLeave(isShowLeave);
+            // param.setIsShowLeave(isShowLeave);
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
             return R.success(result);
         } catch (DefaultException e){
