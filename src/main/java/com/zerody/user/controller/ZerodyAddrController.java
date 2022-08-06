@@ -137,7 +137,7 @@ public class ZerodyAddrController implements AddrRemoteService {
      */
     @Override
     @GetMapping(value = "/get/addr-name/by-codes/inner")
-    DataResult<Map<String, String>> getAddrNamesByCodes(@RequestParam(value = "codes", required = false) String... codes){
+    public DataResult<Map<String, String>> getAddrNamesByCodes(@RequestParam(value = "codes", required = false) String... codes){
         try {
             Map<String, String> nameMap = this.zerodyAddrService.getAddrNamesByCodes(codes);
             return R.success(nameMap);
