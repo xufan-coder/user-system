@@ -48,4 +48,6 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     SysUserInfoVo getCeoInfoByUserId(String userId);
 
     List<StaffInfoVo> getStaffInfoByIds(List<String> userId);
+
+    List<String> getAllCeo();
 }

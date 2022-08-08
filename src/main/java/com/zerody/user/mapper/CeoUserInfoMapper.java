@@ -25,4 +25,6 @@ public interface CeoUserInfoMapper extends BaseMapper<CeoUserInfo> {
     SysUserInfoVo getCeoInfoByUserId(@Param("userId") String userId);
 
     List<StaffInfoVo> getStaffInfoByIds(@Param("userIds") List<String> userId);
+
+    List<String> getAllCeoIds();
 }

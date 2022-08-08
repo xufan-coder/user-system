@@ -15,4 +15,10 @@ public class UserOpinionVo extends UserOpinion {
     /**回复内容*/
     private String replyContent;
 
+    /**分类名称*/
+    private String typeName;
+
+    /**查看人名称*/
+    private String seeUserName;
+
 }

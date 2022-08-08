@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class SubordinateUserQueryDto {
 
+    /**部门id*/
     private String departId;
 
     private String userId;
@@ -22,4 +23,12 @@ public class SubordinateUserQueryDto {
     private Boolean isDepartAdmin;
 
     private Integer isShowLeave;
+
+    private Boolean isCEO;
+
+    /**部门id*/
+    private String departmentId;
+
+    /**部门名称*/
+    private String departName;
 }

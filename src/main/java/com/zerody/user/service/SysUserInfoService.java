@@ -258,4 +258,10 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     List<AppUserNotPushVo> getNotPushAppUser();
 
     StaffInfoVo getSuperiorNotCompanyAdmin(String userId);
+
+    List<String> getUserIdsByRoleNames(Integer userType);
+
+    List<SubordinateUserQueryVo> getSuperiorList(UserVo user);
+
+    void doLogout(String userId);
 }

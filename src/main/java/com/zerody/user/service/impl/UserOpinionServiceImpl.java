@@ -1,19 +1,27 @@
 package com.zerody.user.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.api.bean.DataResult;
+import com.zerody.expression.Expression;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.im.api.dto.SendRobotMessageDto;
+import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.jpush.api.dto.AddJdPushDto;
+import com.zerody.user.config.OpinionMsgConfig;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
+import com.zerody.user.dto.FlowMessageDto;
 import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
@@ -21,12 +29,16 @@ import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.UserOpinionMapper;
 import com.zerody.user.mapper.UserReplyMapper;
 import com.zerody.user.service.ImageService;
+import com.zerody.user.service.UserOpinionRefService;
 import com.zerody.user.service.UserOpinionService;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import com.zerody.user.vo.UserReplyVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
@@ -40,6 +52,7 @@ import java.util.stream.Collectors;
  */
 @RefreshScope
 @Service
+@Slf4j
 public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserOpinion> implements UserOpinionService {
 
     @Resource
@@ -49,10 +62,27 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     private UserReplyMapper userReplyMapper;
 
     @Resource
+    private UserOpinionRefService userOpinionRefService;
+
+    @Resource
     private JPushFeignService jPushFeignService;
+
+    @Autowired
+    private SendMsgFeignService sendMsgFeignService;
+
+    @Autowired
+    private OpinionMsgConfig opinionMsgConfig;
 
     @Value("${jpush.template.user-system.reply-warn:}")
     private String replyWarnTemplate;
+    @Value("${jpush.template.user-system.reply-warn2:}")
+    private String replyWarnTemplate2;
+
+
+    /**
+     * 消息的类型：流程提醒
+     */
+    private static final int MESSAGE_TYPE_FLOW = 1010;
 
     @Override
     public void addUserOpinion(UserOpinionDto param) {
@@ -63,6 +93,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         opinion.setId(UUIDutils.getUUID32());
         this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
+        userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds());
+        new Thread(() -> {
+            for(String userId : param.getSeeUserIds()){
+                jdPush(this.replyWarnTemplate,userId,opinion);
+                pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
+            }
+        }).start();
+
     }
 
     @Override
@@ -79,13 +117,59 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
+        new Thread(() -> {
+            opinion.setUserName(param.getUserName());
+            jdPush(this.replyWarnTemplate2,opinion.getUserId(),opinion);
+            pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
+        }).start();
 
+
+    }
+
+    private void jdPush(String code,String userId, Object obj){
+        //极光推送
         AddJdPushDto push = new AddJdPushDto();
-        push.setData(opinion);
-        push.setUserId(opinion.getUserId());
-        push.setTemplateCode(this.replyWarnTemplate);
-        push.setType(1);
-        this.jPushFeignService.doAuroraPush(push);
+        push.setData(obj);
+        push.setUserId(userId);
+        push.setTemplateCode(code);
+        push.setType(MESSAGE_TYPE_FLOW);
+
+        log.info("推送极光参数---:{}", com.zerody.flow.client.util.JsonUtils.toString(push));
+        DataResult<Object> result = this.jPushFeignService.doAuroraPush(push);
+        log.info("推送极光结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
+    }
+
+    private void pushIm(String title,String id, String userId, String userName,String content){
+        // 小藏推送
+
+        FlowMessageDto dto = new FlowMessageDto();
+        dto.setTitle(title);
+        dto.setMessageSource("extend");
+        dto.setUrl(opinionMsgConfig.getUrl());
+
+        Map params = new HashMap();
+        params.put("id", id);
+        params.put("userName", userName);
+
+        String query = Expression.parse(opinionMsgConfig.getQuery(), params);
+        Object parse = JSONObject.parse(query);
+        dto.setQuery(parse);
+        String arguments = Expression.parse(opinionMsgConfig.getArguments(), params);
+        Object argumentsParse = JSONObject.parse(arguments);
+        dto.setQuery(parse);
+        dto.setArguments(argumentsParse);
+
+
+        SendRobotMessageDto data = new SendRobotMessageDto();
+        String msg = Expression.parse(content, params);
+        dto.setContent(msg);
+        data.setContent(msg);
+        data.setTarget(userId);
+        data.setContentPush(msg);
+        data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
+        data.setType(MESSAGE_TYPE_FLOW);
+        com.zerody.common.api.bean.DataResult<Object> result = this.sendMsgFeignService.send(data);
+        log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
     }
 
@@ -112,9 +196,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
 
     @Override
-    public IPage<UserOpinionVo> queryUserOpinionUser(String userId, PageQueryDto queryDto) {
+    public IPage<UserOpinionVo> queryUserOpinionUser(UserOpinionQueryDto queryDto) {
         Page<UserOpinionVo> iPage = new Page<>(queryDto.getCurrent(),queryDto.getPageSize());
-        return this.baseMapper.queryUserOpinionUser(userId,iPage);
+        return this.baseMapper.queryUserOpinionUser(queryDto,iPage);
     }
 
     @Override
@@ -156,6 +240,21 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         List<String> list = imageList.get(id);
         detailVo.setReplyImageList(list);
         return detailVo;
+    }
+
+    @Override
+    public Object getOpinionAndReplySum(UserOpinionQueryDto dto) {
+
+        Integer opinionSum = (int)queryUserOpinionUser(dto).getTotal();
+        if(dto.isCEO()){
+            dto.setUserId(null);
+        }
+        Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
+        Map<String,Object> orderStatusMap = new HashedMap<>();
+        orderStatusMap.put("replySum",replySum);
+        orderStatusMap.put("opinionSum",opinionSum);
+
+        return orderStatusMap;
     }
 
 }

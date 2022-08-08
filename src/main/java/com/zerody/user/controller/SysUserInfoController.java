@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.utils.CollectionUtils;
@@ -150,6 +151,17 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }  catch (Exception e) {
             log.error("内部接口复制员工错误:{} "+ JSON.toJSONString(param), e);
             return R.error("内部接口复制员工错误,请求异常");
+        }
+    }
+
+    @Override
+    @GetMapping("/get/user-ids/by-role-name/inner")
+    public DataResult<List<String>> getUserIdsByRoleNames(@RequestParam("userType") Integer userType) {
+        try {
+            return R.success(this.sysUserInfoService.getUserIdsByRoleNames(userType));
+        } catch (Exception e) {
+            log.error("通过角色名称查询用户失败：{}",e ,e);
+            return R.error(e.getMessage());
         }
     }
 
@@ -657,6 +669,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @RequestMapping(value = "/get/staff-info/inner", method = RequestMethod.GET)
     public DataResult<StaffInfoVo> getStaffInfo(@RequestParam("userId")String userId){
         try {
+            CeoUserInfo ceo =  this.ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceo)) {
+                StaffInfoVo staffInfoVo = new StaffInfoVo();
+                BeanUtils.copyProperties(ceo, staffInfoVo);
+                staffInfoVo.setUserId(ceo.getId());
+                staffInfoVo.setMobile(ceo.getPhoneNumber());
+                staffInfoVo.setUserAvatar(ceo.getAvatar());
+                return R.success(staffInfoVo);
+            }
             return R.success(sysStaffInfoService.getStaffInfo(userId));
         } catch (DefaultException e){
             log.error("获取员工id错误:{}",e,e);
@@ -990,7 +1011,13 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         try {
             UserVo user = new UserVo();
             user.setUserId(userId);
-            user.setUserType(-1);
+            user.setUserType(UserTypeInfo.CRM_CEO);
+            UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
+            CeoUserInfo ceoUserInfo = this.ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceoUserInfo)) {
+                innerVo.setUserType(user.getUserType());
+                return R.success(innerVo);
+            }
             if (StringUtils.isNotEmpty(userId) && (StringUtils.isEmpty(companyId) || StringUtils.isEmpty(departId))) {
                 StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(userId);
                 user.setCompanyId(staff.getCompanyId());
@@ -999,7 +1026,6 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                 user.setDeptId(departId);
                 user.setCompanyId(companyId);
             }
-            UserTypeInfoInnerVo innerVo = new UserTypeInfoInnerVo();
             UserTypeInfoVo  departs = this.sysUserInfoService.getUserTypeInfo(user);
             BeanUtils.copyProperties(departs, innerVo);
             return R.success(innerVo);
@@ -1108,13 +1134,15 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SubordinateUserQueryVo>
      */
     @GetMapping("/subordinate/all")
-    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(@RequestParam(value = "isShowLeave", required = false ) Integer isShowLeave) {
+    public DataResult<List<SubordinateUserQueryVo>> getSubordinateUser(SubordinateUserQueryDto param) {
         try {
-            SubordinateUserQueryDto param = new SubordinateUserQueryDto();
-            param.setUserId(UserUtils.getUser().getUserId());
+            // SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+            UserVo userVo = UserUtils.getUser();
             param.setDepartId(UserUtils.getUser().getDeptId());
             param.setCompanyId(UserUtils.getUser().getCompanyId());
-            param.setIsShowLeave(isShowLeave);
+            param.setUserId(UserUtils.getUser().getUserId());
+            param.setIsCEO(UserUtils.getUser().isCEO());
+            // param.setIsShowLeave(isShowLeave);
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getSubordinateUser(param);
             return R.success(result);
         } catch (DefaultException e){
@@ -1395,6 +1423,49 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         } catch (Exception e) {
             log.error("获取上级-不包含企业管理员出错:{}", e, e);
             return R.error("获取上级出错!请联系管理员");
+        }
+    }
+
+    /**
+     * @author kuang
+     * @description 查询上级所有人
+     * @date  2022-7-18
+     **/
+    @GetMapping("/get/superior/all")
+    public DataResult<List<SubordinateUserQueryVo>> getSuperiorList() {
+        try {
+            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(UserUtils.getUser());
+            return R.success(getSuperiorList);
+        } catch (DefaultException e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error("获取所有上级出错!请联系管理员");
+        }
+    }
+
+
+    /**
+     * @author kuang
+     * @description 账户注销
+     * @date  2022/08/08
+     * @Param
+     **/
+    @PostMapping("/logout")
+    public DataResult<Object> doLogout(){
+        try {
+            if(UserUtils.getUser() == null) {
+                return R.error("请先进行登录");
+            }
+            this.sysUserInfoService.doLogout(UserUtils.getUserId());
+            return R.success();
+        } catch (DefaultException e){
+            log.error("注销账户出错:{}",UserUtils.getUser(),e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("注销账户出错:{} ",UserUtils.getUser(),e);
+            return R.error("注销账户出错,请求异常");
         }
     }
 

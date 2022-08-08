@@ -30,4 +30,12 @@ public class UserOpinionDto {
 
     /**图片*/
     List<String> replyImageList;
+
+    /**分类id*/
+    @NotNull(message = "分类不能为空")
+    private String typeId;
+
+    /**查看人员列表*/
+    private List<String> seeUserIds;
+
 }

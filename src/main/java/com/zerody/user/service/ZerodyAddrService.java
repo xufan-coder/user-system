@@ -42,5 +42,5 @@ public interface ZerodyAddrService {
     Map<String, String> getCodeByLikeName(String provinceName, String cityName, String areaName);
 
 
-
+    Map<String, String> getAddrNamesByCodes(String... codes);
 }
