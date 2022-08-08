@@ -1445,4 +1445,28 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+
+    /**
+     * @author kuang
+     * @description 账户注销
+     * @date  2022/08/08
+     * @Param
+     **/
+    @PostMapping("/logout")
+    public DataResult<Object> doLogout(){
+        try {
+            if(UserUtils.getUser() == null) {
+                return R.error("请先进行登录");
+            }
+            this.sysUserInfoService.doLogout(UserUtils.getUserId());
+            return R.success();
+        } catch (DefaultException e){
+            log.error("注销账户出错:{}",UserUtils.getUser(),e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("注销账户出错:{} ",UserUtils.getUser(),e);
+            return R.error("注销账户出错,请求异常");
+        }
+    }
+
 }
