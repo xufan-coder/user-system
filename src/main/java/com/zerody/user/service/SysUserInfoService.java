@@ -262,4 +262,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     List<String> getUserIdsByRoleNames(Integer userType);
 
     List<SubordinateUserQueryVo> getSuperiorList(UserVo user);
+
+    void doLogout(String userId);
 }

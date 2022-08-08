@@ -2,9 +2,11 @@ package com.zerody.user.controller;
 
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.user.api.service.AddrRemoteService;
 import com.zerody.user.service.ZerodyAddrService;
 import com.zerody.user.vo.ZerodyAddrVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import java.util.Map;
  * @DateTime 2020/12/23_10:09
  * @Deacription TODO
  */
+@Slf4j
 @RestController
 @RequestMapping("/zerody_addr")
 public class ZerodyAddrController implements AddrRemoteService {
@@ -123,6 +126,28 @@ public class ZerodyAddrController implements AddrRemoteService {
         return R.success(zerodyAddrService.getCodeByLikeName(provinceName, cityName, areaName));
     }
 
-
+    /**
+     *
+     * 获取地址名称
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2022/8/6 18:07
+     * @param                codes
+     * @return               com.zerody.common.api.bean.DataResult<java.util.Map<java.lang.String,java.lang.String>>
+     */
+    @Override
+    @GetMapping(value = "/get/addr-name/by-codes/inner")
+    public DataResult<Map<String, String>> getAddrNamesByCodes(@RequestParam(value = "codes", required = false) String... codes){
+        try {
+            Map<String, String> nameMap = this.zerodyAddrService.getAddrNamesByCodes(codes);
+            return R.success(nameMap);
+        } catch (DefaultException e) {
+            log.error("获取地址名称失败-codes:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取地址名称失败-codes:{}", e, e);
+            return R.error(e.getMessage());
+        }
+    }
 
 }
