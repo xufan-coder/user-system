@@ -33,7 +33,7 @@ public class UserAdviserImTask {
     private AdviserFeignService adviserFeignService;
 
 
-    @XxlJob("user_leave_push")
+    @XxlJob("user_adviser_push")
     public ReturnT<String> execute(String param){
         ReturnT r=ReturnT.SUCCESS;
         try {
