@@ -32,6 +32,7 @@ import com.zerody.user.service.SysLoginInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
 import io.lettuce.core.ScanIterator;
@@ -97,6 +98,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     private static final String  INIT_PWD = "123456";//初始化密码
 
     private static final String DEFAULT_AVATAR = "https://tangsanzangkeji.oss-cn-beijing.aliyuncs.com/scrm/38bb2ab88a82ed2e84d187bfc065c131/picture:67730b2a883141c9a51b3da812087c26";
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     /**
     * @Author               PengQiang
@@ -744,6 +748,16 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         }
         superiorList.addAll(departList);
         return superiorList;
+    }
+
+    @Override
+    public void doLogout(String userId) {
+        QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+        staffQw.lambda().eq(SysStaffInfo::getUserId, userId);
+        SysStaffInfo  staff1 = this.sysStaffInfoService.getOne(staffQw);
+        this.sysUserInfoMapper.updateUserStatusAndIsDeleted(Collections.singletonList(userId));
+        this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.deleted.getValue(),null);
+        this.checkUtil.removeUserToken(userId);
     }
 
     //递归获取上级 不包含企业管理员
