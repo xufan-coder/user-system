@@ -364,7 +364,8 @@
         sdi.depart_name AS departName,
         ssi.id AS staffId,
         aui.is_show_mobile AS isShowMobile,
-        urs.role_id AS roleId
+        urs.role_id AS roleId,
+        urs.role_name
         FROM
         admin_user_info aui
         LEFT JOIN sys_staff_info ssi ON ssi.id=aui.staff_id
