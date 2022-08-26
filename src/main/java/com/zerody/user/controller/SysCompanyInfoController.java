@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,12 @@ public class SysCompanyInfoController implements CompanyRemoteService {
 
     @Autowired
     private CheckUtil checkUtil;
+
+
+    @Value("${flow.oaCompany:oa01}")
+    private String oaCompany;
+    @Value("${flow.oaCompanyName:OA审批企业}")
+    private String oaCompanyName;
 
     /**
      * 添加企业
@@ -114,6 +121,20 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             log.error("企业修改错误:{}", JSON.toJSONString(sysCompanyInfo), e);
             return R.error("修改企业失败,请求异常");
         }
+    }
+
+    /**
+     *   查询企业
+     *   流程专用
+     */
+    @RequestMapping(value = "/flow/page", method = RequestMethod.GET)
+    public DataResult<IPage<SysComapnyInfoVo>> getflowPageCompany(SysCompanyInfoDto companyInfoDto) {
+        IPage<SysComapnyInfoVo> pageCompany = sysCompanyInfoService.getPageCompany(companyInfoDto);
+        SysComapnyInfoVo vo =new SysComapnyInfoVo();
+        vo.setCompanyName(oaCompanyName);
+        vo.setId(oaCompany);
+        pageCompany.getRecords().add(0,vo);
+        return R.success(pageCompany);
     }
 
     /**
