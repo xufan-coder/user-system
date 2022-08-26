@@ -159,4 +159,9 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<SysDepartmentInfoVo> getAllDepPersonByCompanyId(String companyId);
 
     List<SubordinateUserQueryVo> getSuperiorParentList(@Param("departId")String departId);
+
+    /**获取企业下的所有部门负责人id*/
+    List<String> getUserIds(@Param("companyId") String companyId,@Param("parentId")String parentId);
+
+    List<String> getUserIdsByDepartmentId(@Param("departmentId") String departmentId);
 }
