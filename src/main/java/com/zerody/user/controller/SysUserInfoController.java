@@ -32,6 +32,7 @@ import com.zerody.user.vo.CeoRefVo;
 import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.jsonwebtoken.lang.Collections;
+import org.apache.catalina.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -1435,6 +1436,25 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<List<SubordinateUserQueryVo>> getSuperiorList() {
         try {
             List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(UserUtils.getUser());
+            return R.success(getSuperiorList);
+        } catch (DefaultException e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取所有上级出错:{}", e, e);
+            return R.error("获取所有上级出错!请联系管理员");
+        }
+    }
+
+    /**
+     * @author luolujin
+     * @description 查询上级所有人
+     * @date  2022-8-25
+     **/
+    @PostMapping("/inner/superior/all")
+    public DataResult<List<SubordinateUserQueryVo>> getInnerSuperiorList(@RequestBody UserVo user) {
+        try {
+            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(user);
             return R.success(getSuperiorList);
         } catch (DefaultException e) {
             log.error("获取所有上级出错:{}", e, e);
