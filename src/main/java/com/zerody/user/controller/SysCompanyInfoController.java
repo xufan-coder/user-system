@@ -53,7 +53,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     private CheckUtil checkUtil;
 
 
-    @Value("${flow.oaCompany:oa01}")
+    @Value("${flow.oaCompany:oa-flow-001}")
     private String oaCompany;
     @Value("${flow.oaCompanyName:OA审批企业}")
     private String oaCompanyName;

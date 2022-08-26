@@ -103,7 +103,7 @@ import:
     day: 15
 
 flow:
-  oaCompany: oa0000000000001
+  oaCompany: oa-flow-001
   oaCompanyName: OA审批企业
   client:
     clientId: user
