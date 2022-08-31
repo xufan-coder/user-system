@@ -1,8 +1,8 @@
 package com.zerody.user.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.CompanyWorkTime;
+import com.zerody.user.dto.CompanyWorkTimeAddDto;
 import com.zerody.user.dto.CompanyWorkTimeDto;
 import com.zerody.user.vo.CompanyWorkTimeVo;
 
@@ -22,7 +22,7 @@ public interface CompanyWorkTimeService extends IService<CompanyWorkTime> {
     * @param companyWorkTimeDto
     * @return
     */
-    public IPage<CompanyWorkTimeVo> getPageCompanyWorkTime(CompanyWorkTimeDto companyWorkTimeDto);
+    public CompanyWorkTimeVo getPageCompanyWorkTime(CompanyWorkTimeDto companyWorkTimeDto);
 
     /**
     * @Author: chenKeFeng
@@ -53,14 +53,14 @@ public interface CompanyWorkTimeService extends IService<CompanyWorkTime> {
      * @param companyWorkTimeDto
      * @return
      */
-    public Integer editCompanyWorkTime(CompanyWorkTimeDto companyWorkTimeDto);
+    public Integer updateCompanyWorkTime(CompanyWorkTimeDto companyWorkTimeDto);
     
     /**
     * @Author: chenKeFeng
     * @Description: 设置企业上下班时间
     * @Date: 2022/8/31 8:40
     */
-    public Integer setCommuteTime(CompanyWorkTimeDto companyWorkTimeDto);
+    public void setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeDto);
 
 }
 

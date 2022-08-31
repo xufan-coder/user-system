@@ -7,14 +7,26 @@
     <resultMap type="com.zerody.user.domain.CompanyWorkTime" id="companyWorkTimeMap">
         <result property="id" column="id"/>
         <result property="companyId" column="company_id"/>
-        <result property="morningWorkTime" column="morning_work_time"/>
-        <result property="morningAfterTime" column="morning_after_time"/>
-        <result property="afternoonWorkTime" column="afternoon_work_time"/>
-        <result property="afternoonAfterTime" column="afternoon_after_time"/>
+        <result property="companyName" column="company_name"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="deleted" column="deleted"/>
     </resultMap>
 
+
+    <!--分页查询企业上下班时间-->
+    <select id="getPageCompanyWorkTime" resultType="com.zerody.user.vo.CompanyWorkTimeVo">
+        select cwt.company_name, cw.which_day_name, ucw.work_punch_time, ucw.down_punch_time
+          from company_work_time as cwt
+          inner join company_week as cw on cw.company_id = cwt.company_id
+          inner join union_company_work_time as ucw on ucw.company_id = cwt.company_id
+          <where>
+              <if test="param.companyId neq null and param.companyId neq ''">
+                  cwt.company_id=#{param.companyId}
+              </if>
+              and cwt.deleted =0
+          </where>
+        order by cwt.create_time desc
+    </select>
 
 </mapper>

@@ -8,13 +8,13 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 公司上下班时间表
+ * 
  *
  * @author chenKeFeng
- * @date 2022-08-29 11:59:15
+ * @date 2022-08-31 11:22:16
  */
 @Data
-public class CompanyWorkTime implements Serializable {
+public class CompanyWeek implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -23,13 +23,9 @@ public class CompanyWorkTime implements Serializable {
 	@TableId
 	private String id;
 	/**
-	 * 公司id
+	 * 周几
 	 */
-	private String companyId;
-	/**
-	 * 公司名称
-	 */
-	private String companyName;
+	private String whichDayName;
 	/**
 	 * 创建时间
 	 */
@@ -39,8 +35,8 @@ public class CompanyWorkTime implements Serializable {
 	 */
 	private Date updateTime;
 	/**
-	 * 是否删除（0未删除，1删除）
+	 * 公司id
 	 */
-	private Integer deleted;
+	private String companyId;
 
 }

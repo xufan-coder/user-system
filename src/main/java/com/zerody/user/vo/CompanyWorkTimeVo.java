@@ -1,8 +1,12 @@
 package com.zerody.user.vo;
 
+import com.zerody.user.domain.CompanyWeek;
+import com.zerody.user.domain.CompanyWorkTime;
+import com.zerody.user.domain.UnionCompanyWorkTime;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author : chenKeFeng
@@ -15,26 +19,19 @@ public class CompanyWorkTimeVo {
     /**
      * 公司id
      */
-    private Integer companyId;
+    private String companyId;
     /**
-     * 上午上班时间
+     * 公司名称
      */
-    private String morningWorkTime;
-    /**
-     * 上午下班时间
-     */
-    private String morningAfterTime;
-    /**
-     * 下午上班时间
-     */
-    private String afternoonWorkTime;
-    /**
-     * 下午下班时间
-     */
-    private String afternoonAfterTime;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
+    private String companyName;
 
+    /**
+     * 上班时间集合
+     */
+    private List<Integer> companyWeeks;
+
+    /**
+     * 企业打卡时间信息
+     */
+    private List<UnionCompanyWorkTime> unionCompanyWorkTime;
 }

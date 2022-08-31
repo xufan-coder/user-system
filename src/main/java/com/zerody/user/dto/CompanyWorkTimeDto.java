@@ -20,21 +20,10 @@ public class CompanyWorkTimeDto extends PageQueryDto {
      * 公司id
      */
     private String companyId;
+
     /**
-     * 上午上班时间
+     * 公司名称
      */
-    private String morningWorkTime;
-    /**
-     * 上午下班时间
-     */
-    private String morningAfterTime;
-    /**
-     * 下午上班时间
-     */
-    private String afternoonWorkTime;
-    /**
-     * 下午下班时间
-     */
-    private String afternoonAfterTime;
+    private String companyName;
 
 }
