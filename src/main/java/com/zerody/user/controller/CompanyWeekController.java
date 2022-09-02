@@ -34,8 +34,7 @@ public class CompanyWeekController {
     @PostMapping("/add")
     public DataResult<Object> add(@RequestBody CompanyWorkTimeAddDto companyWorkTimeAddDto) {
         try {
-            companyWorkTimeService.setCommuteTime(companyWorkTimeAddDto);
-            return R.success();
+            return R.success(companyWorkTimeService.setCommuteTime(companyWorkTimeAddDto));
         } catch (Exception e) {
             log.error("设置企业上下班时间出错:{}", e.getMessage());
             return R.error("设置企业上下班时间出错" + e.getMessage());

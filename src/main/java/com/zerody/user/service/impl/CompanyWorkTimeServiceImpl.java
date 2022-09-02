@@ -124,12 +124,13 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
     }
 
     @Override
-    public void setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeAddDto) {
+    public Integer setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeAddDto) {
         List<Integer> workingHours = companyWorkTimeAddDto.getWorkingHours();
         List<UnionCompanyWorkTimeDto> companyWorkTimes = companyWorkTimeAddDto.getCompanyWorkTimes();
 
         CompanyWorkTimeDto cdo = new CompanyWorkTimeDto();
         cdo.setCompanyId(companyWorkTimeAddDto.getCompanyId());
+        //获取企业上下班时间详情
         CompanyWorkTime companyWorkTime = getCompanyWorkTimeById(cdo);
         if (DataUtil.isNotEmpty(companyWorkTime)) {
             //编辑企业上下班时间
@@ -156,6 +157,7 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
                     unionCompanyWorkTimeService.addUnionCompanyWorkTime(workTime);
                 }
             }
+            return integer;
         } else {
             //新增企业上下班时间
             CompanyWorkTimeDto companyWorkTimeDto = new CompanyWorkTimeDto();
@@ -177,6 +179,7 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
                     unionCompanyWorkTimeService.addUnionCompanyWorkTime(workTime);
                 }
             }
+            return integer;
         }
     }
 

@@ -32,7 +32,7 @@ public interface CompanyWorkTimeService extends IService<CompanyWorkTime> {
     public List<CompanyWorkTimeVo> getCompanyWorkTimeList(CompanyWorkTimeDto companyWorkTimeDto);
 
     /**
-     * 获取详情
+     * 获取企业上下班时间详情
      *
      * @param companyWorkTimeDto
      * @return
@@ -60,7 +60,7 @@ public interface CompanyWorkTimeService extends IService<CompanyWorkTime> {
     * @Description: 设置企业上下班时间
     * @Date: 2022/8/31 8:40
     */
-    public void setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeDto);
+    public Integer setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeDto);
 
 }
 
