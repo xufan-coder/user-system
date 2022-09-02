@@ -63,12 +63,12 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
                 companyWeeks.add(numberByText);
             }
         }
-        companyWorkTimeVo.setCompanyWeeks(companyWeeks);
+        companyWorkTimeVo.setWorkingHours(companyWeeks);
 
         UnionCompanyWorkTime unionCompanyWorkTime = new UnionCompanyWorkTime();
         unionCompanyWorkTime.setCompanyId(companyWorkTimeDto.getCompanyId());
         List<UnionCompanyWorkTime> unionCompanyWorkTimeList = unionCompanyWorkTimeService.getUnionCompanyWorkTime(unionCompanyWorkTime);
-        companyWorkTimeVo.setUnionCompanyWorkTime(unionCompanyWorkTimeList);
+        companyWorkTimeVo.setCompanyWorkTimes(unionCompanyWorkTimeList);
 
         return companyWorkTimeVo;
     }

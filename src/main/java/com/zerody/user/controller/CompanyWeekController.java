@@ -49,8 +49,11 @@ public class CompanyWeekController {
      */
     @GetMapping("/get-commute-time-backstage")
     public DataResult<CompanyWorkTimeVo> getCompanyCommuteTimePc(CompanyWorkTimeDto companyWorkTimeDto) {
-        UserVo user = UserUtils.getUser();
-        companyWorkTimeDto.setCompanyId(user.getCompanyId());
+        if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
+            UserVo user = UserUtils.getUser();
+            companyWorkTimeDto.setCompanyId(user.getCompanyId());
+        }
+
         try {
             return R.success(companyWorkTimeService.getPageCompanyWorkTime(companyWorkTimeDto));
         } catch (Exception e) {

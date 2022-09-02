@@ -28,10 +28,10 @@ public class CompanyWorkTimeVo {
     /**
      * 上班时间集合
      */
-    private List<Integer> companyWeeks;
+    private List<Integer> workingHours;
 
     /**
      * 企业打卡时间信息
      */
-    private List<UnionCompanyWorkTime> unionCompanyWorkTime;
+    private List<UnionCompanyWorkTime> companyWorkTimes;
 }

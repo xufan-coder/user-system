@@ -11,6 +11,7 @@ import com.zerody.user.mapper.CompanyWeekMapper;
 import com.zerody.user.domain.CompanyWeek;
 import com.zerody.user.service.CompanyWeekService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ public class CompanyWeekServiceImpl extends ServiceImpl<CompanyWeekMapper, Compa
 
     @Override
     public Integer addCompanyWeek(CompanyWeek companyWeek) {
+        companyWeek.setCreateTime(new Date());
         return baseMapper.insert(companyWeek);
     }
 
