@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.google.common.collect.Lists;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.CompanyWeek;
 import com.zerody.user.domain.UnionCompanyWorkTime;
@@ -48,10 +49,13 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
     public CompanyWorkTimeVo getPageCompanyWorkTime(CompanyWorkTimeDto companyWorkTimeDto) {
         CompanyWorkTimeDto c = new CompanyWorkTimeDto();
         c.setCompanyId(companyWorkTimeDto.getCompanyId());
+        //获取企业上下班时间详情
         CompanyWorkTime companyWorkTime = getCompanyWorkTimeById(c);
 
         CompanyWorkTimeVo companyWorkTimeVo = new CompanyWorkTimeVo();
-        BeanUtils.copyProperties(companyWorkTime, companyWorkTimeVo);
+       if (DataUtil.isNotEmpty(companyWorkTime)) {
+           BeanUtils.copyProperties(companyWorkTime, companyWorkTimeVo);
+       }
 
         CompanyWeek companyWeek = new CompanyWeek();
         companyWeek.setCompanyId(companyWorkTimeDto.getCompanyId());
@@ -69,7 +73,6 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
         unionCompanyWorkTime.setCompanyId(companyWorkTimeDto.getCompanyId());
         List<UnionCompanyWorkTime> unionCompanyWorkTimeList = unionCompanyWorkTimeService.getUnionCompanyWorkTime(unionCompanyWorkTime);
         companyWorkTimeVo.setCompanyWorkTimes(unionCompanyWorkTimeList);
-
         return companyWorkTimeVo;
     }
 
@@ -123,10 +126,17 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
         return baseMapper.update(companyWorkTime, updateWrapper);
     }
 
+
     @Override
     public Integer setCommuteTime(CompanyWorkTimeAddDto companyWorkTimeAddDto) {
         List<Integer> workingHours = companyWorkTimeAddDto.getWorkingHours();
+        if (DataUtil.isEmpty(workingHours)) {
+            throw new DefaultException("企业上下班周期为空");
+        }
         List<UnionCompanyWorkTimeDto> companyWorkTimes = companyWorkTimeAddDto.getCompanyWorkTimes();
+        if (DataUtil.isEmpty(companyWorkTimes)) {
+            throw new DefaultException("企业上下班时间为空");
+        }
 
         CompanyWorkTimeDto cdo = new CompanyWorkTimeDto();
         cdo.setCompanyId(companyWorkTimeAddDto.getCompanyId());

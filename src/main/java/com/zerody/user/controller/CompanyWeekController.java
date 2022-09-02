@@ -44,7 +44,7 @@ public class CompanyWeekController {
 
     /**
      * @Author: chenKeFeng
-     * @Description: 获取企业上下班时间 后台
+     * @Description: 获取企业上下班时间详情 后台
      * @Date: 2022/8/31 15:00
      */
     @GetMapping("/get-commute-time-backstage")
@@ -65,7 +65,7 @@ public class CompanyWeekController {
 
     /**
      * @Author: chenKeFeng
-     * @Description: 获取企业上下班时间（客户端）
+     * @Description: 获取企业上下班时间详情（客户端）
      * @Date: 2022/8/31 16:11
      */
     @GetMapping("/get-commute-time-app")
