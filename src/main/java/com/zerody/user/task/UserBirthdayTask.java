@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
@@ -158,7 +159,7 @@ public class UserBirthdayTask {
         data.setContentPush(content);
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
-        com.zerody.common.api.bean.DataResult<Object> result = this.sendMsgFeignService.send(data);
+        DataResult<Long> result = this.sendMsgFeignService.send(data);
         log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
 
