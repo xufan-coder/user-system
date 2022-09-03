@@ -141,7 +141,6 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     private void pushIm(String title,String id, String userId, String userName,String content){
         // 小藏推送
-
         FlowMessageDto dto = new FlowMessageDto();
         dto.setTitle(title);
         dto.setMessageSource("extend");
@@ -158,7 +157,6 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         Object argumentsParse = JSONObject.parse(arguments);
         dto.setQuery(parse);
         dto.setArguments(argumentsParse);
-
 
         SendRobotMessageDto data = new SendRobotMessageDto();
         String msg = Expression.parse(content, params);
