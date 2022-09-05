@@ -165,6 +165,10 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+   /* @Override
+    public DataResult<List<String>> getUserIdsByRoleNames(Integer integer) {
+        return null;
+    }*/
 
     //修改用户
     @PostMapping("/updateUser")

@@ -17,4 +17,19 @@ public class AppUserNotPushVo {
     /** 企业id */
     private String companyId;
 
+    /** 伙伴名称 */
+    private String userName;
+
+    /** 负责人部门id */
+    private String departmentId;
+
+    /**上级部门id*/
+    private String parentId;
+
+    /**用户部门id*/
+    private String userDepartmentId;
+
+    /** 用户部门名称 */
+    private String userDepartmentName;
+
 }
