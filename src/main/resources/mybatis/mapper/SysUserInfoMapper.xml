@@ -520,7 +520,6 @@
                ssi.user_name     AS userName,
                sci.company_name  AS companyName,
                sui.phone_number  AS phone,
-               sjp.position_name AS positionName,
                sdi.depart_name   AS departName,
                ssi.id            AS staffId,
                urs.role_name     AS roleName,
