@@ -165,6 +165,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询所有在用户
+     * @date                 2022/9/5 9:46
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
+     */
+    @Override
+    public DataResult<List<StaffInfoVo>> getAllDuytUserInner() {
+        try {
+            List<StaffInfoVo> duytUser = sysStaffInfoService.getAllDuytUserInner();
+            return R.success(duytUser);
+        } catch (DefaultException e){
+            log.error("内部接口复查询所有在职错误:{}", e, e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("内部接口复查询所有在职错误:{} ", e, e);
+            return R.error(e.getMessage());
+        }
+    }
+
    /* @Override
     public DataResult<List<String>> getUserIdsByRoleNames(Integer integer) {
         return null;

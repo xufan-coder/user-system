@@ -184,4 +184,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<String> getAllDepartAdmin();
 
     List<AppUserNotPushVo> getBirthdayUserIds(@Param("month") String month,@Param("day") String day,@Param("userId") String userId);
+
+    List<StaffInfoVo> getAllDuytUser();
 }
