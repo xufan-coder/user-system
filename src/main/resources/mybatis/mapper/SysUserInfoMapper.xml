@@ -515,22 +515,20 @@
         </if>
     </select>
     <select id="getAllDuytUser" resultType="com.zerody.user.api.vo.StaffInfoVo">
-        SELECT sui.id            AS id,
-               ssi.comp_id       AS compId,
-               ssi.user_name     AS userName,
-               sci.company_name  AS companyName,
+        SELECT sui.id            AS user_id,
+               ssi.comp_id       AS company_id,
+               ssi.user_name     AS user_name,
+               sci.company_name  AS company_name,
                sui.phone_number  AS phone,
-               sjp.position_name AS positionName,
-               sdi.depart_name   AS departName,
-               ssi.id            AS staffId,
-               urs.role_name     AS roleName,
-               sui.status        AS staffStatus,
+               sdi.depart_name   AS depart_name,
+               ssi.id            AS staff_id,
+               sui.status,
+               sdi.id            AS `depart_id`,
                ssi.evaluate,
                ssi.resume_url
         FROM sys_user_info sui
                  JOIN sys_staff_info ssi ON sui.id = ssi.user_id
                  LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
-                 LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
                  LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
                  LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         where sui.status IN (0, 3)

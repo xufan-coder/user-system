@@ -175,6 +175,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
      */
     @Override
+    @GetMapping("/get/duyt/all-user/inner")
     public DataResult<List<StaffInfoVo>> getAllDuytUserInner() {
         try {
             List<StaffInfoVo> duytUser = sysStaffInfoService.getAllDuytUserInner();
@@ -187,11 +188,6 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error(e.getMessage());
         }
     }
-
-   /* @Override
-    public DataResult<List<String>> getUserIdsByRoleNames(Integer integer) {
-        return null;
-    }*/
 
     //修改用户
     @PostMapping("/updateUser")
