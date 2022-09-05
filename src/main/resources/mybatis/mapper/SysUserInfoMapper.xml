@@ -515,7 +515,7 @@
         </if>
     </select>
     <select id="getAllDuytUser" resultType="com.zerody.user.api.vo.StaffInfoVo">
-        SELECT sui.id            AS id,
+        SELECT sui.id            AS user_id,
                ssi.comp_id       AS company_id,
                ssi.user_name     AS user_name,
                sci.company_name  AS company_name,
