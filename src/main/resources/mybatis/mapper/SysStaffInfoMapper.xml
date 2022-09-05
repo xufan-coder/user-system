@@ -630,7 +630,8 @@
         sjp.position_name,
         urs.role_id,
         urs.role_name,
-        ssi.id AS `staff_id`
+        ssi.id AS `staff_id`,
+        ssi.status
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
