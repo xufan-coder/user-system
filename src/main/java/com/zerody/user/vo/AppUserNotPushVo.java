@@ -20,6 +20,9 @@ public class AppUserNotPushVo {
     /** 伙伴名称 */
     private String userName;
 
+    /**头像*/
+    private String avatar;
+
     /** 负责人部门id */
     private String departmentId;
 

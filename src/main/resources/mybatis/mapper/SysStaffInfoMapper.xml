@@ -617,6 +617,8 @@
     </select>
     <select id="getStaffInfoInner" resultType="com.zerody.user.api.vo.StaffInfoVo">
         SELECT
+        sui.avatar AS user_avatar,
+        ssi.avatar AS staff_avatar,
         sui.user_name,
         sui.id AS userId,
         sci.company_name,
@@ -626,8 +628,10 @@
         sui.phone_number AS mobile,
         sui.certificate_card AS identity_card,
         sjp.position_name,
-        sui.status,
-        urs.role_name
+        urs.role_id,
+        urs.role_name,
+        ssi.id AS `staff_id`,
+        ssi.status
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id

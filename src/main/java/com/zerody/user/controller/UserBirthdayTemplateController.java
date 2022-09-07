@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.BirthdayBlessing;
+import com.zerody.user.dto.BlessIngParam;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UserBirthdayTemplateDto;
 import com.zerody.user.service.BirthdayBlessingService;
@@ -292,6 +293,28 @@ public class UserBirthdayTemplateController {
         } catch (Exception e) {
             log.error("获取今天是否生日错误：{}", e, e);
             return R.error("获取今天是否生日错误" + e.getMessage());
+        }
+    }
+
+    /**
+     * @author kuang
+     * @description 发送生日祝福
+     * @date
+     * @Param
+     **/
+    @PostMapping("/add/blessing")
+    public DataResult<Object> addBlessing(@RequestBody BlessIngParam param){
+
+        try {
+            param.setUserId(UserUtils.getUserId());
+            this.service.addBlessing(param);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("发送生日祝福错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("发送生日祝福错误：{}", e, e);
+            return R.error("发送生日祝福错误" + e.getMessage());
         }
     }
 }

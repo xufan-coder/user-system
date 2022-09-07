@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.UserBirthdayTemplate;
+import com.zerody.user.dto.BlessIngParam;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UserBirthdayTemplateDto;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
@@ -33,4 +34,6 @@ public interface UserBirthdayTemplateService extends IService<UserBirthdayTempla
     void modifyTemplate(List<String> ids);
 
     boolean whetherBirthday(String userId);
+
+    void addBlessing(BlessIngParam param);
 }

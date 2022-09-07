@@ -23,6 +23,10 @@ public class BirthdayMsgConfig {
 
     private String arguments;
 
+    private String title;
+
+    private String title2;
+
     private String content;
     private String content2;
 }
