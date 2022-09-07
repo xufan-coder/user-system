@@ -166,6 +166,29 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          查询所有在用户
+     * @date                 2022/9/5 9:46
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
+     */
+    @Override
+    @GetMapping("/get/duyt/all-user/inner")
+    public DataResult<List<StaffInfoVo>> getAllDuytUserInner() {
+        try {
+            List<StaffInfoVo> duytUser = sysStaffInfoService.getAllDuytUserInner();
+            return R.success(duytUser);
+        } catch (DefaultException e){
+            log.error("内部接口复查询所有在职错误:{}", e, e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("内部接口复查询所有在职错误:{} ", e, e);
+            return R.error(e.getMessage());
+        }
+    }
 
     //修改用户
     @PostMapping("/updateUser")
@@ -1196,6 +1219,28 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult<List<StaffInfoVo>> getStaffInfoByIds(@RequestParam(value = "userIds", required = false) List<String> userId){
         try {
             return R.success(this.sysStaffInfoService.getStaffInfoByIds(userId));
+        } catch (DefaultException e){
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取员工信息失败:{}",e,e);
+            return R.error("获取员工信息失败"+ e);
+        }
+
+    }
+    /**
+     * 查询用户信息
+     *
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/28 17:23
+     * @param                userId
+     * @return               com.zerody.common.api.bean.DataResult<java.lang.String>
+     */
+    @RequestMapping(value = "/get/staff-info/{id}", method = RequestMethod.GET)
+    public DataResult<StaffInfoVo> getStaffInfoById(@PathVariable(value = "id") String userId){
+        try {
+            return R.success(this.sysStaffInfoService.getStaffInfo(userId));
         } catch (DefaultException e){
             log.error("获取员工信息失败:{}",e,e);
             return R.error(e.getMessage());

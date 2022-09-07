@@ -2655,6 +2655,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public List<StaffInfoVo> getAllDuytUserInner() {
+        return this.sysUserInfoMapper.getAllDuytUser();
+    }
+
+    @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId, Integer isShowLeave) {
         return sysStaffInfoMapper.getStaffByCompany(companyId, isShowLeave);
     }
