@@ -153,4 +153,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     Boolean getLoginUserIsSuperion(UserVo user, String userId);
 
     List<SysUserInfo> getJobUser(String parentId);
+
+    List<StaffInfoVo> getAllDuytUserInner();
 }

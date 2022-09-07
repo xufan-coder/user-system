@@ -78,8 +78,13 @@ public class UserBirthdayTask {
             String day = DateUtil.getDay();
             List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getBirthdayUserIds(month,day,null);
             for(AppUserNotPushVo user : userList) {
-
-                this.sendPush("祝你生日快乐",template.getBlessing(),user.getUserId());
+                Map params = new HashMap();
+                params.put("userId",user.getUserId());
+                params.put("name",user.getUserName());
+                params.put("dept",user.getUserDepartmentName());
+                params.put("avatar",user.getAvatar());
+                params.put("text",template.getBlessing());
+                this.sendPush(birthdayMsgConfig.getTitle(),template.getBlessing(),user.getUserId(),params);
 
                 // 是否推送给他人
                 if(template.getNoticeColleague() == YesNo.YES){
@@ -91,7 +96,8 @@ public class UserBirthdayTask {
                         // 发送im 提醒生日祝福
                         if(admins.size() > 0) {
                             for(String userId : admins){
-                                this.sendPush("生日快乐",template.getAdminText(),userId);
+                                params.put("text",birthdayMsgConfig.getContent2());
+                                this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                             }
                         }
                     } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
@@ -105,7 +111,8 @@ public class UserBirthdayTask {
                                 // 移除自己 避免重复发送
                                 admins.remove(user.getUserId());
                                 for(String userId : admins){
-                                    this.sendPush("生日快乐",template.getAdminText(),userId);
+                                    params.put("text",birthdayMsgConfig.getContent2());
+                                    this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                                 }
                             }
                         }else {
@@ -117,7 +124,8 @@ public class UserBirthdayTask {
                             // 移除自己 避免重复发送
                             userIds.remove(user.getUserId());
                             for(String userId : userIds){
-                                this.sendPush("生日快乐",template.getNoticeText(),userId);
+                                params.put("text",birthdayMsgConfig.getContent());
+                                this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
                             }
                         }
                     }else {
@@ -129,7 +137,8 @@ public class UserBirthdayTask {
                         // 移除自己 避免重复发送
                         userIds.remove(user.getUserId());
                         for(String userId : userIds){
-                            this.sendPush("生日快乐",template.getNoticeText(),userId);
+                            params.put("text",birthdayMsgConfig.getContent());
+                            this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
                         }
                     }
                 }
@@ -138,12 +147,11 @@ public class UserBirthdayTask {
         return ReturnT.SUCCESS;
     }
 
-    private void sendPush(String title, String content,String userId){
+    private void sendPush(String title, String content,String userId, Map params){
         FlowMessageDto dto = new FlowMessageDto();
         dto.setTitle(title);
         dto.setMessageSource("extend");
         dto.setUrl(birthdayMsgConfig.getUrl());
-        Map params = new HashMap();
         String query = Expression.parse(birthdayMsgConfig.getQuery(), params);
         Object parse = JSONObject.parse(query);
         dto.setQuery(parse);
@@ -153,10 +161,10 @@ public class UserBirthdayTask {
         dto.setArguments(argumentsParse);
 
         SendRobotMessageDto data = new SendRobotMessageDto();
-        data.setContent(content);
-        dto.setContent(content);
+        data.setContent(Expression.parse(content, params));
+        dto.setContent(Expression.parse(content, params));
         data.setTarget(userId);
-        data.setContentPush(content);
+        data.setContentPush(Expression.parse(content, params));
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
         DataResult<Long> result = this.sendMsgFeignService.send(data);

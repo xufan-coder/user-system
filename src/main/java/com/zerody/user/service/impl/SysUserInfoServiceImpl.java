@@ -760,6 +760,33 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         this.checkUtil.removeUserToken(userId);
     }
 
+    @Override
+    public StaffInfoVo getSuperiorAdmin(UserVo user) {
+        if (user.isBack() || user.isCEO()) {
+            return null;
+        }
+        //查询该用户权限
+        AdminVo admin = this.sysStaffInfoService.getIsAdmin(user);
+        //企业管理员没有上级(不包含ceo)
+        if (admin.getIsCompanyAdmin()) {
+            return null;
+        }
+        StaffInfoVo superior = null;
+        if (admin.getIsDepartAdmin()) {
+            SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(user.getDeptId());
+            //找不到部门 或者 没有上级 返回null 不去查询企业管理员
+            if (DataUtil.isNotEmpty(departInfo)) {
+                superior = this.getDepartAdminInfo(departInfo.getParentId());
+            }
+        } else {
+            superior = this.getDepartAdminInfo(user.getDeptId());
+        }
+        if (DataUtil.isEmpty(superior)) {
+            superior = companyAdminMapper.getAdminInfoByCompanyId(user.getCompanyId());
+        }
+        return superior;
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

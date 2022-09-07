@@ -50,6 +50,12 @@ public class SysUserClewCollectVo {
      */
     private Integer todayCalled;
 
+    /**今日呼叫时长 s转"HH:mm:ss**/
+    private String todayTime;
+
+    /**总呼叫时长 s转"HH:mm:ss**/
+    private String totalTime;
+
     /**
      * 最后呼叫时间
      */
