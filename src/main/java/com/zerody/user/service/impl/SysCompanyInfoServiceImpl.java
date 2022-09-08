@@ -672,8 +672,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         List<String[]> exportData = new ArrayList<>();
         final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
-                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "已放未收/笔数", timePeriodStr + "业绩/笔数",
-                "总业绩/笔数", "回款点数", "人均业绩", "人员回款率", "邀约人数", "上门人数"};
+                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "邀约人数", "上门人数"};
         String[] rowData;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ReportFormsQueryVo info : list) {
@@ -686,12 +685,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             rowData[index++] = info.getApproveMoneyTotal() + "/" + info.getApproveNumTotal() + "笔";
             rowData[index++] = info.getLoansMoney() + "/" + info.getLoansNum() + "笔";
             rowData[index++] = info.getLoansMoneyTotal() + "/" + info.getLoansNumTotal() + "笔";
-            rowData[index++] = info.getNotProceedsMoney() + "/" + info.getNotProceedsNum() + "笔";
-            rowData[index++] = info.getPerformanceMoney() + "/" + info.getPerformanceNum() + "笔";
-            rowData[index++] = info.getPerformanceMoneyTotal() + "/" + info.getPerformanceNumTotal() + "笔";
-            rowData[index++] = info.getPaymentCount() + "%";
-            rowData[index++] = info.getPerCapitaPerformance();
-            rowData[index++] = info.getStaffPaymentRate() + "%";
             rowData[index++] = String.valueOf(info.getInviteNum());
             rowData[index++] = String.valueOf(info.getVisitNum());
             exportData.add(rowData);
