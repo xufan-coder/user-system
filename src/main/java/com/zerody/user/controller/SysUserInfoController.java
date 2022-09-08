@@ -1472,6 +1472,23 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    @GetMapping("/get/superior/admin/then-user")
+    public DataResult<StaffInfoVo> getSuperiorAdmin() {
+        try {
+            StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorAdmin(UserUtils.getUser());
+            if (DataUtil.isNotEmpty(staffInfoVo)) {
+                staffInfoVo.setIdentityCard(null);
+                staffInfoVo.setMobile(null);
+            }
+            return R.success(staffInfoVo);
+        } catch (DefaultException e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取上级-不包含企业管理员出错:{}", e, e);
+            return R.error("获取上级出错!请联系管理员");
+        }
+    }
     /**
      * @author kuang
      * @description 查询上级所有人
