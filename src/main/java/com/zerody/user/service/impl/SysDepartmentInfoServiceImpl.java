@@ -32,6 +32,7 @@ import com.zerody.user.service.UnionStaffPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
+import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -266,16 +267,19 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
                 throw new DefaultException("修改线索负责人失败");
             }
         }
+        //把该伙伴的原负责的部门设为空
         UpdateWrapper<SysDepartmentInfo> depAdminRmoveUw = new UpdateWrapper<>();
         depAdminRmoveUw.lambda().eq(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
         depAdminRmoveUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
         depAdminRmoveUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
         this.update(depAdminRmoveUw);
+        //设置新的部门负责人
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();
         depUw.lambda().set(SysDepartmentInfo::getAdminAccount, dto.getStaffId());
         depUw.lambda().eq(SysDepartmentInfo::getId, dto.getId());
         depUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
         this.update(depUw);
+        //有变更部门 删除部门重新加
         QueryWrapper<UnionStaffDepart> staffDepQw = new QueryWrapper<>();
         staffDepQw.lambda().eq(UnionStaffDepart::getStaffId, dto.getStaffId());
         unionStaffDepartMapper.delete(staffDepQw);
@@ -294,6 +298,18 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
                 this.unionStaffPositionService.remove(uspQw);
             }
         }
+        Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
+        staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
+        this.staffInfoService.updateById(staffInfo);
+        //重新获取本部门旧负责人的用户类型
+        if (DataUtil.isNotEmpty(oldAdmin.getAdminAccount())) {
+            userTypeMap = UserTypeUtil.getUserTypeByStaffIds(oldAdmin.getAdminAccount());
+            SysStaffInfo oldAdminInfo = new SysStaffInfo();
+            oldAdminInfo.setUserType(userTypeMap.get(oldAdmin.getAdminAccount()));
+            oldAdminInfo.setId(oldAdmin.getAdminAccount());
+            this.staffInfoService.updateById(oldAdminInfo);
+        }
+        //修改同步状态
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().eq(SysUserInfo::getId, staffInfo.getUserId());
         userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
