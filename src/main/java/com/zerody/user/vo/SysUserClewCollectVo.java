@@ -108,4 +108,9 @@ public class SysUserClewCollectVo {
     public Integer getTodayCalled() {
         return DataUtil.isEmpty(todayCalled) ? 0 : todayCalled;
     }
+
+    public String getTodayTime() { return  DataUtil.isEmpty(todayTime) ? "00:00:00" : todayTime; }
+
+    public String getTotalTime() { return DataUtil.isEmpty(totalTime) ? "00:00:00" : totalTime; }
+
 }
