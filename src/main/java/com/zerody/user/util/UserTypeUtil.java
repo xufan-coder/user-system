@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author PengQiang
@@ -50,7 +47,7 @@ public class UserTypeUtil {
         if (DataUtil.isEmpty(staffIds)) {
             return null;
         }
-        return getUserTypeByStaffIds(Arrays.asList(staffIds));
+        return getUserTypeByStaffIds(new ArrayList<>(Arrays.asList(staffIds)));
     }
 
     public static Map<String, Integer> getUserTypeByStaffIds(List<String> staffIds) {
