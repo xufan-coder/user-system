@@ -66,7 +66,6 @@ public class UserTypeUtil {
                 staffIds.remove(ca.getStaffId());
             });
         }
-        // 最后查找是否存在伙伴类型的
         if (DataUtil.isEmpty(staffIds)) {
             return  userTypeMap;
         }
@@ -88,7 +87,14 @@ public class UserTypeUtil {
                 }
             });
         }
+        // 最后查找是否存在伙伴类型的
+        if (DataUtil.isEmpty(staffIds)) {
+            return  userTypeMap;
+        }
         staffIds.forEach(s -> {
+            if (DataUtil.isEmpty(s)) {
+                return;
+            }
             userTypeMap.put(s , UserTypeInfo.PARTNER);
             staffIds.remove(s);
         });
