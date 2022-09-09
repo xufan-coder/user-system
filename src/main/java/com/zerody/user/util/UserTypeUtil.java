@@ -96,7 +96,6 @@ public class UserTypeUtil {
                 return;
             }
             userTypeMap.put(s , UserTypeInfo.PARTNER);
-            staffIds.remove(s);
         });
         return userTypeMap;
     }
