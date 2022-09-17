@@ -10,6 +10,7 @@ import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.feign.SendMsgFeignService;
+import com.zerody.im.util.IM;
 import com.zerody.jpush.api.dto.AddJdPushDto;
 import com.zerody.user.config.BirthdayMsgConfig;
 import com.zerody.user.domain.SysDepartmentInfo;
@@ -118,7 +119,7 @@ public class UserBirthdayTask {
                         }else {
                             // 团队长
                             // 查询部门伙伴
-                            List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
+                            List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getUserDepartmentId());
 
                             //发送im 提示生日祝福
                             // 移除自己 避免重复发送
@@ -163,6 +164,7 @@ public class UserBirthdayTask {
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContent(Expression.parse(content, params));
         dto.setContent(Expression.parse(content, params));
+        data.setSender(IM.ROBOT_CARE);
         data.setTarget(userId);
         data.setContentPush(Expression.parse(content, params));
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
