@@ -102,37 +102,32 @@ public class UserBirthdayTask {
                             }
                         }
                     } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
+                        List<String> userIds;
                         // 查询是否是副总 和团队长 推送 团队长
                         if(StringUtils.isEmpty(user.getParentId())){
                             // 副总
                             // 查询此部门下的团队长
-                            List<String> admins = this.sysDepartmentInfoMapper.getUserIds(null,user.getDepartmentId());
+                            userIds = this.sysDepartmentInfoMapper.getUserIds(null,user.getDepartmentId());
                             //发送im 提示生日祝福
-                            if(admins.size() > 0) {
-                                // 移除自己 避免重复发送
-                                admins.remove(user.getUserId());
-                                for(String userId : admins){
-                                    params.put("text",birthdayMsgConfig.getContent2());
-                                    this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
-                                }
-                            }
                         }else {
                             // 团队长
                             // 查询部门伙伴
-                            List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getUserDepartmentId());
-
-                            //发送im 提示生日祝福
-                            // 移除自己 避免重复发送
-                            userIds.remove(user.getUserId());
-                            for(String userId : userIds){
-                                params.put("text",birthdayMsgConfig.getContent());
-                                this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
-                            }
+                            userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
                         }
+
+                        //发送im 提示生日祝福
+                        // 移除自己 避免重复发送
+                        userIds.remove(user.getUserId());
+                        for(String userId : userIds){
+                            params.put("text",birthdayMsgConfig.getContent2());
+                            this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
+                        }
+
                     }else {
+                        log.info("伙伴生日推送：{}",user);
                         // 伙伴  推送伙伴
                         // 查询部门伙伴
-                        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
+                        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getUserDepartmentId());
 
                         //发送im 提示生日祝福
                         // 移除自己 避免重复发送
