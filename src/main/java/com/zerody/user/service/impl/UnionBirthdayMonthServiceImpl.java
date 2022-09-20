@@ -37,6 +37,10 @@ public class UnionBirthdayMonthServiceImpl extends ServiceImpl<UnionBirthdayMont
 
     @Override
     public void addTemplateMonth(List<Integer> monthList, String templateId) {
+
+        QueryWrapper<UnionBirthdayMonth> qw = new QueryWrapper<>();
+        qw.lambda().eq(UnionBirthdayMonth::getTemplateId,templateId);
+        this.remove(qw);
         List<UnionBirthdayMonth> templateMonths = new ArrayList<>();
         for(Integer month : monthList) {
             UnionBirthdayMonth template = new UnionBirthdayMonth();

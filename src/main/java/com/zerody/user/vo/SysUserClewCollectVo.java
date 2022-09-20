@@ -50,6 +50,12 @@ public class SysUserClewCollectVo {
      */
     private Integer todayCalled;
 
+    /**今日呼叫时长 s转"HH:mm:ss**/
+    private String todayTime;
+
+    /**总呼叫时长 s转"HH:mm:ss**/
+    private String totalTime;
+
     /**
      * 最后呼叫时间
      */
@@ -102,4 +108,9 @@ public class SysUserClewCollectVo {
     public Integer getTodayCalled() {
         return DataUtil.isEmpty(todayCalled) ? 0 : todayCalled;
     }
+
+    public String getTodayTime() { return  DataUtil.isEmpty(todayTime) ? "00:00:00" : todayTime; }
+
+    public String getTotalTime() { return DataUtil.isEmpty(totalTime) ? "00:00:00" : totalTime; }
+
 }

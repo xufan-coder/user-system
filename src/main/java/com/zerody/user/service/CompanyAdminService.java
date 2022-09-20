@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import java.util.List;
 
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.dto.CompanyAdminPageDto;
 import com.zerody.user.domain.CompanyAdmin;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -46,4 +47,7 @@ public interface CompanyAdminService extends IService<CompanyAdmin>{
 	 * @date 2021/1/8  16:37
 	 */
 	CompanyAdmin getAdminByStaffId(String staffId);
+
+
+	StaffInfoVo getAdminInfoByCompanyId(String companyId);
 }

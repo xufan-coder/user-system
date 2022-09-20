@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CompanyAdmin;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.mapper.CompanyAdminMapper;
@@ -50,5 +51,10 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 		qw.lambda().eq(CompanyAdmin::getStaffId,staffId);
 		return this.getOne(qw);
 
+	}
+
+	@Override
+	public StaffInfoVo getAdminInfoByCompanyId(String companyId) {
+		return this.baseMapper.getAdminInfoByCompanyId(companyId);
 	}
 }

@@ -63,4 +63,7 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
 
     private String keyword;
 
+    /** 用户类型 企业管理员:0、伙伴：1、团队长：2、副总：3*/
+    private Integer userType;
+
 }

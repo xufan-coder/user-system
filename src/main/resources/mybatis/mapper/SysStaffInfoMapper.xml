@@ -791,6 +791,9 @@
                 sui.phone_number LIKE CONCAT('%', #{staff.key}, '%')
                 )
             </if>
+            <if test="staff.userType neq null">
+                AND ssi.user_type = #{staff.userType}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
