@@ -22,6 +22,7 @@ import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CardUserInfo;
 import com.zerody.user.domain.CardUserUnionUser;
+import com.zerody.user.domain.CeoCompanyRef;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.CeoUserInfoPageDto;
@@ -287,6 +288,32 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
             vo.setMobile(item.getPhoneNumber());
             vo.setPositionName(item.getPosition());
             vo.setCompanyName(item.getCompany());
+            return vo;
+        }).collect(Collectors.toList());
+
+        return collect;
+    }
+
+    @Override
+    public List<SubordinateUserQueryVo> getListCompany(String companyId) {
+        QueryWrapper<CeoCompanyRef> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(CeoCompanyRef::getCompanyId,companyId);
+        List<CeoCompanyRef> refList = this.ceoCompanyRefService.list(wrapper);
+        List<String> ceoIds = refList.stream().map(CeoCompanyRef::getCeoId).collect(Collectors.toList());
+        QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
+        qw.lambda().eq(CeoUserInfo::getDeleted, YesNo.NO)
+                .eq(BaseModel::getStatus,YesNo.NO).in(CeoUserInfo::getId,ceoIds);
+        List<CeoUserInfo> list = this.list(qw);
+        if(DataUtil.isEmpty(list)){
+            return null;
+        }
+        List<SubordinateUserQueryVo> collect = list.stream().map(item -> {
+            SubordinateUserQueryVo vo = new SubordinateUserQueryVo();
+                BeanUtils.copyProperties(item, vo);
+                vo.setUserId(item.getId());
+                vo.setMobile(item.getPhoneNumber());
+                vo.setPositionName(item.getPosition());
+                vo.setCompanyName(item.getCompany());
             return vo;
         }).collect(Collectors.toList());
 

@@ -43,6 +43,8 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
 
     List<SubordinateUserQueryVo> getList();
 
+    List<SubordinateUserQueryVo> getListCompany(String companyId);
+
     IPage<BosStaffInfoVo> getCeoPage(SysStaffInfoPageDto param);
 
     SysUserInfoVo getCeoInfoByUserId(String userId);
