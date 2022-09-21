@@ -1,5 +1,6 @@
 package com.zerody.user.dto.data;
 
+import com.zerody.common.vo.UserVo;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -19,4 +20,6 @@ public class DataAddDto {
 
     /** 值 */
     private String dataValue;
+
+    private UserVo user;
 }
