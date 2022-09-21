@@ -165,7 +165,7 @@ public class UserBirthdayTask {
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
         DataResult<Long> result = this.sendMsgFeignService.send(data);
-        log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
+        log.info("推送IM入参:{} -----结果:{}", data,com.zerody.flow.client.util.JsonUtils.toString(result));
 
 
        /* AddJdPushDto push = new AddJdPushDto();
