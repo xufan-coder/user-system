@@ -61,6 +61,7 @@ public class DataController {
      */
     @GetMapping("/get/value/by-key/{key}")
     public DataResult<String> getValueByKey(@PathVariable("key") String key) {
+        log.info("通过key获取value入参{}", key);
         try {
             String value = this.service.getValueByKey(key, UserUtils.getUser());
             return R.success(value);

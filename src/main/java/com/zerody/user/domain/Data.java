@@ -36,7 +36,7 @@ public class Data {
     private Date createTime;
 
     /**
-     * 创建时间
+     * 用户id
      */
     private String userId;
 }
