@@ -502,12 +502,13 @@
 
     <select id="getBirthdayUserIds" resultType="com.zerody.user.vo.AppUserNotPushVo">
         select sui.id as 'userId',sui.user_name as 'userName' ,sui.avatar, ca.company_id as 'companyId',
-        sdi.id 'departmentId',sdi.parent_id as 'parentId',usd.department_id as 'userDepartmentId'
+        sdi.id 'departmentId',sdi.parent_id as 'parentId',usd.department_id as 'userDepartmentId',usdi.depart_name as 'userDepartmentName'
         from sys_user_info sui
         left join sys_staff_info ssi on sui.id = ssi.user_id
         left join company_admin ca on ca.staff_id = ssi.id
         left join sys_department_info sdi on sdi.admin_account = ssi.id
 		left join union_staff_depart usd on usd.staff_id = ssi.id
+        left join sys_department_info usdi on usd.department_id = usdi.id
         where sui.status in (0,3)  and
         birthday_month = #{month} and birthday_day = #{day}
         <if test="userId neq null and userId neq ''">
