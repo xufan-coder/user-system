@@ -85,7 +85,8 @@ public class UserBirthdayTask {
                 params.put("dept",user.getUserDepartmentName());
                 params.put("avatar",user.getAvatar());
                 params.put("text",template.getBlessing());
-                this.sendPush(birthdayMsgConfig.getTitle(),template.getBlessing(),user.getUserId(),params);
+                params.put("image",template.getPosterUrl());
+                this.sendPush(birthdayMsgConfig.getBirthdayUrl(),birthdayMsgConfig.getTitle(),template.getBlessing(),user.getUserId(),params);
 
                 // 是否推送给他人
                 if(template.getNoticeColleague() == YesNo.YES){
@@ -98,7 +99,7 @@ public class UserBirthdayTask {
                         if(admins.size() > 0) {
                             for(String userId : admins){
                                 params.put("text",birthdayMsgConfig.getContent2());
-                                this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
+                                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                             }
                         }
                     } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
@@ -120,7 +121,7 @@ public class UserBirthdayTask {
                         userIds.remove(user.getUserId());
                         for(String userId : userIds){
                             params.put("text",birthdayMsgConfig.getContent2());
-                            this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
+                            this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                         }
 
                     }else {
@@ -134,7 +135,7 @@ public class UserBirthdayTask {
                         userIds.remove(user.getUserId());
                         for(String userId : userIds){
                             params.put("text",birthdayMsgConfig.getContent());
-                            this.sendPush(birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
+                            this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
                         }
                     }
                 }
@@ -143,11 +144,11 @@ public class UserBirthdayTask {
         return ReturnT.SUCCESS;
     }
 
-    private void sendPush(String title, String content,String userId, Map params){
+    private void sendPush(String url, String title, String content,String userId, Map params){
         FlowMessageDto dto = new FlowMessageDto();
         dto.setTitle(title);
         dto.setMessageSource("extend");
-        dto.setUrl(birthdayMsgConfig.getUrl());
+        dto.setUrl(url);
         String query = Expression.parse(birthdayMsgConfig.getQuery(), params);
         Object parse = JSONObject.parse(query);
         dto.setQuery(parse);
@@ -165,7 +166,7 @@ public class UserBirthdayTask {
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
         data.setType(MESSAGE_TYPE_FLOW);
         DataResult<Long> result = this.sendMsgFeignService.send(data);
-        log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
+        log.info("推送IM入参:{} -----结果:{}", data,com.zerody.flow.client.util.JsonUtils.toString(result));
 
 
        /* AddJdPushDto push = new AddJdPushDto();

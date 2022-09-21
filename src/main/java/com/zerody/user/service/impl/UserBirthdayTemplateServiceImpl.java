@@ -171,9 +171,9 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
     public void addBlessing(BlessIngParam param) {
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContent(param.getBlessingText());
-        data.setTarget(param.getBirthdayUserId());
+        data.setTarget(param.getUserId());
         data.setContentPush(param.getBlessingText());
-        data.setSender(param.getUserId());
+        data.setSender(param.getBirthdayUserId());
         data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(param));
         data.setType(MESSAGE_TYPE_FLOW);
         DataResult<Long> result = this.sendMsgFeignService.send(data);
