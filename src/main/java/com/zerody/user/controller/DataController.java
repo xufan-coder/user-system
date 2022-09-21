@@ -36,6 +36,7 @@ public class DataController {
      */
     @PostMapping("/add")
     public DataResult<Void> addData(@Validated @RequestBody DataAddDto param) {
+        log.info("添加键值对数据： {}", param);
         try {
             param.setDataKey(param.getDataKey().trim());
             param.setUser(UserUtils.getUser());
@@ -61,10 +62,10 @@ public class DataController {
      */
     @GetMapping("/get/value/by-key/{key}")
     public DataResult<String> getValueByKey(@PathVariable("key") String key) {
-        log.info("通过key获取value入参 {}", key);
+        log.info("通过key获取value入参： {}", key);
         try {
             String value = this.service.getValueByKey(key, UserUtils.getUser());
-            log.info("获取value返回值 {}", value);
+            log.info("获取value返回值： {}", value);
             return R.success(value);
         } catch (DefaultException e) {
             log.error("获取键值对校验不通过:{}", e, e);
