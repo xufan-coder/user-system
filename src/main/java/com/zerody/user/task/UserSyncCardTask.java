@@ -36,7 +36,7 @@ public class UserSyncCardTask {
      * @description          初始化身份证号 到生日 月-日
      */
     @XxlJob("user_sync_card_task")
-    public ReturnT<String> execute() throws ParseException {
+    public ReturnT<String> execute(String param) throws ParseException {
 
         QueryWrapper<SysUserInfo> qw = new QueryWrapper<>();
         qw.lambda().isNull(SysUserInfo::getBirthdayMonth);
@@ -44,7 +44,6 @@ public class UserSyncCardTask {
         qw.lambda().last("limit 100");
         List<SysUserInfo> userInfos = this.userService.list(qw);
 
-        System.out.println("______________--------------");
         List<SysUserInfo> updateList = new ArrayList<>();
         for(SysUserInfo info : userInfos){
             // 校验身份证号是否正确
