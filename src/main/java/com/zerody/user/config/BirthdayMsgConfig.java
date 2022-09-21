@@ -19,6 +19,9 @@ public class BirthdayMsgConfig {
 
     private String url;
 
+    /**生日推送路径*/
+    private String birthdayUrl;
+
     private String query;
 
     private String arguments;
