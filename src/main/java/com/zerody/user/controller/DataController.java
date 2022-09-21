@@ -61,8 +61,10 @@ public class DataController {
      */
     @GetMapping("/get/value/by-key/{key}")
     public DataResult<String> getValueByKey(@PathVariable("key") String key) {
+        log.info("通过key获取value入参 {}", key);
         try {
             String value = this.service.getValueByKey(key, UserUtils.getUser());
+            log.info("获取value返回值 {}", value);
             return R.success(value);
         } catch (DefaultException e) {
             log.error("获取键值对校验不通过:{}", e, e);
