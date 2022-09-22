@@ -48,9 +48,4 @@ public class CompanyWorkTime implements Serializable {
 	 */
 	private Integer type;
 
-	/**
-	 * boss账号id
-	 */
-	private String ceoUserId;
-
 }

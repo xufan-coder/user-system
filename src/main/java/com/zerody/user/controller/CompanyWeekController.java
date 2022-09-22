@@ -43,12 +43,11 @@ public class CompanyWeekController {
                 if (DataUtil.isEmpty(companyWorkTimeAddDto.getCompanyId())) {
                     return R.error("企业id不能为空");
                 }
-                companyWorkTimeAddDto.setCeoUserId(null);
             } else {
+                companyWorkTimeAddDto.setCompanyId(null);
                 if (DataUtil.isEmpty(companyWorkTimeAddDto.getType())) {
                     return R.error("ceoId不能为空");
                 }
-                companyWorkTimeAddDto.setCompanyId(null);
             }
             return R.success(companyWorkTimeService.setCommuteTime(companyWorkTimeAddDto));
         } catch (Exception e) {
@@ -68,10 +67,6 @@ public class CompanyWeekController {
         if (DataUtil.isEmpty(companyWorkTimeDto.getType())) {
             return R.error("类型不能为空");
         }
-        /*if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
-            UserVo user = UserUtils.getUser();
-            companyWorkTimeDto.setCompanyId(user.getCompanyId());
-        }*/
 
         try {
             return R.success(companyWorkTimeService.getPageCompanyWorkTime(companyWorkTimeDto));
@@ -90,10 +85,8 @@ public class CompanyWeekController {
     @GetMapping("/get-commute-time-app")
     public DataResult<CompanyWorkTimeVo> getCompanyCommuteTimeApp(CompanyWorkTimeDto companyWorkTimeDto) {
         UserVo user = UserUtils.getUser();
+        log.info("是否为boss账号： {}", user.isCEO());
         if (user.isCEO()) {
-            if (DataUtil.isEmpty(companyWorkTimeDto.getCeoUserId())) {
-                return R.error("bossId不能为空");
-            }
             companyWorkTimeDto.setType(YesNo.NO);
         } else {
             if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {

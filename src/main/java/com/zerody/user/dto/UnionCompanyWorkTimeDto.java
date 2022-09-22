@@ -25,9 +25,5 @@ public class UnionCompanyWorkTimeDto {
      * 类型(1:用户、0:boss)
      */
     private Integer type;
-    /**
-     * boss账号id
-     */
-    private String ceoUserId;
 
 }
