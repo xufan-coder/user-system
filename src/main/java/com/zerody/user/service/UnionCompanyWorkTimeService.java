@@ -52,7 +52,7 @@ public interface UnionCompanyWorkTimeService extends IService<UnionCompanyWorkTi
     * @Description: 删除
     * @Date: 2022/8/31 17:19
     */
-    public Integer deleteUnionCompanyWorkTime(String id);
+    public Integer deleteUnionCompanyWorkTime(String id, Integer type, String ceoId);
 
 }
 
