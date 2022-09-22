@@ -35,9 +35,6 @@ public class UnionCompanyWorkTimeServiceImpl extends ServiceImpl<UnionCompanyWor
         if (DataUtil.isNotEmpty(unionCompanyWorkTime.getType())) {
             wrapper.eq(UnionCompanyWorkTime::getType, unionCompanyWorkTime.getType());
         }
-        if (DataUtil.isNotEmpty(unionCompanyWorkTime.getCeoUserId())) {
-            wrapper.eq(UnionCompanyWorkTime::getCeoUserId, unionCompanyWorkTime.getCeoUserId());
-        }
         return this.baseMapper.selectList(wrapper);
     }
 
@@ -60,16 +57,14 @@ public class UnionCompanyWorkTimeServiceImpl extends ServiceImpl<UnionCompanyWor
     }
 
     @Override
-    public Integer deleteUnionCompanyWorkTime(String id, Integer type, String ceoId) {
+    public Integer deleteUnionCompanyWorkTime(String id, Integer type) {
         LambdaQueryWrapper<UnionCompanyWorkTime> wrapper = new LambdaQueryWrapper<>();
         if (type.equals(YesNo.YES)) {
             if (DataUtil.isNotEmpty(id)) {
                 wrapper.eq(UnionCompanyWorkTime::getCompanyId, id);
             }
         } else {
-            if (DataUtil.isNotEmpty(ceoId)) {
-                wrapper.eq(UnionCompanyWorkTime::getCeoUserId, ceoId);
-            }
+            wrapper.eq(UnionCompanyWorkTime::getType, 0);
         }
         return this.baseMapper.delete(wrapper);
     }

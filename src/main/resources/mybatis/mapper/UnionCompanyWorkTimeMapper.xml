@@ -10,7 +10,6 @@
         <result property="workPunchTime" column="work_punch_time"/>
         <result property="downPunchTime" column="down_punch_time"/>
         <result property="type" column="type"/>
-        <result property="ceoUserId" column="ceo_user_id"/>
     </resultMap>
 
 

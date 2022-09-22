@@ -28,11 +28,6 @@ public class CompanyWorkTimeAddDto {
     private Integer type;
 
     /**
-     * boss账号id
-     */
-    private String ceoUserId;
-
-    /**
      * 上班时间
      */
     private List<Integer> workingHours;

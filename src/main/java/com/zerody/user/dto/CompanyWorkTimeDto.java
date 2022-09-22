@@ -31,10 +31,4 @@ public class CompanyWorkTimeDto extends PageQueryDto {
      */
     private Integer type;
 
-    /**
-     * boss账号id
-     */
-    private String ceoUserId;
-
-
 }

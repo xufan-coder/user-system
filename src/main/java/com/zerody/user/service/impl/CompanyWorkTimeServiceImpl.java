@@ -54,9 +54,11 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
         CompanyWorkTimeVo companyWorkTimeVo = new CompanyWorkTimeVo();
         if (DataUtil.isNotEmpty(companyWorkTime)) {
             BeanUtils.copyProperties(companyWorkTime, companyWorkTimeVo);
+
             CompanyWeek companyWeek = new CompanyWeek();
             BeanUtils.copyProperties(companyWorkTimeDto, companyWeek);
             List<CompanyWeek> companyWeekList = companyWeekService.getPageCompanyWeek(companyWeek);
+
             List<Integer> companyWeeks = new ArrayList<>();
             for (CompanyWeek week : companyWeekList) {
                 Integer numberByText = WeeKEnum.getNumberByText(week.getWhichDayName());
@@ -104,9 +106,13 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
         if (DataUtil.isNotEmpty(companyWorkTimeDto.getType())) {
             wrapper.eq(CompanyWorkTime::getType, companyWorkTimeDto.getType());
         }
-        if (DataUtil.isNotEmpty(companyWorkTimeDto.getCeoUserId())) {
-            wrapper.eq(CompanyWorkTime::getCeoUserId, companyWorkTimeDto.getCeoUserId());
-        }
+        return baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public CompanyWorkTime getCeoCompanyWorkTimeById() {
+        LambdaQueryWrapper<CompanyWorkTime> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CompanyWorkTime::getType, 0);
         return baseMapper.selectOne(wrapper);
     }
 
@@ -129,8 +135,8 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
         if (DataUtil.isNotEmpty(companyWorkTimeDto.getCompanyId())) {
             updateWrapper.eq(CompanyWorkTime::getCompanyId, companyWorkTimeDto.getCompanyId());
         }
-        if (DataUtil.isNotEmpty(companyWorkTimeDto.getCeoUserId())) {
-            updateWrapper.eq(CompanyWorkTime::getCeoUserId, companyWorkTimeDto.getCeoUserId());
+        if (DataUtil.isNotEmpty(companyWorkTimeDto.getType())) {
+            updateWrapper.eq(CompanyWorkTime::getType, companyWorkTimeDto.getType());
         }
         return baseMapper.update(companyWorkTime, updateWrapper);
     }
@@ -159,9 +165,9 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
             Integer integer = updateCompanyWorkTime(companyWorkTimeDto);
             if (integer > 0) {
                 //删除已有的上班时间
-                companyWeekService.deleteCompanyWeek(companyWorkTimeAddDto.getCompanyId(), companyWorkTimeAddDto.getType(), companyWorkTimeAddDto.getCeoUserId());
+                companyWeekService.deleteCompanyWeek(companyWorkTimeAddDto.getCompanyId(), companyWorkTimeAddDto.getType());
                 //删除已有的打卡时间
-                unionCompanyWorkTimeService.deleteUnionCompanyWorkTime(companyWorkTimeAddDto.getCompanyId(), companyWorkTimeAddDto.getType(), companyWorkTimeAddDto.getCeoUserId());
+                unionCompanyWorkTimeService.deleteUnionCompanyWorkTime(companyWorkTimeAddDto.getCompanyId(), companyWorkTimeAddDto.getType());
                 for (Integer workingHour : workingHours) {
                     //转为中文存储
                     String textByNumber = WeeKEnum.getTextByNumber(workingHour);
@@ -169,14 +175,12 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
                     companyWeek.setCompanyId(companyWorkTimeDto.getCompanyId());
                     companyWeek.setWhichDayName(textByNumber);
                     companyWeek.setType(companyWorkTimeAddDto.getType());
-                    companyWeek.setCeoUserId(companyWorkTimeAddDto.getCeoUserId());
                     //新增上班时间
                     companyWeekService.addCompanyWeek(companyWeek);
                 }
                 for (UnionCompanyWorkTimeDto workTime : companyWorkTimes) {
                     workTime.setCompanyId(companyWorkTimeDto.getCompanyId());
                     workTime.setType(companyWorkTimeAddDto.getType());
-                    workTime.setCeoUserId(companyWorkTimeAddDto.getCeoUserId());
                     //新增打卡时间
                     unionCompanyWorkTimeService.addUnionCompanyWorkTime(workTime);
                 }
@@ -195,14 +199,12 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
                     companyWeek.setCompanyId(companyWorkTimeDto.getCompanyId());
                     companyWeek.setWhichDayName(textByNumber);
                     companyWeek.setType(companyWorkTimeAddDto.getType());
-                    companyWeek.setCeoUserId(companyWorkTimeAddDto.getCeoUserId());
                     //新增上班时间
                     companyWeekService.addCompanyWeek(companyWeek);
                 }
                 for (UnionCompanyWorkTimeDto workTime : companyWorkTimes) {
                     workTime.setCompanyId(companyWorkTimeDto.getCompanyId());
                     workTime.setType(companyWorkTimeAddDto.getType());
-                    workTime.setCeoUserId(companyWorkTimeAddDto.getCeoUserId());
                     //新增打卡时间
                     unionCompanyWorkTimeService.addUnionCompanyWorkTime(workTime);
                 }

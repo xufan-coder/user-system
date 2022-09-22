@@ -51,7 +51,7 @@ public interface CompanyWeekService extends IService<CompanyWeek> {
     * @Description: 删除
     * @Date: 2022/8/31 17:25
     */
-    public Integer deleteCompanyWeek(String id, Integer type, String ceoId);
+    public Integer deleteCompanyWeek(String id, Integer type);
 
 }
 

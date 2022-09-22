@@ -40,6 +40,14 @@ public interface CompanyWorkTimeService extends IService<CompanyWorkTime> {
     public CompanyWorkTime getCompanyWorkTimeById(CompanyWorkTimeDto companyWorkTimeDto);
 
     /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 获取ceo上下班时间
+    * @Date: 2022/9/22 12:06
+    */
+    public CompanyWorkTime getCeoCompanyWorkTimeById();
+
+    /**
      * 新增
      *
      * @param companyWorkTimeDto

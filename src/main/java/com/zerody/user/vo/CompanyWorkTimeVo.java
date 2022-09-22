@@ -31,11 +31,6 @@ public class CompanyWorkTimeVo {
     private Integer type;
 
     /**
-     * boss账号id
-     */
-    private String ceoUserId;
-
-    /**
      * 上班时间集合
      */
     private List<Integer> workingHours;
