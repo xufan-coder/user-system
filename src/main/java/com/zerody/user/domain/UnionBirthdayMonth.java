@@ -18,7 +18,7 @@ public class UnionBirthdayMonth {
     private String templateId;
 
     /**月份*/
-    private String month;
+    private Integer month;
 
     /**创建时间**/
     private Date createTime;
