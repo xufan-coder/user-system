@@ -73,9 +73,9 @@ public class CompanyWorkTimeServiceImpl extends ServiceImpl<CompanyWorkTimeMappe
             List<UnionCompanyWorkTime> unionCompanyWorkTimeList = unionCompanyWorkTimeService.getUnionCompanyWorkTime(unionCompanyWorkTime);
             companyWorkTimeVo.setCompanyWorkTimes(unionCompanyWorkTimeList);
             return companyWorkTimeVo;
-        } else {
-            throw new DefaultException("企业上下班时间为空");
         }
+        return null;
+
     }
 
     @Override
