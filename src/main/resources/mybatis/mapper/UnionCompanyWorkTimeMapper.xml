@@ -9,6 +9,7 @@
         <result property="companyId" column="company_id"/>
         <result property="workPunchTime" column="work_punch_time"/>
         <result property="downPunchTime" column="down_punch_time"/>
+        <result property="type" column="type"/>
     </resultMap>
 
 

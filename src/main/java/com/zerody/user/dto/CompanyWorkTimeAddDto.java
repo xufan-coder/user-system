@@ -3,6 +3,7 @@ package com.zerody.user.dto;
 import com.zerody.user.domain.UnionCompanyWorkTime;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -13,13 +14,18 @@ import java.util.List;
 public class CompanyWorkTimeAddDto {
 
     /**
-     * 公司id
+     * 企业id
      */
     private String companyId;
     /**
      * 公司名称
      */
     private String companyName;
+
+    /**
+     * 类型(1:用户、0:boss)
+     */
+    private Integer type;
 
     /**
      * 上班时间

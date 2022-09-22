@@ -21,5 +21,9 @@ public class UnionCompanyWorkTimeDto {
      * 下班打卡时间
      */
     private String downPunchTime;
+    /**
+     * 类型(1:用户、0:boss)
+     */
+    private Integer type;
 
 }

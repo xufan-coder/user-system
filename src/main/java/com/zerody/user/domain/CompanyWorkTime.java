@@ -8,7 +8,7 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 公司上下班时间表
+ * 企业上下班时间表
  *
  * @author chenKeFeng
  * @date 2022-08-29 11:59:15
@@ -42,5 +42,10 @@ public class CompanyWorkTime implements Serializable {
 	 * 是否删除（0未删除，1删除）
 	 */
 	private Integer deleted;
+
+	/**
+	 * 类型(1:用户、0:boss)
+	 */
+	private Integer type;
 
 }
