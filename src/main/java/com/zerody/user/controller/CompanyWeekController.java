@@ -2,6 +2,7 @@ package com.zerody.user.controller;
 
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
@@ -11,6 +12,7 @@ import com.zerody.user.service.CompanyWorkTimeService;
 import com.zerody.user.vo.CompanyWorkTimeVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,7 +35,21 @@ public class CompanyWeekController {
      */
     @PostMapping("/add")
     public DataResult<Object> add(@RequestBody CompanyWorkTimeAddDto companyWorkTimeAddDto) {
+        if (DataUtil.isEmpty(companyWorkTimeAddDto.getType())) {
+            return R.error("类型不能为空");
+        }
         try {
+            if (companyWorkTimeAddDto.getType().equals(YesNo.YES)) {
+                if (DataUtil.isEmpty(companyWorkTimeAddDto.getCompanyId())) {
+                    return R.error("企业id不能为空");
+                }
+                companyWorkTimeAddDto.setCeoUserId(null);
+            } else {
+                if (DataUtil.isEmpty(companyWorkTimeAddDto.getType())) {
+                    return R.error("ceoId不能为空");
+                }
+                companyWorkTimeAddDto.setCompanyId(null);
+            }
             return R.success(companyWorkTimeService.setCommuteTime(companyWorkTimeAddDto));
         } catch (Exception e) {
             log.error("设置企业上下班时间出错:{}", e.getMessage());
@@ -49,16 +65,19 @@ public class CompanyWeekController {
      */
     @GetMapping("/get-commute-time-backstage")
     public DataResult<CompanyWorkTimeVo> getCompanyCommuteTimePc(CompanyWorkTimeDto companyWorkTimeDto) {
-        if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
+        if (DataUtil.isEmpty(companyWorkTimeDto.getType())) {
+            return R.error("类型不能为空");
+        }
+        /*if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
             UserVo user = UserUtils.getUser();
             companyWorkTimeDto.setCompanyId(user.getCompanyId());
-        }
+        }*/
 
         try {
             return R.success(companyWorkTimeService.getPageCompanyWorkTime(companyWorkTimeDto));
         } catch (Exception e) {
             log.error("获取企业上下班时间PC出错:{}", e.getMessage());
-            return R.error("获取企业上下班时间PC出错" + e.getMessage());
+            return R.error(e.getMessage());
         }
     }
 
@@ -70,14 +89,23 @@ public class CompanyWeekController {
      */
     @GetMapping("/get-commute-time-app")
     public DataResult<CompanyWorkTimeVo> getCompanyCommuteTimeApp(CompanyWorkTimeDto companyWorkTimeDto) {
-        if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
-            return R.error("企业id不能为空");
+        UserVo user = UserUtils.getUser();
+        if (user.isCEO()) {
+            if (DataUtil.isEmpty(companyWorkTimeDto.getCeoUserId())) {
+                return R.error("bossId不能为空");
+            }
+            companyWorkTimeDto.setType(YesNo.NO);
+        } else {
+            if (DataUtil.isEmpty(companyWorkTimeDto.getCompanyId())) {
+                return R.error("企业id不能为空");
+            }
+            companyWorkTimeDto.setType(YesNo.YES);
         }
         try {
             return R.success(companyWorkTimeService.getPageCompanyWorkTime(companyWorkTimeDto));
         } catch (Exception e) {
             log.error("获取企业上下班时间APP出错:{}", e.getMessage());
-            return R.error("获取企业上下班时间APP出错" + e.getMessage());
+            return R.error(e.getMessage());
         }
     }
 
