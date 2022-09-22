@@ -2,7 +2,9 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.domain.CompanyWeek;
 import com.zerody.user.dto.UnionCompanyWorkTimeDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class UnionCompanyWorkTimeServiceImpl extends ServiceImpl<UnionCompanyWor
         if (DataUtil.isNotEmpty(unionCompanyWorkTime.getCompanyId())) {
             wrapper.eq(UnionCompanyWorkTime::getCompanyId, unionCompanyWorkTime.getCompanyId());
         }
+        if (DataUtil.isNotEmpty(unionCompanyWorkTime.getType())) {
+            wrapper.eq(UnionCompanyWorkTime::getType, unionCompanyWorkTime.getType());
+        }
         return this.baseMapper.selectList(wrapper);
     }
 
@@ -52,9 +57,15 @@ public class UnionCompanyWorkTimeServiceImpl extends ServiceImpl<UnionCompanyWor
     }
 
     @Override
-    public Integer deleteUnionCompanyWorkTime(String id) {
+    public Integer deleteUnionCompanyWorkTime(String id, Integer type) {
         LambdaQueryWrapper<UnionCompanyWorkTime> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(UnionCompanyWorkTime::getCompanyId, id);
+        if (type.equals(YesNo.YES)) {
+            if (DataUtil.isNotEmpty(id)) {
+                wrapper.eq(UnionCompanyWorkTime::getCompanyId, id);
+            }
+        } else {
+            wrapper.eq(UnionCompanyWorkTime::getType, 0);
+        }
         return this.baseMapper.delete(wrapper);
     }
 

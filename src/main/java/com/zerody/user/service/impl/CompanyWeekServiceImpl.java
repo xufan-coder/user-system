@@ -29,6 +29,9 @@ public class CompanyWeekServiceImpl extends ServiceImpl<CompanyWeekMapper, Compa
         if (DataUtil.isNotEmpty(companyWeek.getCompanyId())) {
             wrapper.eq(CompanyWeek::getCompanyId, companyWeek.getCompanyId());
         }
+        if (DataUtil.isNotEmpty(companyWeek.getType())) {
+            wrapper.eq(CompanyWeek::getType, companyWeek.getType());
+        }
         return this.baseMapper.selectList(wrapper);
     }
 
@@ -50,9 +53,15 @@ public class CompanyWeekServiceImpl extends ServiceImpl<CompanyWeekMapper, Compa
     }
 
     @Override
-    public Integer deleteCompanyWeek(String id) {
+    public Integer deleteCompanyWeek(String id, Integer type) {
         LambdaQueryWrapper<CompanyWeek> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CompanyWeek::getCompanyId, id);
+        if (type.equals(1)) {
+            if (DataUtil.isNotEmpty(id)) {
+                wrapper.eq(CompanyWeek::getCompanyId, id);
+            }
+        } else {
+            wrapper.eq(CompanyWeek::getType, 0);
+        }
         return this.baseMapper.delete(wrapper);
     }
 

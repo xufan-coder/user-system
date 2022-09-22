@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.data.DataAddDto;
 import com.zerody.user.service.DataService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,10 @@ public class DataController {
      */
     @PostMapping("/add")
     public DataResult<Void> addData(@Validated @RequestBody DataAddDto param) {
+        log.info("添加键值对数据： {}", param);
         try {
             param.setDataKey(param.getDataKey().trim());
+            param.setUser(UserUtils.getUser());
             this.service.addData(param);
             return R.success();
         } catch (DefaultException e) {
@@ -59,8 +62,10 @@ public class DataController {
      */
     @GetMapping("/get/value/by-key/{key}")
     public DataResult<String> getValueByKey(@PathVariable("key") String key) {
+        log.info("通过key获取value入参： {}", key);
         try {
-            String value = this.service.getValueByKey(key);
+            String value = this.service.getValueByKey(key, UserUtils.getUser());
+            log.info("获取value返回值： {}", value);
             return R.success(value);
         } catch (DefaultException e) {
             log.error("获取键值对校验不通过:{}", e, e);

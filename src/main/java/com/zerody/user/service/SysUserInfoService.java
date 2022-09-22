@@ -263,6 +263,8 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
 
     List<SubordinateUserQueryVo> getSuperiorList(UserVo user);
 
+    List<SubordinateUserQueryVo> getInnerSuperiorList(UserVo user);
+
     void doLogout(String userId);
 
     StaffInfoVo getSuperiorAdmin(UserVo userVo);

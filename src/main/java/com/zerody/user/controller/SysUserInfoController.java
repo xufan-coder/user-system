@@ -1516,7 +1516,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @PostMapping("/inner/superior/all")
     public DataResult<List<SubordinateUserQueryVo>> getInnerSuperiorList(@RequestBody UserVo user) {
         try {
-            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getSuperiorList(user);
+            List<SubordinateUserQueryVo> getSuperiorList = this.sysUserInfoService.getInnerSuperiorList(user);
             return R.success(getSuperiorList);
         } catch (DefaultException e) {
             log.error("获取所有上级出错:{}", e, e);

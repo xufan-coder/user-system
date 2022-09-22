@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.Data;
 import com.zerody.user.dto.data.DataAddDto;
 
@@ -33,5 +34,5 @@ public interface DataService extends IService<Data> {
      * @param                key 键值对key
      * @return               java.lang.String
      */
-    String getValueByKey(String key);
+    String getValueByKey(String key, UserVo user);
 }

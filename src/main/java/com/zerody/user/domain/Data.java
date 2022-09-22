@@ -34,4 +34,9 @@ public class Data {
     * 创建时间
     */
     private Date createTime;
+
+    /**
+     * 用户id
+     */
+    private String userId;
 }

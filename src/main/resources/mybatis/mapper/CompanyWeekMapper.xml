@@ -10,7 +10,7 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="companyId" column="company_id"/>
-        <result property="deleted" column="deleted"/>
+        <result property="type" column="type"/>
     </resultMap>
 
 

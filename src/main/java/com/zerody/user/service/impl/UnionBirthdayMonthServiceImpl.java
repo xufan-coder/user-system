@@ -46,7 +46,7 @@ public class UnionBirthdayMonthServiceImpl extends ServiceImpl<UnionBirthdayMont
             UnionBirthdayMonth template = new UnionBirthdayMonth();
             template.setId(UUIDutils.getUUID32());
             template.setTemplateId(templateId);
-            template.setMonth(month.toString());
+            template.setMonth(month);
             template.setCreateTime(new Date());
             templateMonths.add(template);
         }

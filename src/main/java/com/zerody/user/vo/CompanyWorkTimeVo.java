@@ -26,6 +26,11 @@ public class CompanyWorkTimeVo {
     private String companyName;
 
     /**
+     * 类型(1:用户、0:boss)
+     */
+    private Integer type;
+
+    /**
      * 上班时间集合
      */
     private List<Integer> workingHours;

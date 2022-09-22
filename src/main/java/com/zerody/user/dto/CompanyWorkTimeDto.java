@@ -26,4 +26,9 @@ public class CompanyWorkTimeDto extends PageQueryDto {
      */
     private String companyName;
 
+    /**
+     * 类型(1:用户、0:boss)
+     */
+    private Integer type;
+
 }
