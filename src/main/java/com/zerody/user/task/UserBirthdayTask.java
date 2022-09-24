@@ -92,36 +92,43 @@ public class UserBirthdayTask {
                 if(template.getNoticeColleague() == YesNo.YES){
                     // 查询是否是总经理  推送 副总和团队长
                     if(StringUtils.isNotEmpty(user.getCompanyId())) {
-                        // 查询企业下的所有副总 和团队长
-                        List<String> admins = this.sysDepartmentInfoMapper.getUserIds(user.getCompanyId(),null);
+                        // 是否通知管理层
+                        if(template.getAdminColleague() == YesNo.YES){
+                            // 查询企业下的所有副总 和团队长
+                            List<String> admins = this.sysDepartmentInfoMapper.getUserIds(user.getCompanyId(),null);
 
-                        // 发送im 提醒生日祝福
-                        if(admins.size() > 0) {
-                            for(String userId : admins){
+                            // 发送im 提醒生日祝福
+                            if(admins.size() > 0) {
+                                for(String userId : admins){
+                                    params.put("text",birthdayMsgConfig.getContent2());
+                                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
+                                }
+                            }
+                        }
+
+                    } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
+                        List<String> userIds;
+                        // 是否通知管理层
+                        if(template.getAdminColleague() == YesNo.YES){
+                            // 查询是否是副总 和团队长 推送 团队长
+                            if(StringUtils.isEmpty(user.getParentId())){
+                                // 副总
+                                // 查询此部门下的团队长
+                                userIds = this.sysDepartmentInfoMapper.getUserIds(null,user.getDepartmentId());
+                                //发送im 提示生日祝福
+                            }else {
+                                // 团队长
+                                // 查询部门伙伴
+                                userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
+                            }
+
+                            //发送im 提示生日祝福
+                            // 移除自己 避免重复发送
+                            userIds.remove(user.getUserId());
+                            for(String userId : userIds){
                                 params.put("text",birthdayMsgConfig.getContent2());
                                 this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                             }
-                        }
-                    } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
-                        List<String> userIds;
-                        // 查询是否是副总 和团队长 推送 团队长
-                        if(StringUtils.isEmpty(user.getParentId())){
-                            // 副总
-                            // 查询此部门下的团队长
-                            userIds = this.sysDepartmentInfoMapper.getUserIds(null,user.getDepartmentId());
-                            //发送im 提示生日祝福
-                        }else {
-                            // 团队长
-                            // 查询部门伙伴
-                            userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
-                        }
-
-                        //发送im 提示生日祝福
-                        // 移除自己 避免重复发送
-                        userIds.remove(user.getUserId());
-                        for(String userId : userIds){
-                            params.put("text",birthdayMsgConfig.getContent2());
-                            this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                         }
 
                     }else {
