@@ -229,6 +229,17 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public SysUserInfo getUserById(String id) {
+        CeoUserInfo ceo = this.ceoUserInfoService.getById(id);
+        if (DataUtil.isNotEmpty(ceo)) {
+            SysUserInfo user = new SysUserInfo();
+            user.setPhoneNumber(ceo.getPhoneNumber());
+            user.setUserName(ceo.getUserName());
+            user.setAvatar(ceo.getAvatar());
+            user.setEmail(ceo.getEmail());
+            user.setRoleName("总经办");
+            user.setId(ceo.getId());
+            return user;
+        }
         SysUserInfo user =  sysUserInfoMapper.selectById(id);
         String staffId = sysStaffInfoMapper.getStaffIdByUserId(id);
         QueryWrapper<UnionRoleStaff> urQw = new QueryWrapper<>();
