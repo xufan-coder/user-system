@@ -27,6 +27,7 @@ import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DateUtil;
+import com.zerody.common.vo.IdCardDate;
 import com.zerody.common.vo.UserVo;
 import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
@@ -66,6 +67,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
@@ -244,6 +246,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setCreateUser(UserUtils.getUserName());
         sysUserInfo.setCreateId(UserUtils.getUserId());
         sysUserInfo.setStatus(StatusEnum.activity.getValue());
+        //获取身份证年月日
+        IdCardDate date = DateUtil.getIdCardDate(sysUserInfo.getCertificateCard());
+        //月
+        sysUserInfo.setBirthdayMonth(date.getMonth());
+        //日
+        sysUserInfo.setBirthdayDay(date.getDay());
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
         sysUserInfo.setIsEdit(YesNo.YES);
@@ -294,7 +302,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.saveOrUpdate(staff);
-
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
@@ -680,6 +687,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
         }
+        //获取身份证年月日
+        IdCardDate date = DateUtil.getIdCardDate(sysUserInfo.getCertificateCard());
+        //月
+        sysUserInfo.setBirthdayMonth(date.getMonth());
+        //日
+        sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfoMapper.updateById(sysUserInfo);
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
@@ -1368,6 +1381,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setMaritalStatus(StringUtils.isEmpty(row[11]) ? null : MaritalStatusEnum.getCodeByName(row[11]).getCode());
         userInfo.setBirthday(StringUtils.isEmpty(row[12]) ? null : format.parse(row[12]));
         userInfo.setCertificateCard(row[13]);
+        //获取身份证年月日
+        IdCardDate date = DateUtil.getIdCardDate(row[13]);
+        //月
+        userInfo.setBirthdayMonth(date.getMonth());
+        //日
+        userInfo.setBirthdayDay(date.getDay());
         userInfo.setCertificateCardAddress(row[14]);
         userInfo.setContactAddress(row[15]);
         userInfo.setEmail(row[16]);
@@ -1597,6 +1616,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setMaritalStatus(StringUtils.isEmpty(row[10]) ? null : MaritalStatusEnum.getCodeByName(row[10]).getCode());
         userInfo.setBirthday(StringUtils.isEmpty(row[11]) ? null : format.parse(row[11]));
         userInfo.setCertificateCard(row[12]);
+        //获取身份证年月日
+        IdCardDate date = DateUtil.getIdCardDate(row[12]);
+        //月
+        userInfo.setBirthdayMonth(date.getMonth());
+        //日
+        userInfo.setBirthdayDay(date.getDay());
         userInfo.setCertificateCardAddress(row[13]);
         userInfo.setContactAddress(row[14]);
         userInfo.setEmail(row[15]);
@@ -2627,6 +2652,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public List<SysUserInfo> getJobUser(String parentId) {
         return this.sysStaffInfoMapper.getJobUser(parentId);
+    }
+
+    @Override
+    public List<StaffInfoVo> getAllDuytUserInner() {
+        return this.sysUserInfoMapper.getAllDuytUser();
     }
 
     @Override

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.UserBirthdayTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.UserBirthdayTemplate" >
+      <id column="id" jdbcType="VARCHAR" property="id" />
+      <result column="blessing"  property="blessing" />
+      <result column="push_time"  property="pushTime" />
+      <result column="poster_url"  property="posterUrl" />
+      <result column="notice_colleague"  property="noticeColleague" />
+      <result column="notice_text"  property="noticeText" />
+      <result column="notice_Poster_url"  property="noticePosterUrl" />
+      <result column="admin_colleague"  property="adminColleague" />
+      <result column="admin_text"  property="adminText" />
+      <result column="admin_Poster_url"  property="adminPosterUrl" />
+      <result column="state"  property="state" />
+      <result column="deleted"  property="deleted" />
+      <result column="create_time"  property="createTime" />
+      <result column="create_username"  property="createUsername" />
+      <result column="create_by"  property="createBy" />
+      <result column="update_by"  property="updateBy" />
+      <result column="update_time"  property="updateTime" />
+  </resultMap>
+
+  <select id="getTemplatePage" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
+    select bt.id,bt.blessing,bt.push_time, bt.poster_url,bt.state,GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text
+    from user_birthday_template bt
+    left join union_birthday_month bm on bm.template_id = bt.id
+      where  bt.deleted = 1
+    <if test="queryDto.state neq null">
+        and bt.state = #{queryDto.state}
+    </if>
+    <if test="queryDto.month neq null and queryDto.month neq ''">
+        and FIND_IN_SET( bm.`month`,#{queryDto.month})
+    </if>
+    GROUP BY bt.id order by bm.`month` asc
+  </select>
+
+    <select id="getTemplateInfo" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
+        select bt.id,bt.blessing,bt.push_time, bt.poster_url,bt.state,bt.notice_text,bt.notice_poster_url
+    from user_birthday_template bt
+    join union_birthday_month bm on bm.template_id = bt.id
+      where bt.state = 1 and bt.deleted = 1 and bm.`month` = #{month}
+    </select>
+
+    <select id="getTemplateByTime" resultMap="BaseResultMap">
+        select bt.* from user_birthday_template bt
+        join union_birthday_month bm on bm.template_id = bt.id
+        where bt.state = 1 and deleted = 1 and bm.`month` = #{month}
+        and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
+    </select>
+
+    <select id="getTemplateInfoById" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
+         select bt.*,
+         GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text
+        from user_birthday_template bt
+        left join union_birthday_month bm on bm.template_id = bt.id
+        where bt.id = #{templateId}
+    </select>
+
+</mapper>

@@ -40,6 +40,7 @@ import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -402,11 +403,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         adminQw.lambda().eq(CompanyAdmin::getDeleted, YesNo.NO);
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, dto.getId());
         CompanyAdmin admin = this.companyAdminMapper.selectOne(adminQw);
-        String oldAdminUserId = null;
+        String oldAdminUserId = null, oldStaffId = null;
         if (DataUtil.isNotEmpty(admin)) {
             SysStaffInfo oldAdmin = this.sysStaffInfoMapper.selectById(admin.getStaffId());
             oldAdminUserId = oldAdmin.getUserId();
         }
+        Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(dto.getStaffId());
         if (admin == null) {
             admin = new CompanyAdmin();
             admin.setId(UUIDutils.getUUID32());
@@ -417,8 +419,19 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             admin.setCreateTime(new Date());
             admin.setDeleted(YesNo.NO);
             this.companyAdminMapper.insert(admin);
+            //重置用户类型
+            SysStaffInfo staffInfo = new SysStaffInfo();
+            staffInfo.setId(dto.getStaffId());
+            staffInfo.setUserType(userTypeMap.get(dto.getStaffId()));
+            this.sysStaffInfoService.updateById(staffInfo);
             return;
         }
+        //重置用户类型
+        userTypeMap = UserTypeUtil.getUserTypeByStaffIds(admin.getStaffId());
+        SysStaffInfo staffInfo = new SysStaffInfo();
+        staffInfo.setId(admin.getStaffId());
+        staffInfo.setUserType(userTypeMap.get(admin.getStaffId()));
+        this.sysStaffInfoService.updateById(staffInfo);
         admin.setStaffId(dto.getStaffId());
         admin.setUpdateBy(UserUtils.getUserId());
         admin.setUpdateTime(new Date());
@@ -659,8 +672,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         }
         List<String[]> exportData = new ArrayList<>();
         final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
-                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "已放未收/笔数", timePeriodStr + "业绩/笔数",
-                "总业绩/笔数", "回款点数", "人均业绩", "人员回款率", "邀约人数", "上门人数"};
+                , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "邀约人数", "上门人数"};
         String[] rowData;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ReportFormsQueryVo info : list) {
@@ -673,12 +685,6 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             rowData[index++] = info.getApproveMoneyTotal() + "/" + info.getApproveNumTotal() + "笔";
             rowData[index++] = info.getLoansMoney() + "/" + info.getLoansNum() + "笔";
             rowData[index++] = info.getLoansMoneyTotal() + "/" + info.getLoansNumTotal() + "笔";
-            rowData[index++] = info.getNotProceedsMoney() + "/" + info.getNotProceedsNum() + "笔";
-            rowData[index++] = info.getPerformanceMoney() + "/" + info.getPerformanceNum() + "笔";
-            rowData[index++] = info.getPerformanceMoneyTotal() + "/" + info.getPerformanceNumTotal() + "笔";
-            rowData[index++] = info.getPaymentCount() + "%";
-            rowData[index++] = info.getPerCapitaPerformance();
-            rowData[index++] = info.getStaffPaymentRate() + "%";
             rowData[index++] = String.valueOf(info.getInviteNum());
             rowData[index++] = String.valueOf(info.getVisitNum());
             exportData.add(rowData);

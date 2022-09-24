@@ -12,7 +12,8 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 public enum DictTypeEnum {
-    IM_STATE("imState")
+    IM_STATE("imState"),
+    NO_CALL("noCall")
     ;
     @Getter
     private String alias;
