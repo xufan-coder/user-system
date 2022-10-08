@@ -22,7 +22,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: zerody!@#456
-    host: 192.168.100.201:3306
+    host: 10.66.50.241:3306
     url: jdbc:mysql://${spring.datasource.host}/zero_user?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     maxActive: 20
     initialSize: 1
@@ -71,7 +71,7 @@ upload:
 xxl:
   job:
     admin:
-      addresses: http://192.168.100.198:9080/xxl-job-admin
+      addresses: http://10.66.50.236:9080/xxl-job-admin
 ### 执行器通讯TOKEN [选填]：非空时启用；
     #accessToken=
 ### 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
@@ -103,6 +103,8 @@ import:
     day: 15
 
 flow:
+  oaCompany: oa-flow-001
+  oaCompanyName: OA审批企业
   client:
     clientId: user
     secret: aaa
@@ -117,7 +119,7 @@ flow:
     sleep-time: 10000
   # MQ地址
   rabbitmq:
-    host: 172.16.209.104
+    host: 10.66.50.235
     port: 5672
     username: zerody_admin
     password: zerody_test

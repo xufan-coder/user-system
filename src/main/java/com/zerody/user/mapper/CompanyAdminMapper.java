@@ -1,5 +1,6 @@
 package com.zerody.user.mapper;
 
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CompanyAdmin;
 import java.io.Serializable;
 import java.util.List;
@@ -15,4 +16,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface CompanyAdminMapper extends  BaseMapper<CompanyAdmin>{
 
     List<SubordinateUserQueryVo> getAdminList(@Param("companyId") String companyId);
+
+    StaffInfoVo getAdminInfoByCompanyId(@Param("companyId") String companyId);
 }

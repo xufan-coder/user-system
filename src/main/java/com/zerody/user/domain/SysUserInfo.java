@@ -159,4 +159,12 @@ public class  SysUserInfo extends BaseModel {
     private Integer isEdit;
 
     private String imState;
+
+    /**顾问关联同步(0-未同步 1-已同步)*/
+    private Integer adviserPush;
+
+    /**生日月*/
+    private Integer birthdayMonth;
+    /**生日天*/
+    private Integer birthdayDay;
 }
