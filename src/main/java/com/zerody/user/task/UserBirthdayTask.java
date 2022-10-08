@@ -88,10 +88,8 @@ public class UserBirthdayTask {
                 params.put("image",template.getPosterUrl());
                 this.sendPush(birthdayMsgConfig.getBirthdayUrl(),birthdayMsgConfig.getTitle(),template.getBlessing(),user.getUserId(),params);
 
-                // 是否推送给他人
-                if(template.getNoticeColleague() == YesNo.YES){
-                    // 查询是否是总经理  推送 副总和团队长
-                    if(StringUtils.isNotEmpty(user.getCompanyId())) {
+                // 查询是否是总经理  推送 副总和团队长  && 是否通知管理层
+                if(StringUtils.isNotEmpty(user.getCompanyId()) && template.getAdminColleague() == YesNo.YES) {
                         // 查询企业下的所有副总 和团队长
                         List<String> admins = this.sysDepartmentInfoMapper.getUserIds(user.getCompanyId(),null);
 
@@ -102,8 +100,8 @@ public class UserBirthdayTask {
                                 this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                             }
                         }
-                    } else if(StringUtils.isNotEmpty(user.getDepartmentId())){
-                        List<String> userIds;
+                } else if(StringUtils.isNotEmpty(user.getDepartmentId()) && template.getAdminColleague() == YesNo.YES){
+                    List<String> userIds;
                         // 查询是否是副总 和团队长 推送 团队长
                         if(StringUtils.isEmpty(user.getParentId())){
                             // 副总
@@ -124,19 +122,18 @@ public class UserBirthdayTask {
                             this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(),userId,params);
                         }
 
-                    }else {
-                        log.info("伙伴生日推送：{}",user);
-                        // 伙伴  推送伙伴
-                        // 查询部门伙伴
-                        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getUserDepartmentId());
+                }else if(template.getNoticeColleague() == YesNo.YES){
+                    log.info("伙伴生日推送：{}",user);
+                    // 伙伴  推送伙伴
+                    // 查询部门伙伴
+                    List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getUserDepartmentId());
 
-                        //发送im 提示生日祝福
-                        // 移除自己 避免重复发送
-                        userIds.remove(user.getUserId());
-                        for(String userId : userIds){
-                            params.put("text",birthdayMsgConfig.getContent());
-                            this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
-                        }
+                    //发送im 提示生日祝福
+                    // 移除自己 避免重复发送
+                    userIds.remove(user.getUserId());
+                    for(String userId : userIds){
+                        params.put("text",birthdayMsgConfig.getContent());
+                        this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent(),userId,params);
                     }
                 }
             }
