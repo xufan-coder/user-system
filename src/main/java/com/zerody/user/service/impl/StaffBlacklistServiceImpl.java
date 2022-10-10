@@ -214,7 +214,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         for (SysComapnyInfoVo sysComapnyInfoVo : sysCompanyAll) {
             Map<String, Object> map = maps.stream().filter(l -> l.get("company_id").toString().equals(sysComapnyInfoVo.getId())).findFirst().orElse(null);
             if(DataUtil.isNotEmpty(map)){
-                result.add(new BlackListCount(sysComapnyInfoVo.getCompanyName(),map.get("number")==null?0:Integer.parseInt(map.get("number").toString())));
+                result.add(new BlackListCount(sysComapnyInfoVo.getCompanyName(),
+                        sysComapnyInfoVo.getId()
+                        ,map.get("number")==null?0:Integer.parseInt(map.get("number").toString())));
             }
         }
         //降序 去重

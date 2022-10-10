@@ -19,6 +19,11 @@ public class BlackListCount {
     private String companyName;
 
     /**
+    *   企业ID
+    */
+    private String companyId;
+
+    /**
     *   数量
     */
     private Integer number;
@@ -27,8 +32,9 @@ public class BlackListCount {
         super();
     }
 
-    public BlackListCount(String companyName, Integer number) {
+    public BlackListCount(String companyName, String companyId, Integer number) {
         this.companyName = companyName;
+        this.companyId = companyId;
         this.number = number;
     }
 }
