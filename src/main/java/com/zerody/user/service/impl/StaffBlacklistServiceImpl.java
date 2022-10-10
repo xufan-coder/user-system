@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,9 +33,9 @@ import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
-import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
-import com.zerody.user.vo.MobileBlacklistQueryVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.zerody.user.util.DistinctByProperty.distinctByKey;
 
 /**
  * @author PengQiang
@@ -196,6 +200,44 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         result.setImages(images);
         return result;
     }
+
+    @Override
+    public List<BlackListCount> getBlacklistCount() {
+        List<BlackListCount> result=new ArrayList<>();
+        List<SysComapnyInfoVo> sysCompanyAll = this.sysCompanyInfoService.getCompanyAll(null);
+        QueryWrapper<StaffBlacklist> qw = new QueryWrapper<StaffBlacklist>();
+        qw.select("company_id,count(1) as number").eq("state","BLOCK")
+                .groupBy("company_id");
+        List<Map<String, Object>> maps = this.listMaps(qw);
+        maps = maps.stream().filter(l -> l.get("company_id")!=null).collect(Collectors.toList());
+
+        for (SysComapnyInfoVo sysComapnyInfoVo : sysCompanyAll) {
+            Map<String, Object> map = maps.stream().filter(l -> l.get("company_id").toString().equals(sysComapnyInfoVo.getId())).findFirst().orElse(null);
+            if(DataUtil.isNotEmpty(map)){
+                result.add(new BlackListCount(sysComapnyInfoVo.getCompanyName(),map.get("number")==null?0:Integer.parseInt(map.get("number").toString())));
+            }
+        }
+        //降序 去重
+        return  result.stream().sorted(Comparator.comparingInt(BlackListCount::getNumber).reversed())
+                .filter(DistinctByProperty.distinctByKey(s -> s.getCompanyName()))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void updateStaffBlacklist(StaffBlacklist param) {
+        if(DataUtil.isEmpty(param.getId())||DataUtil.isEmpty(param.getCompanyId())){
+            throw new DefaultException("参数不正确!");
+        }
+        UpdateWrapper<StaffBlacklist> uw=new UpdateWrapper();
+        uw.lambda().eq(StaffBlacklist::getId,param.getId())
+                .set(StaffBlacklist::getCompanyId,param.getCompanyId());
+        boolean update = this.update(uw);
+        if(!update){
+            throw new DefaultException("ID参数不正确");
+        }
+    }
+
 
     private Map<String, Integer> doBlacklistImport(List<String[]> dataList, UserVo user, ImportInfo imp) {
         Map<String, Integer> importResult = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);

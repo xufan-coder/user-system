@@ -6,11 +6,13 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
+import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -85,4 +87,8 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     String doBlacklistExternalImport(MultipartFile file, UserVo user) throws IOException;
 
     FrameworkBlacListQueryPageVo getInfoById(String id);
+
+    List<BlackListCount> getBlacklistCount();
+
+    void updateStaffBlacklist(StaffBlacklist param);
 }
