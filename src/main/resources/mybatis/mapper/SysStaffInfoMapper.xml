@@ -639,7 +639,7 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         LEFT JOIN  union_staff_position AS usp ON usp.staff_id=ssi.id
         LEFT JOIN sys_job_position AS sjp ON sjp.id=usp.position_id
-        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         JOIN sys_user_info AS sui ON sui.id = ssi.user_id
         <where>
             sui.id = #{id}

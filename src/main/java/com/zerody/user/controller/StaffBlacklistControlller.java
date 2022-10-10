@@ -6,12 +6,13 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
-import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -19,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 员工黑名单控制类
@@ -277,4 +280,45 @@ public class StaffBlacklistControlller {
         }
     }
 
+
+    /**
+     * BOSS查看页面
+     * 统计内控名单-按企业
+     * @author  DaBai
+     * @date  2022/10/10 15:12
+     */
+    @GetMapping("/statistics-by-company")
+    public DataResult<List<BlackListCount>> getBlacklistCount(){
+        try {
+            List<BlackListCount> result = this.service.getBlacklistCount();
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("统计黑名单企业人数出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("统计黑名单企业人数出错：{}", e, e);
+            return R.error("统计黑名单企业人数出错" + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * 修改伙伴黑名单所属企业
+     * @author  DaBai
+     * @date  2022/10/10 16:26
+     */
+    @PutMapping("/update")
+    public DataResult<Object> updateStaffBlacklist(@RequestBody StaffBlacklist param){
+        try {
+           this.service.updateStaffBlacklist(param);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("修改伙伴黑名单所属企业错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("修改伙伴黑名单所属企业错误：{}", e, e);
+            return R.error("修改伙伴黑名单所属企业错误" + e.getMessage());
+        }
+    }
 }
