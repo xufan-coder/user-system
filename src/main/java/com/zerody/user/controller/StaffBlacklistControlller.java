@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
@@ -147,7 +148,9 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAllPage(FrameworkBlacListQueryPageDto param){
         try {
             if (!UserUtils.getUser().isBackAdmin()) {
-                param.setCompanyId(UserUtils.getUser().getCompanyId());
+                if(DataUtil.isEmpty(param.getCompanyId())) {
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }
             }
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
