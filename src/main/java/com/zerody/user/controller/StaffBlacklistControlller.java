@@ -164,6 +164,26 @@ public class StaffBlacklistControlller {
         }
     }
 
+     /**
+      * @author  DaBai
+      * @date  2022/10/11 10:46
+      */
+    @GetMapping("/app/page")
+    public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
+        try {
+            param.setQueryDimensionality("blockUser");
+            IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("查询黑名单错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("查询黑名单错误：{}", e, e);
+            return R.error("查询黑名单错误" + e.getMessage());
+        }
+    }
+
+
     /**
      *
      *
