@@ -234,16 +234,41 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public void updateStaffBlacklist(StaffBlacklist param) {
-        if(DataUtil.isEmpty(param.getId())||DataUtil.isEmpty(param.getCompanyId())){
+        if(DataUtil.isEmpty(param.getId())){
             throw new DefaultException("参数不正确!");
         }
         UpdateWrapper<StaffBlacklist> uw=new UpdateWrapper();
-        uw.lambda().eq(StaffBlacklist::getId,param.getId())
-                .set(StaffBlacklist::getCompanyId,param.getCompanyId());
+        uw.lambda().eq(StaffBlacklist::getId,param.getId());
+        if(DataUtil.isNotEmpty(param.getCompanyId())){
+            uw.lambda().set(StaffBlacklist::getCompanyId,param.getCompanyId());
+        }
+        if(DataUtil.isNotEmpty(param.getReason())){
+            uw.lambda().set(StaffBlacklist::getReason,param.getReason());
+        }
+        uw.lambda().set(StaffBlacklist::getUpdateTime,new Date());
         boolean update = this.update(uw);
         if(!update){
             throw new DefaultException("ID参数不正确");
         }
+        if(DataUtil.isNotEmpty(param.getImages())){
+            List<String> images = param.getImages();
+            List<Image> imageAdds = new ArrayList<>();
+            Image image;
+            for (String s : images) {
+                image = new Image();
+                image.setConnectId(param.getId());
+                image.setId(UUIDutils.getUUID32());
+                image.setImageType(ImageTypeInfo.STAFF_BLACKLIST);
+                image.setImageUrl(s);
+                image.setCreateTime(new Date());
+                imageAdds.add(image);
+            }
+            QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+            imageRemoveQw.lambda().eq(Image::getConnectId, param.getId());
+            imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
+            this.imageService.addImages(imageRemoveQw, imageAdds);
+        }
+
     }
 
 
