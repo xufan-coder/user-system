@@ -88,7 +88,7 @@
         AND sb.company_id = #{param.companyId}
       </if>
 
-      <if test="param.keyword neq null and param.companyId neq ''">
+      <if test="param.keyword neq null and param.keyword neq ''">
           AND (
               sb.user_name LIKE CONCAT('%', #{param.keyword}, '%')
               or sb.mobile LIKE CONCAT('%', #{param.keyword}, '%')
