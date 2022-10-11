@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
-import com.zerody.user.dto.BlackQueryDto;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.vo.BlackListCount;

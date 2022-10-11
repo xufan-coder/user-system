@@ -1,14 +1,12 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
-import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -25,19 +23,19 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
-import com.zerody.user.dto.BlackQueryDto;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
-import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
-import com.zerody.user.vo.*;
+import com.zerody.user.vo.BlackListCount;
+import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.MobileBlacklistQueryVo;
+import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,8 +48,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static com.zerody.user.util.DistinctByProperty.distinctByKey;
 
 /**
  * @author PengQiang
