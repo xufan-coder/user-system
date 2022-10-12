@@ -72,7 +72,7 @@
     FROM
         staff_blacklist AS sb
     LEFT JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
-    LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
+    LEFT JOIN sys_company_info AS sci ON sb.company_id = sci.id
     LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
     LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
     LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
