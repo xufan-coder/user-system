@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -75,4 +76,7 @@ public class StaffBlacklist {
 
     @TableField(exist = false)
     private String companyName;
+
+    @TableField(exist = false)
+    private List<String> images;
 }

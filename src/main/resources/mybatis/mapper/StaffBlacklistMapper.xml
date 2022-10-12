@@ -61,9 +61,10 @@
         sb.state,
         sb.process_id,
         sb.process_key,
+        sb.company_id,
         sb.type,
         sb.identity_card as identity_card,
-        sui.certificate_card as identityCard2,
+        IFNULL(sui.certificate_card, sb.identity_card) as identityCard2,
         sb.id AS sb_id,
         sb.is_approve,
         sb.relieve_id ,
@@ -72,7 +73,7 @@
     FROM
         staff_blacklist AS sb
     LEFT JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
-    LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
+    LEFT JOIN sys_company_info AS sci ON sb.company_id = sci.id
     LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
     LEFT JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
     LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
@@ -85,7 +86,14 @@
     <where>
         sb.state='BLOCK'
       <if test="param.companyId neq null and param.companyId neq ''">
-            AND sb.company_id = #{param.companyId}
+        AND sb.company_id = #{param.companyId}
+      </if>
+
+      <if test="param.keyword neq null and param.keyword neq ''">
+          AND (
+              sb.user_name LIKE CONCAT('%', #{param.keyword}, '%')
+              or sb.mobile LIKE CONCAT('%', #{param.keyword}, '%')
+          )
       </if>
       <if test="param.companyIds neq null and param.companyIds.size() gt 0">
         AND sb.company_id

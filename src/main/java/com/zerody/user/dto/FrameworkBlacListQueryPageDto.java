@@ -12,6 +12,11 @@ import lombok.Data;
 @Data
 public class FrameworkBlacListQueryPageDto extends UserPositionPageParam {
 
+    /**
+    *   关键词筛选/app查询名字或手机号
+    */
+    private String keyword;
+
     private String userName;
 
     private String mobile;

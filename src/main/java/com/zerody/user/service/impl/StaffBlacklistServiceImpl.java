@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
-import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
@@ -27,14 +26,16 @@ import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
-import com.zerody.user.enums.StaffStatusEnum;
+import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
+import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
+import com.zerody.user.vo.SysComapnyInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -82,6 +84,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private ImportInfoService importInfoService;
+
+    @Autowired
+    private CeoCompanyRefService ceoCompanyRefService;
+
+    @Autowired
+    private CeoCompanyRefMapper ceoCompanyRefMapper;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -196,6 +204,73 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         result.setImages(images);
         return result;
     }
+
+    @Override
+    public List<BlackListCount> getBlacklistCount() {
+        List<BlackListCount> result=new ArrayList<>();
+        List<SysComapnyInfoVo> sysCompanyAll = this.sysCompanyInfoService.getCompanyAll(null);
+        QueryWrapper<StaffBlacklist> qw = new QueryWrapper<StaffBlacklist>();
+        qw.select("company_id,count(1) as number").eq("state","BLOCK")
+                .groupBy("company_id");
+        List<Map<String, Object>> maps = this.listMaps(qw);
+        maps = maps.stream().filter(l -> l.get("company_id")!=null).collect(Collectors.toList());
+
+        for (SysComapnyInfoVo sysComapnyInfoVo : sysCompanyAll) {
+            Map<String, Object> map = maps.stream().filter(l -> l.get("company_id").toString().equals(sysComapnyInfoVo.getId())).findFirst().orElse(null);
+            int number=0;
+            if(DataUtil.isNotEmpty(map)){
+                number=map.get("number")==null?0:Integer.parseInt(map.get("number").toString());
+            }
+            result.add(new BlackListCount(sysComapnyInfoVo.getCompanyName(),
+                        sysComapnyInfoVo.getId()
+                        ,number));
+        }
+        //降序 去重
+        return  result.stream().sorted(Comparator.comparingInt(BlackListCount::getNumber).reversed())
+                .filter(DistinctByProperty.distinctByKey(s -> s.getCompanyName()))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void updateStaffBlacklist(StaffBlacklist param) {
+        if(DataUtil.isEmpty(param.getId())){
+            throw new DefaultException("参数不正确!");
+        }
+        UpdateWrapper<StaffBlacklist> uw=new UpdateWrapper();
+        uw.lambda().eq(StaffBlacklist::getId,param.getId());
+        if(DataUtil.isNotEmpty(param.getCompanyId())){
+            uw.lambda().set(StaffBlacklist::getCompanyId,param.getCompanyId());
+        }
+        if(DataUtil.isNotEmpty(param.getReason())){
+            uw.lambda().set(StaffBlacklist::getReason,param.getReason());
+        }
+        uw.lambda().set(StaffBlacklist::getUpdateTime,new Date());
+        boolean update = this.update(uw);
+        if(!update){
+            throw new DefaultException("ID参数不正确");
+        }
+        if(DataUtil.isNotEmpty(param.getImages())){
+            List<String> images = param.getImages();
+            List<Image> imageAdds = new ArrayList<>();
+            Image image;
+            for (String s : images) {
+                image = new Image();
+                image.setConnectId(param.getId());
+                image.setId(UUIDutils.getUUID32());
+                image.setImageType(ImageTypeInfo.STAFF_BLACKLIST);
+                image.setImageUrl(s);
+                image.setCreateTime(new Date());
+                imageAdds.add(image);
+            }
+            QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+            imageRemoveQw.lambda().eq(Image::getConnectId, param.getId());
+            imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST);
+            this.imageService.addImages(imageRemoveQw, imageAdds);
+        }
+
+    }
+
 
     private Map<String, Integer> doBlacklistImport(List<String[]> dataList, UserVo user, ImportInfo imp) {
         Map<String, Integer> importResult = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
@@ -328,6 +403,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         entity.setCompanyName(data[index++]);
         entity.setReason(data[index++]);
         entity.setCreateTime(new Date());
+        entity.setApprovalTime(entity.getCreateTime());
         entity.setState(String.valueOf(YesNo.NO));
         entity.setSubmitUserId(user.getUserId());
         entity.setSubmitUserName(user.getUserName());
