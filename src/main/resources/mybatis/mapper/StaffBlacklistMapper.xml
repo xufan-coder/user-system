@@ -63,7 +63,7 @@
         sb.process_key,
         sb.type,
         sb.identity_card as identity_card,
-        sui.certificate_card as identityCard2,
+        IFNULL(sui.certificate_card, sb.identity_card) as identityCard2,
         sb.id AS sb_id,
         sb.is_approve,
         sb.relieve_id ,
