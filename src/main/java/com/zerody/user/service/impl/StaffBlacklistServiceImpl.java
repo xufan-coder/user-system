@@ -403,6 +403,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         entity.setCompanyName(data[index++]);
         entity.setReason(data[index++]);
         entity.setCreateTime(new Date());
+        entity.setApprovalTime(entity.getCreateTime());
         entity.setState(String.valueOf(YesNo.NO));
         entity.setSubmitUserId(user.getUserId());
         entity.setSubmitUserName(user.getUserName());
