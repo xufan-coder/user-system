@@ -90,6 +90,9 @@ public class FrameworkBlacListQueryPageVo {
     /** 视频 */
     private String video;
 
+    /** 企业id */
+    private String companyId;
+
     private List<String> images;
 
     public String getStateSting() {

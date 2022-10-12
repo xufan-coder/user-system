@@ -61,6 +61,7 @@
         sb.state,
         sb.process_id,
         sb.process_key,
+        sb.company_id,
         sb.type,
         sb.identity_card as identity_card,
         IFNULL(sui.certificate_card, sb.identity_card) as identityCard2,
