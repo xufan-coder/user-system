@@ -10,6 +10,7 @@ import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.service.CeoUserInfoService;
+import com.zerody.user.vo.AppCeoUserNotPushVo;
 import com.zerody.user.vo.SubordinateUserQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,5 +97,16 @@ public class CeoUserInfoController {
     public DataResult deleteCeoUserById(@PathVariable(value = "id") String id){
         ceoUserInfoService.deleteCeoUserById(id);
         return R.success();
+    }
+
+
+    @GetMapping("/test")
+    public DataResult<List<AppCeoUserNotPushVo>> test(String month, String day) {
+        try {
+            return R.success(ceoUserInfoService.getOtherCEOsBirthdayUser(month, day));
+        } catch (Exception e) {
+            log.error("描述出错:{}", e.getMessage());
+            return R.error("描述出错" + e.getMessage());
+        }
     }
 }
