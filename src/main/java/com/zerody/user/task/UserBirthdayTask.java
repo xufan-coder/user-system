@@ -6,6 +6,7 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
@@ -90,6 +91,11 @@ public class UserBirthdayTask {
 
             //获取当天生日的ceo信息
             List<AppCeoUserNotPushVo> ceoBirthdayUserList = this.ceoUserInfoService.getCeoBirthdayUserIds(month, day);
+            //推送给其他ceo  不包含自己
+            List<AppCeoUserNotPushVo> otherCEOsBirthdayUser = this.ceoUserInfoService.getOtherCEOsBirthdayUser(month, day);
+            log.info("推送给其他ceo数据条数 {}", otherCEOsBirthdayUser.size());
+            log.info("推送给其他ceo数据 {}", otherCEOsBirthdayUser);
+
             for (AppCeoUserNotPushVo ceoUser : ceoBirthdayUserList) {
                 log.info("推送给自己 {}", ceoUser);
                 Map params = new HashMap();
@@ -101,27 +107,6 @@ public class UserBirthdayTask {
                 params.put("image", template.getPosterUrl());
                 //推给自己
                 this.sendPush(birthdayMsgConfig.getBirthdayUrl(),birthdayMsgConfig.getTitle(),template.getBlessing(), ceoUser.getCeoId(),params);
-
-                // 推送给其他ceo  不包含自己
-                //params.put("text",birthdayMsgConfig.getContent2());
-                //this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), userId, params);
-
-            }
-            //推送给其他ceo  不包含自己
-            List<AppCeoUserNotPushVo> otherCEOsBirthdayUser = this.ceoUserInfoService.getOtherCEOsBirthdayUser(month, day);
-            log.info("推送给其他ceo数据条数 {}", otherCEOsBirthdayUser.size());
-            log.info("推送给其他ceo数据 {}", otherCEOsBirthdayUser);
-            for (AppCeoUserNotPushVo ceoUser : otherCEOsBirthdayUser) {
-                log.info("推送给其他ceo {}", ceoUser);
-
-                Map map = new HashMap();
-                map.put("userId", ceoUser.getCeoId());
-                map.put("name", ceoUser.getUserName());
-                map.put("avatar", ceoUser.getAvatar());
-                map.put("image", template.getPosterUrl());
-                map.put("text",birthdayMsgConfig.getContent2());
-                // 推送给其他ceo  不包含自己
-                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
 
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
@@ -137,6 +122,20 @@ public class UserBirthdayTask {
                     m.put("image", template.getPosterUrl());
                     m.put("text",birthdayMsgConfig.getContent2());
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), m);
+                }
+            }
+
+            if (DataUtil.isNotEmpty(ceoBirthdayUserList)) {
+                for (AppCeoUserNotPushVo ceoUser : otherCEOsBirthdayUser) {
+                    log.info("推送给其他ceo {}", ceoUser);
+                    Map map = new HashMap();
+                    map.put("userId", ceoUser.getCeoId());
+                    map.put("name", ceoUser.getUserName());
+                    map.put("avatar", ceoUser.getAvatar());
+                    map.put("image", template.getPosterUrl());
+                    map.put("text",birthdayMsgConfig.getContent2());
+                    // 推送给其他ceo  不包含自己
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
                 }
             }
 
@@ -203,13 +202,6 @@ public class UserBirthdayTask {
         return ReturnT.SUCCESS;
     }
 
-
-    public static void main(String[] args) {
-        Map<String, String> map =new HashMap<>();
-        map.put("a", "2");
-        map.put("a", "5");
-        System.out.println(map);
-    }
 
     private void sendPush(String url, String title, String content,String userId, Map params){
         FlowMessageDto dto = new FlowMessageDto();
