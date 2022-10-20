@@ -100,11 +100,11 @@ public class CeoBirthdayTask {
                     log.info("总经理 和副总推送: {}", companyAdminVo);
                     params.put("userId", companyAdminVo.getUserId());
                     params.put("text",birthdayMsgConfig.getContent2());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), params);
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getUserId(), params);
                 }
 
                 //推送给其他ceo  不包含自己
-                /*List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
+                List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
                 for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
@@ -114,7 +114,7 @@ public class CeoBirthdayTask {
                     params.put("userId", otherCeo.getCeoId());
                     // 推送给其他ceo  不包含自己
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
-                }*/
+                }
             }
         }
         return ReturnT.SUCCESS;
