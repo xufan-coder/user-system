@@ -104,7 +104,14 @@
         select cu.id as ceoId, user_name, avatar
          from ceo_user_info as cu
          where cu.status in (0,3)
-         and cu.birthday_month = #{month} and cu.birthday_day = #{day}
+         and SUBSTRING(certificate_card,11,2)  = #{month} and SUBSTRING(certificate_card,13,2)  = #{day}
+    </select>
+
+    <select id="getOtherCEOsBirthdayUser" resultType="com.zerody.user.vo.AppCeoUserNotPushVo">
+           select cu.id as ceoId, user_name, avatar
+         from ceo_user_info as cu
+         where cu.status in (0,3)
+         and SUBSTRING(certificate_card,11,2)  &lt;&gt; #{month} and SUBSTRING(certificate_card,13,2)  &lt;&gt; #{day}
     </select>
 
 </mapper>

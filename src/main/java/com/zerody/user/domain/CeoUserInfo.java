@@ -77,9 +77,4 @@ public class CeoUserInfo extends BaseModel {
     @TableField(exist = false)
     private List<String> companys;
 
-    /**生日月*/
-    private Integer birthdayMonth;
-    /**生日天*/
-    private Integer birthdayDay;
-
 }
