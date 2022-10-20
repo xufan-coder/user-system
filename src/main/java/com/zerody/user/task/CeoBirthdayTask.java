@@ -101,18 +101,18 @@ public class CeoBirthdayTask {
                 //查询总经理与副总
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
 
-                for (CompanyAdminVo companyAdminVo : companyAdmin) {
+                /*for (CompanyAdminVo companyAdminVo : companyAdmin) {
                     log.info("总经理 和副总推送: {}", companyAdminVo);
                     params.put("userId", companyAdminVo.getUserId());
                     params.put("text",birthdayMsgConfig.getContent2());
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getUserId(), params);
-                }
+                }*/
 
                 //推送给其他ceo  不包含自己
                 List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
                 log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
                 log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
-                for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
+                /*for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
                         continue;
@@ -121,7 +121,7 @@ public class CeoBirthdayTask {
                     params.put("userId", otherCeo.getCeoId());
                     // 推送给其他ceo  不包含自己
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
-                }
+                }*/
             }
         }
         return ReturnT.SUCCESS;
