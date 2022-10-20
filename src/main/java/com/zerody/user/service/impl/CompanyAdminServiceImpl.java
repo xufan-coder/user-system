@@ -74,13 +74,16 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 		return this.baseMapper.getAdminInfoByCompanyId(companyId);
 	}
 
+
 	@Override
 	public List<CompanyAdminVo> getCompanyAdmin(List<String> companyIds) {
+		log.info("companyIds {}", companyIds);
 		List<CompanyAdminVo> array = new ArrayList<>();
 		LambdaQueryWrapper<CompanyAdmin> wrapper = new LambdaQueryWrapper<>();
 		wrapper.in(CompanyAdmin::getCompanyId, companyIds);
 		//获取总经理
 		List<CompanyAdmin> companyAdmins = this.baseMapper.selectList(wrapper);
+		log.info("companyAdmins {}", companyAdmins);
 		for (CompanyAdmin companyAdmin : companyAdmins) {
 			CompanyAdminVo companyAdminVo = new CompanyAdminVo();
 			//获取员工信息
