@@ -52,4 +52,21 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
     List<StaffInfoVo> getStaffInfoByIds(List<String> userId);
 
     List<String> getAllCeo();
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取当天生日的ceo信息
+    * @Date: 2022/10/20 15:18
+    */
+    List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(String month, String day);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 推送给其它ceo
+    * @Date: 2022/10/20 15:18
+    */
+    List<AppCeoUserNotPushVo> getOtherCEOsBirthdayUser(String month, String day);
+
 }
