@@ -76,7 +76,6 @@ public class CeoBirthdayTask {
 
             //获取当天生日的ceo信息
             List<AppCeoUserNotPushVo> ceoBirthdayUserList = this.ceoUserInfoService.getCeoBirthdayUserIds(month, day);
-
             for (AppCeoUserNotPushVo ceoUser : ceoBirthdayUserList) {
                 log.info("推送给自己 {}", ceoUser);
                 Map params = new HashMap();
@@ -92,18 +91,21 @@ public class CeoBirthdayTask {
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
                 List<String> companyIds = ceoUser.getCompanyIds();
+                log.info("--------companyIds:{}",companyIds);
                 //查询总经理与副总
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
 
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
-                    log.info("companyAdminVo {}", companyAdminVo);
+                    log.info("总经理 和副总推送: {}", companyAdminVo);
                     params.put("userId", companyAdminVo.getUserId());
                     params.put("text",birthdayMsgConfig.getContent2());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), params);
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getUserId(), params);
                 }
 
                 //推送给其他ceo  不包含自己
                 List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
+                log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
+                log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
                 for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
