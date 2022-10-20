@@ -171,5 +171,5 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     * @Description: 获取副总
     * @Date: 2022/10/20 16:46
     */
-    List<CompanyAdminVo> queryVicePresident(@Param("compId") String compId);
+    List<CompanyAdminVo> queryVicePresident(@Param("companyIds") List<String> companyIds);
 }
