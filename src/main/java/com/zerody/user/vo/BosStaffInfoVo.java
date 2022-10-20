@@ -72,13 +72,6 @@ public class BosStaffInfoVo {
      * 员工状态
      */
     private Integer staffStatus;
-
-    /**
-     * 是否钻石会员（0-否 1-是）
-     */
-    private Integer isDiamondMember;
-
-
     private Integer isShowMobile;
 
     private Boolean isAdmin;

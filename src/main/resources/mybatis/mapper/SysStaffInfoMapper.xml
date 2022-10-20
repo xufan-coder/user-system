@@ -301,8 +301,7 @@
         sui.phone_number AS phone,
         sjp.position_name AS positionName,
         sdi.depart_name AS departName,
-        ssi.id AS staffId,
-        ssi.is_diamond_member
+        ssi.id AS staffId
         FROM
         sys_staff_info ssi
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
