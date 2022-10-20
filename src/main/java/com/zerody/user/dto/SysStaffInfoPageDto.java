@@ -66,4 +66,10 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
     /** 用户类型 企业管理员:0、伙伴：1、团队长：2、副总：3*/
     private Integer userType;
 
+    /**
+     * 是否钻石会员（0-否 1-是）
+     */
+    private Integer isDiamondMember;
+
+
 }
