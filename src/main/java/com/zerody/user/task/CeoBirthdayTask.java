@@ -106,21 +106,25 @@ public class CeoBirthdayTask {
                     m.put("text",birthdayMsgConfig.getContent2());
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), m);
                 }
-            }
 
-            //推送给其他ceo  不包含自己
-            List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getOtherCEOsBirthdayUser(month, day);
-            for (AppCeoUserNotPushVo ceoUser : otherCeoBirthdayUser) {
-                log.info("推送给其他ceo {}", ceoUser);
-                Map map = new HashMap();
-                map.put("userId", ceoUser.getCeoId());
-                map.put("name", ceoUser.getUserName());
-                map.put("avatar", ceoUser.getAvatar());
-                map.put("image", template.getPosterUrl());
-                map.put("dept","");
-                map.put("text",birthdayMsgConfig.getContent2());
-                // 推送给其他ceo  不包含自己
-                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
+                //推送给其他ceo  不包含自己
+                List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
+                for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
+                    // 过滤当前生日的ceo
+                    if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
+                        continue;
+                    }
+                    log.info("推送给其他ceo {}", ceoUser);
+                    Map map = new HashMap();
+                    map.put("userId", ceoUser.getCeoId());
+                    map.put("name", ceoUser.getUserName());
+                    map.put("avatar", ceoUser.getAvatar());
+                    map.put("image", template.getPosterUrl());
+                    map.put("dept","");
+                    map.put("text",birthdayMsgConfig.getContent2());
+                    // 推送给其他ceo  不包含自己
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
+                }
             }
         }
         return ReturnT.SUCCESS;

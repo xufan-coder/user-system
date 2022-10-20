@@ -104,7 +104,12 @@
         select cu.id as ceoId, user_name, avatar
          from ceo_user_info as cu
          where cu.status in (0,3)
-         and SUBSTRING(certificate_card,11,2)  = #{month} and SUBSTRING(certificate_card,13,2)  = #{day}
+         <if test="month neq null and month neq ''" >
+             and SUBSTRING(certificate_card,11,2)  = #{month}
+         </if>
+        <if test="day neq null and day neq ''" >
+            and SUBSTRING(certificate_card,13,2)  = #{day}
+        </if>
     </select>
 
     <select id="getOtherCEOsBirthdayUser" resultType="com.zerody.user.vo.AppCeoUserNotPushVo">
