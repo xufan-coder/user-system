@@ -294,13 +294,9 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     @Override
     public List<AppCeoUserNotPushVo> getOtherCEOsBirthdayUser(String month, String day) {
         List<AppCeoUserNotPushVo> arrayList = new ArrayList<>();
-        LambdaQueryWrapper<CeoUserInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.ne(CeoUserInfo::getBirthdayMonth, month);
-        wrapper.ne(CeoUserInfo::getBirthdayDay, day);
-        List<CeoUserInfo> ceoUserInfo = this.baseMapper.selectList(wrapper);
-        for (CeoUserInfo userInfo : ceoUserInfo) {
+        List<AppCeoUserNotPushVo> ceoUserInfo = this.ceoUserInfoMapper.getOtherCEOsBirthdayUser(month, day);
+        for (AppCeoUserNotPushVo userInfo : ceoUserInfo) {
             AppCeoUserNotPushVo appCeoUserNotPushVo = new AppCeoUserNotPushVo();
-            appCeoUserNotPushVo.setCeoId(userInfo.getId());
             BeanUtils.copyProperties(userInfo, appCeoUserNotPushVo);
             //获取ceo关联的企业信息
             List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getBackRefById(appCeoUserNotPushVo.getCeoId());

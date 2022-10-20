@@ -33,4 +33,12 @@ public interface CeoUserInfoMapper extends BaseMapper<CeoUserInfo> {
      */
     List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(@Param("month") String month, @Param("day") String day);
 
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description:
+    * @Date: 2022/10/20 17:44
+    */
+    List<AppCeoUserNotPushVo> getOtherCEOsBirthdayUser(@Param("month") String month, @Param("day") String day);
+
 }
