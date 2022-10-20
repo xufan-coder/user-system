@@ -92,6 +92,7 @@ public class CeoBirthdayTask {
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
                 List<String> companyIds = ceoUser.getCompanyIds();
+                log.info("--------companyIds:{}",companyIds);
                 //查询总经理与副总
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
 
@@ -103,7 +104,7 @@ public class CeoBirthdayTask {
                 }
 
                 //推送给其他ceo  不包含自己
-                List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
+                /*List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
                 for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
@@ -113,7 +114,7 @@ public class CeoBirthdayTask {
                     params.put("userId", otherCeo.getCeoId());
                     // 推送给其他ceo  不包含自己
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
-                }
+                }*/
             }
         }
         return ReturnT.SUCCESS;
