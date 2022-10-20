@@ -198,7 +198,8 @@
         ssi.date_join,
         ssi.working_years,
         ssi.date_left,
-        sui.im_state
+        sui.im_state,
+        ssi.is_diamond_member
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
