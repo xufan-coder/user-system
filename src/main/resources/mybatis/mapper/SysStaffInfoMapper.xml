@@ -112,7 +112,7 @@
                 AND sui.status = #{staff.status}
             </if>
             <if test="ssi.isDiamondMember neq null">
-                AND ssi.is_diamond_member = #{ssi.isDiamondMember}
+                AND ssi.is_diamond_member = #{staff.isDiamondMember}
             </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
