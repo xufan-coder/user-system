@@ -118,11 +118,10 @@ public class UserBirthdayTask {
                 map.put("userId", ceoUser.getCeoId());
                 map.put("name", ceoUser.getUserName());
                 map.put("avatar", ceoUser.getAvatar());
-                //map.put("text", template.getBlessing());
                 map.put("image", template.getPosterUrl());
-                // 推送给其他ceo  不包含自己
                 map.put("text",birthdayMsgConfig.getContent2());
-                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
+                // 推送给其他ceo  不包含自己
+                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
 
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
@@ -131,9 +130,13 @@ public class UserBirthdayTask {
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
                     log.info("companyAdminVo {}", companyAdminVo);
-                    map.put("name", companyAdminVo.getUserName());
-                    map.put("avatar", companyAdminVo.getAvatar());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), map);
+                    Map m = new HashMap();
+                    m.put("userId", ceoUser.getCeoId());
+                    m.put("name", companyAdminVo.getUserName());
+                    m.put("avatar", companyAdminVo.getAvatar());
+                    m.put("image", template.getPosterUrl());
+                    m.put("text",birthdayMsgConfig.getContent2());
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), m);
                 }
             }
 
@@ -198,6 +201,14 @@ public class UserBirthdayTask {
             }
         }
         return ReturnT.SUCCESS;
+    }
+
+
+    public static void main(String[] args) {
+        Map<String, String> map =new HashMap<>();
+        map.put("a", "2");
+        map.put("a", "5");
+        System.out.println(map);
     }
 
     private void sendPush(String url, String title, String content,String userId, Map params){
