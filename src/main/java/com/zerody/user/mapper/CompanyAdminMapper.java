@@ -5,6 +5,7 @@ import com.zerody.user.domain.CompanyAdmin;
 import java.io.Serializable;
 import java.util.List;
 
+import com.zerody.user.vo.CompanyAdminVo;
 import com.zerody.user.vo.SubordinateUserQueryVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
@@ -18,4 +19,6 @@ public interface CompanyAdminMapper extends  BaseMapper<CompanyAdmin>{
     List<SubordinateUserQueryVo> getAdminList(@Param("companyId") String companyId);
 
     StaffInfoVo getAdminInfoByCompanyId(@Param("companyId") String companyId);
+
+    List<CompanyAdminVo> getCompanyAdmin(@Param("companyIds") List<String> companyIds);
 }

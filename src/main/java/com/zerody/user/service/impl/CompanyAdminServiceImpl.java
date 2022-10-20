@@ -77,28 +77,10 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 
 	@Override
 	public List<CompanyAdminVo> getCompanyAdmin(List<String> companyIds) {
-		log.info("companyIds {}", companyIds);
-		List<CompanyAdminVo> array = new ArrayList<>();
-		LambdaQueryWrapper<CompanyAdmin> wrapper = new LambdaQueryWrapper<>();
-		wrapper.in(CompanyAdmin::getCompanyId, companyIds);
-		//获取总经理
-		List<CompanyAdmin> companyAdmins = this.baseMapper.selectList(wrapper);
-		log.info("companyAdmins {}", companyAdmins);
-		for (CompanyAdmin companyAdmin : companyAdmins) {
-			CompanyAdminVo companyAdminVo = new CompanyAdminVo();
-			//获取员工信息
-			SysStaffInfo userInfo = sysStaffInfoService.getUserInfo(companyAdmin.getStaffId());
-			if (DataUtil.isNotEmpty(userInfo)) {
-				BeanUtils.copyProperties(userInfo, companyAdminVo);
-			}
-			companyAdminVo.setCompanyId(companyAdmin.getCompanyId());
-			array.add(companyAdminVo);
-		}
+		List<CompanyAdminVo> array =  this.baseMapper.getCompanyAdmin(companyIds);
 		//获取副总
-		for (String companyId : companyIds) {
-			List<CompanyAdminVo> companyAdminList = sysDepartmentInfoMapper.queryVicePresident(companyId);
-			array.addAll(companyAdminList);
-		}
+		List<CompanyAdminVo> companyAdminList = sysDepartmentInfoMapper.queryVicePresident(companyIds);
+		array.addAll(companyAdminList);
 		return array;
 	}
 }

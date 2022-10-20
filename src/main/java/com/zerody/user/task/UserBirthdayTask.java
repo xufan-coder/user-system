@@ -6,7 +6,6 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
@@ -21,10 +20,10 @@ import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.CompanyAdminMapper;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
-import com.zerody.user.service.*;
-import com.zerody.user.vo.AppCeoUserNotPushVo;
+import com.zerody.user.service.CompanyAdminService;
+import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.UserBirthdayTemplateService;
 import com.zerody.user.vo.AppUserNotPushVo;
-import com.zerody.user.vo.CompanyAdminVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +45,6 @@ public class UserBirthdayTask {
 
     @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
-
-    @Autowired
-    private SysStaffInfoService sysStaffInfoService;
-
-    @Autowired
-    private CeoUserInfoService ceoUserInfoService;
-
-    @Autowired
-    private CompanyAdminService companyAdminService;
 
     @Autowired
     private SysDepartmentInfoMapper sysDepartmentInfoMapper;
@@ -88,57 +78,6 @@ public class UserBirthdayTask {
             String month = DateUtil.getMonth();
             String day = DateUtil.getDay();
             List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getBirthdayUserIds(month,day,null);
-
-            //获取当天生日的ceo信息
-            List<AppCeoUserNotPushVo> ceoBirthdayUserList = this.ceoUserInfoService.getCeoBirthdayUserIds(month, day);
-            //推送给其他ceo  不包含自己
-            List<AppCeoUserNotPushVo> otherCEOsBirthdayUser = this.ceoUserInfoService.getOtherCEOsBirthdayUser(month, day);
-            log.info("推送给其他ceo数据条数 {}", otherCEOsBirthdayUser.size());
-            log.info("推送给其他ceo数据 {}", otherCEOsBirthdayUser);
-
-            for (AppCeoUserNotPushVo ceoUser : ceoBirthdayUserList) {
-                log.info("推送给自己 {}", ceoUser);
-                Map params = new HashMap();
-                params.put("userId", ceoUser.getCeoId());
-                params.put("name", ceoUser.getUserName());
-                //params.put("dept", user.getUserDepartmentName());
-                params.put("avatar", ceoUser.getAvatar());
-                params.put("text", template.getBlessing());
-                params.put("image", template.getPosterUrl());
-                //推给自己
-                this.sendPush(birthdayMsgConfig.getBirthdayUrl(),birthdayMsgConfig.getTitle(),template.getBlessing(), ceoUser.getCeoId(),params);
-
-                // 推送给他关联的企业 总经理和副总
-                // 查询出他关联的企业companyIds
-                List<String> companyIds = ceoUser.getCompanyIds();
-                //查询总经理与副总
-                List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
-                for (CompanyAdminVo companyAdminVo : companyAdmin) {
-                    log.info("companyAdminVo {}", companyAdminVo);
-                    Map m = new HashMap();
-                    m.put("userId", ceoUser.getCeoId());
-                    m.put("name", companyAdminVo.getUserName());
-                    m.put("avatar", companyAdminVo.getAvatar());
-                    m.put("image", template.getPosterUrl());
-                    m.put("text",birthdayMsgConfig.getContent2());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), m);
-                }
-            }
-
-            if (DataUtil.isNotEmpty(ceoBirthdayUserList)) {
-                for (AppCeoUserNotPushVo ceoUser : otherCEOsBirthdayUser) {
-                    log.info("推送给其他ceo {}", ceoUser);
-                    Map map = new HashMap();
-                    map.put("userId", ceoUser.getCeoId());
-                    map.put("name", ceoUser.getUserName());
-                    map.put("avatar", ceoUser.getAvatar());
-                    map.put("image", template.getPosterUrl());
-                    map.put("text",birthdayMsgConfig.getContent2());
-                    // 推送给其他ceo  不包含自己
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
-                }
-            }
-
             for(AppUserNotPushVo user : userList) {
                 Map params = new HashMap();
                 params.put("userId",user.getUserId());
@@ -201,7 +140,6 @@ public class UserBirthdayTask {
         }
         return ReturnT.SUCCESS;
     }
-
 
     private void sendPush(String url, String title, String content,String userId, Map params){
         FlowMessageDto dto = new FlowMessageDto();

@@ -61,4 +61,14 @@
 		JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
 		WHERE ca.company_id = #{companyId}
 	</select>
+
+	<select id="getCompanyAdmin" resultType="com.zerody.user.vo.CompanyAdminVo">
+		SELECT ssi.user_id,ssi.user_name,ssi.avatar
+		from adviser_company ac
+		left join sys_staff_info ssi on  ac.staff_id = ssi.id
+		where ac.deleted = 0 and ac.company_id
+		<foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
 </mapper>
