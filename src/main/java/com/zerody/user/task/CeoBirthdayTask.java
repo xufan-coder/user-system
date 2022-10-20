@@ -97,7 +97,7 @@ public class CeoBirthdayTask {
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
 
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
-                    log.info("companyAdminVo {}", companyAdminVo);
+                    log.info("总经理 和副总推送: {}", companyAdminVo);
                     params.put("userId", companyAdminVo.getUserId());
                     params.put("text",birthdayMsgConfig.getContent2());
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), params);
