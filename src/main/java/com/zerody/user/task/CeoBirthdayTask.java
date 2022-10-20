@@ -97,14 +97,9 @@ public class CeoBirthdayTask {
 
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
                     log.info("companyAdminVo {}", companyAdminVo);
-                    Map m = new HashMap();
-                    m.put("userId", companyAdminVo.getUserId());
-                    m.put("name", companyAdminVo.getUserName());
-                    m.put("avatar", companyAdminVo.getAvatar());
-                    m.put("dept","");
-                    m.put("image", template.getPosterUrl());
-                    m.put("text",birthdayMsgConfig.getContent2());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), m);
+                    params.put("userId", companyAdminVo.getUserId());
+                    params.put("text",birthdayMsgConfig.getContent2());
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), params);
                 }
 
                 //推送给其他ceo  不包含自己
@@ -115,15 +110,9 @@ public class CeoBirthdayTask {
                         continue;
                     }
                     log.info("推送给其他ceo {}", ceoUser);
-                    Map map = new HashMap();
-                    map.put("userId", ceoUser.getCeoId());
-                    map.put("name", ceoUser.getUserName());
-                    map.put("avatar", ceoUser.getAvatar());
-                    map.put("image", template.getPosterUrl());
-                    map.put("dept","");
-                    map.put("text",birthdayMsgConfig.getContent2());
+                    params.put("userId", otherCeo.getCeoId());
                     // 推送给其他ceo  不包含自己
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
                 }
             }
         }
