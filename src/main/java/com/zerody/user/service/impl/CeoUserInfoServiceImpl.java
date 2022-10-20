@@ -275,7 +275,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
 
     @Override
     public List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(String month, String day) {
-        return  ceoUserInfoMapper.getCeoBirthdayUserIds(month, day);
+        return  ceoUserInfoMapper.getCeoBirthdayUserIds(month, day,null);
     }
 
     @Override

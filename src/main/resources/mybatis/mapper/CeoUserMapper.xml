@@ -110,6 +110,9 @@
         <if test="day neq null and day neq ''" >
             and SUBSTRING(certificate_card,13,2)  = #{day}
         </if>
+        <if test="userId neq null and userId neq ''" >
+            and cu.id  = #{userId}
+        </if>
     </select>
 
     <select id="getOtherCEOsBirthdayUser" resultType="com.zerody.user.vo.AppCeoUserNotPushVo">
