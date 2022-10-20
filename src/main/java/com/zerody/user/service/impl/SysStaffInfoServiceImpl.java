@@ -1078,6 +1078,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 staffQw.lambda().inSql(SysStaffInfo::getId, "select staff_id from company_admin where company_id = '".concat(userInfo.getCompanyId()).concat("'"));
                 SysStaffInfo sysStaffInfo = this.getOne(staffQw);
                 userInfo.setSuperiorName(DataUtil.isEmpty(sysStaffInfo) ? null : sysStaffInfo.getUserName());
+                userInfo.setIsDiamondMember(sysStaffInfo.getIsDiamondMember());
                 return userInfo;
             }
             departId = departId.substring(0, departId.lastIndexOf("_"));
@@ -1094,6 +1095,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
+        userInfo.setIsDiamondMember(staffInfo.getIsDiamondMember());
 //        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
 //        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         return userInfo;
