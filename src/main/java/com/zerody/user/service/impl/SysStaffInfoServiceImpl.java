@@ -301,6 +301,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());
         this.saveOrUpdate(staff);
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
@@ -731,6 +732,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
         staff.setDateLeft(setSysUserInfoDto.getDateLeft());//离职时间
+        staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());//是否是钻石会员
         if (DataUtil.isEmpty(setSysUserInfoDto.getRecommendType()) || setSysUserInfoDto.getRecommendType().intValue() == 0) {
             staff.setRecommendId("");
         }
