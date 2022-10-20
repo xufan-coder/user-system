@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -2659,6 +2660,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public List<StaffInfoVo> getAllDuytUserInner() {
         return this.sysUserInfoMapper.getAllDuytUser();
+    }
+
+    @Override
+    public SysStaffInfo getUserInfo(String id) {
+        LambdaQueryWrapper<SysStaffInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysStaffInfo::getId, id);
+        wrapper.eq(SysStaffInfo::getDeleted, YesNo.NO);
+        return this.baseMapper.selectOne(wrapper);
     }
 
     @Override
