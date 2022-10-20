@@ -91,6 +91,7 @@ public class UserBirthdayTask {
             //获取当天生日的ceo信息
             List<AppCeoUserNotPushVo> ceoBirthdayUserList = this.ceoUserInfoService.getCeoBirthdayUserIds(month, day);
             for (AppCeoUserNotPushVo ceoUser : ceoBirthdayUserList) {
+                log.info("推送给自己 {}", ceoUser);
                 Map params = new HashMap();
                 params.put("userId", ceoUser.getCeoId());
                 params.put("name", ceoUser.getUserName());
@@ -108,16 +109,20 @@ public class UserBirthdayTask {
             }
             //推送给其他ceo  不包含自己
             List<AppCeoUserNotPushVo> otherCEOsBirthdayUser = this.ceoUserInfoService.getOtherCEOsBirthdayUser(month, day);
+            log.info("推送给其他ceo数据条数 {}", otherCEOsBirthdayUser.size());
+            log.info("推送给其他ceo数据 {}", otherCEOsBirthdayUser);
             for (AppCeoUserNotPushVo ceoUser : otherCEOsBirthdayUser) {
-                Map params = new HashMap();
-                params.put("userId", ceoUser.getCeoId());
-                params.put("name", ceoUser.getUserName());
-                params.put("avatar", ceoUser.getAvatar());
-                params.put("text", template.getBlessing());
-                params.put("image", template.getPosterUrl());
+                log.info("推送给其他ceo {}", ceoUser);
+
+                Map map = new HashMap();
+                map.put("userId", ceoUser.getCeoId());
+                map.put("name", ceoUser.getUserName());
+                map.put("avatar", ceoUser.getAvatar());
+                //map.put("text", template.getBlessing());
+                map.put("image", template.getPosterUrl());
                 // 推送给其他ceo  不包含自己
-                params.put("text",birthdayMsgConfig.getContent2());
-                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
+                map.put("text",birthdayMsgConfig.getContent2());
+                this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), map);
 
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
@@ -125,9 +130,10 @@ public class UserBirthdayTask {
                 //查询总经理与副总
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
-                    params.put("name", companyAdminVo.getUserName());
-                    params.put("avatar", companyAdminVo.getAvatar());
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), params);
+                    log.info("companyAdminVo {}", companyAdminVo);
+                    map.put("name", companyAdminVo.getUserName());
+                    map.put("avatar", companyAdminVo.getAvatar());
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(),birthdayMsgConfig.getContent2(), companyAdminVo.getStaffId(), map);
                 }
             }
 
