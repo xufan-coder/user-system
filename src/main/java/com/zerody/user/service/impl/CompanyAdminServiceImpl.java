@@ -74,6 +74,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 		return this.baseMapper.getAdminInfoByCompanyId(companyId);
 	}
 
+
 	@Override
 	public List<CompanyAdminVo> getCompanyAdmin(List<String> companyIds) {
 		log.info("companyIds {}", companyIds);
