@@ -5,6 +5,7 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
@@ -21,6 +22,7 @@ import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.CompanyAdminService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserBirthdayTemplateService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.AppCeoUserNotPushVo;
 import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.CompanyAdminVo;
@@ -54,6 +56,10 @@ public class CeoBirthdayTask {
 
     @Autowired
     private BirthdayMsgConfig birthdayMsgConfig;
+
+    @Autowired
+    private CheckUtil checkUtil;
+
 
     @Value("${jpush.template.user-system.user-birthday:}")
     private String monthBirthdayTemplate;
@@ -90,14 +96,12 @@ public class CeoBirthdayTask {
 
                 // 推送给他关联的企业 总经理和副总
                 // 查询出他关联的企业companyIds
-                List<String> companyIds = ceoUser.getCompanyIds();
-                log.info("--------companyIds:{}",companyIds);
+                List<String> companyIds = this.checkUtil.setCeoCompany(ceoUser.getCeoId());
                 //查询总经理与副总
                 List<CompanyAdminVo> companyAdmin = companyAdminService.getCompanyAdmin(companyIds);
 
                 for (CompanyAdminVo companyAdminVo : companyAdmin) {
                     log.info("总经理 和副总推送: {}", companyAdminVo);
-                    params.put("userId", companyAdminVo.getUserId());
                     params.put("text",birthdayMsgConfig.getContent2());
                     this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), companyAdminVo.getUserId(), params);
                 }
@@ -111,10 +115,9 @@ public class CeoBirthdayTask {
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {
                         continue;
                     }
-                    log.info("推送给其他ceo {}", ceoUser);
-                    params.put("userId", otherCeo.getCeoId());
+                    log.info("推送给其他ceo {}", otherCeo);
                     // 推送给其他ceo  不包含自己
-                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), ceoUser.getCeoId(), params);
+                    this.sendPush(birthdayMsgConfig.getUrl(),birthdayMsgConfig.getTitle2(), birthdayMsgConfig.getContent2(), otherCeo.getCeoId(), params);
                 }
             }
         }

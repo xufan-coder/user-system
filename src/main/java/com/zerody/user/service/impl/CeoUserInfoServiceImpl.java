@@ -275,20 +275,7 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
 
     @Override
     public List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(String month, String day) {
-        List<AppCeoUserNotPushVo> arrayList = new ArrayList<>();
-        List<AppCeoUserNotPushVo> ceoBirthdayUser = ceoUserInfoMapper.getCeoBirthdayUserIds(month, day);
-        for (AppCeoUserNotPushVo ceoUserNotPushVo : ceoBirthdayUser) {
-            AppCeoUserNotPushVo appCeoUserNotPushVo = new AppCeoUserNotPushVo();
-            BeanUtils.copyProperties(ceoUserNotPushVo ,appCeoUserNotPushVo);
-            //获取ceo关联的企业信息
-            List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getBackRefById(ceoUserNotPushVo.getCeoId());
-            if (DataUtil.isNotEmpty(ceoCompanyList)) {
-                List<String> companyIds = ceoCompanyList.stream().map(CeoCompanyRef::getCompanyId).distinct().collect(Collectors.toList());
-                appCeoUserNotPushVo.setCompanyIds(companyIds);
-            }
-            arrayList.add(appCeoUserNotPushVo);
-        }
-        return arrayList;
+        return  ceoUserInfoMapper.getCeoBirthdayUserIds(month, day,null);
     }
 
     @Override

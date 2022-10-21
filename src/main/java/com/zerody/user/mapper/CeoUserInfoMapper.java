@@ -31,7 +31,7 @@ public interface CeoUserInfoMapper extends BaseMapper<CeoUserInfo> {
      * @Description: 获取当天生日的ceo信息
      * @Date: 2022/10/20 12:39
      */
-    List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(@Param("month") String month, @Param("day") String day);
+    List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(@Param("month") String month, @Param("day") String day,@Param("userId") String userId);
 
     /**
     * @Author: chenKeFeng
