@@ -97,4 +97,29 @@
         from ceo_user_info
         where deleted = 0 and status = 0
     </select>
+
+
+    <!--获取当天生日的ceo信息-->
+    <select id="getCeoBirthdayUserIds" resultType="com.zerody.user.vo.AppCeoUserNotPushVo">
+        select cu.id as ceoId, user_name, avatar
+         from ceo_user_info as cu
+         where cu.status = 0
+         <if test="month neq null and month neq ''" >
+             and SUBSTRING(certificate_card,11,2)  = #{month}
+         </if>
+        <if test="day neq null and day neq ''" >
+            and SUBSTRING(certificate_card,13,2)  = #{day}
+        </if>
+        <if test="userId neq null and userId neq ''" >
+            and cu.id  = #{userId}
+        </if>
+    </select>
+
+    <select id="getOtherCEOsBirthdayUser" resultType="com.zerody.user.vo.AppCeoUserNotPushVo">
+           select cu.id as ceoId, user_name, avatar
+         from ceo_user_info as cu
+         where cu.status in (0,3)
+         and SUBSTRING(certificate_card,11,2)  &lt;&gt; #{month} and SUBSTRING(certificate_card,13,2)  &lt;&gt; #{day}
+    </select>
+
 </mapper>

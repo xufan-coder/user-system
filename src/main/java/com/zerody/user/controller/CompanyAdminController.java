@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.zerody.user.vo.CompanyAdminVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -88,5 +89,16 @@ public class CompanyAdminController {
 			log.error("删除企业管理员出错:{}", e, e);
 			return R.error("删除企业管理员出错:"+e.getMessage());
 		}
+	}
+
+
+	@PostMapping("/test")
+	public DataResult<List<CompanyAdminVo>> test(@RequestBody List<String> companyIds) {
+	    try {
+	        return R.success(service.getCompanyAdmin(companyIds));
+	    } catch (Exception e) {
+	        log.error("描述出错:{}", e.getMessage());
+	        return R.error("描述出错" + e.getMessage());
+	    }
 	}
 }

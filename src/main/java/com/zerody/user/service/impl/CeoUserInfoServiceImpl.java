@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -271,6 +272,30 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     public List<String> getAllCeo() {
         return this.ceoUserInfoMapper.getAllCeoIds();
     }
+
+    @Override
+    public List<AppCeoUserNotPushVo> getCeoBirthdayUserIds(String month, String day) {
+        return  ceoUserInfoMapper.getCeoBirthdayUserIds(month, day,null);
+    }
+
+    @Override
+    public List<AppCeoUserNotPushVo> getOtherCEOsBirthdayUser(String month, String day) {
+        List<AppCeoUserNotPushVo> arrayList = new ArrayList<>();
+        List<AppCeoUserNotPushVo> ceoUserInfo = this.ceoUserInfoMapper.getOtherCEOsBirthdayUser(month, day);
+        for (AppCeoUserNotPushVo userInfo : ceoUserInfo) {
+            AppCeoUserNotPushVo appCeoUserNotPushVo = new AppCeoUserNotPushVo();
+            BeanUtils.copyProperties(userInfo, appCeoUserNotPushVo);
+            //获取ceo关联的企业信息
+            List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getBackRefById(appCeoUserNotPushVo.getCeoId());
+            if (DataUtil.isNotEmpty(ceoCompanyList)) {
+                List<String> companyIds = ceoCompanyList.stream().map(CeoCompanyRef::getCompanyId).distinct().collect(Collectors.toList());
+                appCeoUserNotPushVo.setCompanyIds(companyIds);
+            }
+            arrayList.add(appCeoUserNotPushVo);
+        }
+        return arrayList;
+    }
+
 
     @Override
     public List<SubordinateUserQueryVo> getList() {

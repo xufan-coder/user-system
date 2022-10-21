@@ -404,4 +404,19 @@
             ssi.status in (0, 3) and usd.department_id = #{departmentId}
         </where>
     </select>
+
+    <!--获取副总-->
+    <select id="queryVicePresident" resultType="com.zerody.user.vo.CompanyAdminVo">
+        SELECT
+        sui.id as 'userId',sui.user_name,sui.avatar
+        FROM
+        sys_department_info AS sdi
+        JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        where sdi.status = 0 and ( LENGTH(sdi.parent_id) = 0 or sdi.parent_id is null )
+        and sdi.comp_id
+        <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

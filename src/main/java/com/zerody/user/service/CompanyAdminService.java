@@ -7,6 +7,8 @@ import com.zerody.user.dto.CompanyAdminPageDto;
 import com.zerody.user.domain.CompanyAdmin;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.user.vo.CompanyAdminVo;
+
 /**
  * 
  * 企业管理员业务接口 
@@ -50,4 +52,12 @@ public interface CompanyAdminService extends IService<CompanyAdmin>{
 
 
 	StaffInfoVo getAdminInfoByCompanyId(String companyId);
+
+	/**
+	* @Author: chenKeFeng
+	* @param  
+	* @Description: 获取总经理
+	* @Date: 2022/10/20 16:03
+	*/
+	List<CompanyAdminVo> getCompanyAdmin(List<String> companyIds);
 }

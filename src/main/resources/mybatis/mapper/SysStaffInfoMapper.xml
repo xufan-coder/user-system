@@ -64,7 +64,8 @@
         ssi.id = #{staff.staffId} AS isAdmin,
         sb.id is not null AS is_block,
         ssi.evaluate,
-        ssi.resume_url
+        ssi.resume_url,
+        ssi.is_diamond_member
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -109,6 +110,9 @@
             </if>
             <if test="staff.status neq null">
                 AND sui.status = #{staff.status}
+            </if>
+            <if test="staff.isDiamondMember neq null">
+                AND ssi.is_diamond_member = #{staff.isDiamondMember}
             </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
@@ -194,7 +198,8 @@
         ssi.date_join,
         ssi.working_years,
         ssi.date_left,
-        sui.im_state
+        sui.im_state,
+        ssi.is_diamond_member
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
