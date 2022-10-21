@@ -76,4 +76,5 @@ public class CeoUserInfo extends BaseModel {
 
     @TableField(exist = false)
     private List<String> companys;
+
 }

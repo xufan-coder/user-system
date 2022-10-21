@@ -18,11 +18,14 @@ import com.zerody.user.domain.UserBirthdayTemplate;
 import com.zerody.user.dto.BlessIngParam;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UserBirthdayTemplateDto;
+import com.zerody.user.mapper.CeoUserInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UserBirthdayTemplateMapper;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.UnionBirthdayMonthService;
 import com.zerody.user.service.UserBirthdayTemplateService;
+import com.zerody.user.vo.AppCeoUserNotPushVo;
 import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
@@ -54,6 +57,9 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
 
     @Autowired
     private SendMsgFeignService sendMsgFeignService;
+
+    @Autowired
+    private CeoUserInfoMapper ceoUserInfoMapper;
 
     /**
      * 消息的类型：流程提醒
@@ -164,7 +170,12 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         String month = com.zerody.common.utils.DateUtil.getMonth();
         String day = com.zerody.common.utils.DateUtil.getDay();
         List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getBirthdayUserIds(month,day,userId);
-        return userList.size() > 0;
+        if(userList.size() == 0) {
+            // 判断是否是ceo生日
+            List<AppCeoUserNotPushVo> ceoList = ceoUserInfoMapper.getCeoBirthdayUserIds(month, day,userId);
+            return ceoList.size() > 0;
+        }
+        return true;
     }
 
     @Override

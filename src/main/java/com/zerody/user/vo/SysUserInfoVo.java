@@ -257,4 +257,9 @@ public class SysUserInfoVo {
     /** 离职时间 */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateLeft;
+
+    /**
+     * 是否钻石会员（0-否 1-是）
+     */
+    private Integer isDiamondMember;
 }

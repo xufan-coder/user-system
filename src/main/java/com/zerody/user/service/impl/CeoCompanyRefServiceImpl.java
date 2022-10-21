@@ -1,7 +1,9 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.DateUtil;
 import com.zerody.common.util.UUIDutils;
@@ -124,5 +126,13 @@ public class CeoCompanyRefServiceImpl extends ServiceImpl<CeoCompanyRefMapper, C
             log.error("账号查询异常：{}",id);
             throw new DefaultException("账号ID不存在！");
         }
+    }
+
+    @Override
+    public List<CeoCompanyRef> getBackRefById(String ceoId) {
+        LambdaQueryWrapper<CeoCompanyRef> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CeoCompanyRef::getCeoId, ceoId);
+        //wrapper.eq(CeoCompanyRef::getType , YesNo.YES);
+        return this.baseMapper.selectList(wrapper);
     }
 }

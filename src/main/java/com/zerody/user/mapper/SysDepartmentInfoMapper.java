@@ -164,4 +164,12 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<String> getUserIds(@Param("companyId") String companyId,@Param("parentId")String parentId);
 
     List<String> getUserIdsByDepartmentId(@Param("departmentId") String departmentId);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取副总
+    * @Date: 2022/10/20 16:46
+    */
+    List<CompanyAdminVo> queryVicePresident(@Param("companyIds") List<String> companyIds);
 }

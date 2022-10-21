@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -301,6 +302,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());
         this.saveOrUpdate(staff);
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
@@ -731,6 +733,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
         staff.setDateLeft(setSysUserInfoDto.getDateLeft());//离职时间
+        staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());//是否是钻石会员
         if (DataUtil.isEmpty(setSysUserInfoDto.getRecommendType()) || setSysUserInfoDto.getRecommendType().intValue() == 0) {
             staff.setRecommendId("");
         }
@@ -2657,6 +2660,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public List<StaffInfoVo> getAllDuytUserInner() {
         return this.sysUserInfoMapper.getAllDuytUser();
+    }
+
+    @Override
+    public SysStaffInfo getUserInfo(String id) {
+        LambdaQueryWrapper<SysStaffInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysStaffInfo::getId, id);
+        wrapper.eq(SysStaffInfo::getDeleted, YesNo.NO);
+        return this.baseMapper.selectOne(wrapper);
     }
 
     @Override
