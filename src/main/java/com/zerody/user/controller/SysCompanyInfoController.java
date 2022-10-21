@@ -424,4 +424,17 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             return R.error(e.getMessage());
         }
     }
+
+    @GetMapping("/get/all/structure/inner")
+    public DataResult<List<SysComapnyInfoVo>> getAllStructure() {
+        try {
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("获取企业组织架构出错:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取企业组织架构出错:{}", e, e);
+            return R.error("获取企业组织架构出错");
+        }
+    }
 }
