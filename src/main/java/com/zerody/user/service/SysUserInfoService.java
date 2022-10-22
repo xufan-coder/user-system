@@ -268,4 +268,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     void doLogout(String userId);
 
     StaffInfoVo getSuperiorAdmin(UserVo userVo);
+
+    void doUserStatusEditInfo();
 }

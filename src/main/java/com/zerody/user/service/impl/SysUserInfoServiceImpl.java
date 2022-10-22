@@ -815,6 +815,16 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return superior;
     }
 
+    @Override
+    public void doUserStatusEditInfo() {
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.select("id", 0 + "AS user_edit", "status");
+        userQw.lambda().eq(SysUserInfo::getStatusEdit, YesNo.YES);
+        userQw.lambda().last("limit 0, 500");
+        List<SysUserInfo> users = this.list(userQw);
+        this.updateBatchById(users);
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {
