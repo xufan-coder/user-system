@@ -762,7 +762,14 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
 
     @Override
     public List<SysComapnyInfoVo> getAllStructure() {
-        return null;
+        List<SysComapnyInfoVo> structure = this.sysCompanyInfoMapper.getProCompnay();
+        if (DataUtil.isEmpty(structure)) {
+            return new ArrayList<>();
+        }
+        structure.forEach(c -> {
+            c.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(c.getId()));
+        });
+        return structure;
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
