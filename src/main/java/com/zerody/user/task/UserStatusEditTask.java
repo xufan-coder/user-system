@@ -25,9 +25,10 @@ public class UserStatusEditTask {
 
     @XxlJob("user_status_edit")
     public ReturnT<String> execute(String param){
+        ReturnT<String> returnT = ReturnT.SUCCESS;
         //获取修改用户状态的用户
-        this.userInfoService.doUserStatusEditInfo();
-
-        return ReturnT.SUCCESS;
+        int num = this.userInfoService.doUserStatusEditInfo();
+        returnT.setMsg("修改数量:" + num);
+        return returnT;
     }
 }

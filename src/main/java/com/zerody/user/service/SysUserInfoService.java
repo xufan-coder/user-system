@@ -269,5 +269,5 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
 
     StaffInfoVo getSuperiorAdmin(UserVo userVo);
 
-    void doUserStatusEditInfo();
+    int doUserStatusEditInfo();
 }
