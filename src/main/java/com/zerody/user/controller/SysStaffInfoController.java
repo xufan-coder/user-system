@@ -79,7 +79,7 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
 
-    @RequestMapping(value = "/page/pageget/inner", method = RequestMethod.POST)
+    @RequestMapping(value = "/page/get/inner", method = RequestMethod.POST)
     public DataResult<IPage<BosStaffInfoVo>> getPageAllStaffInner(@RequestBody SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllStaff(sysStaffInfoPageDto));
     }
