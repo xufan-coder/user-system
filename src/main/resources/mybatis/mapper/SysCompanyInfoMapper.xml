@@ -325,4 +325,28 @@
         WHERE
             status = 0
     </select>
+
+  <select id="getProCompnay" resultType="com.zerody.user.vo.SysComapnyInfoVo">
+      SELECT
+      sci.id,
+      sci.company_name,
+      sci.company_code,
+      sci.company_addr_province_code,
+      sci.company_address_city_code,
+      sci.company_address_area_code,
+      sci.company_address,
+      sci.contact_name,
+      sci.contact_phone,
+      ssi.id adminAccount,
+      ssi.user_name AS adminName,
+      sci.status
+      FROM
+      sys_company_info AS sci
+      LEFT JOIN  company_admin AS ca ON ca.company_id = sci.id
+      LEFT JOIN sys_staff_info AS ssi ON ca.staff_id = ssi.id and ssi.status != -1
+      LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+      where
+      sci.status = 0
+      and sci.is_pro_data=1
+  </select>
 </mapper>

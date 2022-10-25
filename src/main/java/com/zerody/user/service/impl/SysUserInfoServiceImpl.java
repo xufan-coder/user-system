@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.adviser.api.dto.AdviserUserStatusUpdateDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.UserTypeInfo;
@@ -26,6 +27,7 @@ import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
+import com.zerody.user.feign.AdviserFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysLoginInfoService;
@@ -91,6 +93,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Autowired
     private CeoUserInfoService ceoUserInfoService;
+
+    @Autowired
+    private AdviserFeignService adviserFeignService;
 
     @Autowired
     private RabbitMqService mqService;
@@ -813,6 +818,37 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             superior = companyAdminMapper.getAdminInfoByCompanyId(user.getCompanyId());
         }
         return superior;
+    }
+
+    @Override
+    public int doUserStatusEditInfo() {
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.select("id", 0 + "AS user_edit", "status");
+        userQw.lambda().eq(SysUserInfo::getStatusEdit, YesNo.YES);
+        userQw.lambda().last("limit 0, 500");
+        List<SysUserInfo> users = this.list(userQw);
+        if (DataUtil.isEmpty(users)) {
+            return 0;
+        }
+        this.updateBatchById(users);
+        List<AdviserUserStatusUpdateDto> usersParams = new ArrayList<>();
+        users.forEach(u -> {
+            if (DataUtil.isEmpty(u)) {
+                return;
+            }
+            AdviserUserStatusUpdateDto userParam = new AdviserUserStatusUpdateDto();
+            userParam.setUserId(u.getId());
+            userParam.setStatus(YesNo.YES);
+            if (DataUtil.isNotEmpty(userParam.getStatus()) &&
+                    (u.getStatus().equals(StatusEnum.deleted.getValue())
+                    || u.getStatus().equals(StatusEnum.stop.getValue())
+                    )) {
+                userParam.setStatus(YesNo.NO);
+            }
+            usersParams.add(userParam);
+        });
+        this.adviserFeignService.updateAdviserStatus(usersParams);
+        return usersParams.size();
     }
 
     //递归获取上级 不包含企业管理员
