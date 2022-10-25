@@ -112,5 +112,9 @@ public class BosStaffInfoVo {
         }
         return this.phone.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
     }
+
+    public String getPhoneFull() {
+        return this.phone;
+    }
     /** 员工状态 */
 }
