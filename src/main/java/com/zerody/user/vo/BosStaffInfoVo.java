@@ -78,6 +78,9 @@ public class BosStaffInfoVo {
      * 员工状态
      */
     private Integer staffStatus;
+
+    /** 头像(相对路径) **/
+    private String avatar;
     private Integer isShowMobile;
 
     private Boolean isAdmin;
