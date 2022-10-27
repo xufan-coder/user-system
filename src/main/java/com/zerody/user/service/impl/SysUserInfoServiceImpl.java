@@ -833,18 +833,14 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         this.updateBatchById(users);
         List<AdviserUserStatusUpdateDto> usersParams = new ArrayList<>();
         users.forEach(u -> {
-            if (DataUtil.isEmpty(u)) {
+            if (DataUtil.isEmpty(u) || DataUtil.isNotEmpty(u.getStatus()) ||
+                    (!u.getStatus().equals(StatusEnum.deleted.getValue()) && !u.getStatus().equals(StatusEnum.stop.getValue()))) {
                 return;
             }
             AdviserUserStatusUpdateDto userParam = new AdviserUserStatusUpdateDto();
             userParam.setUserId(u.getId());
             userParam.setStatus(YesNo.YES);
-            if (DataUtil.isNotEmpty(userParam.getStatus()) &&
-                    (u.getStatus().equals(StatusEnum.deleted.getValue())
-                    || u.getStatus().equals(StatusEnum.stop.getValue())
-                    )) {
-                userParam.setStatus(YesNo.NO);
-            }
+            userParam.setStatus(YesNo.NO);
             usersParams.add(userParam);
         });
         this.adviserFeignService.updateAdviserStatus(usersParams);
