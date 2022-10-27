@@ -823,7 +823,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     @Override
     public int doUserStatusEditInfo() {
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
-        userQw.select("id", 0 + " AS user_edit", "status");
+        userQw.select("id", 0 + " AS status_edit", "status");
         userQw.lambda().eq(SysUserInfo::getStatusEdit, YesNo.YES);
         userQw.lambda().last("limit 0, 500");
         List<SysUserInfo> users = this.list(userQw);
@@ -833,13 +833,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         this.updateBatchById(users);
         List<AdviserUserStatusUpdateDto> usersParams = new ArrayList<>();
         users.forEach(u -> {
-            if (DataUtil.isEmpty(u) || DataUtil.isNotEmpty(u.getStatus()) ||
+            if (DataUtil.isEmpty(u) || DataUtil.isEmpty(u.getStatus()) ||
                     (!u.getStatus().equals(StatusEnum.deleted.getValue()) && !u.getStatus().equals(StatusEnum.stop.getValue()))) {
                 return;
             }
             AdviserUserStatusUpdateDto userParam = new AdviserUserStatusUpdateDto();
             userParam.setUserId(u.getId());
-            userParam.setStatus(YesNo.YES);
             userParam.setStatus(YesNo.NO);
             usersParams.add(userParam);
         });
