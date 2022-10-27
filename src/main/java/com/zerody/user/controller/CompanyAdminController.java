@@ -91,14 +91,4 @@ public class CompanyAdminController {
 		}
 	}
 
-
-	@PostMapping("/test")
-	public DataResult<List<CompanyAdminVo>> test(@RequestBody List<String> companyIds) {
-	    try {
-	        return R.success(service.getCompanyAdmin(companyIds));
-	    } catch (Exception e) {
-	        log.error("描述出错:{}", e.getMessage());
-	        return R.error("描述出错" + e.getMessage());
-	    }
-	}
 }
