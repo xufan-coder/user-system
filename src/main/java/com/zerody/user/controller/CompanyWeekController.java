@@ -85,8 +85,6 @@ public class CompanyWeekController {
     @GetMapping("/get-commute-time-app")
     public DataResult<CompanyWorkTimeVo> getCompanyCommuteTimeApp(CompanyWorkTimeDto companyWorkTimeDto) {
         UserVo user = UserUtils.getUser();
-        log.info("用户信息： {}", user);
-        log.info("是否为boss账号： {}", user.isCEO());
         if (user.isCEO()) {
             companyWorkTimeDto.setType(YesNo.NO);
         } else {
