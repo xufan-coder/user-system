@@ -78,6 +78,9 @@ public class BosStaffInfoVo {
      * 员工状态
      */
     private Integer staffStatus;
+
+    /** 头像(相对路径) **/
+    private String avatar;
     private Integer isShowMobile;
 
     private Boolean isAdmin;
@@ -111,6 +114,10 @@ public class BosStaffInfoVo {
             return null;
         }
         return this.phone.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
+
+    public String getPhoneFull() {
+        return this.phone;
     }
     /** 员工状态 */
 }

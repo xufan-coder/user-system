@@ -161,4 +161,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<ReportFormsQueryVo> getCompanyBusiness(@Param("param") ReportFormsQueryDto param);
 
     List<SysComapnyInfoVo> getSysCompanyAll();
+
+    List<SysComapnyInfoVo> getProCompnay();
 }

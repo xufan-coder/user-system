@@ -63,6 +63,7 @@
         sui.status = 1 AS stops,
         ssi.id = #{staff.staffId} AS isAdmin,
         sb.id is not null AS is_block,
+        sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
         ssi.is_diamond_member

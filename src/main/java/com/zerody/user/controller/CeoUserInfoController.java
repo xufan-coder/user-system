@@ -99,14 +99,4 @@ public class CeoUserInfoController {
         return R.success();
     }
 
-
-    @GetMapping("/test")
-    public DataResult<List<AppCeoUserNotPushVo>> test(String month, String day) {
-        try {
-            return R.success(ceoUserInfoService.getOtherCEOsBirthdayUser(month, day));
-        } catch (Exception e) {
-            log.error("描述出错:{}", e.getMessage());
-            return R.error("描述出错" + e.getMessage());
-        }
-    }
 }

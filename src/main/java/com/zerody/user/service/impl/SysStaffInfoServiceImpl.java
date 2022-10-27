@@ -665,6 +665,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (users != null && users.size() > 0) {
             throw new DefaultException("手机号或用户名被占用");
         }
+        if (!oldUserInfo.getStatus().equals(setSysUserInfoDto.getStatus())) {
+            sysUserInfo.setStatusEdit(YesNo.YES);
+        }
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfoIdCard) && !staffInfoIdCard.getUserId().equals(setSysUserInfoDto.getId())) {
             String hintContent = "该身份证号码已在“".concat(staffInfoIdCard.getCompanyName());
@@ -1126,6 +1129,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysUserInfo userInfo = this.sysUserInfoMapper.selectById(staff.getUserId());
         userInfo.setStatus(StatusEnum.deleted.getValue());
         userInfo.setIsEdit(YesNo.YES);
+        userInfo.setStatusEdit(YesNo.YES);
         this.sysUserInfoMapper.updateById(userInfo);
         //删除部门
         QueryWrapper<UnionStaffDepart> qw = new QueryWrapper<>();
