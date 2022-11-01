@@ -167,4 +167,9 @@ public class  SysUserInfo extends BaseModel {
     private Integer birthdayMonth;
     /**生日天*/
     private Integer birthdayDay;
+
+    /**
+     * 用户状态是否修改(1.是、0.否)
+     */
+    private Integer statusEdit;
 }
