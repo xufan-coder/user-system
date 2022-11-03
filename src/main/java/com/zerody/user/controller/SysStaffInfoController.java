@@ -158,7 +158,7 @@ public class SysStaffInfoController {
             return R.error(e.getMessage());
         }  catch (Exception e) {
             log.error("添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
-            return R.error("添加伙伴失败,请求异常");
+            return R.error("添加合作伙伴失败,请求异常");
         }
     }
 

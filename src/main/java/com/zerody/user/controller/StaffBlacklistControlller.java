@@ -103,7 +103,7 @@ public class StaffBlacklistControlller {
             return R.error(e.getMessage());
         } catch (Exception e) {
             log.error("pc后台添加伙伴内控名单错误：{}", e, e);
-            return R.error("添加伙伴内控名单错误" + e.getMessage());
+            return R.error("添加内控名单错误" + e.getMessage());
         }
     }
 
