@@ -117,7 +117,7 @@ public class CardUserServiceImpl extends ServiceImpl<CardUserMapper, CardUserInf
         qw.lambda().eq(CardUserUnionUser::getUserId,userId);
         CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(qw);
         if(DataUtil.isEmpty(cardUserUnionUser)){
-            throw new DefaultException("该员工未关联名片夹！");
+            throw new DefaultException("该伙伴未关联名片夹！");
         }
         QueryWrapper<CardUserInfo> userQw =new QueryWrapper<>();
         userQw.lambda().eq(CardUserInfo::getId,cardUserUnionUser.getCardId());

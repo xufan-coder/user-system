@@ -220,7 +220,7 @@ public class SysUserInfoVo {
     /** 推荐人id */
     private String recommendId;
 
-    /** 推荐类型 0:公司社招,1员工介绍 */
+    /** 推荐类型 0:公司社招,1伙伴介绍 */
     private Integer recommendType;
 
     /** 积分 */

@@ -222,7 +222,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
-        log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
+        log.info("添加伙伴入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
         //查看手机号或登录名是否被占用

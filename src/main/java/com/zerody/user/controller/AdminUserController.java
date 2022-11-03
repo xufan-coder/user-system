@@ -103,11 +103,11 @@ public class AdminUserController implements AdminUserRemoteService {
 			AdminUserJurisdictionInfo jurisdiction = this.service.getAdminUserJurisdictionInfo(userId);
 			return R.success(jurisdiction);
 		} catch (DefaultException e){
-			log.error("添加员工错误:{} Id:" + userId, e);
+			log.error("获取后台管理权限:{} Id:" + userId, e);
 			return R.error(e.getMessage());
 		}  catch (Exception e) {
-			log.error("添加员工错误:{} id:"+ userId, e);
-			return R.error("添加员工失败,请求异常");
+			log.error("获取后台管理权限:{} id:"+ userId, e);
+			return R.error("获取后台管理权限,请求异常");
 		}
 	}
 
