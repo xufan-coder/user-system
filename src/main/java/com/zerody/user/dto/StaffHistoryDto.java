@@ -23,7 +23,7 @@ public class StaffHistoryDto {
     /**
      * 员工ID
      */
-    @NotEmpty(message = "员工ID不能为空")
+    @NotEmpty(message = "伙伴ID不能为空")
     private String staffId;
     /**
      * 类型

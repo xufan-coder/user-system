@@ -91,7 +91,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
                 }
                 header[header.length - 1] = "导入失败原因";
                 data = this.getStaffoseRecord(id, info.getCompanyId());
-                fileName = "导入员工失败记录_" + System.currentTimeMillis();
+                fileName = "导入伙伴失败记录_" + System.currentTimeMillis();
                 break;
         }
 
