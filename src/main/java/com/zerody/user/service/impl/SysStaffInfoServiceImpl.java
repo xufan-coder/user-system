@@ -1379,10 +1379,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer status = StringUtils.isEmpty(row[8]) ? StatusEnum.activity.getValue() : row[8].equals(StatusEnum.activity.getDesc()) ? StatusEnum.activity.getValue() :
                 row[8].equals(StatusEnum.teamwork.getDesc()) ? StatusEnum.teamwork.getValue() : StatusEnum.stop.getValue();
         SysUserInfo userInfo = new SysUserInfo();
+        SysStaffInfo staff = new SysStaffInfo();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
-        int index = 8 ;
+        int index = 5 ;
+        staff.setDateJoin(format.parse(row[++index]));
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[++index]);
         userInfo.setNation(row[++index]);
@@ -1418,7 +1420,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String initPwd = SysStaffInfoService.getInitPwd();
-        SysStaffInfo staff = new SysStaffInfo();
         staff.setCompId(companyId);
         staff.setUserName(userInfo.getUserName());
         staff.setUserId(userInfo.getId());
@@ -1443,7 +1444,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setUserId(userInfo.getId());
         staffInfoVo.setStaffId(staff.getId());
-        this.familyMemberService.addFamilyMember(family, staffInfoVo);
+        //其中一个不为空就保存
+        if (DataUtil.isNotEmpty(family.getName()) || DataUtil.isNotEmpty(family.getRelationship()) ||
+                DataUtil.isNotEmpty(family.getMobile()) || DataUtil.isNotEmpty(family.getProfession()) || DataUtil.isNotEmpty(family.getContactAddress())) {
+            this.familyMemberService.addFamilyMember(family, staffInfoVo);
+        }
 
         //保存到员工表
         this.save(staff);
@@ -1686,7 +1691,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setUserId(userInfo.getId());
         staffInfoVo.setStaffId(staff.getId());
-        this.familyMemberService.addFamilyMember(family, staffInfoVo);
+        //其中一个不为空就保存
+        if (DataUtil.isNotEmpty(family.getName()) || DataUtil.isNotEmpty(family.getRelationship()) ||
+                DataUtil.isNotEmpty(family.getMobile()) || DataUtil.isNotEmpty(family.getProfession()) || DataUtil.isNotEmpty(family.getContactAddress())) {
+            this.familyMemberService.addFamilyMember(family, staffInfoVo);
+        }
 
         SysLoginInfo loginInfo = new SysLoginInfo();
         loginInfo.setMobileNumber(userInfo.getPhoneNumber());
@@ -3065,6 +3074,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setDepartName(data[index++]);
         bean.setJobName(data[index++]);
         bean.setRoleName(data[index++]);
+        bean.setDateJoin(data[index++]);
         bean.setRecommendMobile(data[index++]);
         bean.setStatus(data[index++]);
         bean.setGender(data[index++]);
