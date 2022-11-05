@@ -29,6 +29,8 @@ public class UserImportErrorDataDto {
     /** 角色 */
     private String roleName;
 
+    private String dateJoin;
+
     /** 推荐人手机号码 */
     private String recommendMobile;
 
