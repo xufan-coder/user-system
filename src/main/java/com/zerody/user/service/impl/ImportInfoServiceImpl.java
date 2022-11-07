@@ -84,14 +84,14 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             case ImportResultInfoType.STAFF_EXTERNAL_VICE:
                 if (DataUtil.isNotEmpty(info.getCompanyId())) {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 4, 12};
+                    requiredNum = new Integer[]{0, 1, 4, 5, 13};
                 } else {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 2, 5, 13};
+                    requiredNum = new Integer[]{0, 1, 2, 5, 6, 14};
                 }
                 header[header.length - 1] = "导入失败原因";
                 data = this.getStaffoseRecord(id, info.getCompanyId());
-                fileName = "导入员工失败记录_" + System.currentTimeMillis();
+                fileName = "导入合作伙伴失败记录_" + System.currentTimeMillis();
                 break;
         }
 
@@ -147,9 +147,9 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             UserImportErrorDataDto bean = JSONObject.parseObject(ir.getImportContent(), UserImportErrorDataDto.class);
             int index = 0;
             if (StringUtils.isEmpty(companyId)) {
-                data = new String[29];
+                data = new String[30];
             } else {
-                data = new String[28];
+                data = new String[29];
             }
             data[index++] = bean.getName();
             data[index++] = bean.getMobile();
@@ -159,6 +159,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             data[index++] = bean.getDepartName();
             data[index++] = bean.getJobName();
             data[index++] =  bean.getRoleName();
+            data[index++] =  bean.getDateJoin();
             data[index++] = bean.getRecommendMobile();
             data[index++] = bean.getStatus();
             data[index++] =  bean.getGender();
