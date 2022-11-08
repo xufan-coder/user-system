@@ -154,11 +154,11 @@ public class SysStaffInfoController {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
-            log.error("添加员工错误:{}" + JSON.toJSONString(setSysUserInfoDto), e);
+            log.error("添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e);
             return R.error(e.getMessage());
         }  catch (Exception e) {
-            log.error("添加员工错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
-            return R.error("添加员工失败,请求异常");
+            log.error("添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error("添加合作伙伴失败,请求异常");
         }
     }
 

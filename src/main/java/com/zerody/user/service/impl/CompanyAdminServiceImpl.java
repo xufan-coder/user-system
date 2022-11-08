@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * 企业管理员业务实现类
- * @author 黄华盛 
+ * @author 黄华盛
  * @date 2021-01-04
  */
 @Service
@@ -49,7 +49,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 		log.info("添加权限  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(data), JSON.toJSONString(UserUtils.getUser()));
 		SysStaffInfo sysStaffInfo = sysStaffInfoMapper.selectById(data.getStaffId());
 		if (DataUtil.isEmpty(sysStaffInfo)){
-			throw new DefaultException("员工不存在！");
+			throw new DefaultException("合作伙伴不存在！");
 		}
 		data.setCompanyId(sysStaffInfo.getCompId());
 		this.save(data);

@@ -87,7 +87,7 @@ public class SysJobPositionServicImpl extends BaseService<SysJobPositionMapper, 
         QueryWrapper<UnionStaffPosition> qw=new QueryWrapper<>();
         qw.lambda().eq(UnionStaffPosition::getPositionId,jobId);
         if(unionStaffPositionMapper.selectCount(qw)>0){
-            throw new DefaultException("该岗位已有员工存在，不可删除！");
+            throw new DefaultException("该岗位已有合作伙伴存在，不可删除！");
         }
         SysJobPosition job = new SysJobPosition();
         job.setStatus(StatusEnum.deleted.getValue());

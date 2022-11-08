@@ -193,7 +193,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unQw.lambda().eq(UnionStaffDepart::getDepartmentId, depId);
         Integer count = unionStaffDepartMapper.selectCount(unQw);
         if (count > 0){
-            throw new DefaultException("该部门下有员工不可删除!");
+            throw new DefaultException("该部门下有合作伙伴不可删除!");
         }
         SysDepartmentInfo dep = this.getById(depId);
         List<SysDepartmentInfoVo> deps = sysDepartmentInfoMapper.getAllDepByCompanyId(dep.getCompId());
@@ -203,7 +203,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         unQw.lambda().and(a -> a.like(UnionStaffDepart::getDepartmentId, depId.concat("\\_")).or().eq(UnionStaffDepart::getDepartmentId,depId));
         count = unionStaffDepartMapper.selectCount(unQw);
         if(count > 0){
-            throw new DefaultException("该子级部门下有员工不可删除!");
+            throw new DefaultException("该子级部门下有合作伙伴不可删除!");
         }
         //删除当前部门以及子级部门
         UpdateWrapper<SysDepartmentInfo> depUw = new UpdateWrapper<>();

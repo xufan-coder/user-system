@@ -46,7 +46,7 @@ public class StaffBlacklistControlller {
      *流程原子服务调用
      *
      * @author               PengQiang
-     * @description          添加员工黑名单
+     * @description          添加内控名单
      * @date                 2021/8/4 9:57
      * @param                [param]
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
@@ -58,11 +58,11 @@ public class StaffBlacklistControlller {
             StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
             return R.success(result);
         } catch (DefaultException e) {
-            log.error("添加员工黑名单错误：{}", e, e);
+            log.error("添加内控名单错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("添加员工黑名单错误：{}", e, e);
-            return R.error("添加员工黑名单错误" + e.getMessage());
+            log.error("添加内控名单错误：{}", e, e);
+            return R.error("添加内控名单错误" + e.getMessage());
         }
     }
 
@@ -99,11 +99,11 @@ public class StaffBlacklistControlller {
             }
             return R.success();
         } catch (DefaultException e) {
-            log.error("pc后台添加员工黑名单错误：{}", e, e);
+            log.error("pc后台添加伙伴内控名单错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("pc后台添加员工黑名单错误：{}", e, e);
-            return R.error("pc后台添加员工黑名单错误" + e.getMessage());
+            log.error("pc后台添加伙伴内控名单错误：{}", e, e);
+            return R.error("添加内控名单错误" + e.getMessage());
         }
     }
 
