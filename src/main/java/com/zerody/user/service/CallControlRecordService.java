@@ -8,7 +8,7 @@ import com.zerody.user.dto.CallControlRecordPageDto;
 
 import java.util.List;
 
-public interface CallControlRecordService extends IService<CallControl> {
+public interface CallControlRecordService extends IService<CallControlRecord> {
 
 
     IPage<CallControlRecord> getPageList(CallControlRecordPageDto pageDto);

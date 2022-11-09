@@ -60,7 +60,7 @@ public class CallUseControlServiceImpl extends ServiceImpl<CallUseControlMapper,
                 callUseControl.setDeptName(sysUserInfoVo.getDepartName());
                 callUseControl.setUserName(sysUserInfoVo.getUserName());
                 callUseControl.setUserId(sysUserInfoVo.getId());
-                callUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
+                callUseControl.setMobile(sysUserInfoVo.getSensitivePhone());
                 callUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
                 this.save(callUseControl);
             }
