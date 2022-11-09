@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.CallUseControlMapper">
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.CallUseControl">
+    <!--@mbg.generated-->
+    <!--@Table call_use_control-->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="dept_id" jdbcType="VARCHAR" property="deptId" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, user_id, company_id, user_name, dept_id, dept_name, mobile
+  </sql>
+</mapper>
