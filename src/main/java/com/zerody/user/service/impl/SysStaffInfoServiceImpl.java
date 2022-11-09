@@ -2837,11 +2837,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
                 errorStr.append("表格中重复手机号,");
             }
-            if (DataUtil.isNotEmpty(idCards.get(row[13]))) {
+            if (DataUtil.isNotEmpty(idCards.get(row[14]))) {
                 errorStr.append("表格中重复身份证号,");
             }
             mobiles.put(row[1], row[1]);
-            idCards.put(row[13], row[13]);
+            idCards.put(row[14], row[14]);
             try {
                 String companyId = checkCompanyParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, recommendId);
                 if (errorStr.length() > 0) {
@@ -2979,11 +2979,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(mobiles.get(row[1]))) {
                 errorStr.append("表格中重复手机号,");
             }
-            if (DataUtil.isNotEmpty(idCards.get(row[12]))) {
+            if (DataUtil.isNotEmpty(idCards.get(row[13]))) {
                 errorStr.append("表格中重复身份证号,");
             }
             mobiles.put(row[1], row[1]);
-            idCards.put(row[12], row[12]);
+            idCards.put(row[13], row[13]);
             try {
                 checkParam(row, errorStr, unionStaffDepart, unionStaffPosition, unionRoleStaff, user, recommendId);
                 if (errorStr.length() > 0) {
