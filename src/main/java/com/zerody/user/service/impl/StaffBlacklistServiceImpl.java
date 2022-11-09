@@ -524,6 +524,32 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
+    public void doRelieveByMobile(String mobile,Integer state) {
+        UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
+        relieveUw.lambda().eq(StaffBlacklist::getMobile, mobile);
+        relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
+        relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
+        this.update(relieveUw);
+    }
+
+    @Override
+    public List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param) {
+        QueryWrapper<StaffBlacklist> qw = new QueryWrapper<>();
+        qw.lambda().eq(StaffBlacklist::getMobile, param.getMobile());
+        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.RELIEVE.name());
+        List<StaffBlacklist> list = this.list(qw);
+
+        for (StaffBlacklist staffBlacklist : list) {
+            staffBlacklist.setRelieveId(param.getRelieveId());
+            staffBlacklist.setRelieveKey(param.getRelieveKey());
+            staffBlacklist.setIsApprove(param.getIsApprove());
+            staffBlacklist.setUpdateTime(new Date());
+        }
+        this.saveBatch(list);
+        return list;
+    }
+
+    @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(String mobile) {
         MobileBlacklistQueryVo  result = new MobileBlacklistQueryVo();
         List<String> companys = this.baseMapper.getBlacklistByMobile(mobile);
