@@ -14,6 +14,7 @@ import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlTimeDto;
 import com.zerody.user.enums.WeeKEnum;
+import com.zerody.user.service.CallControlRecordService;
 import com.zerody.user.service.CallUseControlService;
 import com.zerody.user.vo.CallControlTimeVo;
 import com.zerody.user.vo.CallControlVo;
@@ -48,6 +49,9 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
     @Autowired
     private CallUseControlService callUseControlService;
+
+    @Autowired
+    private CallControlRecordService callControlRecordService;
 
     @Override
     public CallControlVo getByCompany(String companyId) {
@@ -151,7 +155,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                         //大于呼叫次数限制则强制退出
                         //todo
                         //新增一条限制记录
-
+                        callControlRecordService.saveRecord(userId);
                     }
 
 
