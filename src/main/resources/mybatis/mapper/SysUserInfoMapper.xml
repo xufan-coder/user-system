@@ -534,4 +534,21 @@
                  LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         where sui.status IN (0, 3)
     </select>
+
+    <select id="getUserIdUnionRoleStaff" resultType="com.zerody.user.domain.UnionRoleStaff">
+        SELECT
+        urs.id,
+        urs.staff_id,
+        urs.role_id,
+        urs.role_name
+        FROM sys_user_info AS sui
+        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+        sui.status IN (0, 3)
+        <if test="userId neq null and userId neq ''">
+            AND sui.id = #{userId}
+        </if>
+        </where>
+    </select>
 </mapper>

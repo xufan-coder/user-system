@@ -7,9 +7,9 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserIdentifierQueryVo;
-import com.zerody.user.domain.AppUserPush;
-import com.zerody.user.dto.*;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.dto.*;
 import com.zerody.user.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -270,4 +270,12 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     StaffInfoVo getSuperiorAdmin(UserVo userVo);
 
     int doUserStatusEditInfo();
+    /**
+    *
+    *  @description   通过客户负责人id查询角色
+    *  @author        YeChangWei
+    *  @date          2022/11/8 18:12
+    *  @return        com.zerody.user.domain.UnionRoleStaff
+    */
+    UnionRoleStaff getUnionRoleStaff(String userId);
 }
