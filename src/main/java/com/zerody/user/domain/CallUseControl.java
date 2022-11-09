@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+
 /**
-    * 呼叫限制白名单
-    */
+ * 呼叫限制白名单
+ * @author  DaBai
+ * @date  2022/11/9 10:21
+ */
+
 @Data
 public class CallUseControl {
     /**
