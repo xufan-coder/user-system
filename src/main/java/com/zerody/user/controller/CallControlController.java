@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlPageDto;
 import com.zerody.user.service.CallControlService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 呼叫限制控制层
  * @author  DaBai
  * @date  2021/4/21 15:36
  */
@@ -115,4 +117,20 @@ public class CallControlController {
         }
     }
 
+    /**
+     *   提交呼叫次数/预警提示/超出强退
+     */
+    @PostMapping("/submit")
+    public DataResult submitCallControl(){
+        try {
+            this.callControlService.submitCallControl(UserUtils.getUser());
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("提交呼叫次数提醒：{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("提交呼叫次数错误：{}", e, e);
+            return R.error("提交呼叫次数错误" + e.getMessage());
+        }
+    }
 }
