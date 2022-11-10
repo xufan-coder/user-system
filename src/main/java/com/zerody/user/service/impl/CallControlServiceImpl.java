@@ -3,10 +3,13 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.enums.SysCodeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.oauth.api.dto.RemoveTokenDto;
+import com.zerody.oauth.api.dto.SendTemplateDataDto;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.CallControl;
 import com.zerody.user.domain.CallUseControl;
@@ -14,6 +17,7 @@ import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlTimeDto;
 import com.zerody.user.enums.WeeKEnum;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.service.CallControlRecordService;
 import com.zerody.user.service.CallUseControlService;
 import com.zerody.user.vo.CallControlTimeVo;
@@ -52,6 +56,9 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
     @Autowired
     private CallControlRecordService callControlRecordService;
+
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     @Override
     public CallControlVo getByCompany(String companyId) {
@@ -153,12 +160,11 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
                     if(count.equals(callNum+1)){
                         //大于呼叫次数限制则强制退出
-                        //todo
                         //新增一条限制记录
-                        callControlRecordService.saveRecord(userId);
+                        this.callControlRecordService.saveRecord(userId);
+                        //SCRM不强制退出
+                        oauthFeignService.removeToken(new RemoveTokenDto(userId,SysCodeEnum.ZERODY_SCRM_MINI.getCode()));
                     }
-
-
                 }else {
                     StringBuffer tip = new StringBuffer();
                     tip.append("本时间段禁止使用呼叫功能，请在以下时间使用：\r\n");

@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,12 +52,16 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
 
     @Override
     public void relieveCallControlRecordList(List<String> ids) {
-
+            ids.forEach(item->{relieveCallControlRecord(item);});
     }
-
     @Override
     public void relieveCallControlRecord(String id) {
-
+        UpdateWrapper<CallControlRecord> uw =new UpdateWrapper<>();
+        uw.lambda().eq(CallControlRecord::getId,id);
+        uw.lambda().eq(CallControlRecord::getState, YesNo.NO);
+        uw.lambda().set(CallControlRecord::getState,YesNo.YES)
+                .set(CallControlRecord::getRemoveTime,new Date());
+        this.update(uw);
     }
 
     @Override
