@@ -419,4 +419,16 @@
             #{id}
         </foreach>
     </select>
+
+        <!--获取副总-->
+    <select id="getTopLeader" resultType="com.zerody.user.vo.CompanyAdminVo">
+        SELECT
+        sui.id as 'userId',sui.user_name,sui.avatar,sdi.comp_id as companyId
+        FROM
+        sys_department_info AS sdi
+        JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        where sdi.status = 0 and ( LENGTH(sdi.parent_id) = 0 or sdi.parent_id is null )
+        and sdi.id= #{deptId};
+    </select>
 </mapper>
