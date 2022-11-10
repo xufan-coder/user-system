@@ -3,17 +3,21 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.enums.SysCodeEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.SpringUtil;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.constant.CommonConstants;
+import com.zerody.user.domain.CallControlRecord;
 import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlDto;
 import com.zerody.user.dto.UseControlTimeDto;
 import com.zerody.user.enums.WeeKEnum;
 import com.zerody.user.mapper.UseControlMapper;
+import com.zerody.user.service.CallControlRecordService;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.UseControlTimeVo;
@@ -43,6 +47,10 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private UsersUseControlService usersUseControlService;
+    @Autowired
+    private SpringUtil springUtil;
+    @Autowired
+    private CallControlRecordService callControlRecordService;
     @Override
     public void addOrUpdate(UseControlDto param) {
         //是否全局关闭
@@ -159,9 +167,22 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                 }
                 throw new DefaultException(tip.toString());
             }
-        }else {
-            //如果没有配置，则默认允许登录使用
-            return false;
         }
+        //如果没有配置，则默认允许登录使用
+
+        //2022-11-10增加呼叫超出次数限制
+        String sysCode = springUtil.getRequest().getHeader("sys-code");
+        if(!SysCodeEnum.ZERODY_SCRM_MINI.getCode().equals(sysCode)){
+            //SCRM不限制
+            QueryWrapper<CallControlRecord> cqw =new QueryWrapper<>();
+            cqw.lambda().eq(CallControlRecord::getUserId,userId);
+            cqw.lambda().eq(CallControlRecord::getState, YesNo.NO);
+            CallControlRecord callControlRecord = this.callControlRecordService.getOne(cqw);
+            if(DataUtil.isNotEmpty(callControlRecord)){
+                String tip="当日日拨打次数超出系统限制，系统已临时限制使用，请联系行政解除限制！";
+                throw new DefaultException(tip);
+            }
+        }
+        return false;
     }
 }
