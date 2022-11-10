@@ -18,4 +18,6 @@ public interface CallControlRecordService extends IService<CallControlRecord> {
     void relieveCallControlRecord(String id);
 
     void saveRecord(String userId);
+
+    List<CallControlRecord> getList(CallControlRecordPageDto pageDto);
 }

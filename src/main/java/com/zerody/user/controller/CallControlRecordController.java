@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.CallControlRecord;
 import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlPageDto;
@@ -11,11 +12,15 @@ import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.service.CallControlRecordService;
 import com.zerody.user.service.CallControlService;
 import com.zerody.user.service.CallUseControlService;
+import com.zerody.user.vo.CallControlRecordVo;
+import com.zerody.user.vo.UserPerformanceReviewsVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +58,10 @@ public class CallControlRecordController {
     @PostMapping("/export")
     public DataResult<Void> exportPageList(CallControlRecordPageDto pageDto, HttpServletResponse response) {
         try {
-
+            List<CallControlRecord> list = this.callControlRecordService.getList(pageDto);
+            List<CallControlRecordVo> datas =new ArrayList<>();
+            BeanUtils.copyProperties(datas,list);
+            ExcelHandlerUtils.exportExcel(datas, "呼叫限制记录", CallControlRecordVo.class, "呼叫限制记录列表.xls", response);
             return R.success();
         } catch (Exception e) {
             log.error("导出呼叫限制记录出错:{}", e, e);

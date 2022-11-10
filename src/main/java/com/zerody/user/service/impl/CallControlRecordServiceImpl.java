@@ -88,4 +88,20 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
                 this.save(callControlRecord);
             }
     }
+
+    @Override
+    public List<CallControlRecord> getList(CallControlRecordPageDto pageDto) {
+        QueryWrapper<CallControlRecord> qw = new QueryWrapper<>();
+        if(DataUtil.isNotEmpty(pageDto.getCompanyId())){
+            qw.lambda().eq(CallControlRecord::getCompanyId,pageDto.getCompanyId());
+        }
+        if(DataUtil.isNotEmpty(pageDto.getUserId())){
+            qw.lambda().eq(CallControlRecord::getCompanyId,pageDto.getUserId());
+        }
+        if(DataUtil.isNotEmpty(pageDto.getDepartId())){
+            pageDto.setDepartId(pageDto.getDepartId().concat("%"));
+            qw.lambda().like(CallControlRecord::getCompanyId,pageDto.getDepartId());
+        }
+        return this.list(qw);
+    }
 }
