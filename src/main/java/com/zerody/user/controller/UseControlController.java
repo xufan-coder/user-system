@@ -10,6 +10,7 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.service.RestrictRemoteService;
 import com.zerody.user.domain.Msg;
+import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.UseControlService;
@@ -80,10 +81,10 @@ public class UseControlController  implements RestrictRemoteService {
 	 *   获取限制登录时间提示
 	 */
 	@GetMapping("/tips/get")
-	public DataResult<Integer> getTips() {
+	public DataResult<UseControl> getTips() {
 		try {
-			Integer msg = this.useControlService.getTips(UserUtils.getUser());
-			return R.success(msg);
+			UseControl tips = this.useControlService.getTips(UserUtils.getUser());
+			return R.success(tips);
 		} catch (Exception e) {
 			log.error("获取限制登录时间提示错误:{}", e, e);
 			return R.error("获取限制登录时间提示错误:"+e.getMessage());

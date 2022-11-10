@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.SysCodeEnum;
 import com.zerody.common.exception.DefaultException;
@@ -188,7 +189,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
     }
 
     @Override
-    public Integer getTips(UserVo user) {
+    public UseControl getTips(UserVo user) {
         //查询是否存在白名单  白名单的用户不提醒
         QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
         qw.lambda().eq(UsersUseControl::getUserId,user.getUserId()).eq(UsersUseControl::getType,2);
@@ -206,12 +207,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
             UseControl companyAuth = this.getOne(UcQw);
             if(DataUtil.isNotEmpty(companyAuth)){
-                //结束时间距离现在1小时则提醒
-               if(companyAuth.getEnd()-Integer.parseInt(hour)==1){
-                   throw new DefaultException("小伙伴您好！系统将于当天"+companyAuth.getEnd()+"时后限制使用，请及时保存您的客户，今天辛苦了，请注意休息！");
-               }else {
-                   return companyAuth.getEnd();
-               }
+               return companyAuth;
             }
         }
         return null;
