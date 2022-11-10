@@ -77,6 +77,21 @@ public class UseControlController  implements RestrictRemoteService {
 
 
 	/**
+	 *   获取限制登录时间提示
+	 */
+	@GetMapping("/tips/get")
+	public DataResult<Integer> getTips() {
+		try {
+			Integer msg = this.useControlService.getTips(UserUtils.getUser());
+			return R.success(msg);
+		} catch (Exception e) {
+			log.error("获取限制登录时间提示错误:{}", e, e);
+			return R.error("获取限制登录时间提示错误:"+e.getMessage());
+		}
+	}
+
+
+	/**
 	 *   添加黑/白名单
 	 */
 	@PostMapping("/users/name-list/add")
