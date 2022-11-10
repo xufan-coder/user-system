@@ -545,7 +545,7 @@
         JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>
---         sui.status IN (0, 3)
+         sui.status IN (0, 3)
         <if test="userId neq null and userId neq ''">
              sui.id = #{userId}
         </if>
