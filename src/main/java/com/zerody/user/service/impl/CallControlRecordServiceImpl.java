@@ -85,6 +85,7 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
                 callControlRecord.setUserId(sysUserInfoVo.getId());
                 callControlRecord.setMobile(sysUserInfoVo.getSensitivePhone());
                 callControlRecord.setCompanyId(sysUserInfoVo.getCompanyId());
+                callControlRecord.setCompanyName(sysUserInfoVo.getCompanyName());
                 callControlRecord.setRole(sysUserInfoVo.getRoleName());
                 callControlRecord.setCreateTime(new Date());
                 callControlRecord.setNum(1);
