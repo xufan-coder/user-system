@@ -402,4 +402,13 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     Integer getCompanyUserCountById(@Param("companyId") String companyId);
 
     void updateStatus(@Param("staffId")String staffId, @Param("status")  Integer status, @Param("leaveReason") String leaveReason);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 伙伴数据统计
+     * @Date: 2022/11/11 10:12
+     */
+    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+
 }

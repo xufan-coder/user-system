@@ -1034,8 +1034,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
-             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
-             userInfo.setRecommendInfo(recommendInfo);
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+            userInfo.setRecommendInfo(recommendInfo);
         }
         if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
@@ -2176,7 +2176,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StringUtils.isNotEmpty(userInfo.getImState())) {
             DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
             if (DataUtil.isNotEmpty(imState)) {
-               userInfo.setImStateName(imState.getDictName());
+                userInfo.setImStateName(imState.getDictName());
             }
         }
         RecommendInfoVo recommendInfo = null;
@@ -2448,7 +2448,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.setPerformanceReviews(param, list);
             }
         }
-    return list;
+        return list;
     }
 
     @Override
@@ -2686,6 +2686,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         wrapper.eq(SysStaffInfo::getId, id);
         wrapper.eq(SysStaffInfo::getDeleted, YesNo.NO);
         return this.baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
+        return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
     @Override
@@ -3057,7 +3062,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         unionRoleStaffService.saveBatch(unionRoleStaffList);
         this.importResultInfoService.saveBatch(errors);
-                //数据总条数
+        //数据总条数
         result.put("total", dataList.size());
         //异常条数
         result.put("errorCount", errors.size());
