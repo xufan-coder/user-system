@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.CallControl;
 import com.zerody.user.domain.CallControlRecord;
 import com.zerody.user.dto.CallControlRecordPageDto;
+import com.zerody.user.vo.CallControlRecordVo;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface CallControlRecordService extends IService<CallControlRecord> {
 
     void saveRecord(String userId);
 
-    List<CallControlRecord> getList(CallControlRecordPageDto pageDto);
+    List<CallControlRecordVo> getList(CallControlRecordPageDto pageDto);
 }

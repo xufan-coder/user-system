@@ -545,10 +545,25 @@
         JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
         <where>
-         sui.status IN (0, 3)
+            ssi.deleted = 0 and sui.status != -1
         <if test="userId neq null and userId neq ''">
-             sui.id = #{userId}
+            and sui.id = #{userId}
         </if>
         </where>
+    </select>
+
+    <select id="getUserIds" resultType="com.zerody.user.vo.AppUserNotPushVo">
+        select sui.id as 'userId',sui.user_name as 'userName' ,sui.avatar, ca.company_id as 'companyId',
+        sdi.id 'departmentId',sdi.parent_id as 'parentId',usd.department_id as 'userDepartmentId',usdi.depart_name as 'userDepartmentName',ssi.date_join
+        from sys_user_info sui
+        left join sys_staff_info ssi on sui.id = ssi.user_id
+        left join company_admin ca on ca.staff_id = ssi.id
+        left join sys_department_info sdi on sdi.admin_account = ssi.id
+        left join union_staff_depart usd on usd.staff_id = ssi.id
+        left join sys_department_info usdi on usd.department_id = usdi.id
+        where sui.status in (0,3)
+        <if test="time neq null">
+          AND TO_DAYS(ssi.date_join) = TO_DAYS(NOW())
+        </if>
     </select>
 </mapper>

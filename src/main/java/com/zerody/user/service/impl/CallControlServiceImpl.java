@@ -152,7 +152,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
             QueryWrapper<CallControl> cqw =new QueryWrapper<>();
             cqw.lambda().eq(CallControl::getCompanyId,companyId);
-            cqw.lambda().eq(CallControl::getWeek,week);
+            cqw.lambda().eq(CallControl::getWeek,WeeKEnum.getNumberByText(week));
             CallControl callControl = this.getOne(cqw);
             if(DataUtil.isNotEmpty(callControl)){
                 //判断是否在使用时间内

@@ -384,7 +384,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
+//        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
 //        //最后发送短信
 //        smsFeignService.sendSms(smsDto);
         //推送app账户
@@ -574,7 +574,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
+//        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
 //        //最后发送短信
 //        smsFeignService.sendSms(smsDto);
         //推送app账户
@@ -992,44 +992,44 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
-        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
-            //先新增名片
-            CardUserInfo cardUserInfo = new CardUserInfo();
-            cardUserInfo.setUserName(sysUserInfo.getUserName());
-            cardUserInfo.setPhoneNumber(sysUserInfo.getPhoneNumber());
-            cardUserInfo.setCreateTime(new Date());
-            cardUserInfo.setStatus(StatusEnum.activity.getValue());
-            cardUserInfoMapper.insert(cardUserInfo);
+//        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
+//            //先新增名片
+//            CardUserInfo cardUserInfo = new CardUserInfo();
+//            cardUserInfo.setUserName(sysUserInfo.getUserName());
+//            cardUserInfo.setPhoneNumber(sysUserInfo.getPhoneNumber());
+//            cardUserInfo.setCreateTime(new Date());
+//            cardUserInfo.setStatus(StatusEnum.activity.getValue());
+//            cardUserInfoMapper.insert(cardUserInfo);
 
             //解除名片限制
-            UserCardReplaceDto userReplace = new UserCardReplaceDto();
-            userReplace.setNewUserId(null);
-            userReplace.setOldUserId(sysUserInfo.getId());
-            this.cardFeignService.updateCardUser(userReplace);
+//            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+//            userReplace.setNewUserId(null);
+//            userReplace.setOldUserId(sysUserInfo.getId());
+//            this.cardFeignService.updateCardUser(userReplace);
 
-            //生成基础名片信息
-            UserCardDto cardDto = new UserCardDto();
-            cardDto.setMobile(cardUserInfo.getPhoneNumber());
-            cardDto.setUserName(cardUserInfo.getUserName());
-            //crm用户ID
-            cardDto.setUserId(sysUserInfo.getId());
-            //名片用户ID
-            cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setAvatar(sysUserInfo.getAvatar());
-            cardDto.setEmail(sysUserInfo.getEmail());
-            cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setCreateBy(UserUtils.getUserId());
-            log.info("新增名片信息{}", JSON.toJSON(cardDto));
-            DataResult<String> card = cardFeignService.createCard(cardDto);
-            if (!card.isSuccess()) {
-                throw new DefaultException("服务异常！");
-            }
-            //直接修改该用户关联的名片，且解除旧关联
-            UpdateWrapper<CardUserUnionUser> uw = new UpdateWrapper<>();
-            uw.lambda().eq(CardUserUnionUser::getUserId, oldUserInfo.getId());
-            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
-            cardUserUnionCrmUserMapper.update(null, uw);
-        }
+//            //生成基础名片信息
+//            UserCardDto cardDto = new UserCardDto();
+//            cardDto.setMobile(cardUserInfo.getPhoneNumber());
+//            cardDto.setUserName(cardUserInfo.getUserName());
+//            //crm用户ID
+//            cardDto.setUserId(sysUserInfo.getId());
+//            //名片用户ID
+//            cardDto.setCustomerUserId(cardUserInfo.getId());
+//            cardDto.setAvatar(sysUserInfo.getAvatar());
+//            cardDto.setEmail(sysUserInfo.getEmail());
+//            cardDto.setCustomerUserId(cardUserInfo.getId());
+//            cardDto.setCreateBy(UserUtils.getUserId());
+//            log.info("新增名片信息{}", JSON.toJSON(cardDto));
+//            DataResult<String> card = cardFeignService.createCard(cardDto);
+//            if (!card.isSuccess()) {
+//                throw new DefaultException("服务异常！");
+//            }
+//            //直接修改该用户关联的名片，且解除旧关联
+//            UpdateWrapper<CardUserUnionUser> uw = new UpdateWrapper<>();
+//            uw.lambda().eq(CardUserUnionUser::getUserId, oldUserInfo.getId());
+//            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
+//            cardUserUnionCrmUserMapper.update(null, uw);
+//        }
 
 
         if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
@@ -1055,8 +1055,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
-             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
-             userInfo.setRecommendInfo(recommendInfo);
+            recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
+            userInfo.setRecommendInfo(recommendInfo);
         }
         if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
@@ -1501,7 +1501,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[4]);
+//        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[4]);
         //推送app账户
         appUserPushService.doPushAppUser(userInfo.getId(), sysCompanyInfo.getId());
         return staff.getId();
@@ -1739,7 +1739,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[3]);
+//        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[3]);
 
         //推送app账户
         appUserPushService.doPushAppUser(userInfo.getId(), sysCompanyInfo.getId());
@@ -2197,7 +2197,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StringUtils.isNotEmpty(userInfo.getImState())) {
             DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
             if (DataUtil.isNotEmpty(imState)) {
-               userInfo.setImStateName(imState.getDictName());
+                userInfo.setImStateName(imState.getDictName());
             }
         }
         RecommendInfoVo recommendInfo = null;
@@ -2469,7 +2469,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.setPerformanceReviews(param, list);
             }
         }
-    return list;
+        return list;
     }
 
     @Override
@@ -2707,6 +2707,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         wrapper.eq(SysStaffInfo::getId, id);
         wrapper.eq(SysStaffInfo::getDeleted, YesNo.NO);
         return this.baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
+        return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
     @Override
@@ -3078,7 +3083,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         unionRoleStaffService.saveBatch(unionRoleStaffList);
         this.importResultInfoService.saveBatch(errors);
-                //数据总条数
+        //数据总条数
         result.put("total", dataList.size());
         //异常条数
         result.put("errorCount", errors.size());

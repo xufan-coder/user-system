@@ -164,4 +164,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     */
     SysStaffInfo getUserInfo(String id);
 
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 10:13
+    */
+    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+
 }
