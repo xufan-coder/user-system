@@ -183,7 +183,8 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
-            sysStaffInfoService.updateStaff(setSysUserInfoDto);
+            UserVo user = UserUtils.getUser();
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);

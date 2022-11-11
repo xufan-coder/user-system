@@ -207,6 +207,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private CeoCompanyRefService ceoCompanyRefService;
 
+    @Autowired
+    private PositionRecordService positionRecordService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -647,7 +650,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional
-    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) {
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
@@ -921,6 +924,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
         //  员工为离职状态时 增加app推送
+        //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
             if (DataUtil.isNotEmpty(appUserPush)) {
@@ -933,6 +937,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffDimissionInfo.setOperationUserId(UserUtils.getUser().getUserId());
             staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+
+            SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+            PositionRecord positionRecord = new PositionRecord();
+            positionRecord.setId(UUIDutils.getUUID32());
+            positionRecord.setUserId(staff.getUserId());
+            positionRecord.setUserName(staff.getUserName());
+            positionRecord.setCompanyId(staff.getCompId());
+            positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
+            positionRecord.setPhone(sysUserInfo.getPhoneNumber());
+            positionRecord.setRoleName(sysUserInfo.getRoleName());
+            positionRecord.setPositionTime(staff.getDateJoin());
+            positionRecord.setQuitTime(staff.getDateLeft());
+            positionRecord.setQuitReason(staff.getLeaveReason());
+            positionRecord.setCreateBy(user.getUserId());
+            positionRecord.setCreateName(user.getUserName());
+            positionRecord.setCreateTime(new Date());
+            this.positionRecordService.save(positionRecord);
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
