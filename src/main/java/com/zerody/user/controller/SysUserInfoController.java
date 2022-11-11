@@ -1,38 +1,37 @@
 package com.zerody.user.controller;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.UserTypeInfo;
-import com.zerody.common.constant.YesNo;
+import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.UserTypeEnum;
-import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.export.util.ExcelHandlerUtils;
+import com.zerody.user.api.dto.CardUserDto;
+import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.dto.UserCopyDto;
+import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.*;
 import com.zerody.user.domain.CeoUserInfo;
-import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.domain.SysUserIdentifier;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.dto.*;
 import com.zerody.user.service.*;
-import com.zerody.user.vo.*;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BackUserRefVo;
 import com.zerody.user.vo.CeoRefVo;
-import com.zerody.user.vo.CompanyRefVo;
 import com.zerody.user.vo.SysLoginUserInfoVo;
+import com.zerody.user.vo.*;
 import io.jsonwebtoken.lang.Collections;
-import org.apache.catalina.User;
+import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,23 +39,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.LastModified;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.zerody.common.api.bean.DataResult;
-import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.api.bean.R;
-import com.zerody.common.enums.StatusEnum;
-import com.zerody.common.exception.DefaultException;
-import com.zerody.common.util.UserUtils;
-import com.zerody.common.utils.DataUtil;
-import com.zerody.common.vo.UserVo;
-import com.zerody.user.api.dto.CardUserDto;
-import com.zerody.user.api.dto.LoginCheckParamDto;
-import com.zerody.user.api.service.UserRemoteService;
-import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.service.base.CheckUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
-import io.micrometer.core.instrument.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author PengQiang
@@ -1548,6 +1538,26 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }  catch (Exception e) {
             log.error("注销账户出错:{} ",UserUtils.getUser(),e);
             return R.error("注销账户出错,请求异常");
+        }
+    }
+    /**
+    *
+    *  @description   通过客户负责人id查询角色
+    *  @author        YeChangWei
+    *  @date          2022/11/8 18:05
+    *  @return        com.zerody.common.api.bean.DataResult<com.zerody.user.domain.UnionRoleStaff>
+    */
+    @GetMapping("/get/user-role/inner")
+    public DataResult<UnionRoleStaff> getUnionRoleStaff(@RequestParam(value = "userId", required = false)String userId){
+        try {
+            UnionRoleStaff unionRoleStaff = this.sysUserInfoService.getUnionRoleStaff(userId);
+            return R.success(unionRoleStaff);
+        } catch (DefaultException e){
+            log.error("通过客户负责人id查询角色出错:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("通过客户负责人id查询角色出错:{} ",e,e);
+            return R.error("通过客户负责人id查询角色异常!");
         }
     }
 

@@ -773,38 +773,38 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
-        //添加员工即为内部员工需要生成名片小程序用户账号
-        CardUserInfo cardUserInfo = new CardUserInfo();
-        cardUserInfo.setUserName(userInfo.getUserName());
-        cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
-        cardUserInfo.setCreateBy(UserUtils.getUserId());
-        cardUserInfo.setCreateTime(new Date());
-        cardUserInfo.setStatus(StatusEnum.activity.getValue());
-        this.cardUserMapper.insert(cardUserInfo);
-
-        //关联内部员工信息
-        CardUserUnionUser cardUserUnionUser = new CardUserUnionUser();
-        cardUserUnionUser.setId(UUIDutils.getUUID32());
-        cardUserUnionUser.setCardId(cardUserInfo.getId());
-        cardUserUnionUser.setUserId(userInfo.getId());
-        cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
-
-        //生成基础名片信息
-        UserCardDto cardDto = new UserCardDto();
-        cardDto.setMobile(cardUserInfo.getPhoneNumber());
-        cardDto.setUserName(cardUserInfo.getUserName());
-        cardDto.setUserId(cardUserInfo.getId());
-        cardDto.setAvatar(userInfo.getAvatar());
-        cardDto.setEmail(userInfo.getEmail());
-        cardDto.setCreateBy(UserUtils.getUserId());
-        cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
-        cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
-        cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
-        cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
-        DataResult<String> card = cardService.createCard(cardDto);
-        if (!card.isSuccess()) {
-            throw new DefaultException("服务异常！");
-        }
+//        //添加员工即为内部员工需要生成名片小程序用户账号
+//        CardUserInfo cardUserInfo = new CardUserInfo();
+//        cardUserInfo.setUserName(userInfo.getUserName());
+//        cardUserInfo.setPhoneNumber(userInfo.getPhoneNumber());
+//        cardUserInfo.setCreateBy(UserUtils.getUserId());
+//        cardUserInfo.setCreateTime(new Date());
+//        cardUserInfo.setStatus(StatusEnum.activity.getValue());
+//        this.cardUserMapper.insert(cardUserInfo);
+//
+//        //关联内部员工信息
+//        CardUserUnionUser cardUserUnionUser = new CardUserUnionUser();
+//        cardUserUnionUser.setId(UUIDutils.getUUID32());
+//        cardUserUnionUser.setCardId(cardUserInfo.getId());
+//        cardUserUnionUser.setUserId(userInfo.getId());
+//        cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
+//
+//        //生成基础名片信息
+//        UserCardDto cardDto = new UserCardDto();
+//        cardDto.setMobile(cardUserInfo.getPhoneNumber());
+//        cardDto.setUserName(cardUserInfo.getUserName());
+//        cardDto.setUserId(cardUserInfo.getId());
+//        cardDto.setAvatar(userInfo.getAvatar());
+//        cardDto.setEmail(userInfo.getEmail());
+//        cardDto.setCreateBy(UserUtils.getUserId());
+//        cardDto.setAddressProvince(sysCompanyInfo.getCompanyAddrProvinceCode());
+//        cardDto.setAddressCity(sysCompanyInfo.getCompanyAddressCityCode());
+//        cardDto.setAddressArea(sysCompanyInfo.getCompanyAddressAreaCode());
+//        cardDto.setAddressDetail(sysCompanyInfo.getCompanyAddress());
+//        DataResult<String> card = cardService.createCard(cardDto);
+//        if (!card.isSuccess()) {
+//            throw new DefaultException("服务异常！");
+//        }
     }
 
 }
