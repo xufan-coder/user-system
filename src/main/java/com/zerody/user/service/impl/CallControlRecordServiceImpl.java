@@ -14,6 +14,7 @@ import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.mapper.CallControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.vo.CallControlRecordVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private CallControlRecordMapper callControlRecordMapper;
 
     @Override
     public IPage<CallControlRecord> getPageList(CallControlRecordPageDto pageDto) {
@@ -90,18 +94,8 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
     }
 
     @Override
-    public List<CallControlRecord> getList(CallControlRecordPageDto pageDto) {
-        QueryWrapper<CallControlRecord> qw = new QueryWrapper<>();
-        if(DataUtil.isNotEmpty(pageDto.getCompanyId())){
-            qw.lambda().eq(CallControlRecord::getCompanyId,pageDto.getCompanyId());
-        }
-        if(DataUtil.isNotEmpty(pageDto.getUserId())){
-            qw.lambda().eq(CallControlRecord::getCompanyId,pageDto.getUserId());
-        }
-        if(DataUtil.isNotEmpty(pageDto.getDepartId())){
-            pageDto.setDepartId(pageDto.getDepartId().concat("%"));
-            qw.lambda().like(CallControlRecord::getCompanyId,pageDto.getDepartId());
-        }
-        return this.list(qw);
+    public List<CallControlRecordVo> getList(CallControlRecordPageDto pageDto) {
+        List<CallControlRecordVo> list = this.callControlRecordMapper.getList(pageDto);
+        return list;
     }
 }
