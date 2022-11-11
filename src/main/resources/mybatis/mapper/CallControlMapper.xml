@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.CallControlMapper">
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.CallControl">
+    <!--@mbg.generated-->
+    <!--@Table call_control-->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="week" jdbcType="INTEGER" property="week" />
+    <result column="start" jdbcType="INTEGER" property="start" />
+    <result column="end" jdbcType="INTEGER" property="end" />
+    <result column="enable" jdbcType="INTEGER" property="enable" />
+    <result column="tip_num" jdbcType="INTEGER" property="tipNum" />
+    <result column="call_num" jdbcType="INTEGER" property="callNum" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, company_id, week, `start`, `end`, `enable`, tip_num, call_num, update_time
+  </sql>
+</mapper>

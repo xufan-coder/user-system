@@ -37,7 +37,6 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
-import io.lettuce.core.ScanIterator;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -844,6 +843,12 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         });
         this.adviserFeignService.updateAdviserStatus(usersParams);
         return usersParams.size();
+    }
+
+    @Override
+    public UnionRoleStaff getUnionRoleStaff(String userId) {
+        UnionRoleStaff staff = this.sysUserInfoMapper.getUserIdUnionRoleStaff(userId);
+        return staff;
     }
 
     //递归获取上级 不包含企业管理员
