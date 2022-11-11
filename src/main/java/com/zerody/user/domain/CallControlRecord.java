@@ -36,7 +36,7 @@ public class CallControlRecord {
     private String companyId;
 
     /**
-    * 伙伴名称
+    * 企业名称
     */
     private String companyName;
 

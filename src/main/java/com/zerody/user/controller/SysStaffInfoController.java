@@ -452,4 +452,22 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoDetailsVo);
     }
 
+
+    
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 9:51
+    */
+    @GetMapping("/statistics-users")
+    public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
+        try {
+            return R.success();
+        } catch (Exception e) {
+            log.error("伙伴数据统计出错:{}", e.getMessage());
+            return R.error("伙伴数据统计出错" + e.getMessage());
+        }
+    }
+
 }

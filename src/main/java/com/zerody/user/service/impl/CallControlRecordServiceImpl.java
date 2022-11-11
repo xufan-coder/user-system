@@ -14,6 +14,7 @@ import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.mapper.CallControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.vo.CallControlRecordVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private CallControlRecordMapper callControlRecordMapper;
 
     @Override
     public IPage<CallControlRecord> getPageList(CallControlRecordPageDto pageDto) {
@@ -81,11 +85,18 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
                 callControlRecord.setUserId(sysUserInfoVo.getId());
                 callControlRecord.setMobile(sysUserInfoVo.getSensitivePhone());
                 callControlRecord.setCompanyId(sysUserInfoVo.getCompanyId());
+                callControlRecord.setCompanyName(sysUserInfoVo.getCompanyName());
                 callControlRecord.setRole(sysUserInfoVo.getRoleName());
                 callControlRecord.setCreateTime(new Date());
                 callControlRecord.setNum(1);
                 callControlRecord.setState(YesNo.NO);
                 this.save(callControlRecord);
             }
+    }
+
+    @Override
+    public List<CallControlRecordVo> getList(CallControlRecordPageDto pageDto) {
+        List<CallControlRecordVo> list = this.callControlRecordMapper.getList(pageDto);
+        return list;
     }
 }

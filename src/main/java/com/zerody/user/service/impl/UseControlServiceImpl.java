@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.SysCodeEnum;
 import com.zerody.common.exception.DefaultException;
@@ -147,6 +148,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         QueryWrapper<UseControl> UcQw =new QueryWrapper<>();
         UcQw.lambda().eq(UseControl::getCompanyId,companyId);
         UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
+        UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
         UseControl companyAuth = this.getOne(UcQw);
         if(DataUtil.isNotEmpty(companyAuth)){
             // 大于配置开始时间小于结束时间则允许登录使用
@@ -168,7 +170,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                 throw new DefaultException(tip.toString());
             }
         }
-        //如果没有配置，则默认允许登录使用
+        //如果没有配置 或没有启用，则默认允许登录使用
 
         //2022-11-10增加呼叫超出次数限制
         String sysCode = springUtil.getRequest().getHeader("sys-code");
@@ -179,10 +181,35 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             cqw.lambda().eq(CallControlRecord::getState, YesNo.NO);
             CallControlRecord callControlRecord = this.callControlRecordService.getOne(cqw);
             if(DataUtil.isNotEmpty(callControlRecord)){
-                String tip="当日日拨打次数超出系统限制，系统已临时限制使用，请联系行政解除限制！";
+                String tip="为了保护客户信息安全，当前账号因呼叫客户次数已达到限制值，现已禁止登录，如需解除限制请联系公司行政或者集团客服！";
                 throw new DefaultException(tip);
             }
         }
         return false;
+    }
+
+    @Override
+    public UseControl getTips(UserVo user) {
+        //查询是否存在白名单  白名单的用户不提醒
+        QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
+        qw.lambda().eq(UsersUseControl::getUserId,user.getUserId()).eq(UsersUseControl::getType,2);
+        UsersUseControl authorize = this.usersUseControlService.getOne(qw);
+        if(DataUtil.isEmpty(authorize)){
+            //查询企业时间限制
+            //当前周几 中文需要转换
+            SimpleDateFormat formatter = new SimpleDateFormat("E", Locale.CHINA);
+            String week = formatter.format(new Date());
+            //当前时间 24小时制
+            String hour = DateUtil.getHour();
+            QueryWrapper<UseControl> UcQw =new QueryWrapper<>();
+            UcQw.lambda().eq(UseControl::getCompanyId,user.getCompanyId());
+            UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
+            UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
+            UseControl companyAuth = this.getOne(UcQw);
+            if(DataUtil.isNotEmpty(companyAuth)){
+               return companyAuth;
+            }
+        }
+        return null;
     }
 }
