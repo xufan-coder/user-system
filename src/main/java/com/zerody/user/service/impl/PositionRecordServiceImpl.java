@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.mapper.PositionRecordMapper;
 import com.zerody.user.service.PositionRecordService;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PositionRecordServiceImpl extends BaseService<PositionRecordMapper, PositionRecord> implements PositionRecordService {
+public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper, PositionRecord> implements PositionRecordService {
     @Override
     public List<PositionRecordListVo> queryPositionRecord(String phone) {
         QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
@@ -29,6 +30,6 @@ public class PositionRecordServiceImpl extends BaseService<PositionRecordMapper,
             }
         }
 
-        return null;
+        return vos;
     }
 }

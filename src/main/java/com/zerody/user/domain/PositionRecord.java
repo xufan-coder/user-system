@@ -1,22 +1,15 @@
 package com.zerody.user.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.io.Serializable;
-import java.util.Date;
-
 
 import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
 @Data
-public class PositionRecord extends BaseModel implements Serializable {
+public class PositionRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
