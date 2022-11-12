@@ -69,6 +69,7 @@ public class UserLogUtil {
         logDto.setCompanyName(infoVo.getCompanyName());
         logDto.setDepartId(infoVo.getDepartId());
         logDto.setDepartName(infoVo.getDepartmentName());
+        logDto.setRoleName(infoVo.getRoleName());
         Log.addCustomerLog(logDto);
     }
 }
