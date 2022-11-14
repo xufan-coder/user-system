@@ -34,6 +34,7 @@ import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -53,9 +54,7 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.util.CommonUtils;
-import com.zerody.user.util.DateUtils;
-import com.zerody.user.util.SetSuperiorIdUtil;
+import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.Data;
@@ -84,7 +83,6 @@ import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.util.IdCardUtil;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -391,6 +389,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //        smsFeignService.sendSms(smsDto);
         //推送app账户
         appUserPushService.doPushAppUser(sysUserInfo.getId(), setSysUserInfoDto.getCompanyId());
+
+        UserLogUtil.addUserLog(sysUserInfo,UserUtils.getUser(),"签约伙伴", DataCodeType.PARTNER_ADD);
         return staff;
     }
 
@@ -630,6 +630,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("状态不能为空");
         }
 
+        SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(userId);
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setId(userId);
         userInfo.setStatus(status);
@@ -647,12 +648,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
+
+        UserLogUtil.addUserLog(oldUserInfo,UserUtils.getUser(),status, DataCodeType.PARTNER_MODIFY);
     }
 
 
     @Override
     @Transactional
-    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) {
+    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException {
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
@@ -729,6 +732,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus()) && DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())) {
             setSysUserInfoDto.setDateLeft(new Date());
         }
+
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
         staff.setRecommendType(setSysUserInfoDto.getRecommendType());
         staff.setIntegral(setSysUserInfoDto.getIntegral());
@@ -766,6 +770,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
+
+        // 获取埋点数据内容
+        List<String> contentList = new ArrayList<>();
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -775,7 +783,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+            contentList.add("新增了荣耀记录");
         } else {
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            if(historyVos.size() >0) {
+                contentList.add("删除了荣耀记录");
+            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
@@ -792,7 +805,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+            contentList.add("新增了惩罚记录");
         } else {
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            if(historyVos.size() >0) {
+                contentList.add("删除了惩罚记录");
+            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
@@ -806,6 +824,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
             sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
             sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
+            if(setSysUserInfoDto.getStaffRelationDtoList().size() >0) {
+                contentList.add("新增了关系记录");
+            }else {
+                List<SysStaffRelationVo> relationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
+                if(relationVos.size() >0) {
+                    contentList.add("删除了关系记录");
+                }
+            }
             this.sysStaffRelationService.removeRelation(sysStaffRelationDto);
             //添加
             setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
@@ -1037,6 +1063,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
         }
+
+        // 新旧值比较  用于记录伙伴操作埋点数据
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,setSysUserInfoDto);
+        String content = UserCompareUtil.convertCompars(comparList);
+        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
+
         log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
 
