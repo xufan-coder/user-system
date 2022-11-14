@@ -205,6 +205,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             UcQw.lambda().eq(UseControl::getCompanyId,user.getCompanyId());
 //            UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
 //            UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
+            UcQw.lambda().orderByAsc(UseControl::getWeek);
             List<UseControl> list = this.list(UcQw);
             if(DataUtil.isNotEmpty(list)){
                return list;
