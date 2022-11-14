@@ -396,6 +396,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
+        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(setSysUserInfoDto.getCompanyId());
+        SysCompanyInfo sysCompany = this.sysCompanyInfoMapper.selectById(param.getCompanyId());
         if (DataUtil.isNotEmpty(param.getReinstateId())) {
             SysUserInfo user = new SysUserInfo();
             user.setId(param.getReinstateId());
@@ -420,6 +422,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
             return result;
         }
+        //添加一条任职记录
+        PositionRecord positionRecord = new PositionRecord();
+        positionRecord.setId(UUIDutils.getUUID32());
+        positionRecord.setPhone(setSysUserInfoDto.getPhoneNumber());
+        positionRecord.setCompanyId(setSysUserInfoDto.getCompanyId());
+        positionRecord.setCompanyName(companyInfo.getCompanyName());
+        positionRecord.setUserId(setSysUserInfoDto.getId());
+        positionRecord.setUserName(setSysUserInfoDto.getUserName());
+        positionRecord.setPositionTime(setSysUserInfoDto.getDateJoin());
+        positionRecord.setCreateTime(new Date());
+        positionRecord.setRoleName(setSysUserInfoDto.getRoleName());
+        positionRecord.setQuitTime(new Date());
+        positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+        positionRecordService.save(positionRecord);
+
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
