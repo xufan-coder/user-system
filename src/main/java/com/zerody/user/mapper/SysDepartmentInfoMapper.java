@@ -174,4 +174,6 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<CompanyAdminVo> queryVicePresident(@Param("companyIds") List<String> companyIds);
 
     List<CompanyAdminVo> getTopLeader(@Param("deptId")String deptId);
+
+    List<DepartInfoVo> getAllDepList();
 }

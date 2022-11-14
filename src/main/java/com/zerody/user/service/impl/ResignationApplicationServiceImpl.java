@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.Msg;
+import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.ResignationApplication;
 import com.zerody.user.dto.ResignationPageDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.mapper.ResignationApplicationMapper;
+import com.zerody.user.service.PositionRecordService;
 import com.zerody.user.service.ResignationApplicationService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
@@ -36,6 +39,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+    @Autowired
+    private PositionRecordService positionRecordService;
 
 
     @Override
@@ -55,6 +60,20 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     data.setDepartName(sysUserInfoVo.getDepartName());
                     data.setPositionId(sysUserInfoVo.getPositionId());
                     data.setPositionName(sysUserInfoVo.getPositionName());
+                    //添加一条任职记录
+                    PositionRecord positionRecord = new PositionRecord();
+                    positionRecord.setId(UUIDutils.getUUID32());
+                    positionRecord.setPhone(sysUserInfoVo.getPhoneNumber());
+                    positionRecord.setCompanyId(sysUserInfoVo.getCompanyId());
+                    positionRecord.setCompanyName(sysUserInfoVo.getCompanyName());
+                    positionRecord.setUserId(sysUserInfoVo.getId());
+                    positionRecord.setUserName(sysUserInfoVo.getUserName());
+                    positionRecord.setPositionTime(sysUserInfoVo.getDateJoin());
+                    positionRecord.setCreateTime(new Date());
+                    positionRecord.setRoleName(sysUserInfoVo.getRoleName());
+                    positionRecord.setQuitTime(new Date());
+                    positionRecord.setQuitReason(data.getReason());
+                    positionRecordService.save(positionRecord);
                 }
             }
 
