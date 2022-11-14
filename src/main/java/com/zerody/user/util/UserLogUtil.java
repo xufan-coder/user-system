@@ -1,13 +1,11 @@
 package com.zerody.user.util;
 
-import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.log.api.constant.ModuleCodeType;
 import com.zerody.log.api.constant.SystemCodeType;
 import com.zerody.log.api.dto.OperatorLogDto;
 import com.zerody.log.api.util.Log;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.UserCompar;
