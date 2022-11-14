@@ -60,6 +60,7 @@ import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +69,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -396,8 +398,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
-        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(setSysUserInfoDto.getCompanyId());
-        SysCompanyInfo sysCompany = this.sysCompanyInfoMapper.selectById(param.getCompanyId());
         if (DataUtil.isNotEmpty(param.getReinstateId())) {
             SysUserInfo user = new SysUserInfo();
             user.setId(param.getReinstateId());
@@ -422,20 +422,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
             return result;
         }
-        //添加一条任职记录
-        PositionRecord positionRecord = new PositionRecord();
-        positionRecord.setId(UUIDutils.getUUID32());
-        positionRecord.setPhone(setSysUserInfoDto.getPhoneNumber());
-        positionRecord.setCompanyId(setSysUserInfoDto.getCompanyId());
-        positionRecord.setCompanyName(companyInfo.getCompanyName());
-        positionRecord.setUserId(setSysUserInfoDto.getId());
-        positionRecord.setUserName(setSysUserInfoDto.getUserName());
-        positionRecord.setPositionTime(setSysUserInfoDto.getDateJoin());
-        positionRecord.setCreateTime(new Date());
-        positionRecord.setRoleName(setSysUserInfoDto.getRoleName());
-        positionRecord.setQuitTime(new Date());
-        positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
-        positionRecordService.save(positionRecord);
+
 
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
@@ -544,8 +531,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //                sysStaffRelationService.addRelation(item);
 //            });
 //        }
-
-
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -3147,6 +3132,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SetSysUserInfoDto doOldUserInfo(UserCopyDto param) {
         //查询出需要复制的参数
         SetSysUserInfoDto userInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
+        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(userInfoDto.getCompanyId());
+        SysCompanyInfo sysCompany = this.sysCompanyInfoMapper.selectById(param.getCompanyId());
         userInfoDto.setDepartId(param.getDepartId());
         userInfoDto.setPositionId(param.getJobId());
         userInfoDto.setRoleId(param.getRoleId());
@@ -3160,6 +3147,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
         userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
         this.sysUserInfoService.update(userUw);
+
+        //添加一条任职记录
+        SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
+        PositionRecord positionRecord = new PositionRecord();
+        if(StringUtils.isNotEmpty(sysUserInfoDto.getRoleId())){
+            DataResult<?> result = oauthFeignService.getRoleById(sysUserInfoDto.getRoleId());
+            if (!result.isSuccess()) {
+                throw new DefaultException("服务异常！");
+            }
+            JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
+            positionRecord.setRoleName(obj.get("roleName").toString());
+        }
+        positionRecord.setId(UUIDutils.getUUID32());
+        positionRecord.setPhone(sysUserInfoDto.getPhoneNumber());
+        positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
+        positionRecord.setCompanyName(companyInfo.getCompanyName());
+        positionRecord.setUserId(param.getOldUserId());
+        positionRecord.setUserName(sysUserInfoDto.getUserName());
+        positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
+        positionRecord.setCreateTime(new Date());
+        positionRecord.setQuitTime(new Date());
+        positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+        positionRecordService.save(positionRecord);
+
         // 修改员工档案为离职
         this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.stop.getValue(), "调离新公司");
         this.checkUtil.removeUserToken(staff1.getUserId());
