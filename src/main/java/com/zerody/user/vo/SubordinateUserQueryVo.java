@@ -33,5 +33,8 @@ public class SubordinateUserQueryVo {
      */
     private String companyName;
 
+    /**企业id*/
+    private String companyId;
+
     private String avatar;
 }
