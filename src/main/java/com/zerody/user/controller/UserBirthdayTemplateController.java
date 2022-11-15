@@ -15,14 +15,11 @@ import com.zerody.user.service.UserBirthdayTemplateService;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author kuang
@@ -51,7 +48,7 @@ public class UserBirthdayTemplateController {
     public DataResult<Object> addTemplate(@RequestBody UserBirthdayTemplateDto template){
         try {
             if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
-                return R.error("月份不能为空");
+                return R.error("时间不能为空");
             }
             if(StringUtils.isEmpty(template.getBlessing())){
                 return R.error("祝福内容不能为空");
@@ -64,17 +61,17 @@ public class UserBirthdayTemplateController {
             }
             for(Integer month : template.getMonthList()) {
                 if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
-                    return R.error("月份输入有误");
+                    return R.error("时间输入有误");
                 }
             }
             this.service.addTemplate(UserUtils.getUser(),template);
             return R.success();
         } catch (DefaultException e) {
-            log.error("新增生日模板错误：{}", e, e);
+            log.error("新增模板错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("新增生日模板错误：{}", e, e);
-            return R.error("新增生日模板错误" + e.getMessage());
+            log.error("新增模板错误：{}", e, e);
+            return R.error("新增模板错误" + e.getMessage());
         }
     }
 
@@ -90,11 +87,11 @@ public class UserBirthdayTemplateController {
                 return R.error("模板id不能为空");
             }
             if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
-                return R.error("月份不能为空");
+                return R.error("时间不能为空");
             }
             for(Integer month : template.getMonthList()) {
                 if( Calendar.MINUTE < month || month < Calendar.SUNDAY ) {
-                    return R.error("月份输入有误");
+                    return R.error("时间输入有误");
                 }
             }
             if(StringUtils.isEmpty(template.getBlessing())){
@@ -109,11 +106,11 @@ public class UserBirthdayTemplateController {
             this.service.modifyTemplate(UserUtils.getUser(),template);
             return R.success();
         } catch (DefaultException e) {
-            log.error("修改生日模板错误：{}", e, e);
+            log.error("修改模板错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("修改生日模板错误：{}", e, e);
-            return R.error("修改生日模板错误" + e.getMessage());
+            log.error("修改模板错误：{}", e, e);
+            return R.error("修改模板错误" + e.getMessage());
         }
     }
 
@@ -129,11 +126,11 @@ public class UserBirthdayTemplateController {
             Page<UserBirthdayTemplateVo> page = this.service.getTemplate(queryDto);
             return R.success(page);
         } catch (DefaultException e) {
-            log.error("查询生日模板列表错误：{}", e, e);
+            log.error("查询模板列表错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("查询生日模板列表错误：{}", e, e);
-            return R.error("修改生日模板错误" + e.getMessage());
+            log.error("查询模板列表错误：{}", e, e);
+            return R.error("查询模板列表错误" + e.getMessage());
         }
 
     }
@@ -144,16 +141,16 @@ public class UserBirthdayTemplateController {
      * @date  2022-08-20
      **/
     @GetMapping("/blessing/list")
-    public DataResult<List<BirthdayBlessing>> getBlessingList(){
+    public DataResult<List<BirthdayBlessing>> getBlessingList(@RequestParam("type") Integer type){
         try {
-            List<BirthdayBlessing> list = this.birthdayBlessingService.getBlessingList();
+            List<BirthdayBlessing> list = this.birthdayBlessingService.getBlessingList(type);
             return R.success(list);
         } catch (DefaultException e) {
-            log.error("查询生日祝福语句列表错误：{}", e, e);
+            log.error("查询祝福语句列表错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("查询生日祝福语句列表错误：{}", e, e);
-            return R.error("查询生日祝福语句列表错误" + e.getMessage());
+            log.error("查询祝福语句列表错误：{}", e, e);
+            return R.error("查询祝福语句列表错误" + e.getMessage());
         }
     }
 
@@ -187,11 +184,11 @@ public class UserBirthdayTemplateController {
             UserBirthdayTemplateVo templateVo = this.service.getTemplateInfo(templateId);
             return R.success(templateVo);
         } catch (DefaultException e) {
-            log.error("获取生日祝福模板错误：{}", e, e);
+            log.error("获取祝福模板错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("获取生日祝福模板错误：{}", e, e);
-            return R.error("获取生日祝福模板错误" + e.getMessage());
+            log.error("获取祝福模板错误：{}", e, e);
+            return R.error("获取祝福模板错误" + e.getMessage());
         }
     }
 
@@ -246,11 +243,11 @@ public class UserBirthdayTemplateController {
             this.service.modifyTemplateById(id);
             return R.success();
         } catch (DefaultException e) {
-            log.error("删除生日模板错误：{}", e, e);
+            log.error("删除模板错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("删除生日模板错误：{}", e, e);
-            return R.error("删除生日模板错误" + e.getMessage());
+            log.error("删除模板错误：{}", e, e);
+            return R.error("删除模板错误" + e.getMessage());
         }
     }
 
@@ -266,11 +263,11 @@ public class UserBirthdayTemplateController {
             this.service.modifyTemplate(ids);
             return R.success();
         } catch (DefaultException e) {
-            log.error("批量删除生日模板错误：{}", e, e);
+            log.error("批量删除模板错误：{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("批量删除生日模板错误：{}", e, e);
-            return R.error("批量删除生日模板错误" + e.getMessage());
+            log.error("批量删除模板错误：{}", e, e);
+            return R.error("批量删除模板错误" + e.getMessage());
         }
     }
 

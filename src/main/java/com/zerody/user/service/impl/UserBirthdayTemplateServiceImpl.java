@@ -22,7 +22,6 @@ import com.zerody.user.mapper.CeoUserInfoMapper;
 import com.zerody.user.mapper.SysStaffInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.mapper.UserBirthdayTemplateMapper;
-import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.UnionBirthdayMonthService;
 import com.zerody.user.service.UserBirthdayTemplateService;
 import com.zerody.user.vo.AppCeoUserNotPushVo;
@@ -77,7 +76,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setId(UUIDutils.getUUID32());
         int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList());
         if(cnt > 0) {
-            throw new DefaultException("该月份已有模板记录");
+            throw new DefaultException("该时间已有模板记录");
         }
         this.save(template);
         unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
@@ -92,7 +91,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
 
         int cnt = unionBirthdayMonthService.getMonthCount(dto.getId(),dto.getMonthList());
         if(cnt > 0) {
-            throw new DefaultException("该月份已有模板记录");
+            throw new DefaultException("该时间已有模板记录");
         }
         this.updateById(template);
         unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
@@ -130,8 +129,13 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
     }
 
     @Override
-    public UserBirthdayTemplate getTimeTemplate(Date time) {
-        return this.baseMapper.getTemplateByTime( DateUtil.getMonth(), time);
+    public UserBirthdayTemplate getTimeTemplate(Date time,Integer type) {
+        return this.baseMapper.getTemplateByTime( DateUtil.getMonth(), time,type);
+    }
+
+    @Override
+    public UserBirthdayTemplate getEntryTimeTemplate(Integer year,Date time,Integer type) {
+        return this.baseMapper.getTemplateByTime( year.toString(), time,type);
     }
 
     @Override

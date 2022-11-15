@@ -47,4 +47,9 @@ public class UserBirthdayTemplateDto {
 
     /**启用状态  0-否 1-是*/
     private Integer state;
+
+    /**
+     * 模板类型 0-生日 1-入职
+     */
+    private Integer type;
 }

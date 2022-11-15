@@ -6,18 +6,15 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
-import com.zerody.user.domain.BirthdayGreetingCard;
 import com.zerody.user.dto.BirthdayGreetingCardDto;
+import com.zerody.user.dto.GreetingListDto;
 import com.zerody.user.service.BirthdayGreetingCardService;
 import com.zerody.user.vo.BirthdayGreetingCardVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -81,10 +78,10 @@ public class BirthdayGreetingCardController {
      * @date  2022-08-20
      **/
     @GetMapping("/list")
-    public DataResult<List<BirthdayGreetingCardVo>> getGreetingList(){
+    public DataResult<List<BirthdayGreetingCardVo>> getGreetingList(GreetingListDto param){
 
         try {
-            List<BirthdayGreetingCardVo> page = this.birthdayGreetingCardService.getGreetingList(null);
+            List<BirthdayGreetingCardVo> page = this.birthdayGreetingCardService.getGreetingList(param);
             return R.success(page);
         } catch (DefaultException e) {
             log.error("查询贺卡列表错误：{}", e, e);
