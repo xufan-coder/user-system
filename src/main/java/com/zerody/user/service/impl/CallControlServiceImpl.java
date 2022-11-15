@@ -79,6 +79,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
         //查询该企业配置
         QueryWrapper<CallControl> qw =new QueryWrapper<>();
         qw.lambda().eq(CallControl::getCompanyId,companyId);
+        qw.lambda().orderByAsc(CallControl::getWeek);
         List<CallControl> list = this.list(qw);
 
         if(DataUtil.isNotEmpty(list)){
