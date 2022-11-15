@@ -74,7 +74,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setCreateTime(new Date());
         template.setCreateUsername(user.getUserName());
         template.setId(UUIDutils.getUUID32());
-        int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList());
+        int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList(),dto.getType());
         if(cnt > 0) {
             throw new DefaultException("该时间已有模板记录");
         }
@@ -89,7 +89,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setUpdateBy(user.getUserId());
         template.setUpdateTime(new Date());
 
-        int cnt = unionBirthdayMonthService.getMonthCount(dto.getId(),dto.getMonthList());
+        int cnt = unionBirthdayMonthService.getMonthCount(dto.getId(),dto.getMonthList(),dto.getType());
         if(cnt > 0) {
             throw new DefaultException("该时间已有模板记录");
         }

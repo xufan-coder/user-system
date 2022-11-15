@@ -13,7 +13,7 @@
          select count(bt.id)
         from user_birthday_template bt
         join union_birthday_month bm on bm.template_id = bt.id
-        where bt.state = 1 and bt.deleted = 1 and bm.`month` in
+        where bt.state = 1 and bt.deleted = 1 and bt.type = #{type} and bm.`month` in
         <foreach collection="months" item="month" open=" (" separator="," close=")">
             #{month}
         </foreach>
