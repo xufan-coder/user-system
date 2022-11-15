@@ -242,20 +242,22 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
 
     public void checkParams(CallControl callControl){
-        if(DataUtil.isEmpty(callControl.getWeek())){
-            throw new DefaultException("星期参数错误！");
-        }
-        if(DataUtil.isEmpty(callControl.getCallNum())){
-            throw new DefaultException("限制次数参数错误！");
-        }
-        if(DataUtil.isEmpty(callControl.getTipNum())){
-            throw new DefaultException("预警次数参数错误！");
-        }
-        if(DataUtil.isEmpty(callControl.getStart())){
-            throw new DefaultException("开始时间参数错误！");
-        }
-        if(DataUtil.isEmpty(callControl.getEnd())){
-            throw new DefaultException("结束时间参数错误！");
+        if(callControl.getEnable().equals(YesNo.YES)){
+            if(DataUtil.isEmpty(callControl.getWeek())){
+                throw new DefaultException("星期参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getCallNum())){
+                throw new DefaultException("限制次数参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getTipNum())){
+                throw new DefaultException("预警次数参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getStart())){
+                throw new DefaultException("开始时间参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getEnd())){
+                throw new DefaultException("结束时间参数错误！");
+            }
         }
     }
 }
