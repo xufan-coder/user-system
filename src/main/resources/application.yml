@@ -132,3 +132,10 @@ msg:
     title2: '意见提交回复提醒'
     content: '${userName}向你提出了一个意见或建议，请及时查看!'
     content2: '${userName}已经回复了你提出的意见或建议，请及时查看!'
+  entry:
+    url:
+    query:
+    arguments:
+    title: '入职周年祝贺'
+    content: '小微一直记得您为公司所作出的贡献：</br>您总共录入了${importCustomerNum}个客户;</br>您总共放入了${loansMoney}款;</br>您总共签了${signOrderNum}比单;</br>进入系统</br>您辛苦了，感谢您为公司的付出'
+    content2: '小微一直记得您带领的团队为公司所作出的贡献：</br>您的团队总共录入了${importCustomerNum}个客户;</br>您的团队总共放入了${loansMoney}款;</br>您的团队总共签了${signOrderNum}比单;</br>进入系统</br>您辛苦了，感谢您带领的团队为公司的付出'

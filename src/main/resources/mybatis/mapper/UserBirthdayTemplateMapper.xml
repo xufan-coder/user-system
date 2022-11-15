@@ -25,7 +25,7 @@
     select bt.id,bt.blessing,bt.push_time, bt.poster_url,bt.state,GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text
     from user_birthday_template bt
     left join union_birthday_month bm on bm.template_id = bt.id
-      where  bt.deleted = 1
+      where  bt.deleted = 1 AND bt.type = #{queryDto.type}
     <if test="queryDto.state neq null">
         and bt.state = #{queryDto.state}
     </if>
@@ -45,7 +45,7 @@
     <select id="getTemplateByTime" resultMap="BaseResultMap">
         select bt.* from user_birthday_template bt
         join union_birthday_month bm on bm.template_id = bt.id
-        where bt.state = 1 and deleted = 1 and bm.`month` = #{month}
+        where bt.state = 1 and deleted = 1 and bt.type = #{type} AND bm.`month` = #{month}
         and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
     </select>
 
