@@ -30,10 +30,10 @@ public class PositionRecordController {
      * @date 2022/11/8
      * @return
      */
-    @GetMapping("/get/position/{phone}")
-    public DataResult<List<PositionRecordListVo>> queryPositionRecord(@PathVariable("phone") String phone) {
+    @GetMapping("/get/position/{certificateCard}")
+    public DataResult<List<PositionRecordListVo>> queryPositionRecord(@PathVariable("certificateCard") String certificateCard) {
         try {
-            List<PositionRecordListVo> vos = this.service.queryPositionRecord(phone);
+            List<PositionRecordListVo> vos = this.service.queryPositionRecord(certificateCard);
             return R.success(vos);
         } catch (DefaultException e){
             log.error("查询任职记录错误!", e , e);
