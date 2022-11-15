@@ -160,9 +160,9 @@ public class UserBirthdayTemplateController {
      * @date  2022-08-20
      **/
     @GetMapping("/get/exist/month")
-    public DataResult<List<String>> getExistMonthList(String templateId){
+    public DataResult<List<String>> getExistMonthList(@RequestParam("templateId") String templateId,@RequestParam("type") Integer type){
         try {
-            List<String> list = this.unionBirthdayMonthService.getExistMonthList(templateId);
+            List<String> list = this.unionBirthdayMonthService.getExistMonthList(templateId,type);
             return R.success(list);
         } catch (DefaultException e) {
             log.error("查询已有生日模板的月份错误：{}", e, e);

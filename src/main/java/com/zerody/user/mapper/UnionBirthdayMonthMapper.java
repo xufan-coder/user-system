@@ -14,5 +14,5 @@ public interface UnionBirthdayMonthMapper extends BaseMapper<UnionBirthdayMonth>
 
     int getMonthCount(@Param("templateId") String templateId, @Param("months") List<Integer> months);
 
-    List<String> getMonthList(@Param("templateId") String templateId);
+    List<String> getMonthList(@Param("templateId") String templateId,@Param("type")Integer type);
 }
