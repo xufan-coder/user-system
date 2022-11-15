@@ -524,9 +524,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public void doRelieveByMobile(String mobile,Integer state) {
+    public void doRelieveByMobile(String mobile,Integer state,String relieveId) {
         UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
         relieveUw.lambda().eq(StaffBlacklist::getMobile, mobile);
+        relieveUw.lambda().eq(StaffBlacklist::getRelieveId, relieveId);
         relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
         relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
         this.update(relieveUw);
@@ -536,16 +537,18 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     public List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param) {
         QueryWrapper<StaffBlacklist> qw = new QueryWrapper<>();
         qw.lambda().eq(StaffBlacklist::getMobile, param.getMobile());
-        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.RELIEVE.name());
+        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
         List<StaffBlacklist> list = this.list(qw);
 
         for (StaffBlacklist staffBlacklist : list) {
-            staffBlacklist.setRelieveId(param.getRelieveId());
-            staffBlacklist.setRelieveKey(param.getRelieveKey());
-            staffBlacklist.setIsApprove(param.getIsApprove());
-            staffBlacklist.setUpdateTime(new Date());
+            if(DataUtil.isEmpty(staffBlacklist.getRelieveId())){
+                staffBlacklist.setRelieveId(param.getRelieveId());
+                staffBlacklist.setRelieveKey(param.getRelieveKey());
+                staffBlacklist.setIsApprove(param.getIsApprove());
+                staffBlacklist.setUpdateTime(new Date());
+            }
         }
-        this.saveBatch(list);
+        this.updateBatchById(list);
         return list;
     }
 
