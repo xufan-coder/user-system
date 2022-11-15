@@ -189,7 +189,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
     }
 
     @Override
-    public UseControl getTips(UserVo user) {
+    public List<UseControl> getTips(UserVo user) {
         //查询是否存在白名单  白名单的用户不提醒
         QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
         qw.lambda().eq(UsersUseControl::getUserId,user.getUserId()).eq(UsersUseControl::getType,2);
@@ -203,11 +203,12 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             String hour = DateUtil.getHour();
             QueryWrapper<UseControl> UcQw =new QueryWrapper<>();
             UcQw.lambda().eq(UseControl::getCompanyId,user.getCompanyId());
-            UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
-            UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
-            UseControl companyAuth = this.getOne(UcQw);
-            if(DataUtil.isNotEmpty(companyAuth)){
-               return companyAuth;
+//            UcQw.lambda().eq(UseControl::getWeek, WeeKEnum.getNumberByText(week));
+//            UcQw.lambda().eq(UseControl::getEnable, YesNo.YES);
+            UcQw.lambda().orderByAsc(UseControl::getWeek);
+            List<UseControl> list = this.list(UcQw);
+            if(DataUtil.isNotEmpty(list)){
+               return list;
             }
         }
         return null;

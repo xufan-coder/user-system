@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdminUserAllVo;
 import com.zerody.user.api.vo.AdminUserInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserIdentifierQueryVo;
@@ -278,4 +279,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     *  @return        com.zerody.user.domain.UnionRoleStaff
     */
     UnionRoleStaff getUnionRoleStaff(String userId);
+
+    AdminUserAllVo getAdminUserAll();
 }

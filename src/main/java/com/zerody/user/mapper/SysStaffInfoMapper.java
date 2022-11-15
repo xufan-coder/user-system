@@ -409,6 +409,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 伙伴数据统计
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+    UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
 
 }

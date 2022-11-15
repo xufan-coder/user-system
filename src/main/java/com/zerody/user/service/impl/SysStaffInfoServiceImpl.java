@@ -34,6 +34,7 @@ import com.zerody.contract.api.vo.PerformanceReviewsVo;
 import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -53,13 +54,12 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.util.CommonUtils;
-import com.zerody.user.util.DateUtils;
-import com.zerody.user.util.SetSuperiorIdUtil;
+import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +68,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,7 +83,6 @@ import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.service.base.BaseService;
-import com.zerody.user.util.IdCardUtil;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -206,6 +206,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private DictService dictService;
     @Autowired
     private CeoCompanyRefService ceoCompanyRefService;
+
+    @Autowired
+    private PositionRecordService positionRecordService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -381,11 +384,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
+//        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
 //        //最后发送短信
 //        smsFeignService.sendSms(smsDto);
         //推送app账户
         appUserPushService.doPushAppUser(sysUserInfo.getId(), setSysUserInfoDto.getCompanyId());
+
+        UserLogUtil.addUserLog(sysUserInfo,UserUtils.getUser(),"签约伙伴", DataCodeType.PARTNER_ADD);
         return staff;
     }
 
@@ -417,6 +422,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
             return result;
         }
+
+
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
@@ -524,8 +531,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //                sysStaffRelationService.addRelation(item);
 //            });
 //        }
-
-
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -571,7 +576,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
+//        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
 //        //最后发送短信
 //        smsFeignService.sendSms(smsDto);
         //推送app账户
@@ -625,6 +630,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("状态不能为空");
         }
 
+        SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(userId);
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setId(userId);
         userInfo.setStatus(status);
@@ -642,12 +648,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
+
+        UserLogUtil.addUserLog(oldUserInfo,UserUtils.getUser(),status, DataCodeType.PARTNER_MODIFY);
     }
 
 
     @Override
     @Transactional
-    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto) {
+    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException {
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
@@ -724,6 +732,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus()) && DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())) {
             setSysUserInfoDto.setDateLeft(new Date());
         }
+
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
         staff.setRecommendType(setSysUserInfoDto.getRecommendType());
         staff.setIntegral(setSysUserInfoDto.getIntegral());
@@ -761,6 +770,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
+
+        // 获取埋点数据内容
+        List<String> contentList = new ArrayList<>();
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -770,7 +783,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+            contentList.add("新增了荣耀记录");
         } else {
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            if(historyVos.size() >0) {
+                contentList.add("删除了荣耀记录");
+            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
@@ -787,7 +805,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
+            contentList.add("新增了惩罚记录");
         } else {
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            if(historyVos.size() >0) {
+                contentList.add("删除了惩罚记录");
+            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
@@ -801,6 +824,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
             sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
             sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
+            if(setSysUserInfoDto.getStaffRelationDtoList().size() >0) {
+                contentList.add("新增了关系记录");
+            }else {
+                List<SysStaffRelationVo> relationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
+                if(relationVos.size() >0) {
+                    contentList.add("删除了关系记录");
+                }
+            }
             this.sysStaffRelationService.removeRelation(sysStaffRelationDto);
             //添加
             setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
@@ -921,6 +952,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
         //  员工为离职状态时 增加app推送
+        //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
             if (DataUtil.isNotEmpty(appUserPush)) {
@@ -933,6 +965,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffDimissionInfo.setOperationUserId(UserUtils.getUser().getUserId());
             staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+
+            SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+            PositionRecord positionRecord = new PositionRecord();
+            positionRecord.setId(UUIDutils.getUUID32());
+            positionRecord.setUserId(staff.getUserId());
+            positionRecord.setUserName(staff.getUserName());
+            positionRecord.setCompanyId(staff.getCompId());
+            positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
+            positionRecord.setPhone(sysUserInfo.getPhoneNumber());
+            positionRecord.setRoleName(sysUserInfo.getRoleName());
+            positionRecord.setPositionTime(staff.getDateJoin());
+            positionRecord.setQuitTime(staff.getDateLeft());
+            positionRecord.setQuitReason(staff.getLeaveReason());
+            positionRecord.setCreateBy(user.getUserId());
+            positionRecord.setCreateName(user.getUserName());
+            positionRecord.setCreateTime(new Date());
+            this.positionRecordService.save(positionRecord);
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -971,49 +1020,55 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
-        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
-            //先新增名片
-            CardUserInfo cardUserInfo = new CardUserInfo();
-            cardUserInfo.setUserName(sysUserInfo.getUserName());
-            cardUserInfo.setPhoneNumber(sysUserInfo.getPhoneNumber());
-            cardUserInfo.setCreateTime(new Date());
-            cardUserInfo.setStatus(StatusEnum.activity.getValue());
-            cardUserInfoMapper.insert(cardUserInfo);
+//        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
+//            //先新增名片
+//            CardUserInfo cardUserInfo = new CardUserInfo();
+//            cardUserInfo.setUserName(sysUserInfo.getUserName());
+//            cardUserInfo.setPhoneNumber(sysUserInfo.getPhoneNumber());
+//            cardUserInfo.setCreateTime(new Date());
+//            cardUserInfo.setStatus(StatusEnum.activity.getValue());
+//            cardUserInfoMapper.insert(cardUserInfo);
 
             //解除名片限制
-            UserCardReplaceDto userReplace = new UserCardReplaceDto();
-            userReplace.setNewUserId(null);
-            userReplace.setOldUserId(sysUserInfo.getId());
-            this.cardFeignService.updateCardUser(userReplace);
+//            UserCardReplaceDto userReplace = new UserCardReplaceDto();
+//            userReplace.setNewUserId(null);
+//            userReplace.setOldUserId(sysUserInfo.getId());
+//            this.cardFeignService.updateCardUser(userReplace);
 
-            //生成基础名片信息
-            UserCardDto cardDto = new UserCardDto();
-            cardDto.setMobile(cardUserInfo.getPhoneNumber());
-            cardDto.setUserName(cardUserInfo.getUserName());
-            //crm用户ID
-            cardDto.setUserId(sysUserInfo.getId());
-            //名片用户ID
-            cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setAvatar(sysUserInfo.getAvatar());
-            cardDto.setEmail(sysUserInfo.getEmail());
-            cardDto.setCustomerUserId(cardUserInfo.getId());
-            cardDto.setCreateBy(UserUtils.getUserId());
-            log.info("新增名片信息{}", JSON.toJSON(cardDto));
-            DataResult<String> card = cardFeignService.createCard(cardDto);
-            if (!card.isSuccess()) {
-                throw new DefaultException("服务异常！");
-            }
-            //直接修改该用户关联的名片，且解除旧关联
-            UpdateWrapper<CardUserUnionUser> uw = new UpdateWrapper<>();
-            uw.lambda().eq(CardUserUnionUser::getUserId, oldUserInfo.getId());
-            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
-            cardUserUnionCrmUserMapper.update(null, uw);
-        }
+//            //生成基础名片信息
+//            UserCardDto cardDto = new UserCardDto();
+//            cardDto.setMobile(cardUserInfo.getPhoneNumber());
+//            cardDto.setUserName(cardUserInfo.getUserName());
+//            //crm用户ID
+//            cardDto.setUserId(sysUserInfo.getId());
+//            //名片用户ID
+//            cardDto.setCustomerUserId(cardUserInfo.getId());
+//            cardDto.setAvatar(sysUserInfo.getAvatar());
+//            cardDto.setEmail(sysUserInfo.getEmail());
+//            cardDto.setCustomerUserId(cardUserInfo.getId());
+//            cardDto.setCreateBy(UserUtils.getUserId());
+//            log.info("新增名片信息{}", JSON.toJSON(cardDto));
+//            DataResult<String> card = cardFeignService.createCard(cardDto);
+//            if (!card.isSuccess()) {
+//                throw new DefaultException("服务异常！");
+//            }
+//            //直接修改该用户关联的名片，且解除旧关联
+//            UpdateWrapper<CardUserUnionUser> uw = new UpdateWrapper<>();
+//            uw.lambda().eq(CardUserUnionUser::getUserId, oldUserInfo.getId());
+//            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
+//            cardUserUnionCrmUserMapper.update(null, uw);
+//        }
 
 
         if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
         }
+
+        // 新旧值比较  用于记录伙伴操作埋点数据
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,setSysUserInfoDto);
+        String content = UserCompareUtil.convertCompars(comparList);
+        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
+
         log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
 
@@ -1480,7 +1535,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[4]);
+//        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[4]);
         //推送app账户
         appUserPushService.doPushAppUser(userInfo.getId(), sysCompanyInfo.getId());
         return staff.getId();
@@ -1718,7 +1773,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
-        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[3]);
+//        saveCardUser(userInfo, loginInfo, sysCompanyInfo, row[3]);
 
         //推送app账户
         appUserPushService.doPushAppUser(userInfo.getId(), sysCompanyInfo.getId());
@@ -3109,6 +3164,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SetSysUserInfoDto doOldUserInfo(UserCopyDto param) {
         //查询出需要复制的参数
         SetSysUserInfoDto userInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
+        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(userInfoDto.getCompanyId());
+        SysCompanyInfo sysCompany = this.sysCompanyInfoMapper.selectById(param.getCompanyId());
         userInfoDto.setDepartId(param.getDepartId());
         userInfoDto.setPositionId(param.getJobId());
         userInfoDto.setRoleId(param.getRoleId());
@@ -3122,6 +3179,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
         userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
         this.sysUserInfoService.update(userUw);
+
+        //添加一条任职记录
+        SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
+        PositionRecord positionRecord = new PositionRecord();
+        if(StringUtils.isNotEmpty(sysUserInfoDto.getRoleId())){
+            DataResult<?> result = oauthFeignService.getRoleById(sysUserInfoDto.getRoleId());
+            if (!result.isSuccess()) {
+                throw new DefaultException("服务异常！");
+            }
+            JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
+            positionRecord.setRoleName(obj.get("roleName").toString());
+        }
+        positionRecord.setId(UUIDutils.getUUID32());
+        positionRecord.setPhone(sysUserInfoDto.getPhoneNumber());
+        positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
+        positionRecord.setCompanyName(companyInfo.getCompanyName());
+        positionRecord.setUserId(param.getOldUserId());
+        positionRecord.setUserName(sysUserInfoDto.getUserName());
+        positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
+        positionRecord.setCreateTime(new Date());
+        positionRecord.setQuitTime(new Date());
+        positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+        positionRecordService.save(positionRecord);
+
         // 修改员工档案为离职
         this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.stop.getValue(), "调离新公司");
         this.checkUtil.removeUserToken(staff1.getUserId());

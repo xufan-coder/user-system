@@ -1561,4 +1561,24 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+
+    /**
+     * @author kuang
+     * @description 获取所有管理层账户
+     **/
+    @Override
+    @GetMapping("/get/admin-all/inner")
+    public DataResult<AdminUserAllVo> getAdminUserAll() {
+        try {
+            AdminUserAllVo allVo = this.sysUserInfoService.getAdminUserAll();
+            return R.success(allVo);
+        } catch (DefaultException e){
+            log.error("获取所有管理层账户出错:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取所有管理层账户出错:{} ",e,e);
+            return R.error("获取所有管理层账户出错!");
+        }
+    }
+
 }

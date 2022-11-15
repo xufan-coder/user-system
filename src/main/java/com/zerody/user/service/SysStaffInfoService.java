@@ -59,7 +59,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateStaffStatus(String userId, Integer status, String leaveReason);
 
 
-    void updateStaff(SetSysUserInfoDto setSysUserInfoDto);
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
 
     SysUserInfoVo selectStaffById(String id);
 
