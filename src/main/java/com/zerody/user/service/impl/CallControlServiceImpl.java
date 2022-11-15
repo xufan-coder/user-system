@@ -89,14 +89,6 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                 weekInfo.add(timeVo);
             }
             vo.setWeekInfo(weekInfo);
-        }else {
-            for (int i = 0; i < 7; i++) {
-                CallControlTimeVo timeVo=new CallControlTimeVo();
-                timeVo.setEnable(YesNo.YES);
-                timeVo.setWeek(i+1);
-                timeVo.setStart(0);
-                timeVo.setEnd(24);
-            }
         }
         vo.setCompanyId(companyId);
         return vo;

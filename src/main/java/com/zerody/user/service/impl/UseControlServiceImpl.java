@@ -98,14 +98,6 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
                 weekInfo.add(timeVo);
             }
             vo.setWeekInfo(weekInfo);
-        }else {
-            for (int i = 0; i < 7; i++) {
-                UseControlTimeVo timeVo=new UseControlTimeVo();
-                timeVo.setEnable(YesNo.YES);
-                timeVo.setWeek(i+1);
-                timeVo.setStart(0);
-                timeVo.setEnd(24);
-            }
         }
         vo.setCompanyId(companyId);
         return vo;
