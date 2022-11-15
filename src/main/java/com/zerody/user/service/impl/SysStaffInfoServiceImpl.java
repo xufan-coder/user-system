@@ -686,6 +686,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             hintContent = hintContent.concat("”存在，请再次确认");
             throw new DefaultException(hintContent);
         }
+        if(oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard())){
+            UpdateWrapper<PositionRecord> wrapper = new UpdateWrapper<>();
+            wrapper.lambda().eq(PositionRecord::getUserId,oldUserInfo.getId()).
+                    set(PositionRecord::getCertificateCard,setSysUserInfoDto.getCertificateCard());
+            this.positionRecordService.update(wrapper);
+        }
         //效验通过保存用户信息
         log.info("修改员工信息入参-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         sysUserInfo.setUpdateTime(new Date());
@@ -973,7 +979,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setUserName(staff.getUserName());
             positionRecord.setCompanyId(staff.getCompId());
             positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
-            positionRecord.setPhone(sysUserInfo.getPhoneNumber());
+            positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
             positionRecord.setRoleName(sysUserInfo.getRoleName());
             positionRecord.setPositionTime(staff.getDateJoin());
             positionRecord.setQuitTime(staff.getDateLeft());
@@ -3192,7 +3198,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setRoleName(obj.get("roleName").toString());
         }
         positionRecord.setId(UUIDutils.getUUID32());
-        positionRecord.setPhone(sysUserInfoDto.getPhoneNumber());
+        positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
         positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
         positionRecord.setCompanyName(companyInfo.getCompanyName());
         positionRecord.setUserId(param.getOldUserId());
