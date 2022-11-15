@@ -63,7 +63,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     //添加一条任职记录
                     PositionRecord positionRecord = new PositionRecord();
                     positionRecord.setId(UUIDutils.getUUID32());
-                    positionRecord.setPhone(sysUserInfoVo.getPhoneNumber());
+                    positionRecord.setCertificateCard(sysUserInfoVo.getCertificateCard());
                     positionRecord.setCompanyId(sysUserInfoVo.getCompanyId());
                     positionRecord.setCompanyName(sysUserInfoVo.getCompanyName());
                     positionRecord.setUserId(sysUserInfoVo.getId());

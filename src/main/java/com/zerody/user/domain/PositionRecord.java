@@ -34,9 +34,9 @@ public class PositionRecord implements Serializable {
 	 */
 	private String companyName;
 	/**
-	 * 手机号
+	 * 身份证
 	 */
-	private String phone;
+	private String certificateCard;
 	/**
 	 * 任职时间
 	 */
