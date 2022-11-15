@@ -25,11 +25,11 @@ public class UnionBirthdayMonthServiceImpl extends ServiceImpl<UnionBirthdayMont
     }
 
     @Override
-    public int getMonthCount(String templateId,List<Integer> monthList) {
+    public int getMonthCount(String templateId, List<Integer> monthList,Integer type) {
         if(monthList == null || monthList.size() ==0) {
             return 0;
         }
-        return this.baseMapper.getMonthCount(templateId, monthList);
+        return this.baseMapper.getMonthCount(templateId, monthList,type);
     }
 
     @Override
