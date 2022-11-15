@@ -92,7 +92,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
 
     void updateStaffBlacklist(StaffBlacklist param);
 
-    void doRelieveByMobile(String mobile, Integer state);
+    void doRelieveByMobile(String mobile, Integer state,String relieveId);
 
     List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param);
 }

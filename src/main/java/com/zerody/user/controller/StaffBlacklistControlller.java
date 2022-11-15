@@ -68,9 +68,11 @@ public class StaffBlacklistControlller {
      * @date  2022/11/8 12:03
      */
     @PostMapping("/emp/relieve-mobile/{mobile}")
-    public DataResult<Object> doRelieveByMobile(@PathVariable("mobile") String mobile,@RequestParam("state") Integer state){
+    public DataResult<Object> doRelieveByMobile(@PathVariable("mobile") String mobile,
+                                                @RequestParam("state") Integer state,
+                                                @RequestParam("relieveId") String relieveId){
         try {
-            this.service.doRelieveByMobile(mobile,state);
+            this.service.doRelieveByMobile(mobile,state,relieveId);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);
