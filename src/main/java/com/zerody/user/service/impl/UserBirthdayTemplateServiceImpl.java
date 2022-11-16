@@ -74,12 +74,21 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setCreateTime(new Date());
         template.setCreateUsername(user.getUserName());
         template.setId(UUIDutils.getUUID32());
-        int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList(),dto.getType());
-        if(cnt > 0) {
-            throw new DefaultException("该时间已有模板记录");
+        if(dto.getType()==YesNo.NO){
+            int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList(),dto.getType());
+            if(cnt > 0) {
+                throw new DefaultException("该生日月份已有模板记录");
+            }
+            this.save(template);
+            unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
+        }else if(dto.getType()==YesNo.YES){
+            int cnt = unionBirthdayMonthService.getYearCount(null,dto.getYearList(),dto.getType());
+            if(cnt > 0) {
+                throw new DefaultException("该入职年份已有模板记录");
+            }
+            this.save(template);
+            unionBirthdayMonthService.addTemplateYear(dto.getYearList(),template.getId());
         }
-        this.save(template);
-        unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
     }
 
     @Override
@@ -89,12 +98,21 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setUpdateBy(user.getUserId());
         template.setUpdateTime(new Date());
 
-        int cnt = unionBirthdayMonthService.getMonthCount(dto.getId(),dto.getMonthList(),dto.getType());
-        if(cnt > 0) {
-            throw new DefaultException("该时间已有模板记录");
+        if(dto.getType()==YesNo.NO){
+            int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList(),dto.getType());
+            if(cnt > 0) {
+                throw new DefaultException("该生日月份已有模板记录");
+            }
+            this.save(template);
+            unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
+        }else if(dto.getType()==YesNo.YES){
+            int cnt = unionBirthdayMonthService.getYearCount(null,dto.getYearList(),dto.getType());
+            if(cnt > 0) {
+                throw new DefaultException("该入职年份已有模板记录");
+            }
+            this.save(template);
+            unionBirthdayMonthService.addTemplateYear(dto.getYearList(),template.getId());
         }
-        this.updateById(template);
-        unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
 
     }
 
