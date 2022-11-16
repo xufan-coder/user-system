@@ -29,9 +29,12 @@
     <if test="queryDto.state neq null">
         and bt.state = #{queryDto.state}
     </if>
-    <if test="queryDto.month neq null and queryDto.month neq ''">
+    <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 0">
         and FIND_IN_SET( bm.`month`,#{queryDto.month})
     </if>
+      <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 1">
+          and  bm.`year`= #{queryDto.month}
+      </if>
     GROUP BY bt.id order by bm.`month` asc
   </select>
 
@@ -46,6 +49,13 @@
         select bt.* from user_birthday_template bt
         join union_birthday_month bm on bm.template_id = bt.id
         where bt.state = 1 and deleted = 1 and bt.type = #{type} AND bm.`month` = #{month}
+        and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
+    </select>
+
+    <select id="getTemplateByYear" resultMap="BaseResultMap">
+        select bt.* from user_birthday_template bt
+        join union_birthday_month bm on bm.template_id = bt.id
+        where bt.state = 1 and deleted = 1 and bt.type = #{type} AND bm.`year` = #{year}
         and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
     </select>
 
