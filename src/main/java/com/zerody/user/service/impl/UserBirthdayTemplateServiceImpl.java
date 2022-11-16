@@ -152,8 +152,8 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
     }
 
     @Override
-    public UserBirthdayTemplate getEntryTimeTemplate(Integer year,Date time,Integer type) {
-        return this.baseMapper.getTemplateByTime( year.toString(), time,type);
+    public UserBirthdayTemplate getEntryTimeTemplate(String year,Date time,Integer type) {
+        return this.baseMapper.getTemplateByYear( year, time,type);
     }
 
     @Override
