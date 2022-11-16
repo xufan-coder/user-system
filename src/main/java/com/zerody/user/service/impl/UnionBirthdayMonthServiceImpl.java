@@ -2,18 +2,15 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.common.util.DateUtil;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.user.domain.UnionBirthdayMonth;
 import com.zerody.user.mapper.UnionBirthdayMonthMapper;
 import com.zerody.user.service.UnionBirthdayMonthService;
-import com.zerody.user.vo.UserBirthdayTemplateVo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author kuang
@@ -22,17 +19,17 @@ import java.util.stream.Collectors;
 public class UnionBirthdayMonthServiceImpl extends ServiceImpl<UnionBirthdayMonthMapper, UnionBirthdayMonth> implements UnionBirthdayMonthService {
 
     @Override
-    public List<String> getExistMonthList(String templateId) {
+    public List<String> getExistMonthList(String templateId,Integer type) {
 
-        return this.baseMapper.getMonthList(templateId);
+        return this.baseMapper.getMonthList(templateId,type);
     }
 
     @Override
-    public int getMonthCount(String templateId,List<Integer> monthList) {
+    public int getMonthCount(String templateId, List<Integer> monthList,Integer type) {
         if(monthList == null || monthList.size() ==0) {
             return 0;
         }
-        return this.baseMapper.getMonthCount(templateId, monthList);
+        return this.baseMapper.getMonthCount(templateId, monthList,type);
     }
 
     @Override

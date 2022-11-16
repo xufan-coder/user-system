@@ -79,6 +79,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
         //查询该企业配置
         QueryWrapper<CallControl> qw =new QueryWrapper<>();
         qw.lambda().eq(CallControl::getCompanyId,companyId);
+        qw.lambda().orderByAsc(CallControl::getWeek);
         List<CallControl> list = this.list(qw);
 
         if(DataUtil.isNotEmpty(list)){
@@ -89,14 +90,6 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                 weekInfo.add(timeVo);
             }
             vo.setWeekInfo(weekInfo);
-        }else {
-            for (int i = 0; i < 7; i++) {
-                CallControlTimeVo timeVo=new CallControlTimeVo();
-                timeVo.setEnable(YesNo.YES);
-                timeVo.setWeek(i+1);
-                timeVo.setStart(0);
-                timeVo.setEnd(24);
-            }
         }
         vo.setCompanyId(companyId);
         return vo;
@@ -119,6 +112,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
             BeanUtils.copyProperties(callControlTimeVo,callControl);
             callControl.setCompanyId(param.getCompanyId());
             callControl.setUpdateTime(new Date());
+            checkParams(callControl);
             list.add(callControl);
         }
         // 再新增配置
@@ -242,6 +236,27 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                 data.setType(1);
                 com.zerody.common.api.bean.DataResult<Long> result = this.sendMsgFeignService.send(data);
                 LOGGER.info(leader.getUserId()+"呼叫限制通知推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
+            }
+        }
+    }
+
+
+    public void checkParams(CallControl callControl){
+        if(callControl.getEnable().equals(YesNo.YES)){
+            if(DataUtil.isEmpty(callControl.getWeek())){
+                throw new DefaultException("星期参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getCallNum())){
+                throw new DefaultException("限制次数参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getTipNum())){
+                throw new DefaultException("预警次数参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getStart())){
+                throw new DefaultException("开始时间参数错误！");
+            }
+            if(DataUtil.isEmpty(callControl.getEnd())){
+                throw new DefaultException("结束时间参数错误！");
             }
         }
     }

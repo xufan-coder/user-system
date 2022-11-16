@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface UnionBirthdayMonthMapper extends BaseMapper<UnionBirthdayMonth> {
 
-    int getMonthCount(@Param("templateId") String templateId, @Param("months") List<Integer> months);
+    int getMonthCount(@Param("templateId") String templateId, @Param("months") List<Integer> months,@Param("type")Integer type);
 
-    List<String> getMonthList(@Param("templateId") String templateId);
+    List<String> getMonthList(@Param("templateId") String templateId,@Param("type")Integer type);
 }

@@ -30,4 +30,9 @@ public class BirthdayGreetingCard {
 
     /**创建人*/
     private String createBy;
+
+    /**
+     *   贺卡类型 0-生日 1-入职
+     */
+    private Integer type;
 }

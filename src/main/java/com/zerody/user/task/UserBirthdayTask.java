@@ -1,6 +1,5 @@
 package com.zerody.user.task;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -11,17 +10,12 @@ import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.im.util.IM;
-import com.zerody.jpush.api.dto.AddJdPushDto;
 import com.zerody.user.config.BirthdayMsgConfig;
-import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.UserBirthdayTemplate;
 import com.zerody.user.dto.FlowMessageDto;
 import com.zerody.user.feign.JPushFeignService;
-import com.zerody.user.mapper.CompanyAdminMapper;
 import com.zerody.user.mapper.SysDepartmentInfoMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
-import com.zerody.user.service.CompanyAdminService;
-import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.UserBirthdayTemplateService;
 import com.zerody.user.vo.AppUserNotPushVo;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -71,7 +65,7 @@ public class UserBirthdayTask {
     @XxlJob("user_birthday_task")
     public ReturnT<String> execute(String param){
         // 获取当前时间 时分
-        UserBirthdayTemplate template = userBirthdayTemplateService.getTimeTemplate(new Date());
+        UserBirthdayTemplate template = userBirthdayTemplateService.getTimeTemplate(new Date(),YesNo.NO);
         // 进入推送时间 查询生日伙伴进行推送
         if(template != null) {
             // 获取当天日期  月-日

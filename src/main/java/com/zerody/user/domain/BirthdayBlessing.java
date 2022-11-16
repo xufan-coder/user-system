@@ -22,4 +22,8 @@ public class BirthdayBlessing {
     /**创建时间*/
     private Date createTime;
 
+    /**
+     * 祝福语类型 0-生日 1-入职
+     */
+    private Integer type;
 }

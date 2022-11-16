@@ -17,9 +17,9 @@ import java.util.List;
 @Service
 public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper, PositionRecord> implements PositionRecordService {
     @Override
-    public List<PositionRecordListVo> queryPositionRecord(String phone) {
+    public List<PositionRecordListVo> queryPositionRecord(String certificateCard) {
         QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(PositionRecord::getPhone,phone);
+        wrapper.lambda().eq(PositionRecord::getCertificateCard,certificateCard);
         List<PositionRecord> list = this.list(wrapper);
         ArrayList<PositionRecordListVo> vos = new ArrayList<>();
         if(ObjectUtils.isNotEmpty(list) && list.size()!=0){

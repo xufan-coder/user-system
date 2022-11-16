@@ -553,17 +553,20 @@
     </select>
 
     <select id="getUserIds" resultType="com.zerody.user.vo.AppUserNotPushVo">
-        select sui.id as 'userId',sui.user_name as 'userName' ,sui.avatar, ca.company_id as 'companyId',
-        sdi.id 'departmentId',sdi.parent_id as 'parentId',usd.department_id as 'userDepartmentId',usdi.depart_name as 'userDepartmentName',ssi.date_join
+        select
+        sui.id as 'userId',
+        sui.user_name as 'userName',
+        sui.avatar,
+        ca.company_id as 'companyId',
+        sdi.id 'departmentId',
+        sdi.parent_id as 'parentId'
         from sys_user_info sui
         left join sys_staff_info ssi on sui.id = ssi.user_id
         left join company_admin ca on ca.staff_id = ssi.id
         left join sys_department_info sdi on sdi.admin_account = ssi.id
-        left join union_staff_depart usd on usd.staff_id = ssi.id
-        left join sys_department_info usdi on usd.department_id = usdi.id
         where sui.status in (0,3)
         <if test="time neq null">
-          AND TO_DAYS(ssi.date_join) = TO_DAYS(NOW())
+          AND (TO_DAYS(ssi.date_join) = TO_DAYS(NOW()) or (ssi.date_join is null and ssi.create_time = TO_DAYS(NOW()))
         </if>
     </select>
 </mapper>

@@ -9,5 +9,5 @@ import java.util.List;
  * @author kuang
  */
 public interface BirthdayBlessingService extends IService<BirthdayBlessing> {
-    List<BirthdayBlessing> getBlessingList();
+    List<BirthdayBlessing> getBlessingList(Integer type);
 }

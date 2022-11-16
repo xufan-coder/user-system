@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BirthdayGreetingCard;
 import com.zerody.user.dto.BirthdayGreetingCardDto;
+import com.zerody.user.dto.GreetingListDto;
 import com.zerody.user.mapper.BirthdayGreetingCardMapper;
 import com.zerody.user.service.BirthdayGreetingCardService;
 import com.zerody.user.vo.BirthdayGreetingCardVo;
@@ -14,8 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ public class BirthdayGreetingCardServiceImpl extends ServiceImpl<BirthdayGreetin
         card.setCardUrl(cardDto.getCardUrl());
         card.setSort(cardDto.getSort());
         card.setState(cardDto.getState());
+        card.setType(cardDto.getType());
+        card.setCreateTime(new Date());
         card.setId(UUIDutils.getUUID32());
         this.save(card);
 
@@ -44,6 +47,7 @@ public class BirthdayGreetingCardServiceImpl extends ServiceImpl<BirthdayGreetin
         card.setCardUrl(cardDto.getCardUrl());
         card.setState(cardDto.getState());
         card.setSort(cardDto.getSort());
+        card.setType(cardDto.getType());
         this.updateById(card);
     }
 
@@ -64,6 +68,25 @@ public class BirthdayGreetingCardServiceImpl extends ServiceImpl<BirthdayGreetin
         //
         return cardVos;
     }
+
+    @Override
+    public List<BirthdayGreetingCardVo> getGreetingList(GreetingListDto param) {
+        QueryWrapper<BirthdayGreetingCard> qw = new QueryWrapper<>();
+        qw.lambda().eq(DataUtil.isNotEmpty(param.getType()),BirthdayGreetingCard::getType,param.getType());
+        qw.lambda().eq(DataUtil.isNotEmpty(param.getState()),BirthdayGreetingCard::getState,param.getState());
+        qw.lambda().eq(BirthdayGreetingCard::getDeleted, YesNo.YES);
+        qw.lambda().orderByDesc(BirthdayGreetingCard::getSort);
+        List<BirthdayGreetingCard>  cards =  this.list(qw);
+
+        List<BirthdayGreetingCardVo> cardVos = new ArrayList<>();
+        for(BirthdayGreetingCard card : cards){
+            BirthdayGreetingCardVo vo = new BirthdayGreetingCardVo();
+            BeanUtils.copyProperties(card,vo);
+            cardVos.add(vo);
+        }
+        return cardVos;
+    }
+
 
     @Override
     public void modifyGreetingById(String id) {

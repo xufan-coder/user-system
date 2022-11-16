@@ -14,4 +14,10 @@ public class TemplatePageDto extends PageQueryDto {
 
     /**月份 多个月份已，分割*/
     private String month;
+
+    /**
+     * 模板类型 0-生日 1-入职
+     */
+    private Integer type;
+
 }

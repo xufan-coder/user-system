@@ -25,7 +25,10 @@ public interface UserBirthdayTemplateService extends IService<UserBirthdayTempla
     UserBirthdayTemplateVo getNoticeInfo(String userId);
 
     /**根据推送时间查询模板*/
-    UserBirthdayTemplate getTimeTemplate(Date time);
+    UserBirthdayTemplate getTimeTemplate(Date time,Integer type);
+
+    /**根据推送时间查询入职周年模板*/
+    UserBirthdayTemplate getEntryTimeTemplate(Integer year,Date time,Integer type);
 
     UserBirthdayTemplateVo getTemplateInfo(String templateId);
 

@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface PositionRecordService  extends IService<PositionRecord> {
 
-    List<PositionRecordListVo> queryPositionRecord(String phone);
+    List<PositionRecordListVo> queryPositionRecord(String certificateCard);
 }
