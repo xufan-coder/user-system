@@ -54,7 +54,7 @@ public class UserBirthdayTemplateController {
                 }
                 for(Integer month : template.getMonthList()) {
                     if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
-                        return R.error("时间输入有误");
+                        return R.error("生日月份输入有误");
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class UserBirthdayTemplateController {
                 }
                 for(Integer month : template.getMonthList()) {
                     if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
-                        return R.error("时间输入有误");
+                        return R.error("生日月份输入有误");
                     }
                 }
             }
