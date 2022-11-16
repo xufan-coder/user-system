@@ -63,60 +63,50 @@ public class UserEntryAnniversaryTask {
         // 获取当天日期  年
         int year = new Integer(DateUtil.getYear());
         //查询所有在职的人员,入职时间是在当天的,和入职年限
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-        List<AppUserNotPushVo> lists = sysUserInfoMapper.getUserIds(new Date());
+
+        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(new Date());
             for (AppUserNotPushVo user : lists) {
-                if (DataUtil.isNotEmpty(user.getDateJoin())) {
-                    int time = new Integer(sdf.format(user.getDateJoin()));
-                    //入职年限
-                    user.setNum(year - time == 0 ? 1 : year - time);
+
                 // 获取当前时间推送的模板 时分
                 UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(user.getNum(),new Date(), YesNo.YES);
-                    //生日祝福
-                    user.setBlessing(template.getBlessing());
+
                     // 进入推送时间 查询入职周年伙伴进行推送
-                   if(template != null){
+                   if(template != null && user.getNum() != null && user.getNum() > 0){
+                       //生日祝福
+                       user.setBlessing(template.getBlessing());
+
                        if(StringUtils.isNotEmpty(user.getCompanyId())) {
-                           //推送总经理
-                           List<String> admins = this.sysDepartmentInfoMapper.getUserIds(user.getCompanyId(), null);
-                           if (admins.size() > 0) {
-                               for (String userId : admins) {
-                                   //查询签单数量 和放款金额 和放款数
-                                   DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(user.getCompanyId(), null, null);
-                                   if (signOrderData.isSuccess()) {
-                                       user.setSignOrderNum(signOrderData.getData().getSignOrderNum());
-                                       user.setLoansMoney(signOrderData.getData().getLoansMoney());
-                                       user.setLoansNum(signOrderData.getData().getLoansNum());
-                                   }
-                                   //查询录入客户数量
-                                   DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(user.getCompanyId(), null, null);
-                                   if (importCustomerNum.isSuccess()) {
-                                       user.setImportCustomerNum(importCustomerNum.getData());
-                                   }
-                                   this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing()+entryMsgConfig.getContent2(), userId, user);
-                               }
+                           //推送总经理 查询该企业年统计量
+
+                           //查询签单数量 和放款金额 和放款数
+                           DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(user.getCompanyId(), null, null);
+                           if (signOrderData.isSuccess()) {
+                               user.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                               user.setLoansMoney(signOrderData.getData().getLoansMoney());
+                               user.setLoansNum(signOrderData.getData().getLoansNum());
                            }
+                           //查询录入客户数量
+                           DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(user.getCompanyId(), null, null);
+                           if (importCustomerNum.isSuccess()) {
+                               user.setImportCustomerNum(importCustomerNum.getData());
+                           }
+                           this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing()+entryMsgConfig.getContent2(), user.getUserId(), user);
                        } else if(StringUtils.isNotEmpty(user.getDepartmentId())) {
-                           //推送副总或团队长
-                           List<String> ids;
-                           ids = this.sysDepartmentInfoMapper.getUserIds(null, user.getDepartmentId());
-                           if (ids.size() > 0) {
-                               for (String id : ids) {
-                                   //查询签单数量 和放款金额 和放款数
-                                   DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, user.getDepartmentId(), null);
-                                   if (signOrderData.isSuccess()) {
-                                       user.setSignOrderNum(signOrderData.getData().getSignOrderNum());
-                                       user.setLoansMoney(signOrderData.getData().getLoansMoney());
-                                       user.setLoansNum(signOrderData.getData().getLoansNum());
-                                   }
-                                   //查询录入客户数量
-                                   DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, user.getDepartmentId(), null);
-                                   if (importCustomerNum.isSuccess()) {
-                                       user.setImportCustomerNum(importCustomerNum.getData());
-                                   }
-                                   this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing()+entryMsgConfig.getContent2(), id, user);
-                               }
+                           //推送副总或团队长  查询该部门年统计量
+
+                       //查询签单数量 和放款金额 和放款数
+                           DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, user.getDepartmentId(), null);
+                           if (signOrderData.isSuccess()) {
+                               user.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                               user.setLoansMoney(signOrderData.getData().getLoansMoney());
+                               user.setLoansNum(signOrderData.getData().getLoansNum());
                            }
+                           //查询录入客户数量
+                           DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, user.getDepartmentId(), null);
+                           if (importCustomerNum.isSuccess()) {
+                               user.setImportCustomerNum(importCustomerNum.getData());
+                           }
+                           this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing()+entryMsgConfig.getContent2(), user.getUserId(), user);
 
                        }
 
@@ -140,7 +130,6 @@ public class UserEntryAnniversaryTask {
                         }
                     }
                   }
-                }
             }
 
         return ReturnT.SUCCESS;
