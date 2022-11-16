@@ -110,7 +110,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
             if(cnt > 0) {
                 throw new DefaultException("该入职年份已有模板记录");
             }
-            this.save(template);
+            this.updateById(template);
             unionBirthdayMonthService.addTemplateYear(dto.getYearList(),template.getId());
         }
 
