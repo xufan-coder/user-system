@@ -317,18 +317,15 @@ public class UserBirthdayTemplateController {
     *  @return        com.zerody.common.api.bean.DataResult<java.lang.Object>
     */
     @GetMapping("/get/whether-entry")
-    public DataResult<Object> whetherEntry(@RequestParam(required = false) String userId){
+    public DataResult<Object> whetherEntry(){
         try {
-            if(StringUtils.isEmpty(userId)) {
-                userId = UserUtils.getUserId();
-            }
-            return R.success(this.service.whetherEntry(userId));
+            return R.success(this.service.whetherEntry(UserUtils.getUserId()));
         } catch (DefaultException e) {
-            log.error("获取今天是否入职周年错误：{}", e, e);
+            log.error("获取今天是否入职周年错误：{}", e.getMessage());
             return R.error(e.getMessage());
         } catch (Exception e) {
             log.error("获取今天是否入职周年错误：{}", e, e);
-            return R.error("获取今天是否入职周年错误" + e.getMessage());
+            return R.error("获取今天是否入职周年错误！");
         }
     }
 
