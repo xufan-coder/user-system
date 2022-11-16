@@ -28,6 +28,7 @@ import com.zerody.user.vo.AppCeoUserNotPushVo;
 import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,10 +217,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
 
     @Override
     public boolean whetherEntry(String userId) {
-        List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getEntryUserIds(userId);
-        if(userList.size() == 0) {
-            return false;
-        }
-        return true;
+        List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getAnniversaryUserList(userId);
+        return userList.size() > 0;
     }
 }

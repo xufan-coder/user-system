@@ -63,7 +63,7 @@ public class UserEntryAnniversaryTask {
 
 
         //查询所有在职的人员,入职时间是在当天的,和入职年限
-        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(new Date());
+        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(null);
             for (AppUserNotPushVo user : lists) {
 
                 if(user.getNum() != null && user.getNum() > 0){
