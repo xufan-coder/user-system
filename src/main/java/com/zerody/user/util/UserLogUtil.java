@@ -53,7 +53,7 @@ public class UserLogUtil {
         log.info("伙伴修改项对比结果:{}",content);
         OperatorLogDto logDto = new OperatorLogDto();
         logDto.setSystemCode(SystemCodeType.SYSTEM_CRM_PC);
-        logDto.setModuleCode(ModuleCodeType.CUSTOMER);
+        logDto.setModuleCode(ModuleCodeType.PARTNER);
         logDto.setDataCode(dataCode);
         logDto.setName(userInfo.getUserName());
         logDto.setMobile(userInfo.getPhoneNumber());
@@ -68,6 +68,6 @@ public class UserLogUtil {
         logDto.setDepartId(infoVo.getDepartId());
         logDto.setDepartName(infoVo.getDepartmentName());
         logDto.setRoleName(infoVo.getRoleName());
-        Log.addCustomerLog(logDto);
+        Log.addUserLog(logDto);
     }
 }
