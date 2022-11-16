@@ -309,6 +309,28 @@ public class UserBirthdayTemplateController {
             return R.error("获取今天是否生日错误" + e.getMessage());
         }
     }
+    /**
+    *
+    *  @description   获取今天是否入职周年
+    *  @author        YeChangWei
+    *  @date          2022/11/16 19:00
+    *  @return        com.zerody.common.api.bean.DataResult<java.lang.Object>
+    */
+    @GetMapping("/get/whether-entry")
+    public DataResult<Object> whetherEntry(@RequestParam(required = false) String userId){
+        try {
+            if(StringUtils.isEmpty(userId)) {
+                userId = UserUtils.getUserId();
+            }
+            return R.success(this.service.whetherEntry(userId));
+        } catch (DefaultException e) {
+            log.error("获取今天是否入职周年错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取今天是否入职周年错误：{}", e, e);
+            return R.error("获取今天是否入职周年错误" + e.getMessage());
+        }
+    }
 
     /**
      * @author kuang

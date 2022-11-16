@@ -39,4 +39,12 @@ public interface UserBirthdayTemplateService extends IService<UserBirthdayTempla
     boolean whetherBirthday(String userId);
 
     void addBlessing(BlessIngParam param);
+    /**
+    *
+    *  @description   获取今天是否入职周年
+    *  @author        YeChangWei
+    *  @date          2022/11/16 19:01
+    *  @return        java.lang.Object
+    */
+    boolean whetherEntry(String userId);
 }

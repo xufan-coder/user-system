@@ -213,4 +213,13 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
     }
+
+    @Override
+    public boolean whetherEntry(String userId) {
+        List<AppUserNotPushVo> userList =  this.sysUserInfoMapper.getEntryUserIds(userId);
+        if(userList.size() == 0) {
+            return false;
+        }
+        return true;
+    }
 }
