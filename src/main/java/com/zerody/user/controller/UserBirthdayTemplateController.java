@@ -6,13 +6,20 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.contract.api.vo.SignOrderDataVo;
 import com.zerody.user.domain.BirthdayBlessing;
+import com.zerody.user.domain.UserBirthdayTemplate;
 import com.zerody.user.dto.BlessIngParam;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UserBirthdayTemplateDto;
+import com.zerody.user.feign.ContractFeignService;
+import com.zerody.user.feign.CustomerFeignService;
+import com.zerody.user.mapper.SysDepartmentInfoMapper;
+import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.BirthdayBlessingService;
 import com.zerody.user.service.UnionBirthdayMonthService;
 import com.zerody.user.service.UserBirthdayTemplateService;
+import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +46,19 @@ public class UserBirthdayTemplateController {
 
     @Autowired
     private UnionBirthdayMonthService unionBirthdayMonthService;
+
+
+    @Autowired
+    private UserBirthdayTemplateService userBirthdayTemplateService;
+    @Autowired
+    private SysUserInfoMapper sysUserInfoMapper;
+    @Autowired
+    private SysDepartmentInfoMapper sysDepartmentInfoMapper;
+    @Autowired
+    private ContractFeignService contractFeignService;
+    @Autowired
+    private CustomerFeignService customerFeignService;
+
 
 
     /**
@@ -349,5 +370,69 @@ public class UserBirthdayTemplateController {
             log.error("发送生日祝福错误：{}", e, e);
             return R.error("发送生日祝福错误" + e.getMessage());
         }
+    }
+
+    private AppUserNotPushVo getEntryPullData(String userId){
+
+        //查询当前入职周年的信息
+        AppUserNotPushVo entryData = sysUserInfoMapper.getEntryData(userId);
+        //获取模板
+        UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(entryData.getNum().toString(),new Date(), YesNo.YES);
+        entryData.setBlessing(template.getBlessing());
+        if (StringUtils.isNotEmpty(entryData.getCompanyId())) {
+            //总经理 查询该企业年统计量
+
+            //查询签单数量 和放款金额 和放款数
+            DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(entryData.getCompanyId(), null, null);
+            if (signOrderData.isSuccess()) {
+                entryData.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                entryData.setLoansMoney(signOrderData.getData().getLoansMoney());
+                entryData.setLoansNum(signOrderData.getData().getLoansNum());
+            }
+            //查询录入客户数量
+            DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(entryData.getCompanyId(), null, null);
+            if (importCustomerNum.isSuccess()) {
+                entryData.setImportCustomerNum(importCustomerNum.getData());
+            }
+        } else if (StringUtils.isNotEmpty(entryData.getDepartmentId())) {
+            //副总或团队长  查询该部门年统计量
+
+            //查询签单数量 和放款金额 和放款数
+            DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, entryData.getDepartmentId(), null);
+            if (signOrderData.isSuccess()) {
+                entryData.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                entryData.setLoansMoney(signOrderData.getData().getLoansMoney());
+                entryData.setLoansNum(signOrderData.getData().getLoansNum());
+            }
+            //查询录入客户数量
+            DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, entryData.getDepartmentId(), null);
+            if (importCustomerNum.isSuccess()) {
+                entryData.setImportCustomerNum(importCustomerNum.getData());
+            }
+
+        }
+        //伙伴数据
+        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(entryData.getDepartmentId());
+         if (userIds.size() > 0) {
+            for (String id : userIds) {
+
+           if(id==userId){
+                //查询签单数量 和放款金额 和放款数
+                DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, id);
+                if (signOrderData.isSuccess()) {
+                    entryData.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                    entryData.setLoansMoney(signOrderData.getData().getLoansMoney());
+                    entryData.setLoansNum(signOrderData.getData().getLoansNum());
+                }
+                //查询录入客户数量
+                DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, null, id);
+                if (importCustomerNum.isSuccess()) {
+                    entryData.setImportCustomerNum(importCustomerNum.getData());
+                }
+           }
+         }
+        }
+        entryData.setContent("亲爱的"+entryData.getUserName()+"小微集团祝您签约"+entryData.getNum()+"快乐");
+        return entryData;
     }
 }
