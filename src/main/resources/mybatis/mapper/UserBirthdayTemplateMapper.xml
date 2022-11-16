@@ -52,6 +52,13 @@
         and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
     </select>
 
+    <select id="getTemplateByYear" resultMap="BaseResultMap">
+        select bt.* from user_birthday_template bt
+        join union_birthday_month bm on bm.template_id = bt.id
+        where bt.state = 1 and deleted = 1 and bt.type = #{type} AND bm.`year` = #{year}
+        and DATE_FORMAT(bt.push_time, '%H:%i') = DATE_FORMAT(#{time},'%H:%i')  limit 1
+    </select>
+
     <select id="getTemplateInfoById" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
          select bt.*,
          GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text,GROUP_CONCAT(bm.`year` order by bm.`year` asc) as year_text
