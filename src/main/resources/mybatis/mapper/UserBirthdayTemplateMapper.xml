@@ -29,9 +29,12 @@
     <if test="queryDto.state neq null">
         and bt.state = #{queryDto.state}
     </if>
-    <if test="queryDto.month neq null and queryDto.month neq ''">
+    <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 0">
         and FIND_IN_SET( bm.`month`,#{queryDto.month})
     </if>
+      <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 1">
+          and  bm.`year`= #{queryDto.month}
+      </if>
     GROUP BY bt.id order by bm.`month` asc
   </select>
 

@@ -99,11 +99,11 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         template.setUpdateTime(new Date());
 
         if(dto.getType()==YesNo.NO){
-            int cnt = unionBirthdayMonthService.getMonthCount(null,dto.getMonthList(),dto.getType());
+            int cnt = unionBirthdayMonthService.getMonthCount(dto.getId(),dto.getMonthList(),dto.getType());
             if(cnt > 0) {
                 throw new DefaultException("该生日月份已有模板记录");
             }
-            this.save(template);
+            this.updateById(template);
             unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
         }else if(dto.getType()==YesNo.YES){
             int cnt = unionBirthdayMonthService.getYearCount(dto.getId(),dto.getYearList(),dto.getType());
