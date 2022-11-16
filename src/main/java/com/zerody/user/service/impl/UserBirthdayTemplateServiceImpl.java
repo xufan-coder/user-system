@@ -106,7 +106,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
             this.save(template);
             unionBirthdayMonthService.addTemplateMonth(dto.getMonthList(),template.getId());
         }else if(dto.getType()==YesNo.YES){
-            int cnt = unionBirthdayMonthService.getYearCount(null,dto.getYearList(),dto.getType());
+            int cnt = unionBirthdayMonthService.getYearCount(dto.getId(),dto.getYearList(),dto.getType());
             if(cnt > 0) {
                 throw new DefaultException("该入职年份已有模板记录");
             }
