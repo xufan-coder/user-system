@@ -330,6 +330,7 @@ public class UserBirthdayTemplateController {
             return R.error("获取今天是否生日错误" + e.getMessage());
         }
     }
+
     /**
     *
     *  @description   获取今天是否入职周年
@@ -375,10 +376,19 @@ public class UserBirthdayTemplateController {
     private AppUserNotPushVo getEntryPullData(String userId){
 
         //查询当前入职周年的信息
-        AppUserNotPushVo entryData = sysUserInfoMapper.getEntryData(userId);
+        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(userId);
+        AppUserNotPushVo entryData;
+        if(lists.size() == 0) {
+           throw new DefaultException("查找周年庆错误");
+        }
+        entryData = lists.get(0);
         //获取模板
         UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(entryData.getNum().toString(),new Date(), YesNo.YES);
+        if(template == null) {
+            throw new DefaultException("未配置"+entryData.getNum()+"周年模板");
+        }
         entryData.setBlessing(template.getBlessing());
+        entryData.setPosterUrl(template.getPosterUrl());
         if (StringUtils.isNotEmpty(entryData.getCompanyId())) {
             //总经理 查询该企业年统计量
 
@@ -410,27 +420,20 @@ public class UserBirthdayTemplateController {
                 entryData.setImportCustomerNum(importCustomerNum.getData());
             }
 
-        }
-        //伙伴数据
-        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(entryData.getDepartmentId());
-         if (userIds.size() > 0) {
-            for (String id : userIds) {
-
-           if(id==userId){
-                //查询签单数量 和放款金额 和放款数
-                DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, id);
-                if (signOrderData.isSuccess()) {
-                    entryData.setSignOrderNum(signOrderData.getData().getSignOrderNum());
-                    entryData.setLoansMoney(signOrderData.getData().getLoansMoney());
-                    entryData.setLoansNum(signOrderData.getData().getLoansNum());
-                }
-                //查询录入客户数量
-                DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, null, id);
-                if (importCustomerNum.isSuccess()) {
-                    entryData.setImportCustomerNum(importCustomerNum.getData());
-                }
-           }
-         }
+        }else {
+            //伙伴数据
+            //查询签单数量 和放款金额 和放款数
+            DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, userId);
+            if (signOrderData.isSuccess()) {
+                entryData.setSignOrderNum(signOrderData.getData().getSignOrderNum());
+                entryData.setLoansMoney(signOrderData.getData().getLoansMoney());
+                entryData.setLoansNum(signOrderData.getData().getLoansNum());
+            }
+            //查询录入客户数量
+            DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, null, userId);
+            if (importCustomerNum.isSuccess()) {
+                entryData.setImportCustomerNum(importCustomerNum.getData());
+            }
         }
         entryData.setContent("亲爱的"+entryData.getUserName()+"小微集团祝您签约"+entryData.getNum()+"快乐");
         return entryData;

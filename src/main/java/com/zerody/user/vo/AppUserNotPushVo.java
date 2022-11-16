@@ -61,4 +61,7 @@ public class AppUserNotPushVo {
     /**内容*/
     private String content;
 
+    /**海报背景图*/
+    private String posterUrl;
+
 }
