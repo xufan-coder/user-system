@@ -22,7 +22,7 @@
   </resultMap>
 
   <select id="getTemplatePage" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
-    select bt.id,bt.blessing,bt.push_time, bt.poster_url,bt.state,GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text
+    select bt.id,bt.blessing,bt.push_time, bt.poster_url,bt.state,GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text,GROUP_CONCAT(bm.`year` order by  bm.`year` asc) as year_text
     from user_birthday_template bt
     left join union_birthday_month bm on bm.template_id = bt.id
       where  bt.deleted = 1 AND bt.type = #{queryDto.type}
@@ -51,7 +51,7 @@
 
     <select id="getTemplateInfoById" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
          select bt.*,
-         GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text
+         GROUP_CONCAT(bm.`month` order by bm.`month` asc) as month_text,GROUP_CONCAT(bm.`year` order by bm.`year` asc) as year_text
         from user_birthday_template bt
         left join union_birthday_month bm on bm.template_id = bt.id
         where bt.id = #{templateId}

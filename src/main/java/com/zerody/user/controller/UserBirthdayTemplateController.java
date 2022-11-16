@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.BirthdayBlessing;
@@ -47,9 +48,22 @@ public class UserBirthdayTemplateController {
     @PostMapping("/add")
     public DataResult<Object> addTemplate(@RequestBody UserBirthdayTemplateDto template){
         try {
-            if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
-                return R.error("时间不能为空");
+            if(template.getType()== YesNo.NO){
+                if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
+                    return R.error("生日月份不能为空");
+                }
+                for(Integer month : template.getMonthList()) {
+                    if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
+                        return R.error("时间输入有误");
+                    }
+                }
             }
+            if(template.getType()== YesNo.YES){
+                if(template.getYearList() == null || template.getYearList().size() == 0 ) {
+                    return R.error("入职年份不能为空");
+                }
+            }
+
             if(StringUtils.isEmpty(template.getBlessing())){
                 return R.error("祝福内容不能为空");
             }
@@ -59,11 +73,7 @@ public class UserBirthdayTemplateController {
             if(StringUtils.isEmpty(template.getPosterUrl())){
                 return R.error("海报背景图不能为空");
             }
-            for(Integer month : template.getMonthList()) {
-                if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
-                    return R.error("时间输入有误");
-                }
-            }
+
             this.service.addTemplate(UserUtils.getUser(),template);
             return R.success();
         } catch (DefaultException e) {
@@ -86,12 +96,19 @@ public class UserBirthdayTemplateController {
             if(StringUtils.isEmpty(template.getId())){
                 return R.error("模板id不能为空");
             }
-            if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
-                return R.error("时间不能为空");
+            if(template.getType()== YesNo.NO){
+                if(template.getMonthList() == null || template.getMonthList().size() == 0 ) {
+                    return R.error("生日月份不能为空");
+                }
+                for(Integer month : template.getMonthList()) {
+                    if( Calendar.MINUTE < month || month < Calendar.SUNDAY) {
+                        return R.error("时间输入有误");
+                    }
+                }
             }
-            for(Integer month : template.getMonthList()) {
-                if( Calendar.MINUTE < month || month < Calendar.SUNDAY ) {
-                    return R.error("时间输入有误");
+            if(template.getType()== YesNo.YES){
+                if(template.getYearList() == null || template.getYearList().size() == 0 ) {
+                    return R.error("入职年份不能为空");
                 }
             }
             if(StringUtils.isEmpty(template.getBlessing())){
