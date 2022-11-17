@@ -962,10 +962,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
 
-        log.info("员工为离职状态时----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
+            log.info("离职时----添加伙伴的任职记录:{}", JSON.toJSONString(setSysUserInfoDto));
             AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
             if (DataUtil.isNotEmpty(appUserPush)) {
                 appUserPush.setResigned(YesNo.YES);
@@ -995,12 +995,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCreateTime(new Date());
             this.positionRecordService.save(positionRecord);
         }
+        log.info("员工为离职状态时----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
         }
         if (removeToken) {
+            log.info("清除token----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
             if (DataUtil.isEmpty(userRole)) {
                 if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
                     this.checkUtil.removeUserToken(sysUserInfo.getId());
@@ -1018,6 +1020,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         unionStaffDepartMapper.delete(usdQW);
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
+
+            log.info("更改部门信息----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
             UnionStaffDepart sd = new UnionStaffDepart();
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
             sd.setStaffId(staff.getId());
@@ -1031,6 +1035,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             depAdmin.setAdminAccount(null);
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
+        log.info("更改部门信息结果----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
 //        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
 //            //先新增名片
