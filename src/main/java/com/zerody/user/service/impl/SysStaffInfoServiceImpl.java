@@ -779,7 +779,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 获取埋点数据内容
         List<String> contentList = new ArrayList<>();
-
+        log.info("荣耀记录日志-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -872,6 +872,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.staffBlacklistService.doRelieveByStaffId(one.getId());
             }
         }
+
+
+        log.info("全部角色记录日志-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
@@ -957,6 +960,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
+
+
+        log.info("员工为离职状态时----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -1064,7 +1070,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
 //            cardUserUnionCrmUserMapper.update(null, uw);
 //        }
-
+        log.info("新旧值比较----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
 
         if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());

@@ -59,8 +59,10 @@ public class UserLogUtil {
         logDto.setMobile(userInfo.getPhoneNumber());
         logDto.setUserId(userInfo.getId());
         logDto.setContent(content);
-        logDto.setOperatorId(operator.getUserId());
-        logDto.setOperator(operator.getUserName());
+        if(operator !=null) {
+            logDto.setOperatorId(operator.getUserId());
+            logDto.setOperator(operator.getUserName());
+        }
 
         StaffInfoVo infoVo = sysStaffInfoService.getStaffInfo(userInfo.getId());
         logDto.setCompanyId(infoVo.getCompanyId());
