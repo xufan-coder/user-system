@@ -46,7 +46,6 @@ public class  SysUserInfo extends BaseModel {
     private String nickname;
 
     /** 头像(相对路径) **/
-    @CheckCompare(value = "avatar",name = "头像")
     private String avatar;
 
     /** 出生日期 **/
