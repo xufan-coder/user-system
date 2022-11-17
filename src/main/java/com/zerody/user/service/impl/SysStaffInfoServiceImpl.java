@@ -1072,7 +1072,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserInfoComparDto userCompart = new UserInfoComparDto();
         BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
         // 新旧值比较  用于记录伙伴操作埋点数据
-        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,setSysUserInfoDto);
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
         String content = UserCompareUtil.convertCompars(comparList);
         UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
