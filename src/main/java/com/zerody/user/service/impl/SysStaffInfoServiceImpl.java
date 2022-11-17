@@ -991,14 +991,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCreateTime(new Date());
             this.positionRecordService.save(positionRecord);
         }
-        log.info("员工为离职状态时----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
         }
         if (removeToken) {
-            log.info("清除token----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
             if (DataUtil.isEmpty(userRole)) {
                 if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
                     this.checkUtil.removeUserToken(sysUserInfo.getId());

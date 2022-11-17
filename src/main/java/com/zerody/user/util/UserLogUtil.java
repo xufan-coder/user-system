@@ -9,6 +9,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.UserCompar;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,9 @@ public class UserLogUtil {
 
     public static void  addUserLog(SysUserInfo userInfo, UserVo operator, String content, String dataCode){
         log.info("伙伴修改项对比结果:{}",content);
+        if(StringUtils.isEmpty(content)) {
+            return;
+        }
         OperatorLogDto logDto = new OperatorLogDto();
         logDto.setSystemCode(SystemCodeType.SYSTEM_CRM_PC);
         logDto.setModuleCode(ModuleCodeType.PARTNER);
