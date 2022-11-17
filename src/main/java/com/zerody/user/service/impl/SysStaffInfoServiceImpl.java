@@ -1072,6 +1072,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 新旧值比较  用于记录伙伴操作埋点数据
         List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,setSysUserInfoDto);
+        log.info("新旧值对比:{}",JSONObject.toJSONString(comparList));
         String content = UserCompareUtil.convertCompars(comparList);
         UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
