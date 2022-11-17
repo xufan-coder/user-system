@@ -779,7 +779,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 获取埋点数据内容
         List<String> contentList = new ArrayList<>();
-
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -872,6 +871,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.staffBlacklistService.doRelieveByStaffId(one.getId());
             }
         }
+
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
@@ -957,6 +957,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
+
+
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -989,12 +991,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCreateTime(new Date());
             this.positionRecordService.save(positionRecord);
         }
+        log.info("员工为离职状态时----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
         }
         if (removeToken) {
+            log.info("清除token----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
             if (DataUtil.isEmpty(userRole)) {
                 if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
                     this.checkUtil.removeUserToken(sysUserInfo.getId());
@@ -1010,6 +1014,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
+
+        UserInfoComparDto userCompart = new UserInfoComparDto();
+        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
+        // 新旧值比较  用于记录伙伴操作埋点数据
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
+        String content = UserCompareUtil.convertCompars(comparList);
+        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
+
         unionStaffDepartMapper.delete(usdQW);
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
             UnionStaffDepart sd = new UnionStaffDepart();
@@ -1064,17 +1076,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
 //            cardUserUnionCrmUserMapper.update(null, uw);
 //        }
-
-
-        if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
-            this.checkUtil.removeUserToken(sysUserInfo.getId());
-        }
-        UserInfoComparDto userCompart = new UserInfoComparDto();
-        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
-        // 新旧值比较  用于记录伙伴操作埋点数据
-        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
-        String content = UserCompareUtil.convertCompars(comparList);
-        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
         log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
