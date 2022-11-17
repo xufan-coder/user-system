@@ -68,7 +68,7 @@ public class  SysUserInfo extends BaseModel {
     private String provCityDistrict;
 
     /** 联系地址 **/
-    @CheckCompare(value = "contactAddress",name = "联系地址")
+    @CheckCompare(value = "contactAddress",name = "居住地址")
     private String contactAddress;
 
     /** 注册时间 **/

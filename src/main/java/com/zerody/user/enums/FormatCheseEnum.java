@@ -8,7 +8,9 @@ package com.zerody.user.enums;
 public  enum FormatCheseEnum {
     status("状态"),
     maritalStatus("婚姻状态"),
-    gender("性别")
+    gender("性别"),
+    highestEducation("最高学历"),
+    birthday("出生日期")
     ;
 
     private String text;
