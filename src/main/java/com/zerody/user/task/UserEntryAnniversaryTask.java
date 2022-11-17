@@ -69,8 +69,8 @@ public class UserEntryAnniversaryTask {
                     String year = user.getNum() > 10 ? "10+" : String.valueOf(user.getNum());
 
                     String chineseNum =user.getNum() > 10 ? CommonUtils.CHINESE_LIST[10] : CommonUtils.CHINESE_LIST[user.getNum()] ;
-                    String content = "亲爱的,"+user.getUserName()+" 小微集团祝您签约 "+chineseNum+"周年快乐!";
-
+                    String content = "亲爱的,"+user.getUserName()+"/n 小微集团祝您签约 "+chineseNum+"周年快乐!";
+                    user.setContent(content);
                     // 获取当前时间推送的模板 时分
                     UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(year,new Date(), YesNo.YES);
                     // 进入推送时间 查询入职周年伙伴进行推送
