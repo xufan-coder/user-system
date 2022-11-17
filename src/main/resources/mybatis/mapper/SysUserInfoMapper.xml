@@ -566,9 +566,10 @@
         left join company_admin ca on ca.staff_id = ssi.id
         left join sys_department_info sdi on sdi.admin_account = ssi.id
         where sui.status in (0,3)
-        <if test="time neq null">
           AND ( DATE_FORMAT(ssi.date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
               or (ssi.date_join is null and DATE_FORMAT(ssi.create_time,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') ))
+        <if test="userId neq null and userId neq ''">
+            and sui.id = #{userId}
         </if>
     </select>
 </mapper>

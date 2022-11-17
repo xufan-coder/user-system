@@ -7,6 +7,7 @@ import com.zerody.user.domain.UserBirthdayTemplate;
 import com.zerody.user.dto.BlessIngParam;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UserBirthdayTemplateDto;
+import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
 
 import java.util.Date;
@@ -39,4 +40,20 @@ public interface UserBirthdayTemplateService extends IService<UserBirthdayTempla
     boolean whetherBirthday(String userId);
 
     void addBlessing(BlessIngParam param);
+    /**
+    *
+    *  @description   获取今天是否入职周年
+    *  @author        YeChangWei
+    *  @date          2022/11/16 19:01
+    *  @return        java.lang.Object
+    */
+    boolean whetherEntry(String userId);
+    /**
+    *
+    *  @description   查询入职周年的信息
+    *  @author        YeChangWei
+    *  @date          2022/11/16 20:45
+    *  @return        com.zerody.user.vo.AppUserNotPushVo
+    */
+    AppUserNotPushVo getEntryPullData(String userId);
 }

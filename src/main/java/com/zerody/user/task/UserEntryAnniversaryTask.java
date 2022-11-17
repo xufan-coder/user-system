@@ -57,17 +57,22 @@ public class UserEntryAnniversaryTask {
      */
     private static final int MESSAGE_TYPE_FLOW = 1010;
 
+    private  static final String[] CHINESE_LIST = {"零","一","二","三","四","五","六","七","八","九","十"};
 
     @XxlJob("user_entry_anniversary_task")
     public ReturnT<String> execute(String param) {
 
 
         //查询所有在职的人员,入职时间是在当天的,和入职年限
-        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(new Date());
+        List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(null);
             for (AppUserNotPushVo user : lists) {
 
                 if(user.getNum() != null && user.getNum() > 0){
                     String year = user.getNum() > 10 ? "10+" : String.valueOf(user.getNum());
+
+                    String chineseNum =user.getNum() > 10 ? CHINESE_LIST[10] : CHINESE_LIST[user.getNum()] ;
+                    String content = "亲爱的,"+user.getUserName()+" 小微集团祝您签约 "+chineseNum+"周年快乐!";
+
                     // 获取当前时间推送的模板 时分
                     UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(year,new Date(), YesNo.YES);
                     // 进入推送时间 查询入职周年伙伴进行推送

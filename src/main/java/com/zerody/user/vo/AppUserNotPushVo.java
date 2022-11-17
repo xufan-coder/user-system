@@ -58,4 +58,10 @@ public class AppUserNotPushVo {
     /**生日祝福*/
     private String blessing;
 
+    /**内容*/
+    private String content;
+
+    /**海报背景图*/
+    private String posterUrl;
+
 }
