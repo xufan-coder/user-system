@@ -779,7 +779,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 获取埋点数据内容
         List<String> contentList = new ArrayList<>();
-        log.info("荣耀记录日志-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -873,8 +872,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
 
-
-        log.info("全部角色记录日志-已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
@@ -965,7 +962,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
-            log.info("离职时----添加伙伴的任职记录:{}", JSON.toJSONString(setSysUserInfoDto));
             AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
             if (DataUtil.isNotEmpty(appUserPush)) {
                 appUserPush.setResigned(YesNo.YES);
@@ -1018,10 +1014,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
+
+        UserInfoComparDto userCompart = new UserInfoComparDto();
+        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
+        // 新旧值比较  用于记录伙伴操作埋点数据
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
+        String content = UserCompareUtil.convertCompars(comparList);
+        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
+
         unionStaffDepartMapper.delete(usdQW);
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
-
-            log.info("更改部门信息----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
             UnionStaffDepart sd = new UnionStaffDepart();
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
             sd.setStaffId(staff.getId());
@@ -1035,7 +1037,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             depAdmin.setAdminAccount(null);
             this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
-        log.info("更改部门信息结果----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
 //        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
 //            //先新增名片
@@ -1075,17 +1076,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
 //            cardUserUnionCrmUserMapper.update(null, uw);
 //        }
-        log.info("新旧值比较----已通过校验:{}", JSON.toJSONString(setSysUserInfoDto));
-
-        if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
-            this.checkUtil.removeUserToken(sysUserInfo.getId());
-        }
-        UserInfoComparDto userCompart = new UserInfoComparDto();
-        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
-        // 新旧值比较  用于记录伙伴操作埋点数据
-        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
-        String content = UserCompareUtil.convertCompars(comparList);
-        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
         log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
