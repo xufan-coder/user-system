@@ -5,8 +5,6 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.utils.DataUtil;
-import com.zerody.common.utils.DateUtil;
 import com.zerody.contract.api.vo.SignOrderDataVo;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
@@ -26,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -116,25 +113,22 @@ public class UserEntryAnniversaryTask {
                         }
 
                         // 推送部门伙伴
-                        List<String> userIds = this.sysDepartmentInfoMapper.getUserIdsByDepartmentId(user.getDepartmentId());
-                        if (userIds.size() > 0) {
-                            for (String userId : userIds) {
+
                                 //查询签单数量 和放款金额 和放款数
-                                DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, userId);
+                                DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, user.getUserId());
                                 if (signOrderData.isSuccess()) {
                                     user.setSignOrderNum(signOrderData.getData().getSignOrderNum());
                                     user.setLoansMoney(signOrderData.getData().getLoansMoney());
                                     user.setLoansNum(signOrderData.getData().getLoansNum());
                                 }
                                 //查询录入客户数量
-                                DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, null, userId);
+                                DataResult<Integer> importCustomerNum = customerFeignService.getImportCustomerNum(null, null, user.getUserId());
                                 if (importCustomerNum.isSuccess()) {
                                     user.setImportCustomerNum(importCustomerNum.getData());
                                 }
-                                this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing() + entryMsgConfig.getContent(), userId, user);
+                                this.sendPush(entryMsgConfig.getUrl(), entryMsgConfig.getTitle(), user.getBlessing() + entryMsgConfig.getContent(), user.getUserId(), user);
                             }
-                        }
-                    }
+
                 }
             }
 
