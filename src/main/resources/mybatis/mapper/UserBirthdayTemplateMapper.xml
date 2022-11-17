@@ -35,7 +35,7 @@
       <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 1">
           and  bm.`year`= #{queryDto.month}
       </if>
-    GROUP BY bt.id order by bm.`month` asc
+      GROUP BY bt.id order by bm.`year` ='10+',bm.`month`, bm.`year` asc
   </select>
 
     <select id="getTemplateInfo" resultType="com.zerody.user.vo.UserBirthdayTemplateVo">
