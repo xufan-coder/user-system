@@ -72,7 +72,6 @@ public class  SysUserInfo extends BaseModel {
     private String contactAddress;
 
     /** 注册时间 **/
-    @CheckCompare(value = "registerTime",name = "注册时间")
     private Date registerTime;
 
     /** 民族 **/
