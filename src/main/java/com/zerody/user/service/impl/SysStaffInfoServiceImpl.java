@@ -63,6 +63,7 @@ import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -727,7 +728,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //查询得到员工信息
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
-        SysStaffInfo staff = this.getOne(staffQW);
+        SysStaffInfo oldStaff = this.getOne(staffQW);
+        SysStaffInfo staff = new SysStaffInfo();
+        BeanUtils.copyProperties(oldStaff,staff);
         if (setSysUserInfoDto.getRecommendType().intValue() == 1 && StringUtils.isEmpty(setSysUserInfoDto.getRecommendId())) {
             throw new DefaultException("请选择推荐人");
         }
@@ -1017,6 +1020,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
         // 新旧值比较  用于记录伙伴操作埋点数据
         List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
+        comparList.addAll(UserCompareUtil.compareTwoClass(oldStaff,userCompart));
         String content = UserCompareUtil.convertCompars(comparList);
         UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
