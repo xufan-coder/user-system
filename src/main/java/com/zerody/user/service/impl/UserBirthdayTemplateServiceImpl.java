@@ -24,6 +24,7 @@ import com.zerody.user.feign.CustomerFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.UnionBirthdayMonthService;
 import com.zerody.user.service.UserBirthdayTemplateService;
+import com.zerody.user.util.CommonUtils;
 import com.zerody.user.vo.AppCeoUserNotPushVo;
 import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
@@ -290,7 +291,10 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
                 entryData.setImportCustomerNum(importCustomerNum.getData());
             }
         }
-        entryData.setContent("亲爱的"+entryData.getUserName()+"小微集团祝您签约"+entryData.getNum()+"快乐");
+        String chineseNum =entryData.getNum() > 10 ? CommonUtils.CHINESE_LIST[10] : CommonUtils.CHINESE_LIST[entryData.getNum()] ;
+        String blessing =  entryData.getBlessing().replace("${num}",chineseNum);
+        entryData.setBlessing(blessing);
+        entryData.setContent("亲爱的"+entryData.getUserName()+"</br>小微集团祝您签约"+entryData.getNum()+"快乐");
         return entryData;
     }
 }
