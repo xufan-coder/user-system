@@ -1,13 +1,19 @@
 package com.zerody.user.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.service.AddrRemoteService;
 import com.zerody.user.constant.CheckCompare;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.SetSysUserInfoDto;
+import com.zerody.user.dto.UserInfoComparDto;
 import com.zerody.user.enums.FormatCheseEnum;
 import com.zerody.user.vo.UserCompar;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -172,5 +178,20 @@ public class UserCompareUtil {
             sb.deleteCharAt(sb.length()-1);
         }
         return sb.toString();
+    }
+
+    public static void main(String[] args) throws ParseException, IllegalAccessException {
+        SysUserInfo oldUserInfo = new SysUserInfo();
+        oldUserInfo.setAncestral("银行");
+        SetSysUserInfoDto setSysUserInfoDto = new SetSysUserInfoDto();
+
+        setSysUserInfoDto.setAncestral("河边");
+        setSysUserInfoDto.setAvatar("dddd");
+
+        UserInfoComparDto userCompart = new UserInfoComparDto();
+        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
+        List<UserCompar> list = compareTwoClass(oldUserInfo,userCompart);
+
+        System.out.println(JSON.toJSONString(list));
     }
 }
