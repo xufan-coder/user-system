@@ -23,5 +23,7 @@ public interface UserBirthdayTemplateMapper extends BaseMapper<UserBirthdayTempl
 
     UserBirthdayTemplate getTemplateByYear(@Param("year") String year,@Param("time") Date time,@Param("type")Integer type );
 
+    UserBirthdayTemplate getTemplateInfoByYear(@Param("year") String year, @Param("type")Integer type );
+
     UserBirthdayTemplateVo getTemplateInfoById(@Param("templateId") String templateId);
 }

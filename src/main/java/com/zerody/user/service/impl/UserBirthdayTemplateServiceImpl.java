@@ -238,7 +238,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         }
         entryData = lists.get(0);
         //获取模板
-        UserBirthdayTemplate template = userBirthdayTemplateService.getEntryTimeTemplate(entryData.getNum().toString(),new Date(), YesNo.YES);
+        UserBirthdayTemplate template = this.baseMapper.getTemplateInfoByYear(entryData.getNum().toString(), YesNo.YES);
         if(template == null) {
             throw new DefaultException("未配置"+entryData.getNum()+"周年模板");
         }

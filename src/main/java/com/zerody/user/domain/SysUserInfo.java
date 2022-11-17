@@ -34,6 +34,7 @@ public class  SysUserInfo extends BaseModel {
     /** 手机号 **/
     @NotEmpty(message = "手机号不能为空")
     @Size(max = 11, min = 11, message = "手机号必须为11位")
+    @CheckCompare(value = "phoneNumber",name = "手机号")
     private String phoneNumber;
 
     /** 邮箱 **/
