@@ -55,6 +55,7 @@ public class BirthdayGreetingCardServiceImpl extends ServiceImpl<BirthdayGreetin
     public List<BirthdayGreetingCardVo> getGreetingList(Integer state) {
         QueryWrapper<BirthdayGreetingCard> qw = new QueryWrapper<>();
         qw.lambda().eq(BirthdayGreetingCard::getDeleted, YesNo.YES);
+        qw.lambda().eq(BirthdayGreetingCard::getType,YesNo.NO);
         qw.lambda().eq(state !=null,BirthdayGreetingCard::getState, state);
         qw.lambda().orderByDesc(BirthdayGreetingCard::getSort);
         List<BirthdayGreetingCard>  cards =  this.list(qw);
