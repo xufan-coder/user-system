@@ -1,12 +1,15 @@
 package com.zerody.user.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.UserTypeInfo;
+import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.enums.SysCodeEnum;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
@@ -18,8 +21,9 @@ import com.zerody.user.api.dto.LoginCheckParamDto;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.service.UserRemoteService;
 import com.zerody.user.api.vo.*;
-import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysUserIdentifier;
+import com.zerody.user.domain.CallControlRecord;
+import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.dto.*;
@@ -91,6 +95,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
 
     @Autowired
     private CeoCompanyRefService ceoCompanyRefService;
+    @Autowired
+    private CallControlRecordService callControlRecordService;
 
 	@Override
 	public long getLastModified(HttpServletRequest request) {
@@ -303,6 +309,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
+            checkCallControl(params.getSysCode(),info.getId());
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
             info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
         }
@@ -313,6 +320,23 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
 		return R.success(info);
 	}
+
+
+	public void checkCallControl(String sysCode,String userId){
+        //增加呼叫限制登录判断
+        if(DataUtil.isNotEmpty(sysCode)) {
+            if (!SysCodeEnum.ZERODY_SCRM_MINI.getCode().equals(sysCode)) {
+                QueryWrapper<CallControlRecord> cqw = new QueryWrapper<>();
+                cqw.lambda().eq(CallControlRecord::getUserId, userId);
+                cqw.lambda().eq(CallControlRecord::getState, YesNo.NO);
+                CallControlRecord callControlRecord = this.callControlRecordService.getOne(cqw);
+                if (DataUtil.isNotEmpty(callControlRecord)) {
+                    String tip = "为了保护客户信息安全，当前账号因呼叫客户次数已达到限制值，现已禁止登录，如需解除限制请联系公司行政或者集团客服！";
+                    throw new DefaultException(tip);
+                }
+            }
+        }
+    }
 
     /**
     *    登录平台管理后台校验账户和密码
@@ -343,7 +367,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     */
     @Override
     @RequestMapping(value = "/user-info/inner",method = GET, produces = "application/json")
-    public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName){
+    public DataResult<com.zerody.user.api.vo.SysLoginUserInfoVo> getUserInfo(@RequestParam("userName") String userName,@RequestParam("sysCode") String sysCode){
         //4-20增加总裁用户表，优先判断总裁表的用户返回
         CeoUserInfo one = ceoUserInfoService.getByPhone(userName);
         com.zerody.user.api.vo.SysLoginUserInfoVo info = new com.zerody.user.api.vo.SysLoginUserInfoVo();
@@ -368,6 +392,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (StatusEnum.stop.getValue().equals(companyInfo.getStatus())) {
                 return R.error("账号被停用！");
             }
+            checkCallControl(sysCode,info.getId());
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
         }
         SysUserIdentifier identifier = sysUserIdentifierService.getIdentifierInfo(info.getId());
