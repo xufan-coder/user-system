@@ -309,9 +309,10 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (DataUtil.isEmpty(sysLoginUserInfoVo)) {
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
-            checkCallControl(params.getSysCode(),info.getId());
+
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
             info.setIsAdmin(sysUserInfoService.checkUserAdmin(info.getId()));
+            checkCallControl(params.getSysCode(),info.getId());
         }
         SysUserIdentifier identifier = sysUserIdentifierService.getIdentifierInfo(info.getId());
         if(!Objects.isNull(identifier)){
@@ -392,8 +393,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if (StatusEnum.stop.getValue().equals(companyInfo.getStatus())) {
                 return R.error("账号被停用！");
             }
-            checkCallControl(sysCode,info.getId());
             BeanUtils.copyProperties(sysLoginUserInfoVo, info);
+            checkCallControl(sysCode,info.getId());
         }
         SysUserIdentifier identifier = sysUserIdentifierService.getIdentifierInfo(info.getId());
         if(!Objects.isNull(identifier)){
