@@ -276,7 +276,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
                 entryData.setImportCustomerNum(importCustomerNum.getData());
             }
 
-        }else {
+        } else if (StringUtils.isEmpty(entryData.getCompanyId()) && StringUtils.isEmpty(entryData.getDepartmentId())) {
             //伙伴数据
             //查询签单数量 和放款金额 和放款数
             DataResult<SignOrderDataVo> signOrderData = contractFeignService.getSignOrderData(null, null, userId);
