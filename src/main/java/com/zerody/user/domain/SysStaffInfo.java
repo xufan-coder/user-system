@@ -2,6 +2,7 @@ package com.zerody.user.domain;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -62,6 +63,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      * 员工评价
      */
+    @CheckCompare(value = "evaluate",name = "员工评价")
     private String evaluate;
 
     /**
@@ -86,6 +88,7 @@ public class SysStaffInfo extends BaseModel {
     private Integer recommendType;
 
     /** 积分 */
+    @CheckCompare(value = "integral",name = "积分")
     private Integer integral;
 
     /** 密码 */
@@ -94,6 +97,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      * 工作年限
      */
+    @CheckCompare(value = "workingYears",name = "工作年限")
     private Integer workingYears;
 
     /** 用户类型 企业管理员:0、伙伴：1、团队长：2、副总：3 */
