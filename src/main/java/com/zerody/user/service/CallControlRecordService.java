@@ -14,9 +14,9 @@ public interface CallControlRecordService extends IService<CallControlRecord> {
 
     IPage<CallControlRecord> getPageList(CallControlRecordPageDto pageDto);
 
-    void relieveCallControlRecordList(List<String> ids);
+    void doRelieveCallControlRecordList(List<String> ids);
 
-    void relieveCallControlRecord(String id);
+    void doRelieveCallControlRecord(String id);
 
     void saveRecord(String userId);
 

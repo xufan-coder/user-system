@@ -6,19 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.user.domain.CallControl;
 import com.zerody.user.domain.CallControlRecord;
-import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlRecordPageDto;
-import com.zerody.user.mapper.CallControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.CallControlRecordVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
 import com.zerody.user.mapper.CallControlRecordMapper;
 import com.zerody.user.service.CallControlRecordService;
 
@@ -55,11 +50,12 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
     }
 
     @Override
-    public void relieveCallControlRecordList(List<String> ids) {
-            ids.forEach(item->{relieveCallControlRecord(item);});
+    public void doRelieveCallControlRecordList(List<String> ids) {
+            ids.forEach(item->{
+                doRelieveCallControlRecord(item);});
     }
     @Override
-    public void relieveCallControlRecord(String id) {
+    public void doRelieveCallControlRecord(String id) {
         UpdateWrapper<CallControlRecord> uw =new UpdateWrapper<>();
         uw.lambda().eq(CallControlRecord::getId,id);
         uw.lambda().eq(CallControlRecord::getState, YesNo.NO);

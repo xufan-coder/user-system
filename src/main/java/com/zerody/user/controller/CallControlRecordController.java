@@ -10,12 +10,10 @@ import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.service.CallControlRecordService;
 import com.zerody.user.vo.CallControlRecordVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,7 +66,7 @@ public class CallControlRecordController {
     @PutMapping("/relieve/{id}")
     public DataResult relieveCallControlRecord(@PathVariable String id){
         try {
-            this.callControlRecordService.relieveCallControlRecord(id);
+            this.callControlRecordService.doRelieveCallControlRecord(id);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除呼叫限制错误：{}", e.getMessage());
@@ -85,7 +83,7 @@ public class CallControlRecordController {
     @PostMapping("/relieve/batch")
     public DataResult relieveCallControlRecordList(@RequestBody List<String> ids){
         try {
-            this.callControlRecordService.relieveCallControlRecordList(ids);
+            this.callControlRecordService.doRelieveCallControlRecordList(ids);
             return R.success();
         } catch (DefaultException e) {
             log.error("批量解除呼叫限制错误：{}", e.getMessage());
