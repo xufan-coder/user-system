@@ -3177,7 +3177,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     private SetSysUserInfoDto doOldUserInfo(UserCopyDto param) {
         //查询出需要复制的参数
         SetSysUserInfoDto userInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
-        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(userInfoDto.getCompanyId());
+        SysUserInfo byId = sysUserInfoService.getById(param.getOldUserId());
+        QueryWrapper<SysStaffInfo> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SysStaffInfo::getUserId,byId.getId());
+        SysStaffInfo sysStaffInfo = this.sysStaffInfoMapper.selectOne(wrapper);
+        SysCompanyInfo companyInfo = this.sysCompanyInfoMapper.selectById(sysStaffInfo.getCompId());
         SysCompanyInfo sysCompany = this.sysCompanyInfoMapper.selectById(param.getCompanyId());
         userInfoDto.setDepartId(param.getDepartId());
         userInfoDto.setPositionId(param.getJobId());
@@ -3196,14 +3200,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
         PositionRecord positionRecord = new PositionRecord();
-        if(StringUtils.isNotEmpty(sysUserInfoDto.getRoleId())){
-            DataResult<?> result = oauthFeignService.getRoleById(sysUserInfoDto.getRoleId());
-            if (!result.isSuccess()) {
-                throw new DefaultException("服务异常！");
-            }
-            JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
-            positionRecord.setRoleName(obj.get("roleName").toString());
-        }
+        QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysStaffInfo.getId());
+        UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
+        positionRecord.setRoleName(unionRoleStaff.getRoleName());
         positionRecord.setId(UUIDutils.getUUID32());
         positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
         positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
