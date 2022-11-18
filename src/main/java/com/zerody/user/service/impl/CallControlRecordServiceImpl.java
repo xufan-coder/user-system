@@ -35,6 +35,7 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
         page.setCurrent(pageDto.getCurrent());
         page.setSize(pageDto.getPageSize());
         QueryWrapper<CallControlRecord> qw = new QueryWrapper<>();
+        qw.lambda().eq(CallControlRecord::getState,YesNo.NO);
         if(DataUtil.isNotEmpty(pageDto.getCompanyId())){
             qw.lambda().eq(CallControlRecord::getCompanyId,pageDto.getCompanyId());
         }
