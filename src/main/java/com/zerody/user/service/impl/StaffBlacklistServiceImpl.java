@@ -519,6 +519,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //                "SELECT ssi.user_id FROM sys_staff_info AS ssi  WHERE ssi.id = '".concat(staffId).concat("'")
 //        );
 //        this.userInfoService.update(userUw);
+        StaffBlacklist staffBlack = this.getById(id);
+        SysUserInfo userInfo = this.userInfoService.getById(staffBlack.getUserId());
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除伙伴内控名单",DataCodeType.PARTNER_LOCK);
     }
     @Override
     public void doRelieve(String id,Integer state) {
