@@ -41,7 +41,7 @@ public class AppUserNotPushVo {
     private Date dateJoin;
 
     /*** 入职年限*/
-    private Integer year;
+    private Integer num;
 
     /*** 签单数*/
     private Integer signOrderNum;
@@ -54,5 +54,14 @@ public class AppUserNotPushVo {
 
     /*** 录入客户数*/
     private Integer importCustomerNum;
+
+    /**生日祝福*/
+    private String blessing;
+
+    /**内容*/
+    private String content;
+
+    /**海报背景图*/
+    private String posterUrl;
 
 }

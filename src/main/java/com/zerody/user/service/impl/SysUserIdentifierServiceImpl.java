@@ -22,6 +22,7 @@ import com.zerody.flow.api.dto.process.StopProcessDto;
 import com.zerody.flow.api.dto.task.TaskFormDto;
 import com.zerody.flow.api.state.TaskAction;
 import com.zerody.jpush.api.dto.AuroraPushDto;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.SysLoginInfo;
@@ -37,6 +38,7 @@ import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.UserLogUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
@@ -266,6 +268,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.checkUtil.removeUserToken(identifier.getUserId());
             this.pullMq(identifier.getUserId(),null,null);
         }
+        SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
 
     @Override
@@ -352,6 +356,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 //                throw new DefaultException(dataResult.getMessage());
             }
         }
+
+        SysUserInfo userInfo = sysUserInfoService.getById(userId);
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除设备绑定", DataCodeType.PARTNER_UNBIND);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 

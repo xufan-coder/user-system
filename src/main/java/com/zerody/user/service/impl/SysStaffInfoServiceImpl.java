@@ -63,6 +63,7 @@ import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -727,7 +728,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //查询得到员工信息
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
-        SysStaffInfo staff = this.getOne(staffQW);
+        SysStaffInfo staff =  this.getOne(staffQW);
+        // 对比伙伴信息
+        List<UserCompar> staffList = UserCompareUtil.compareTwoClass(staff,setSysUserInfoDto);
+
         if (setSysUserInfoDto.getRecommendType().intValue() == 1 && StringUtils.isEmpty(setSysUserInfoDto.getRecommendId())) {
             throw new DefaultException("请选择推荐人");
         }
@@ -779,7 +783,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 获取埋点数据内容
         List<String> contentList = new ArrayList<>();
-
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -872,6 +875,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.staffBlacklistService.doRelieveByStaffId(one.getId());
             }
         }
+
         //修改员工的时候删除该员工的全部角色
         QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
         ursQW.lambda().eq(UnionRoleStaff::getStaffId, staff.getId());
@@ -957,6 +961,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 removeToken = !removeToken;
             }
         }
+
+
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -1010,6 +1016,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
+
+        UserInfoComparDto userCompart = new UserInfoComparDto();
+        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
+        // 新旧值比较  用于记录伙伴操作埋点数据
+        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,userCompart);
+        comparList.addAll(staffList);
+        String content = UserCompareUtil.convertCompars(comparList);
+        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
+
         unionStaffDepartMapper.delete(usdQW);
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
             UnionStaffDepart sd = new UnionStaffDepart();
@@ -1064,16 +1079,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 //            uw.lambda().set(CardUserUnionUser::getCardId, cardUserInfo.getId());
 //            cardUserUnionCrmUserMapper.update(null, uw);
 //        }
-
-
-        if (removeToken && StatusEnum.stop.equals(sysUserInfo.getStatus())) {
-            this.checkUtil.removeUserToken(sysUserInfo.getId());
-        }
-
-        // 新旧值比较  用于记录伙伴操作埋点数据
-        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldUserInfo,setSysUserInfoDto);
-        String content = UserCompareUtil.convertCompars(comparList);
-        UserLogUtil.addUserLog(oldUserInfo,user,content,contentList, DataCodeType.PARTNER_MODIFY);
 
         log.info("批量分配客户信息  ——> 结果：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
     }
@@ -1235,6 +1240,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
 
         this.oauthFeignService.removeToken(userIds);
+
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"删除伙伴",DataCodeType.PARTNER_DEL);
     }
 
     @Override

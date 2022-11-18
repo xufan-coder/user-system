@@ -877,6 +877,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         List<CompanyInfoVo> adminUser = new ArrayList<>();
         for (SubordinateUserQueryVo suv : managerList){
 
+            if(StringUtils.isEmpty(suv.getUserId())){
+                continue;
+            }
             CompanyInfoVo admin = new CompanyInfoVo();
             admin.setAdminUserId(suv.getUserId());
             admin.setAdminUserName(suv.getUserName());

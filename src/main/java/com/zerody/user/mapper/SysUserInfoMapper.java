@@ -13,7 +13,6 @@ import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -202,6 +201,5 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     *  @date          2022/11/10 14:20
     *  @return        java.util.List<com.zerody.user.vo.AppUserNotPushVo>
     */
-    List<AppUserNotPushVo> getUserIds(@Param("time") Date time);
-
+    List<AppUserNotPushVo> getAnniversaryUserList(@Param("userId") String userId);
 }

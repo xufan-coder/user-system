@@ -8,6 +8,9 @@ import org.apache.commons.lang.StringUtils;
  */
  
 public class CommonUtils {
+
+    public static final String[] CHINESE_LIST = {"零","一","二","三","四","五","六","七","八","九","十"};
+
     // 手机号码前三后四脱敏
     public static String mobileEncrypt(String mobile) {
         if (StringUtils.isEmpty(mobile) || (mobile.length() != 11)) {

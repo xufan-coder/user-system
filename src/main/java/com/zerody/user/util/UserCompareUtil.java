@@ -1,13 +1,21 @@
 package com.zerody.user.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.enums.customer.EducationBackgroundEnum;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.utils.DateUtil;
 import com.zerody.user.api.service.AddrRemoteService;
 import com.zerody.user.constant.CheckCompare;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.SetSysUserInfoDto;
+import com.zerody.user.dto.UserInfoComparDto;
 import com.zerody.user.enums.FormatCheseEnum;
 import com.zerody.user.vo.UserCompar;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +24,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -153,6 +162,12 @@ public class UserCompareUtil {
         }else if(f.equals(FormatCheseEnum.maritalStatus.name())){
             name1="0".equals(s1)?"未婚":"1".equals(s1)?"已婚":"2".equals(s1)?"离婚":"";
             name2="0".equals(s2)?"未婚":"1".equals(s2)?"已婚":"2".equals(s1)?"离婚":"";
+        }else if(f.equals(FormatCheseEnum.highestEducation.name())){
+            name1 = EducationBackgroundEnum.getTextByCode(s1);
+            name2 = EducationBackgroundEnum.getTextByCode(s2);
+        }else if(f.equals(FormatCheseEnum.birthday.name())){
+            name1 =val1 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val1) : s1;
+            name2 =val2 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val2) : s2;
         }
         custCompar.setOldValue(name1);
         custCompar.setNewValue(name2);
@@ -172,5 +187,22 @@ public class UserCompareUtil {
             sb.deleteCharAt(sb.length()-1);
         }
         return sb.toString();
+    }
+
+    public static void main(String[] args) throws ParseException, IllegalAccessException {
+      /*  SysUserInfo oldUserInfo = new SysUserInfo();
+        oldUserInfo.setAncestral("银行");
+        SetSysUserInfoDto setSysUserInfoDto = new SetSysUserInfoDto();
+
+        setSysUserInfoDto.setAncestral("河边");
+        setSysUserInfoDto.setAvatar("dddd");
+
+        UserInfoComparDto userCompart = new UserInfoComparDto();
+        BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
+        List<UserCompar> list = compareTwoClass(oldUserInfo,userCompart);
+
+        System.out.println(JSON.toJSONString(list));*/
+
+        System.out.println( DateUtil.formatyyyyMMddtoString(new Date()));
     }
 }

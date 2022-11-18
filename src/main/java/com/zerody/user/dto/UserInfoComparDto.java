@@ -1,26 +1,130 @@
-package com.zerody.user.domain;
+package com.zerody.user.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.constant.CheckCompare;
-import com.zerody.user.domain.base.BaseModel;
+import com.zerody.user.domain.FamilyMember;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
-/**
- *
- *
- * @author               PengQiang
- * @description          DELL
- * @date                 2021/1/19 14:28
- * @param
- * @return
- */
 @Data
-public class  SysUserInfo extends BaseModel {
+public class UserInfoComparDto {
+
+    /**
+     * 企业ID
+     */
+    @NotEmpty(message = "请选择企业！")
+    private String companyId;
+
+    /**
+     * 员工id
+     */
+    private String staffId;
+
+    /**
+     * 角色id
+     */
+    private String roleId;
+
+    /**
+     * 岗位id
+     */
+    private String positionId;
+
+    /**
+     * 部门id
+     */
+    private String departId;
+
+    /**
+     * 员工状态
+     */
+    private Integer status;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
+     * 员工评价
+     */
+    private String evaluate;
+
+    /**
+     * 员工简历url
+     */
+    private String resumeUrl;
+
+    /**
+     * 离职原因
+     */
+    private String leaveReason;
+    /**
+     * 入职时间
+     */
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date dateJoin;
+
+    /**
+     * 工作年限
+     */
+    private Integer workingYears;
+
+
+    /**
+     * 荣耀
+     */
+    private List<StaffHistoryDto> staffHistoryHonor;
+    /**
+     * 惩罚
+     */
+    private List<StaffHistoryDto> staffHistoryPunishment;
+    /**
+     * 关系
+     */
+    private List<SysStaffRelationDto> staffRelationDtoList;
+
+    private List<FamilyMember> familyMembers;
+
+    /**
+     * 推荐人id
+     */
+    private String recommendId;
+
+    /**
+     * 推荐类型 0:公司社招,1伙伴介绍
+     */
+    @NotNull(message = "请选择推荐类型")
+    private Integer recommendType;
+
+    /**
+     * 积分
+     */
+    private Integer integral;
+
+    /**
+     * 离职时间
+     */
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date dateLeft;
+
+    /**
+     * 是否钻石会员（0-否 1-是）
+     */
+    private Integer isDiamondMember;
+
+    /**
+     * 企业id  多个
+     */
+    private List<String> companyIds;
+
+
 
     /** 用户名 **/
     @NotEmpty(message = "用户名不能为空")
@@ -34,7 +138,6 @@ public class  SysUserInfo extends BaseModel {
     /** 手机号 **/
     @NotEmpty(message = "手机号不能为空")
     @Size(max = 11, min = 11, message = "手机号必须为11位")
-    @CheckCompare(value = "phoneNumber",name = "手机号")
     private String phoneNumber;
 
     /** 邮箱 **/
@@ -45,9 +148,6 @@ public class  SysUserInfo extends BaseModel {
     /** 昵称 **/
     @CheckCompare(value = "nickname",name = "昵称")
     private String nickname;
-
-    /** 头像(相对路径) **/
-    private String avatar;
 
     /** 出生日期 **/
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
@@ -68,10 +168,11 @@ public class  SysUserInfo extends BaseModel {
     private String provCityDistrict;
 
     /** 联系地址 **/
-    @CheckCompare(value = "contactAddress",name = "居住地址")
+    @CheckCompare(value = "contactAddress",name = "联系地址")
     private String contactAddress;
 
     /** 注册时间 **/
+    @CheckCompare(value = "registerTime",name = "注册时间")
     private Date registerTime;
 
     /** 民族 **/
@@ -85,10 +186,6 @@ public class  SysUserInfo extends BaseModel {
     /** 备注 **/
     @CheckCompare(value = "description",name = "备注")
     private String description;
-
-    /** 状态: 1.enable,0. disable ,-1 deleted **/
-    @CheckCompare(value = "status",name = "状态")
-    private Integer status;
 
     /** 最高学历 **/
     @CheckCompare(value = "highestEducation",name = "最高学历")
@@ -113,55 +210,55 @@ public class  SysUserInfo extends BaseModel {
     private String scrmOpenId;
 
     /**
-    *   微信unionId
-    */
+     *   微信unionId
+     */
     private String unionId;
 
     /**
-    *   紧急联系人姓名
-    */
+     *   紧急联系人姓名
+     */
     @CheckCompare(value = "urgentName",name = "紧急联系人姓名")
     private String urgentName;
 
     /**
-    *   '紧急联系人关系'
-    */
+     *   '紧急联系人关系'
+     */
     @CheckCompare(value = "urgentRelation",name = "紧急联系人关系")
     private String urgentRelation;
 
     /**
-    *   '紧急联系人电话'
-    */
+     *   '紧急联系人电话'
+     */
     @CheckCompare(value = "urgentPhone",name = "紧急联系人电话")
     private String urgentPhone;
 
     /**
-    *   '家庭成员姓名'
-    */
+     *   '家庭成员姓名'
+     */
     @CheckCompare(value = "familyName",name = "家庭成员姓名")
     private String familyName;
 
     /**
-    *   '家庭成员关系'
-    */
+     *   '家庭成员关系'
+     */
     @CheckCompare(value = "familyName",name = "家庭成员姓名")
     private String familyRelation;
 
     /**
-    *   '家庭成员电话'
-    */
+     *   '家庭成员电话'
+     */
     @CheckCompare(value = "familyPhone",name = "家庭成员电话")
     private String familyPhone;
 
     /**
-    *   '家庭成员职业'
-    */
+     *   '家庭成员职业'
+     */
     @CheckCompare(value = "familyJob",name = "家庭成员职业")
     private String familyJob;
 
     /**
-    *   '家庭成员地址'
-    */
+     *   '家庭成员地址'
+     */
     private String familyAddr;
 
     /** 业绩查看密码 */

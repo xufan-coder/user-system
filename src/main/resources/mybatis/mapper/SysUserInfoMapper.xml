@@ -552,21 +552,24 @@
         </where>
     </select>
 
-    <select id="getUserIds" resultType="com.zerody.user.vo.AppUserNotPushVo">
+    <select id="getAnniversaryUserList" resultType="com.zerody.user.vo.AppUserNotPushVo">
         select
         sui.id as 'userId',
         sui.user_name as 'userName',
         sui.avatar,
         ca.company_id as 'companyId',
         sdi.id 'departmentId',
-        sdi.parent_id as 'parentId'
+        sdi.parent_id as 'parentId',
+        year(NOW())  -  year(IFNULL(ssi.date_join,ssi.create_time)) as  num
         from sys_user_info sui
         left join sys_staff_info ssi on sui.id = ssi.user_id
         left join company_admin ca on ca.staff_id = ssi.id
         left join sys_department_info sdi on sdi.admin_account = ssi.id
         where sui.status in (0,3)
-        <if test="time neq null">
-          AND (TO_DAYS(ssi.date_join) = TO_DAYS(NOW()) or (ssi.date_join is null and ssi.create_time = TO_DAYS(NOW()))
+          AND ( DATE_FORMAT(ssi.date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
+              or (ssi.date_join is null and DATE_FORMAT(ssi.create_time,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') ))
+        <if test="userId neq null and userId neq ''">
+            and sui.id = #{userId}
         </if>
     </select>
 </mapper>

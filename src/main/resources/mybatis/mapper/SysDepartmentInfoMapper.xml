@@ -443,6 +443,6 @@
         FROM
             sys_department_info AS sdi
         LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
-         where sdi.status = 0
+         where sdi.status = 0 and ssi.user_id is not null
     </select>
 </mapper>
