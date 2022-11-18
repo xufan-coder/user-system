@@ -294,7 +294,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         String chineseNum =entryData.getNum() > 10 ? CommonUtils.CHINESE_LIST[10] : CommonUtils.CHINESE_LIST[entryData.getNum()] ;
         String blessing =  entryData.getBlessing().replace("${num}",chineseNum);
         entryData.setBlessing(blessing);
-        entryData.setContent("亲爱的"+entryData.getUserName()+"\n小微集团祝您签约"+chineseNum+"快乐");
+        entryData.setContent("亲爱的"+entryData.getUserName()+"\n"+"小微集团祝您签约"+chineseNum+"周年快乐");
         return entryData;
     }
 }
