@@ -128,6 +128,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
     public CallTipsVo checkCallAuth(UserVo user) {
         CallTipsVo result =new CallTipsVo();
+        result.setTitle("温馨提示");
         result.setType(YesNo.YES);
         String companyId = user.getCompanyId();
         String userId = user.getUserId();
@@ -165,6 +166,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
                     if(count.equals(tipNum)){
                         String tip=String.format(call_tip,userName,tipNum,callNum);
+                        result.setTitle("客户呼叫限制预警提醒");
                         result.setMessage(tip);
                         return result;
                     }
@@ -191,6 +193,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                             tip.append(WeeKEnum.getTextByNumber(control.getWeek())+":"+control.getStart()+"时~"+control.getEnd()+"时；\r\n");
                         }
                     }
+                    result.setTitle("客户呼叫限制通知");
                     result.setType(YesNo.NO);
                     result.setMessage(tip.toString());
                     return result;
