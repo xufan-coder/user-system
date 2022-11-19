@@ -182,6 +182,11 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
 
     @Override
     public List<UseControl> getTips(UserVo user) {
+        //先判断全局token 是否全局禁用
+        String s = this.stringRedisTemplate.opsForValue().get(CommonConstants.SYS_CLOSE);
+        if(DataUtil.isNotEmpty(s)){
+            return null;
+        }
         //查询是否存在白名单  白名单的用户不提醒
         QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
         qw.lambda().eq(UsersUseControl::getUserId,user.getUserId()).eq(UsersUseControl::getType,2);
