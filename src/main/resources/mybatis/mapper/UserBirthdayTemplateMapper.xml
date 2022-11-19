@@ -33,7 +33,7 @@
         and FIND_IN_SET( bm.`month`,#{queryDto.month})
     </if>
       <if test="queryDto.month neq null and queryDto.month neq '' and queryDto.type eq 1">
-          and  bm.`year`= #{queryDto.month}
+          and FIND_IN_SET( bm.`year`,#{queryDto.month})
       </if>
       GROUP BY bt.id order by bm.`year` in ('10','10+'),bm.`month`, bm.`year` asc
   </select>
