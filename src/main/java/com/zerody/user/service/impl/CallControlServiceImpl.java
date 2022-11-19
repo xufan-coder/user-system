@@ -151,7 +151,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
             cqw.lambda().eq(CallControl::getCompanyId,companyId);
             cqw.lambda().eq(CallControl::getWeek,WeeKEnum.getNumberByText(week));
             CallControl callControl = this.getOne(cqw);
-            if(DataUtil.isNotEmpty(callControl)){
+            if(DataUtil.isNotEmpty(callControl)&& callControl.getEnable().equals(YesNo.YES)){
                 //判断是否在使用时间内
                 if(Integer.parseInt(hour)>=callControl.getStart()
                         &&Integer.parseInt(hour)<=callControl.getEnd()){
