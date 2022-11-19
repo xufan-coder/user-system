@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.CallControlRecord;
 import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.vo.CallControlRecordVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.zerody.user.mapper.CallControlRecordMapper;
 import com.zerody.user.service.CallControlRecordService;
@@ -28,6 +31,9 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
 
     @Autowired
     private CallControlRecordMapper callControlRecordMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public IPage<CallControlRecord> getPageList(CallControlRecordPageDto pageDto) {
@@ -63,16 +69,32 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
         uw.lambda().set(CallControlRecord::getState,YesNo.YES)
                 .set(CallControlRecord::getRemoveTime,new Date());
         this.update(uw);
+        clearCount(id);
+    }
+
+    public void clearCount(String id){
+        QueryWrapper<CallControlRecord> qw =new QueryWrapper<>();
+        qw.lambda().eq(CallControlRecord::getId,id);
+        CallControlRecord one = this.getOne(qw);
+        if(DataUtil.isNotEmpty(one)){
+            String key= CommonConstants.CALL_FLAG+one.getCompanyId()+":"+one.getUserId();
+            stringRedisTemplate.delete(key);
+        }
     }
 
     @Override
     public void saveRecord(String userId) {
             QueryWrapper<CallControlRecord> qw =new QueryWrapper<>();
             qw.lambda().eq(CallControlRecord::getUserId,userId);
-            qw.lambda().eq(CallControlRecord::getState, YesNo.NO);
-             CallControlRecord one = this.getOne(qw);
+            qw.lambda().orderByDesc(CallControlRecord::getCreateTime);
+            qw.lambda().last(" limit 1");
+            CallControlRecord one = this.getOne(qw);
             if(DataUtil.isNotEmpty(one)){
                 one.setNum(one.getNum()+1);
+                one.setId(UUIDutils.getUUID32());
+                one.setCreateTime(new Date());
+                one.setState(YesNo.NO);
+                this.save(one);
             }else {
                 SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId);
                 CallControlRecord callControlRecord=new CallControlRecord();
