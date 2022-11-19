@@ -120,13 +120,15 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
     }
 
     @Override
-    public void submitCallControl(UserVo user) {
+    public CallTipsVo submitCallControl(UserVo user) {
         //提交呼叫次数
-        this.checkCallAuth(user);
+       return this.checkCallAuth(user);
     }
 
 
-    public void checkCallAuth(UserVo user) {
+    public CallTipsVo checkCallAuth(UserVo user) {
+        CallTipsVo result =new CallTipsVo();
+        result.setType(YesNo.YES);
         String companyId = user.getCompanyId();
         String userId = user.getUserId();
         String userName = user.getUserName();
@@ -163,7 +165,8 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
                     if(count.equals(tipNum)){
                         String tip=String.format(call_tip,userName,tipNum,callNum);
-                        throw new DefaultException(tip);
+                        result.setMessage(tip);
+                        return result;
                     }
 
                     if(count.equals(callNum+1)){
@@ -188,12 +191,15 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                             tip.append(WeeKEnum.getTextByNumber(control.getWeek())+":"+control.getStart()+"时~"+control.getEnd()+"时；\r\n");
                         }
                     }
-                    throw new DefaultException(tip.toString());
+                    result.setType(YesNo.NO);
+                    result.setMessage(tip.toString());
+                    return result;
                 }
             }else {
                 //如果没有配置，默认能呼叫，不限制次数
             }
         }
+        return result;
     }
 
     /**
