@@ -1,7 +1,6 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.user.domain.BirthdayBlessing;
@@ -17,10 +16,10 @@ import java.util.List;
 @Service
 public class BirthdayBlessingServiceImpl extends ServiceImpl<BirthdayBlessingMapper,BirthdayBlessing> implements BirthdayBlessingService {
     @Override
-    public List<BirthdayBlessing> getBlessingList() {
+    public List<BirthdayBlessing> getBlessingList(Integer type) {
         QueryWrapper<BirthdayBlessing> qw = new QueryWrapper<>();
         qw.lambda().eq(BirthdayBlessing::getDeleted, YesNo.YES);
-
+        qw.lambda().eq(BirthdayBlessing::getType, type);
         return this.list(qw);
     }
 }

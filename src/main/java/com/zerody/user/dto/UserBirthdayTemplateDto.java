@@ -17,6 +17,9 @@ public class UserBirthdayTemplateDto {
     /**生日月份*/
     private List<Integer> monthList;
 
+    /**入职年份*/
+    private List<String> yearList;
+
     /**生日祝福*/
     private String blessing;
 
@@ -47,4 +50,9 @@ public class UserBirthdayTemplateDto {
 
     /**启用状态  0-否 1-是*/
     private Integer state;
+
+    /**
+     * 模板类型 0-生日 1-入职
+     */
+    private Integer type;
 }

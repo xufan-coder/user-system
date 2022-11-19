@@ -83,4 +83,20 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 		array.addAll(companyAdminList);
 		return array;
 	}
+
+	/**
+	*   获取直属上级的副总和总经理
+	*/
+	@Override
+	public List<CompanyAdminVo> getCompanyAdminByUserId(String companyId,String deptId) {
+		List<String> list =new ArrayList<>();
+		list.add(companyId);
+		List<CompanyAdminVo> array =  this.baseMapper.getCompanyAdmin(list);
+		//获取顶级部门id
+		deptId=deptId.substring(0,deptId.indexOf("_"));
+		//获取副总
+		List<CompanyAdminVo> topLeader = sysDepartmentInfoMapper.getTopLeader(deptId);
+		array.addAll(topLeader);
+		return array;
+	}
 }

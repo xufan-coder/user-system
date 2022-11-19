@@ -534,4 +534,42 @@
                  LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         where sui.status IN (0, 3)
     </select>
+
+    <select id="getUserIdUnionRoleStaff" resultType="com.zerody.user.domain.UnionRoleStaff">
+        SELECT
+        urs.id,
+        urs.staff_id,
+        urs.role_id,
+        urs.role_name
+        FROM sys_user_info AS sui
+        JOIN  sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN union_role_staff AS urs ON urs.staff_id = ssi.id
+        <where>
+            ssi.deleted = 0 and sui.status != -1
+        <if test="userId neq null and userId neq ''">
+            and sui.id = #{userId}
+        </if>
+        </where>
+    </select>
+
+    <select id="getAnniversaryUserList" resultType="com.zerody.user.vo.AppUserNotPushVo">
+        select
+        sui.id as 'userId',
+        sui.user_name as 'userName',
+        sui.avatar,
+        ca.company_id as 'companyId',
+        sdi.id 'departmentId',
+        sdi.parent_id as 'parentId',
+        year(NOW())  -  year(IFNULL(ssi.date_join,ssi.create_time)) as  num
+        from sys_user_info sui
+        left join sys_staff_info ssi on sui.id = ssi.user_id
+        left join company_admin ca on ca.staff_id = ssi.id
+        left join sys_department_info sdi on sdi.admin_account = ssi.id
+        where sui.status in (0,3)
+          AND ( DATE_FORMAT(ssi.date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
+              or (ssi.date_join is null and DATE_FORMAT(ssi.create_time,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') ))
+        <if test="userId neq null and userId neq ''">
+            and sui.id = #{userId}
+        </if>
+    </select>
 </mapper>

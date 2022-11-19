@@ -51,6 +51,9 @@ public class UserBirthdayTemplateVo {
     /**模板月份*/
     private String monthText;
 
+    /**模板年份*/
+    private String yearText;
+
     /**模板月份*/
     private List<String> monthList;
 
@@ -60,5 +63,14 @@ public class UserBirthdayTemplateVo {
             return new ArrayList<>();
         }
         return Arrays.asList(monthText.split(","));
+    }
+    /**模板年份*/
+    private List<String> yearList;
+    public List<String> getYearList(){
+
+        if(StringUtils.isEmpty(yearText)){
+            return new ArrayList<>();
+        }
+        return Arrays.asList(yearText.split(","));
     }
 }

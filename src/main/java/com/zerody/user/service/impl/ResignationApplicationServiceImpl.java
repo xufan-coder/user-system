@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.Msg;
+import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.ResignationApplication;
 import com.zerody.user.dto.ResignationPageDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
 import com.zerody.user.mapper.ResignationApplicationMapper;
+import com.zerody.user.service.PositionRecordService;
 import com.zerody.user.service.ResignationApplicationService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
@@ -36,16 +39,35 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+    @Autowired
+    private PositionRecordService positionRecordService;
 
 
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
+        SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
         if(DataUtil.isNotEmpty(data.getId())){
             data.setApprovalTime(new Date());
             this.updateById(data);
+            if(DataUtil.isNotEmpty(sysUserInfoVo) && sysUserInfoVo.getStatus()==1){
+                //添加一条任职记录
+                PositionRecord positionRecord = new PositionRecord();
+                positionRecord.setId(UUIDutils.getUUID32());
+                positionRecord.setCertificateCard(sysUserInfoVo.getCertificateCard());
+                positionRecord.setCompanyId(sysUserInfoVo.getCompanyId());
+                positionRecord.setCompanyName(sysUserInfoVo.getCompanyName());
+                positionRecord.setUserId(sysUserInfoVo.getId());
+                positionRecord.setUserName(sysUserInfoVo.getUserName());
+                positionRecord.setPositionTime(sysUserInfoVo.getDateJoin());
+                positionRecord.setCreateTime(new Date());
+                positionRecord.setRoleName(sysUserInfoVo.getRoleName());
+                positionRecord.setQuitTime(new Date());
+                positionRecord.setQuitReason(data.getReason());
+                positionRecordService.save(positionRecord);
+            }
+
         }else {
             if(DataUtil.isNotEmpty(data.getUserId())){
-                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
                 if(DataUtil.isNotEmpty(sysUserInfoVo)){
                     data.setStaffId(sysUserInfoVo.getStaffId());
                     data.setName(sysUserInfoVo.getUserName());

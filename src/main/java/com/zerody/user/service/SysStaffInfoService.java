@@ -59,7 +59,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateStaffStatus(String userId, Integer status, String leaveReason);
 
 
-    void updateStaff(SetSysUserInfoDto setSysUserInfoDto);
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
 
     SysUserInfoVo selectStaffById(String id);
 
@@ -163,5 +163,13 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Date: 2022/10/20 16:23
     */
     SysStaffInfo getUserInfo(String id);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 10:13
+    */
+    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
 
 }

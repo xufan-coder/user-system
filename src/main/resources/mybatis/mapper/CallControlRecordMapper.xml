@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.CallControlRecordMapper">
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.CallControlRecord">
+    <!--@mbg.generated-->
+    <!--@Table call_control_record-->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="dept_id" jdbcType="VARCHAR" property="deptId" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="remove_time" jdbcType="TIMESTAMP" property="removeTime" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, user_id, user_name, company_id, company_name, dept_id, dept_name, mobile, `role`,
+    create_time, remove_time, deleted
+  </sql>
+
+
+  <select id="getList" resultType="com.zerody.user.vo.CallControlRecordVo">
+    SELECT
+        *
+    FROM call_control_record AS c
+    WHERE
+    c.state=0
+    <if test="dto.userId neq null and dto.userId neq '' ">
+            AND c.user_id = #{dto.userId}
+      </if>
+  <if test="dto.companyId neq null and dto.companyId neq '' ">
+            AND c.company_id = #{dto.companyId}
+      </if>
+    <if test="dto.departId neq null and dto.departId neq '' ">
+            AND c.dept_id LIKE CONCAT(#{dto.departId}, '%')
+      </if>
+    ORDER BY c.create_time DESC
+    </select>
+</mapper>

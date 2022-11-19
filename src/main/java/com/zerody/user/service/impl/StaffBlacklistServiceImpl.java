@@ -14,10 +14,12 @@ import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
@@ -32,6 +34,7 @@ import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
+import com.zerody.user.util.UserLogUtil;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
@@ -489,6 +492,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         } else {
             this.updateById(blac);
         }
+
+        SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
+        UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
     }
 
@@ -513,6 +519,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //                "SELECT ssi.user_id FROM sys_staff_info AS ssi  WHERE ssi.id = '".concat(staffId).concat("'")
 //        );
 //        this.userInfoService.update(userUw);
+        StaffBlacklist staffBlack = this.getById(id);
+        SysUserInfo userInfo = this.userInfoService.getById(staffBlack.getUserId());
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除伙伴内控名单",DataCodeType.PARTNER_LOCK);
     }
     @Override
     public void doRelieve(String id,Integer state) {
@@ -521,6 +530,35 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
         relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
         this.update(relieveUw);
+    }
+
+    @Override
+    public void doRelieveByMobile(String mobile,Integer state,String relieveId) {
+        UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
+        relieveUw.lambda().eq(StaffBlacklist::getMobile, mobile);
+        relieveUw.lambda().eq(StaffBlacklist::getRelieveId, relieveId);
+        relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
+        relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
+        this.update(relieveUw);
+    }
+
+    @Override
+    public List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param) {
+        QueryWrapper<StaffBlacklist> qw = new QueryWrapper<>();
+        qw.lambda().eq(StaffBlacklist::getMobile, param.getMobile());
+        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+        List<StaffBlacklist> list = this.list(qw);
+
+        for (StaffBlacklist staffBlacklist : list) {
+            if(DataUtil.isEmpty(staffBlacklist.getRelieveId())){
+                staffBlacklist.setRelieveId(param.getRelieveId());
+                staffBlacklist.setRelieveKey(param.getRelieveKey());
+                staffBlacklist.setIsApprove(param.getIsApprove());
+                staffBlacklist.setUpdateTime(new Date());
+            }
+        }
+        this.updateBatchById(list);
+        return list;
     }
 
     @Override

@@ -172,4 +172,8 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     * @Date: 2022/10/20 16:46
     */
     List<CompanyAdminVo> queryVicePresident(@Param("companyIds") List<String> companyIds);
+
+    List<CompanyAdminVo> getTopLeader(@Param("deptId")String deptId);
+
+    List<DepartInfoVo> getAllDepList();
 }

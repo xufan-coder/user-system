@@ -132,3 +132,10 @@ msg:
     title2: '意见提交回复提醒'
     content: '${userName}向你提出了一个意见或建议，请及时查看!'
     content2: '${userName}已经回复了你提出的意见或建议，请及时查看!'
+  entry:
+    url: /home/anniversary/celebration/notice
+    query: '{"importCustomerNum":"${importCustomerNum}","loansMoney":"${loansMoney}","signOrderNum":"${signOrderNum}","content":"${content}","blessing":"${blessing}}"}'
+    arguments:
+    title: '入职周年祝贺'
+    content: ''
+    content2: ''

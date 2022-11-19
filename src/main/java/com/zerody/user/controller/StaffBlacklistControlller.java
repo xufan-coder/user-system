@@ -43,6 +43,50 @@ public class StaffBlacklistControlller {
     private CheckUtil checkUtil;
 
     /**
+     * 原子服务按手机号添加伙伴内控流程
+     * @author  DaBai
+     * @date  2022/11/8 11:57
+     */
+    @PostMapping("/relieve-mobile")
+    public DataResult<List<StaffBlacklist>> updateRelieveByMobile(@RequestBody StaffBlacklist param){
+        try {
+            List<StaffBlacklist> result = this.service.updateRelieveByMobile(param);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("解除内控名单申请错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("解除内控名单申请错误：{}", e, e);
+            return R.error("解除内控名单申请错误" + e.getMessage());
+        }
+    }
+
+
+    /**
+     * 原子服务按手机号解除伙伴内控状态
+     * @author  DaBai
+     * @date  2022/11/8 12:03
+     */
+    @PostMapping("/emp/relieve-mobile/{mobile}")
+    public DataResult<Object> doRelieveByMobile(@PathVariable("mobile") String mobile,
+                                                @RequestParam("state") Integer state,
+                                                @RequestParam("relieveId") String relieveId){
+        try {
+            this.service.doRelieveByMobile(mobile,state,relieveId);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("解除黑名单出错：{}", e, e);
+            return R.error("解除黑名单出错" + e.getMessage());
+        }
+    }
+
+
+
+
+    /**
      *流程原子服务调用
      *
      * @author               PengQiang

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BirthdayGreetingCard;
 import com.zerody.user.dto.BirthdayGreetingCardDto;
+import com.zerody.user.dto.GreetingListDto;
 import com.zerody.user.vo.BirthdayGreetingCardVo;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public interface BirthdayGreetingCardService extends IService<BirthdayGreetingCa
     void modifyTemplate(BirthdayGreetingCardDto cardDto);
 
     List<BirthdayGreetingCardVo> getGreetingList(Integer state);
+
+    List<BirthdayGreetingCardVo> getGreetingList(GreetingListDto param);
 
     void modifyGreetingById(String id);
 }

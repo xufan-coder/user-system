@@ -7,6 +7,7 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
@@ -183,7 +184,8 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
-            sysStaffInfoService.updateStaff(setSysUserInfoDto);
+            UserVo user = UserUtils.getUser();
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -450,6 +452,29 @@ public class SysStaffInfoController {
 
         SysStaffInfoDetailsVo sysStaffInfoDetailsVo=this.sysStaffInfoService.getStaffDetailsCount(id);
         return R.success(sysStaffInfoDetailsVo);
+    }
+
+
+    
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 9:51
+    */
+    @GetMapping("/statistics-users")
+    public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
+        try {
+            UserStatistics userStatistics = new UserStatistics();
+            if (DataUtil.isEmpty(userInfoDto.getDepartId())) {
+                return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
+            } else {
+                return R.success(userStatistics);
+            }
+        } catch (Exception e) {
+            log.error("伙伴数据统计出错:{}", e.getMessage());
+            return R.error("伙伴数据统计出错" + e.getMessage());
+        }
     }
 
 }
