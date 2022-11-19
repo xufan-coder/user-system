@@ -10,6 +10,7 @@ import com.zerody.user.dto.CallControlPageDto;
 import com.zerody.user.service.CallControlService;
 import com.zerody.user.service.CallUseControlService;
 import com.zerody.user.vo.CallControlVo;
+import com.zerody.user.vo.CallTipsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -121,10 +122,10 @@ public class CallControlController {
      *   提交呼叫次数/预警提示/超出强退
      */
     @PostMapping("/submit")
-    public DataResult submitCallControl(){
+    public DataResult<CallTipsVo> submitCallControl(){
         try {
-            this.callControlService.submitCallControl(UserUtils.getUser());
-            return R.success();
+            CallTipsVo vo =this.callControlService.submitCallControl(UserUtils.getUser());
+            return R.success(vo);
         } catch (DefaultException e) {
             log.error("提交呼叫次数提醒：{}", e.getMessage());
             return R.error(e.getMessage());

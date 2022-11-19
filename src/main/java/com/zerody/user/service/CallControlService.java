@@ -7,6 +7,7 @@ import com.zerody.user.domain.CallControl;
 import com.zerody.user.domain.CallUseControl;
 import com.zerody.user.dto.CallControlPageDto;
 import com.zerody.user.vo.CallControlVo;
+import com.zerody.user.vo.CallTipsVo;
 
 public interface CallControlService extends IService<CallControl> {
 
@@ -15,5 +16,5 @@ public interface CallControlService extends IService<CallControl> {
 
     void addOrUpdate(CallControlVo param);
 
-    void submitCallControl(UserVo user);
+    CallTipsVo submitCallControl(UserVo user);
 }
