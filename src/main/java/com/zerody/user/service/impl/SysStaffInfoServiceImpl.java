@@ -979,6 +979,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
 
             SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+            QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
+            UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
             PositionRecord positionRecord = new PositionRecord();
             positionRecord.setId(UUIDutils.getUUID32());
             positionRecord.setUserId(staff.getUserId());
@@ -986,7 +989,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCompanyId(staff.getCompId());
             positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
             positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
-            positionRecord.setRoleName(sysUserInfo.getRoleName());
+            positionRecord.setRoleName(unionRoleStaff.getRoleName());
             positionRecord.setPositionTime(staff.getDateJoin());
             positionRecord.setQuitTime(staff.getDateLeft());
             positionRecord.setQuitReason(staff.getLeaveReason());
