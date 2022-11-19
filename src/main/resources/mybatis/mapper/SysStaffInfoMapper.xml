@@ -1114,6 +1114,7 @@
         count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
         left join union_staff_depart as usd on usd.staff_id = ssi.id
+        left join sys_user_info as sui on sui.id = ssi.user_id
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="param.companyId neq null and param.companyId neq ''">
