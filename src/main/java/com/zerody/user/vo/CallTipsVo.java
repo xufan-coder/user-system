@@ -20,4 +20,9 @@ public class CallTipsVo {
      */
     private Integer type;
 
+    /**
+     * 标题
+     */
+    private String title;
+
 }
