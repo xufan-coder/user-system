@@ -120,13 +120,16 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
     }
 
     @Override
-    public void submitCallControl(UserVo user) {
+    public CallTipsVo submitCallControl(UserVo user) {
         //提交呼叫次数
-        this.checkCallAuth(user);
+       return this.checkCallAuth(user);
     }
 
 
-    public void checkCallAuth(UserVo user) {
+    public CallTipsVo checkCallAuth(UserVo user) {
+        CallTipsVo result =new CallTipsVo();
+        result.setTitle("温馨提示");
+        result.setType(YesNo.YES);
         String companyId = user.getCompanyId();
         String userId = user.getUserId();
         String userName = user.getUserName();
@@ -148,7 +151,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
             cqw.lambda().eq(CallControl::getCompanyId,companyId);
             cqw.lambda().eq(CallControl::getWeek,WeeKEnum.getNumberByText(week));
             CallControl callControl = this.getOne(cqw);
-            if(DataUtil.isNotEmpty(callControl)){
+            if(DataUtil.isNotEmpty(callControl)&& callControl.getEnable().equals(YesNo.YES)){
                 //判断是否在使用时间内
                 if(Integer.parseInt(hour)>=callControl.getStart()
                         &&Integer.parseInt(hour)<=callControl.getEnd()){
@@ -163,7 +166,9 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
                     if(count.equals(tipNum)){
                         String tip=String.format(call_tip,userName,tipNum,callNum);
-                        throw new DefaultException(tip);
+                        result.setTitle("客户呼叫限制预警提醒");
+                        result.setMessage(tip);
+                        return result;
                     }
 
                     if(count.equals(callNum+1)){
@@ -188,12 +193,16 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
                             tip.append(WeeKEnum.getTextByNumber(control.getWeek())+":"+control.getStart()+"时~"+control.getEnd()+"时；\r\n");
                         }
                     }
-                    throw new DefaultException(tip.toString());
+                    result.setTitle("客户呼叫限制通知");
+                    result.setType(YesNo.NO);
+                    result.setMessage(tip.toString());
+                    return result;
                 }
             }else {
                 //如果没有配置，默认能呼叫，不限制次数
             }
         }
+        return result;
     }
 
     /**

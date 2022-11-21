@@ -1111,16 +1111,17 @@
         count(IF(ssi.user_type =1, 1 ,NULL)) as partnerNum,
         count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
         count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
-        count(IF(ssi.status =2,  1 ,NULL)) as inCooperationNum
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
         left join union_staff_depart as usd on usd.staff_id = ssi.id
+        left join sys_user_info as sui on sui.id = ssi.user_id
         <where>
-            ssi.deleted =0
+            ssi.deleted = 0 and sui.status != -1
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+                and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND ssi.comp_id
+                and ssi.comp_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
