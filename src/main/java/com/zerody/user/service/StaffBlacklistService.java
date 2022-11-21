@@ -91,4 +91,8 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     List<BlackListCount> getBlacklistCount();
 
     void updateStaffBlacklist(StaffBlacklist param);
+
+    void doRelieveByMobile(String mobile, Integer state,String relieveId);
+
+    List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param);
 }

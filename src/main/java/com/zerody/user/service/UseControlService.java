@@ -8,6 +8,8 @@ import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlDto;
 import com.zerody.user.vo.UseControlVo;
 
+import java.util.List;
+
 /**
  * @author  DaBai
  * @date  2022/3/1 14:00
@@ -23,4 +25,6 @@ public interface UseControlService extends IService<UseControl> {
     Boolean checkUserAuth(UserVo userId);
 
     Boolean checkUserAuth(String userId,String companyId);
+
+    List<UseControl> getTips(UserVo user);
 }

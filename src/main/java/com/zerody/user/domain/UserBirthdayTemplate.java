@@ -64,5 +64,9 @@ public class UserBirthdayTemplate {
 
     /**更新时间*/
     private Date updateTime;
+    /**
+     * 模板类型 0-生日 1-入职
+     */
+    private Integer type;
 
 }

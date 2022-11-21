@@ -19,6 +19,8 @@ public class UnionBirthdayMonth {
 
     /**月份*/
     private Integer month;
+    /**年份*/
+    private String year;
 
     /**创建时间**/
     private Date createTime;

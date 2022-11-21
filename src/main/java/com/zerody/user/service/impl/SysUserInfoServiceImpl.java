@@ -20,11 +20,14 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.api.vo.UserIdentifierQueryVo;
+import com.zerody.user.api.vo.*;
+import com.zerody.user.api.vo.DepartInfoVo;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.CeoUserInfo;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
 import com.zerody.user.feign.AdviserFeignService;
@@ -37,7 +40,7 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
-import io.lettuce.core.ScanIterator;
+import com.zerody.user.vo.SysLoginUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -844,6 +847,52 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         });
         this.adviserFeignService.updateAdviserStatus(usersParams);
         return usersParams.size();
+    }
+
+    @Override
+    public UnionRoleStaff getUnionRoleStaff(String userId) {
+        UnionRoleStaff staff = this.sysUserInfoMapper.getUserIdUnionRoleStaff(userId);
+        return staff;
+    }
+
+    @Override
+    public AdminUserAllVo getAdminUserAll() {
+
+        AdminUserAllVo allVo = new AdminUserAllVo();
+        // 查询ceo账户
+        List<SubordinateUserQueryVo> superiorList = this.ceoUserInfoService.getList();
+        List<com.zerody.user.api.vo.CeoRefVo> ceoUser = new ArrayList<>();
+        for (SubordinateUserQueryVo suv : superiorList){
+
+            com.zerody.user.api.vo.CeoRefVo ceo = new com.zerody.user.api.vo.CeoRefVo();
+            ceo.setCeoId(suv.getUserId());
+            ceo.setUserName(suv.getUserName());
+            ceo.setPhoneNumber(suv.getMobile());
+            ceoUser.add(ceo);
+        }
+        allVo.setCeoUser(ceoUser);
+        // 企业管理员(总经理)
+        // 获取总经理账户信息
+        List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(null);
+        List<CompanyInfoVo> adminUser = new ArrayList<>();
+        for (SubordinateUserQueryVo suv : managerList){
+
+            if(StringUtils.isEmpty(suv.getUserId())){
+                continue;
+            }
+            CompanyInfoVo admin = new CompanyInfoVo();
+            admin.setAdminUserId(suv.getUserId());
+            admin.setAdminUserName(suv.getUserName());
+            admin.setCompanyId(suv.getCompanyId());
+            admin.setCompanyName(suv.getCompanyName());
+            adminUser.add(admin);
+        }
+        allVo.setAdminUser(adminUser);
+        // 团队长 副总
+        List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+        allVo.setDepartUser(departUser);
+        return allVo;
+
     }
 
     //递归获取上级 不包含企业管理员

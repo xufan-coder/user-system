@@ -122,4 +122,10 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 是否钻石会员（0-否 1-是）
      */
     private Integer isDiamondMember;
+
+    /**
+     * 企业id  多个
+     */
+    private List<String> companyIds;
+
 }
