@@ -2,6 +2,7 @@ package com.zerody.user.domain;
 
 /**
  *
+ * 菜单，角色关联表
  *
  * @author
  * @description          DELL

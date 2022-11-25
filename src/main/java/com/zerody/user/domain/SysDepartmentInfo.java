@@ -11,6 +11,7 @@ import java.util.Date;
 
 /**
  *
+ * 部门信息表
  *
  * @author               PengQiang
  * @description          DELL
@@ -20,7 +21,6 @@ import java.util.Date;
  */
 @Data
 public class SysDepartmentInfo extends BaseModel {
-
 
     /**
      *
@@ -79,5 +79,9 @@ public class SysDepartmentInfo extends BaseModel {
     /** 是否显示业务 */
     private Integer isShowBusiness;
 
+    /**
+     * 是否操作部门(1是 0否)
+     */
     private Integer isEdit;
+
 }

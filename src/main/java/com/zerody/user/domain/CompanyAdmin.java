@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 /**
+ * 企业管理员
+ *
  * @author 黄华盛
  * @date 2021-01-04
  */

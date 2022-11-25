@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 /**
+ * 平台用户与员工关联表
+ *
  * @author  DaBai
  * @date  2021/1/11 10:33
  */
