@@ -9,6 +9,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 问题反馈类型表
+ *
  * @ClassName CourseColumn
  * @author PengQiang
  * @DateTime 2022/7/8_16:14

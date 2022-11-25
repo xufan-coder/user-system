@@ -7,9 +7,12 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 
+/**
+ * 企业信息表
+ */
+
 @Data
 public class SysCompanyInfo extends BaseModel {
-
 
     /**
      *
@@ -198,11 +201,17 @@ public class SysCompanyInfo extends BaseModel {
     /** 纬度 */
     private Float lat;
 
+    /**
+     * 是否操作企业(1是 0否)
+     */
     private Integer isEdit;
 
     @TableField(exist = false)
     private String certificateCard;
 
+    /**
+     * 是否禁用短信:1.是、0.否
+     */
     private Integer isNotSms;
 
     /**
