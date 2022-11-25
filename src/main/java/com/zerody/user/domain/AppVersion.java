@@ -8,6 +8,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * app版本控制表
+ *
  * @author zhangpingping
  * @date 2021年10月13日 17:19
  */

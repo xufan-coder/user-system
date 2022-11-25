@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.util.Date;
 /**
+ * 登录控制表
+ *
  * @author  DaBai
  * @date  2022/3/1 13:57
  */

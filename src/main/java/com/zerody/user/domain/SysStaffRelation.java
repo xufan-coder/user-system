@@ -9,6 +9,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 员工关系表
+ *
  * @author zhangpingping
  * @date 2021年09月09日 16:09
  */

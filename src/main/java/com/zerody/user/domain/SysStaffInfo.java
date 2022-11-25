@@ -10,6 +10,8 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
+ * 员工信息表
+ *
  * @param
  * @author PengQiang
  * @description DELL
@@ -24,6 +26,9 @@ public class SysStaffInfo extends BaseModel {
      **/
     private String compId;
 
+    /**
+     * 头像
+     */
     private String avatar;
 
     /**
