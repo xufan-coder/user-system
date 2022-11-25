@@ -174,15 +174,27 @@ public class  SysUserInfo extends BaseModel {
     @TableField(exist = false)
     private String roleName;
 
+    /**
+     * 头像修改时间
+     */
     private Date avatarUpdateTime;
 
+    /**
+     * 是否删除
+     */
     private Integer isDeleted;
 
     /** 是否修改用户名称名称(1.是，0.否) */
     private Integer isUpdateName;
 
+    /**
+     * 是否操作用户(1是 0否)
+     */
     private Integer isEdit;
 
+    /**
+     * im状态
+     */
     private String imState;
 
     /**顾问关联同步(0-未同步 1-已同步)*/

@@ -11,6 +11,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 伙伴账户推送app
+ *
  * @author  DaBai
  * @date  2021/7/9 16:15
  */

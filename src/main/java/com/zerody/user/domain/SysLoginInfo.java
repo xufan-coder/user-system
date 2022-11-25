@@ -6,6 +6,10 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * 登录信息表
+ */
+
 @Data
 public class SysLoginInfo extends BaseStringModel {
 

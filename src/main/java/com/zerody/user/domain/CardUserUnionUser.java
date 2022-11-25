@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
+ * 名片小程序用户关联CRM用户
+ *
  * @author  DaBai
  * @date  2021/1/14 17:20
  */
