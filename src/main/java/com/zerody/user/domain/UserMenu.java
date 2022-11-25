@@ -12,6 +12,8 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
+ * 个人常用菜单表
+ *
  * @author  DaBai
  * @date  2021/9/10 15:06
  */

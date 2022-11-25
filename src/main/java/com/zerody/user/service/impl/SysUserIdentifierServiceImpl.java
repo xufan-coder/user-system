@@ -269,7 +269,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.pullMq(identifier.getUserId(),null,null);
         }
         SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
-        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除设备绑定", DataCodeType.PARTNER_UNBIND);
+        UserLogUtil.addUserLog(userInfo,null,"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
 
     @Override
