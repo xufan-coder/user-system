@@ -55,6 +55,9 @@ public class UserLogUtil {
         if(StringUtils.isEmpty(content)) {
             return;
         }
+        if(userInfo == null){
+            return;
+        }
         OperatorLogDto logDto = new OperatorLogDto();
         logDto.setSystemCode(SystemCodeType.SYSTEM_CRM_PC);
         logDto.setModuleCode(ModuleCodeType.PARTNER);
