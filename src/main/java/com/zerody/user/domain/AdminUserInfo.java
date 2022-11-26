@@ -35,11 +35,11 @@ public class AdminUserInfo {
      */
     private String userPwd;
     /**
-     * 是否删除(0存在 1删除)
+     * 员工id
      */
     private String staffId;
     /**
-     *
+     * 是否删除(0存在 1删除)
      */
     private Integer deleted;
     /**

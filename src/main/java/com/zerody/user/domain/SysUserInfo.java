@@ -12,6 +12,7 @@ import java.util.Date;
 
 /**
  *
+ * 伙伴(员工)信息表
  *
  * @author               PengQiang
  * @description          DELL

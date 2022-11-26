@@ -8,6 +8,7 @@ import lombok.Data;
 
 /**
  * 呼叫限制记录
+ *
  * @author  DaBai
  * @date  2022/11/9 10:22
  */
@@ -59,7 +60,6 @@ public class CallControlRecord {
     * 角色名称
     */
     private String role;
-
 
     /**
      * 累计限制次数

@@ -2049,8 +2049,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<BosStaffInfoVo> records = page.getRecords();
         if(DataUtil.isNotEmpty(records)){
             records.stream().forEach(item->{
+                //获取后台管理员以及关联企业信息
                 BackUserRefVo backRef = ceoCompanyRefService.getBackRef(item.getId());
-                if(DataUtil.isNotEmpty(backRef)&&DataUtil.isNotEmpty(backRef.getCompanys())){
+                if(DataUtil.isNotEmpty(backRef) && DataUtil.isNotEmpty(backRef.getCompanys())){
+                    //企业名称
                     List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(Collectors.toList());
                     item.setCompanys(collect);
                 }

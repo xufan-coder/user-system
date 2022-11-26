@@ -12,7 +12,9 @@ import java.util.Date;
  */
 @Data
 public class AppVersionInfo {
-    /***/
+    /**
+     * id
+     */
     private String id;
     /**
      * 标题

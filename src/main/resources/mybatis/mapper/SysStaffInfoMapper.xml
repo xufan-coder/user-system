@@ -118,6 +118,7 @@
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
+
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
 			sui.id
@@ -359,6 +360,7 @@
         </where>
     </select>
 
+    <!--分页获取平台管理员列表-->
     <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         aui.id AS id,
