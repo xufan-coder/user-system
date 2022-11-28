@@ -211,6 +211,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private PositionRecordService positionRecordService;
 
+    @Autowired
     private UserResumeService userResumeService;
 
     @Value("${upload.path}")

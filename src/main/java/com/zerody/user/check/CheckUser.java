@@ -66,6 +66,17 @@ public class CheckUser {
                 }
             }
         }
+
+        if (StringUtils.isBlank(sysUserInfo.getIdCardFront())) {
+            throw new DefaultException("身份证照片国徽面(正面)不能为空");
+        }
+        if (StringUtils.isBlank(sysUserInfo.getIdCardReverse())) {
+            throw new DefaultException("身份证照片人像面(反面)不能为空");
+        }
+        if (StringUtils.isBlank(sysUserInfo.getComplianceCommitment())) {
+            throw new DefaultException("合规承诺书不能为空");
+        }
+
     }
 
 
