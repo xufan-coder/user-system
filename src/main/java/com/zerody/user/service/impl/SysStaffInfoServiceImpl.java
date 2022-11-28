@@ -42,6 +42,7 @@ import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
+import com.zerody.user.constant.FileTypeInfo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
@@ -87,6 +88,7 @@ import com.zerody.user.service.base.BaseService;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -214,6 +216,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UserResumeService userResumeService;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private CommonFileService commonFileService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -232,7 +240,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("添加伙伴入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
-        CheckUser.checkParamUserResume(setSysUserInfoDto.getUserResumes());
+        CheckUser.checkParamList(setSysUserInfoDto);
         //查看手机号或登录名是否被占用
         Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
         if (flag) {
@@ -381,7 +389,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             unionStaffDepartMapper.insert(sd);
         }
 
+        //添加履历
         this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
+        //添加合规承诺书
+        saveImage(setSysUserInfoDto.getComplianceCommitments(),staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        //添加学历证书
+        saveImage(setSysUserInfoDto.getDiplomas(),staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
+        //添加合作申请表
+        saveFile(setSysUserInfoDto.getCooperationFiles(),staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
 
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
@@ -400,6 +415,48 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         UserLogUtil.addUserLog(sysUserInfo,UserUtils.getUser(),"签约伙伴", DataCodeType.PARTNER_ADD);
         return staff;
+    }
+
+    public void saveFile(List<String> cooperationFiles,String userId,String type){
+        List<CommonFile> files = new ArrayList<>();
+        CommonFile file;
+        for (String s : cooperationFiles) {
+            file = new CommonFile();
+            file.setConnectId(userId);
+            file.setId(UUIDutils.getUUID32());
+            file.setFileType(type);
+            file.setFileUrl(s);
+            file.setCreateTime(new Date());
+            files.add(file);
+        }
+        if(DataUtil.isNotEmpty(files)){
+            QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
+            remQ.lambda().eq(CommonFile::getConnectId, userId);
+            remQ.lambda().eq(CommonFile::getFileType, type);
+            this.commonFileService.addFiles(remQ, files);
+        }
+
+    }
+
+    public void saveImage(List<String> images,String userId,String type){
+        List<Image> imageAdds = new ArrayList<>();
+        Image image;
+        for (String s : images) {
+            image = new Image();
+            image.setConnectId(userId);
+            image.setId(UUIDutils.getUUID32());
+            image.setImageType(type);
+            image.setImageUrl(s);
+            image.setCreateTime(new Date());
+            imageAdds.add(image);
+        }
+        if(DataUtil.isNotEmpty(imageAdds)){
+            QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+            imageRemoveQw.lambda().eq(Image::getConnectId, userId);
+            imageRemoveQw.lambda().eq(Image::getImageType, type);
+            this.imageService.addImages(imageRemoveQw, imageAdds);
+        }
+
     }
 
     @Override
@@ -676,7 +733,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
         CheckUser.checkParam(sysUserInfo,setSysUserInfoDto.getFamilyMembers());
-        CheckUser.checkParamUserResume(setSysUserInfoDto.getUserResumes());
+        CheckUser.checkParamList(setSysUserInfoDto);
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
@@ -784,6 +841,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
         this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
+
+        //合规承诺书
+        saveImage(setSysUserInfoDto.getComplianceCommitments(),staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        //学历证书
+        saveImage(setSysUserInfoDto.getDiplomas(),staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
+        //合作申请表
+        saveFile(setSysUserInfoDto.getCooperationFiles(),staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+
+
+
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
