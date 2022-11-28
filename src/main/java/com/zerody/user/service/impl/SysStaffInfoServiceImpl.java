@@ -211,6 +211,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private PositionRecordService positionRecordService;
 
+    private UserResumeService userResumeService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -229,6 +231,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("添加伙伴入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
+        CheckUser.checkParamUserResume(setSysUserInfoDto.getUserResumes());
         //查看手机号或登录名是否被占用
         Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
         if (flag) {
@@ -376,6 +379,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
         }
+
+        this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
+
         //获取企业信息的地址用于生成名片
         QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
         qw.lambda().eq(SysCompanyInfo::getId, setSysUserInfoDto.getCompanyId())
@@ -669,6 +675,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
         CheckUser.checkParam(sysUserInfo,setSysUserInfoDto.getFamilyMembers());
+        CheckUser.checkParamUserResume(setSysUserInfoDto.getUserResumes());
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
@@ -1110,6 +1117,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
             userInfo.setRecommendSecond(recommendInfo);
         }
+        QueryWrapper<UserResume> rq = new QueryWrapper<>();
+        rq.lambda().eq(UserResume::getUserId, userInfo.getId());
+        rq.lambda().orderByDesc(UserResume::getCreateTime);
+        userInfo.setUserResumes(this.userResumeService.list(rq));
+
+
         if(Objects.nonNull(userInfo)) {
             //获取荣耀和惩罚记录
             getRecord(id, userInfo);

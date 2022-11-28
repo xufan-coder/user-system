@@ -201,7 +201,10 @@
         ssi.working_years,
         ssi.date_left,
         sui.im_state,
-        ssi.is_diamond_member
+        ssi.is_diamond_member,
+        sui.id_card_reverse,
+        sui.id_card_front,
+        sui.compliance_commitment
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
