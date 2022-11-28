@@ -1,16 +1,12 @@
 package com.zerody.user.service.impl;
 
-import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.zerody.card.api.dto.UserCardDto;
@@ -24,10 +20,16 @@ import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.customer.MaritalStatusEnum;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
-import com.zerody.common.util.*;
+import com.zerody.common.util.MD5Utils;
+import com.zerody.common.util.PhoneHomeLocationUtils;
+import com.zerody.common.util.UUIDutils;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
+import com.zerody.common.utils.FileUtil;
 import com.zerody.common.vo.IdCardDate;
 import com.zerody.common.vo.UserVo;
 import com.zerody.contract.api.vo.PerformanceReviewsVo;
@@ -42,7 +44,8 @@ import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
-import com.zerody.user.constant.ImageTypeInfo;
+import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.check.CheckUser;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
@@ -50,44 +53,35 @@ import com.zerody.user.dto.*;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.enums.StaffHistoryTypeEnum;
+import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
+import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
-import lombok.Data;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.util.StringUtil;
+import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.unit.DataUnit;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.exception.DefaultException;
-import com.zerody.common.utils.DataUtil;
-import com.zerody.common.utils.FileUtil;
-import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.check.CheckUser;
-import com.zerody.user.enums.StaffStatusEnum;
-import com.zerody.user.service.base.BaseService;
-import io.micrometer.core.instrument.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author PengQiang
@@ -2764,6 +2758,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
+    }
+
+    @Override
+    public List<StaffInfoVo> getAllUser() {
+        List<StaffInfoVo> staffInfoVos = this.sysUserInfoMapper.getAllUser();
+        return staffInfoVos;
     }
 
     @Override

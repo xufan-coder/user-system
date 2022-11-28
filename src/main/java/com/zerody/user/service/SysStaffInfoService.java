@@ -3,18 +3,17 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
+import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.UserPerformanceReviewsPageDto;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * @author PengQiang
@@ -171,5 +168,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Date: 2022/11/11 10:13
     */
     UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
-
+    /**
+    *
+    *  @description   查询所有在职伙伴
+    *  @author        YeChangWei
+    *  @date          2022/11/28 17:34
+    *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+    */
+    List<StaffInfoVo> getAllUser();
 }
