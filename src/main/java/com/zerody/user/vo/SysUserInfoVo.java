@@ -278,5 +278,11 @@ public class SysUserInfoVo {
     private String idCardReverse;
 
     /** 合规承诺书 */
-    private String complianceCommitment;
+    private List<String> complianceCommitments;
+
+    /** 学历证书 */
+    private List<String> diplomas;
+
+    /** 合作申请表 */
+    private List<String> cooperationFiles;
 }

@@ -1204,6 +1204,29 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
+        //合规承诺书
+        QueryWrapper<Image> imageQw = new QueryWrapper<>();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+
+        //学历证书
+        imageQw.clear();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+
+        //合作申请表
+        QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
+        fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
+        fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+        fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
+        userInfo.setCooperationFiles(this.commonFileService.list(fileQw).stream().map(s->s.getFileUrl()).collect(Collectors.toList()));
+
+
+
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
