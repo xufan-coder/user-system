@@ -218,6 +218,4 @@ public class  SysUserInfo extends BaseModel {
     /** 身份证照片人像面(反面) */
     private String idCardReverse;
 
-    /** 合规承诺书 */
-    private String complianceCommitment;
 }
