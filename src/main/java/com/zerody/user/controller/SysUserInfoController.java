@@ -1636,7 +1636,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     *  @date          2022/11/28 15:05
     *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
     */
-    @GetMapping("/get/all-user")
+    @GetMapping("/company/all-user")
     public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(@RequestParam("searchName") String searchName) {
         try {
             List<StaffInfoByAddressBookVo> user = sysStaffInfoService.getAllUser(searchName);
