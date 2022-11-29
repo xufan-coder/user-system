@@ -191,11 +191,11 @@ public class StaffBlacklistControlller {
     @GetMapping("/all/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAllPage(FrameworkBlacListQueryPageDto param){
         try {
-            if (!UserUtils.getUser().isBackAdmin()) {
-                if(DataUtil.isEmpty(param.getCompanyId())) {
-                    param.setCompanyId(UserUtils.getUser().getCompanyId());
-                }
-            }
+//            if (!UserUtils.getUser().isBackAdmin()) {
+//                if(DataUtil.isEmpty(param.getCompanyId())) {
+//                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+//                }
+//            }
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
