@@ -1695,6 +1695,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
             }
+
+            //手机号码判断是否是内控名单
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
+                errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
+            }
+
             //身份证号码校验
             String cardId = row[14];
             //验证身份证
@@ -1936,6 +1943,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
             }
+
+            //手机号码判断是否是内控名单
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
+                errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
+            }
+
             //身份证号码校验
             String cardId = row[13];
             //验证身份证
