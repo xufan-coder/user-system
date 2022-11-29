@@ -842,6 +842,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffInfoVo.setUserId(sysUserInfo.getId());
         this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
 
+        //添加履历
+        this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
         //合规承诺书
         saveImage(setSysUserInfoDto.getComplianceCommitments(),staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
         //学历证书
