@@ -2761,8 +2761,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<StaffInfoVo> getAllUser() {
-        List<StaffInfoVo> staffInfoVos = this.sysUserInfoMapper.getAllUser();
+    public List<StaffInfoByAddressBookVo> getAllUser() {
+        List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser();
         return staffInfoVos;
     }
 

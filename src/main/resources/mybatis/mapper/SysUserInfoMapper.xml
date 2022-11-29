@@ -573,24 +573,27 @@
         </if>
     </select>
 
-    <select id="getAllUser" resultType="com.zerody.user.api.vo.StaffInfoVo">
-	SELECT sui.id     AS user_id,
-    ssi.comp_id       AS company_id,
-    ssi.user_name     AS user_name,
-    sci.company_name  AS company_name,
-    sui.phone_number  AS phone,
-    sdi.depart_name   AS depart_name,
-    ssi.id            AS staff_id,
-    sui.status,
-    sdi.id            AS `depart_id`,
-    ssi.evaluate,
-    ssi.resume_url
-      FROM sys_user_info sui
-      JOIN sys_staff_info ssi ON sui.id = ssi.user_id
-      LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
-      LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
-      LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
-      where sui.status IN (0, 3)
-	  and sci.status=0 AND sci.is_pro_data=1
+    <select id="getAllUser" resultType="com.zerody.user.vo.StaffInfoByAddressBookVo">
+	 SELECT
+        sui.id AS id,
+        ssi.avatar AS avatar,
+        ssi.user_name AS userName,
+        sui.phone_number AS phone,
+        sjp.position_name AS positionName,
+        urs.role_name AS roleName,
+        sdi.depart_name AS departName,
+        sci.company_name AS companyName,
+        ssi.id AS staffId
+        FROM
+         sys_user_info sui
+        LEFT JOIN sys_staff_info ssi ON ssi.user_id= sui.id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        where
+        sui.status in (0,3) and sci.status=0 AND sci.is_pro_data=1
     </select>
 </mapper>

@@ -209,5 +209,5 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     *  @date          2022/11/28 17:40
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
-    List<StaffInfoVo> getAllUser();
+    List<StaffInfoByAddressBookVo> getAllUser();
 }

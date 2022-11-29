@@ -175,5 +175,5 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @date          2022/11/28 17:34
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
-    List<StaffInfoVo> getAllUser();
+    List<StaffInfoByAddressBookVo> getAllUser();
 }
