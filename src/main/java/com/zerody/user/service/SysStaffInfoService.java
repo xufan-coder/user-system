@@ -42,8 +42,13 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
         return sb.toString();
     }
 
+    /**
+     * 新增伙伴
+     *
+     * @param setSysUserInfoDto
+     * @return
+     */
     SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
-
 
 
     UserCopyResultVo doCopyStaffInner(UserCopyDto param);
