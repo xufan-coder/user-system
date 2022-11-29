@@ -58,6 +58,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
 
+    /**
+     * 获取伙伴详情
+     *
+     * @param id 员工id
+     * @return
+     */
     SysUserInfoVo selectStaffById(String id);
 
     void deleteStaffById(String staffId);
@@ -168,6 +174,31 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Date: 2022/11/11 10:13
     */
     UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取员工信息
+    * @Date: 2022/11/28 9:31
+    */
+    List<AppUserVo> querySysStaffInfoList(String departmentId);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 查询企业下的员工信息
+     * @Date: 2022/11/28 10:21
+     */
+    List<AppUserVo> queryCompStaff(String compId);
+
+    /**
+     * 根据用户id 校验是否为企业负责人
+     *
+     * @param userId
+     * @return
+     */
+    Boolean checkCompInCharge(String userId);
+
     /**
     *
     *  @description   查询所有在职伙伴

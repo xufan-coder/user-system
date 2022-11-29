@@ -6,6 +6,7 @@ import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -24,7 +25,7 @@ import java.util.Date;
 public class  SysUserInfo extends BaseModel {
 
     /** 用户名 **/
-    @NotEmpty(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空")
     @CheckCompare(value = "userName",name = "名称")
     private String userName;
 
@@ -33,7 +34,7 @@ public class  SysUserInfo extends BaseModel {
     private Integer gender;
 
     /** 手机号 **/
-    @NotEmpty(message = "手机号不能为空")
+    @NotBlank(message = "手机号不能为空")
     @Size(max = 11, min = 11, message = "手机号必须为11位")
     @CheckCompare(value = "phoneNumber",name = "手机号")
     private String phoneNumber;

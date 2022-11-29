@@ -74,7 +74,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/19 15:08
-     * @param                id
+     * @param                id 员工id
      * @return               com.zerody.user.vo.SysUserInfoVo
      */
     SysUserInfoVo selectStaffById(String id);
@@ -410,5 +410,21 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Date: 2022/11/11 10:12
      */
     UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取员工信息
+     * @Date: 2022/11/28 9:30
+     */
+    List<AppUserVo> querySysStaffInfoList(@Param("departmentId") String departmentId);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 查询企业下的员工信息
+    * @Date: 2022/11/28 10:21
+    */
+    List<AppUserVo> queryCompStaff(@Param("compId")  String compId);
 
 }

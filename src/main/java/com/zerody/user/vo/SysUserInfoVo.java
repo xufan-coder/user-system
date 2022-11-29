@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 伙伴信息类
+ *
  * @author PengQiang
  * @ClassName SysUserInfoVo
  * @DateTime 2020/12/18_15:19
@@ -18,7 +20,7 @@ import java.util.List;
 public class SysUserInfoVo {
 
     /**
-     * userID
+     * userId
      */
     private String id;
     /**
@@ -30,75 +32,118 @@ public class SysUserInfoVo {
      */
     private String companyId;
 
-    //员工id
+    /**
+     * 员工id
+     */
     private String staffId;
 
-    //用户姓名
+    /**
+     * 用户姓名
+     */
     private String userName;
 
-    //性别
+    /**
+     * 性别
+     */
     private Integer gender;
 
-    //手机号
+    /**
+     * 手机号
+     */
     private String phoneNumber;
 
+    /**
+     * 敏感电话号码
+     */
     private String sensitivePhone;
 
-    //邮箱
+    /**
+     * 邮箱
+     */
     private String email;
 
-
-    //昵称
+    /**
+     * 昵称
+     */
     private String nickname;
 
-    //头像(相对路径)
+    /**
+     * 头像(相对路径)
+     */
     private String avatar;
 
-    //出生日期
+    /**
+     * 出生日期
+     */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date birthday;
 
 
-    //证件号码
+    /**
+     * 证件号码
+     */
     private String certificateCard;
 
-    //身份证地址
+    /**
+     * 身份证地址
+     */
     private String certificateCardAddress;
 
-    //省市区
+    /**
+     * 省市区
+     */
     private String provCityDistrict;
 
-    //联系地址
+    /**
+     * 联系地址
+     */
     private String contactAddress;
 
 
-    //注册时间
+    /**
+     * 注册时间
+     */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date registerTime;
 
-    //名族
+    /**
+     * 名族
+     */
     private String nation;
 
-    //籍贯
+    /**
+     * 籍贯
+     */
     private String ancestral;
 
-    //备注
+    /**
+     * 备注
+     */
     private String description;
 
-    //状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+    /**
+     * 状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+     */
     private Integer status;
 
-
-    //最高学历
+    /**
+     * 最高学历
+     */
     private String highestEducation;
 
-    //毕业院校
+    /**
+     * 毕业院校
+     */
     private String graduatedFrom;
 
-    //所学专业
+    /**
+     * 所学专业
+     */
     private String major;
 
-    //婚姻状态
+    /**
+     * 婚姻状态
+     */
     private Integer maritalStatus;
 
     /**
@@ -111,13 +156,19 @@ public class SysUserInfoVo {
      **/
     private String scrmOpenId;
 
-    //角色名
+    /**
+     * 角色名
+     */
     private String roleName;
 
-    //部门名称
+    /**
+     * 部门名称
+     */
     private String departName;
 
-    //岗位名称
+    /**
+     * 岗位名称
+     */
     private String positionName;
 
     /**
@@ -185,18 +236,22 @@ public class SysUserInfoVo {
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
     /**
      * 员工评价
      */
     private String evaluate;
+
     /**
      * 员工简历url
      */
     private String resumeUrl;
+
     /**
      * 荣耀记录
      */
     private List<StaffHistoryVo> staffHistoryHonor;
+
     /**
      * 惩罚记录
      */
@@ -206,15 +261,26 @@ public class SysUserInfoVo {
      * 离职原因
      */
     private String leaveReason;
+
     /**
-     * 关系
+     * 企业内部关系信息
      */
     private List<SysStaffRelationVo> staffRelationDtoList;
 
+    /**
+     * 是否为企业管理员(true：是；false：否)
+     */
     private Boolean isCompanyAdmin;
 
+
+    /**
+     * 是否为部门管理员(true：是；false：否)
+     */
     private Boolean isDepartAdmin;
 
+    /**
+     * 是否被拉黑(true：是；false：否)
+     */
     private Boolean isBlock;
 
     /** 推荐人id */
@@ -236,6 +302,9 @@ public class SysUserInfoVo {
      */
     private Integer workingYears;
 
+    /**
+     * 家庭成员信息类
+     */
     private List<FamilyMember> familyMembers;
 
     /**
@@ -248,9 +317,16 @@ public class SysUserInfoVo {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }
 
+    /**
+     * im状态
+     */
     private String imState;
 
+    /**
+     * im状态名称
+     */
     private String imStateName;
+
 
     private String userAvatar;
 
