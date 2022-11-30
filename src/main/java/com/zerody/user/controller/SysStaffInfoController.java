@@ -571,4 +571,50 @@ public class SysStaffInfoController {
         }
     }
 
+
+    /**************************************************************************************************
+     **
+     * 原子服务判断是否其他部门，是否相同副总
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/same-dept")
+    public DataResult<Object> getSameDept(@RequestParam(name = "userId") String userId,@RequestParam(name = "chooseUserId") String chooseUserId){
+        try {
+            Map<String,Object> map =sysStaffInfoService.getSameDept(userId,chooseUserId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("判断部门错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根判断部门错误:{}", e, e);
+            return R.error("判断部门错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
+     * 原子服务查询伙伴的所属团队长和副总id
+     *
+     * @param userId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/leader-user-id")
+    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId){
+        try {
+            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            return R.success(leadersId);
+        } catch (DefaultException e){
+            log.error("查询伙伴的所属团队长和副总错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询伙伴的所属团队长和副总错误:{}", e, e);
+            return R.error("查询伙伴的所属团队长和副总错误");
+        }
+    }
 }

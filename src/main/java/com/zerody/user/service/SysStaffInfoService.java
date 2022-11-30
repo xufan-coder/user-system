@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author PengQiang
@@ -212,4 +213,8 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
     List<StaffInfoByAddressBookVo> getAllUser(String searchName);
+
+    Map<String, Object> getSameDept(String userId, String chooseUserId);
+
+    List<String> getLeaderUserId(String userId);
 }
