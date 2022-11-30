@@ -15,7 +15,7 @@ public class LeaveUserInfoVo {
     private String userId;
 
     /**伙伴名称*/
-    private String name;
+    private String userName;
 
     /**伙伴手机号*/
     private String mobile;
@@ -27,7 +27,7 @@ public class LeaveUserInfoVo {
     private String roleName;
 
     /**离职时间*/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date leaveTime;
 
     /**离职原因*/
