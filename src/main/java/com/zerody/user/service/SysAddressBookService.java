@@ -1,11 +1,10 @@
 package com.zerody.user.service;
 
+import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
-import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,19 +27,19 @@ public interface SysAddressBookService {
      * @description 部门
      * @author zhangpingping
      * @date 2021/9/25
-     * @param [id]
+     * @param departInfoDto
      * @return
      */
-    List<DepartInfoVo> queryDepartInfo(String id);
+    List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto);
 
     /***
      * @description 团队
      * @author zhangpingping
      * @date 2021/9/25
-     * @param [id]
+     * @param departInfoDto
      * @return
      */
-    List<DepartInfoVo> queryTeam(String id,String departmentId);
+    List<DepartInfoVo> queryTeam(DepartInfoDto departInfoDto);
 
     /***
      * @description  查询员工

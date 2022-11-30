@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.SysAddressBookService;
@@ -30,15 +31,13 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
-    public List<DepartInfoVo> queryDepartInfo(String id) {
-        List<DepartInfoVo> departInfoVos= sysMailListMapper.queryDepartInfo(id);
-        return departInfoVos;
+    public List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto) {
+        return sysMailListMapper.queryDepartInfo(departInfoDto);
     }
 
     @Override
-    public List<DepartInfoVo> queryTeam(String id,String departmentId) {
-        List<DepartInfoVo> departInfoVoList=sysMailListMapper.queryTeam(id,departmentId);
-        return departInfoVoList;
+    public List<DepartInfoVo> queryTeam(DepartInfoDto departInfoDto) {
+        return sysMailListMapper.queryTeam(departInfoDto);
     }
 
     @Override

@@ -24,6 +24,8 @@
          GROUP BY
               sci.id;
   </select>
+
+    <!--根据企业id查询部门信息-->
     <select id="queryDepartInfo" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -41,13 +43,25 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
-        <if test="id neq null and id neq ''">
-            AND sci.id=#{id}
+        <if test="param.compId neq null and param.compId neq ''">
+            AND sci.id=#{param.compId}
         </if>
+        <if test="param.userType neq null and param.userType neq ''">
+            AND ssi.user_type=#{param.userType}
+        </if>
+        <if test="param.userName neq null and param.userName neq ''">
+            AND sui.user_name=#{param.userName}
+        </if>
+        <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
+            AND sui.phone_number=#{param.phoneNumber}
+        </if>
+
         GROUP BY
         sdi.id;
 
     </select>
+
+   <!-- 查询团队-->
     <select id="queryTeam" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -65,11 +79,20 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
-        <if test="departmentId neq null and departmentId neq ''">
-            AND sdi.parent_id=#{departmentId}
+        <if test="param.departmentId neq null and param.departmentId neq ''">
+            AND sdi.parent_id=#{param.departmentId}
         </if>
-        <if test="id neq null and id neq ''">
-            AND sci.id=#{id}
+        <if test="param.compId neq null and param.compId neq ''">
+            AND sci.id=#{param.compId}
+        </if>
+        <if test="param.userType neq null and param.userType neq ''">
+            AND ssi.user_type=#{param.userType}
+        </if>
+        <if test="param.userName neq null and param.userName neq ''">
+            AND sui.user_name=#{param.userName}
+        </if>
+        <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
+            AND sui.phone_number=#{param.phoneNumber}
         </if>
 
         GROUP BY
@@ -77,6 +100,7 @@
     </select>
 
 
+    <!--查询员工-->
     <select id="getStaffByCompany" resultType="com.zerody.user.vo.StaffInfoByAddressBookVo">
         SELECT
         sui.id AS id,
@@ -103,7 +127,7 @@
                 and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
-                    and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
+                and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND sci.id

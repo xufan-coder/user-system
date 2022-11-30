@@ -202,4 +202,12 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     *  @return        java.util.List<com.zerody.user.vo.AppUserNotPushVo>
     */
     List<AppUserNotPushVo> getAnniversaryUserList(@Param("userId") String userId);
+    /**
+    *
+    *  @description   查询所有在职伙伴
+    *  @author        YeChangWei
+    *  @date          2022/11/28 17:40
+    *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+    */
+    List<StaffInfoByAddressBookVo> getAllUser(@Param("searchName")String searchName);
 }
