@@ -427,4 +427,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     */
     List<AppUserVo> queryCompStaff(@Param("compId")  String compId);
 
+    /**查询离职伙伴信息*/
+    LeaveUserInfoVo getLeaveUserInfo(@Param("userId") String userId);
 }

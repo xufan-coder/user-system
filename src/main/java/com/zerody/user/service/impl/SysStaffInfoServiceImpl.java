@@ -2839,6 +2839,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public LeaveUserInfoVo getQuitUserInfo(String userId) {
+        LeaveUserInfoVo info = this.sysStaffInfoMapper.getLeaveUserInfo(userId);
+        if(info == null) {
+            throw new DefaultException("未找到伙伴离职信息");
+        }
+        return info;
+    }
+
+    @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId, Integer isShowLeave) {
         return sysStaffInfoMapper.getStaffByCompany(companyId, isShowLeave);
     }

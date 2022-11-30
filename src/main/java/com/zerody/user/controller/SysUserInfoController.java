@@ -1650,4 +1650,24 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+     * @author kuang
+     * @description 查询离职伙伴信息
+     **/
+    @GetMapping("/leave/info")
+    public DataResult<LeaveUserInfoVo> getLeaveInfo(String userId){
+
+        try {
+            LeaveUserInfoVo infoVo = this.sysStaffInfoService.getQuitUserInfo(userId);
+            return R.success(infoVo);
+        } catch (DefaultException e) {
+            log.error("查询离职伙伴出错:{}---入参:{}", e.getMessage(),userId);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("删除员工下级线索出错:{}---入参:{}", e,userId, e);
+            return R.error("删除员工下级线索出错！请求异常");
+        }
+
+    }
+
 }
