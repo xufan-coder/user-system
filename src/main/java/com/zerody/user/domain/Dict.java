@@ -26,7 +26,10 @@ public class Dict {
     */
     private String dictType;
 
-    /** 排序号 */
+    /**
+     * 排序号
+     *
+     */
     private Integer orderNum;
 
 }

@@ -128,7 +128,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
      *
-     *  分页查询
+     * 分页获取平台管理员列表
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/1/19 15:13

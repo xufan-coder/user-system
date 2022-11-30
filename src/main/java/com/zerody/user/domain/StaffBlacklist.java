@@ -21,7 +21,7 @@ public class StaffBlacklist {
     /** 员工手机号 */
     private String mobile;
 
-    /** 状态 */
+    /** 状态  BLOCK:拉黑， RELIEVE:解除*/
     private String state;
 
     /** 创建时间 */

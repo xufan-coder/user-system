@@ -118,6 +118,7 @@
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
+
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
 			sui.id
@@ -200,7 +201,9 @@
         ssi.working_years,
         ssi.date_left,
         sui.im_state,
-        ssi.is_diamond_member
+        ssi.is_diamond_member,
+        sui.id_card_reverse,
+        sui.id_card_front
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -359,6 +362,7 @@
         </where>
     </select>
 
+    <!--分页获取平台管理员列表-->
     <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         aui.id AS id,

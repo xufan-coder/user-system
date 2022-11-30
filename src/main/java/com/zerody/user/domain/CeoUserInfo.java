@@ -136,6 +136,9 @@ public class CeoUserInfo extends BaseModel {
      */
     private String imState;
 
+    /**
+     * 企业id集合
+     */
     @TableField(exist = false)
     private List<String> companys;
 

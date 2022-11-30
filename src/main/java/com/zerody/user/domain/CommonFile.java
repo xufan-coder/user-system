@@ -5,15 +5,14 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *
- *  图片表
- *
- * @author               PengQiang
- * @description          DELL
- * @date                 2021/8/3 19:17
+ * 文件表
+ * @author  DaBai
+ * @date  2022/11/28 17:21
  */
+
 @Data
-public class Image {
+public class CommonFile {
+
     private String id;
 
     /**
@@ -21,15 +20,26 @@ public class Image {
      */
     private String connectId;
 
-    /**
-     * 图片路径
-     */
-    private String imageUrl;
 
     /**
-     * 图片类型
+     * 文件名称
      */
-    private String imageType;
+    private String fileName;
+
+    /**
+    *   文件格式
+    */
+    private String format;
+
+    /**
+     * 文件路径路径
+     */
+    private String fileUrl;
+
+    /**
+     * 类型
+     */
+    private String fileType;
 
     /**
      * 创建时间

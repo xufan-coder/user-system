@@ -12,6 +12,7 @@ import java.util.Date;
 
 /**
  *
+ * 伙伴(员工)信息表
  *
  * @author               PengQiang
  * @description          DELL
@@ -209,4 +210,12 @@ public class  SysUserInfo extends BaseModel {
      * 用户状态是否修改(1.是、0.否)
      */
     private Integer statusEdit;
+
+    /** 身份证照片国徽面(正面) */
+
+    private String idCardFront;
+
+    /** 身份证照片人像面(反面) */
+    private String idCardReverse;
+
 }
