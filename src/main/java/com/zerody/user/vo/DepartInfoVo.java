@@ -29,7 +29,7 @@ public class DepartInfoVo {
      */
     private String companyName;
     /**
-     * 用户ID
+     * 用户Id
      */
     private String userId;
     /**

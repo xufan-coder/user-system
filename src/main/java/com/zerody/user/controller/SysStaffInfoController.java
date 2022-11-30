@@ -146,6 +146,8 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllSuperiorStaff(sysStaffInfoPageDto));
     }
+
+
     /**
     *   添加员工
     */
@@ -162,6 +164,7 @@ public class SysStaffInfoController {
             return R.error("添加合作伙伴失败,请求异常");
         }
     }
+
 
     //修改员工状态
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
@@ -196,6 +199,50 @@ public class SysStaffInfoController {
         }
     }
 
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: app添加伙伴
+     * @Date: 2022/11/28 23:58
+     */
+    @PostMapping("/app-add")
+    public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        try {
+            sysStaffInfoService.addStaff(setSysUserInfoDto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("app添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("app添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error("添加合作伙伴失败,请求异常");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: app编辑伙伴
+    * @Date: 2022/11/28 23:59
+    */
+    @PutMapping("/app-update")
+    public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        try {
+            UserVo user = UserUtils.getUser();
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error("修改员工信息失败,请求异常");
+        }
+    }
+
+
     /**
     *    根据员工id查询员工信息
     */
@@ -204,13 +251,60 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.selectStaffById(staffId));
         } catch (DefaultException e){
-            log.error("根据员工id查询员工信息:{}", e, e);
+            log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
         }  catch (Exception e) {
             log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
     }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取app伙伴详情
+    * @Date: 2022/11/26 11:08
+    */
+    @GetMapping("/get-app/{id}")
+    public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
+        try {
+            return R.success(sysStaffInfoService.selectStaffById(id));
+        } catch (DefaultException e){
+            log.error("获取app伙伴详情错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取app伙伴详情错误:{}", e, e);
+            return R.error("获取app伙伴详情,请求异常");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取企业下的员工
+    * @Date: 2022/11/28 9:40
+    */
+    @GetMapping("/get-app-staff")
+    public DataResult<List<AppUserVo>> querySysStaffInfoList(String compId) {
+        try {
+            UserVo user = UserUtils.getUser();
+            if (DataUtil.isEmpty(compId)) {
+                compId = user.getCompanyId();
+            }
+            //获取该企业下的员工
+            return R.success(this.sysStaffInfoService.queryCompStaff(compId));
+        } catch (DefaultException e) {
+            log.error("获取下属员工出错:{}", e.getMessage());
+            return R.error( e.getMessage());
+        } catch (Exception e) {
+            log.error("获取下属员工出错:{}", e, e);
+            return R.error("获取下属员工出错");
+        }
+    }
+
+
 
     /**
      *    根据用户id查询员工信息
@@ -455,10 +549,10 @@ public class SysStaffInfoController {
     }
 
 
-    
+
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 伙伴数据统计
     * @Date: 2022/11/11 9:51
     */

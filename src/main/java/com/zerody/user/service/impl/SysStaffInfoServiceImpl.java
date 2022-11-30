@@ -1085,11 +1085,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StringUtils.isEmpty(id)) {
             throw new DefaultException("id不能为空");
         }
+        //查看员工详情
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffById(id);
         if (DataUtil.isEmpty(userInfo)) {
             throw new DefaultException("找不到用户");
         }
         if (StringUtils.isNotEmpty(userInfo.getImState())) {
+            //获取字典信息
             DictQuseryVo imState = this.dictService.getListById(userInfo.getImState());
             if (DataUtil.isNotEmpty(imState)) {
                 userInfo.setImStateName(imState.getDictName());
@@ -1130,6 +1132,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
+
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
             return userInfo;
@@ -1154,10 +1157,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
         }
 
+        //获取部门信息
         SysDepartmentInfo departInfo = this.sysDepartmentInfoMapper.selectById(userInfo.getDepartId());
         if (StringUtils.isEmpty(departInfo.getAdminAccount())) {
             return userInfo;
         }
+        //根据部门管理员id获取员工信息
         SysStaffInfo staffInfo = this.sysStaffInfoMapper.selectById(departInfo.getAdminAccount());
         userInfo.setSuperiorName(staffInfo.getUserName());
 //        userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
@@ -2761,9 +2766,31 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<StaffInfoByAddressBookVo> getAllUser() {
-        List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser();
+    public List<StaffInfoByAddressBookVo> getAllUser(String searchName) {
+        List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser(searchName);
         return staffInfoVos;
+    }
+
+    @Override
+    public List<AppUserVo> querySysStaffInfoList(String departmentId) {
+        return this.sysStaffInfoMapper.querySysStaffInfoList(departmentId);
+    }
+
+    @Override
+    public List<AppUserVo> queryCompStaff(String compId) {
+        return this.sysStaffInfoMapper.queryCompStaff(compId);
+    }
+
+    @Override
+    public Boolean checkCompInCharge(String userId) {
+        LambdaQueryWrapper<SysStaffInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysStaffInfo::getUserId ,userId);
+        SysStaffInfo sysStaffInfo = this.baseMapper.selectOne(wrapper);
+        if (DataUtil.isNotEmpty(sysStaffInfo) && sysStaffInfo.getUserType().equals(0)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

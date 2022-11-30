@@ -1,5 +1,6 @@
 package com.zerody.user.mapper;
 
+import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
@@ -32,7 +33,7 @@ public interface SysAddressBookMapper {
      * @param []
      * @return
      */
-    List<DepartInfoVo> queryDepartInfo(@Param("id") String id);
+    List<DepartInfoVo> queryDepartInfo(@Param("param") DepartInfoDto departInfoDto);
 
     /**
      * @description   团队
@@ -41,7 +42,8 @@ public interface SysAddressBookMapper {
      * @param
      * @return
      */
-    List<DepartInfoVo> queryTeam(@Param("id") String id,@Param("departmentId")String departmentId);
+    List<DepartInfoVo> queryTeam(@Param("param") DepartInfoDto departInfoDto);
+
     /***
      * @description  查询员工
      * @author zhangpingping

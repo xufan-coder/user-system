@@ -598,7 +598,14 @@
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
-        where
-        sui.status in (0,3) and sci.status=0 AND sci.is_pro_data=1
+        <where>
+            sui.status in (0,3) and sci.status=0 AND sci.is_pro_data=1
+            <if test="searchName neq null and searchName neq ''">
+                and  (ssi.user_name like concat('%',#{searchName},'%')
+                or sui.phone_number like concat('%',#{searchName},'%'))
+            </if>
+        </where>
+
+
     </select>
 </mapper>

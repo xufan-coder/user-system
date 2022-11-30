@@ -150,6 +150,7 @@
         </where>
     </select>
 
+    <!--查看员工详情-->
     <select id="selectStaffById" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
@@ -1129,6 +1130,35 @@
                 </foreach>
             </if>
         </where>
+    </select>
+
+
+    <!--获取员工信息-->
+    <select id="querySysStaffInfoList" resultType="com.zerody.user.vo.AppUserVo" parameterType="java.lang.String">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			left join union_staff_depart usd on usd.staff_id = ssi.id
+			left join sys_department_info sdi on sdi.id = usd.department_id
+			join sys_company_info sci on sci.id = sdi.comp_id
+		    <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.departmentId neq null and param.departmentId neq ''">
+                    sdi.id = #{param.departmentId}
+                </if>
+            </where>
+    </select>
+
+    <!--查询企业下的员工信息-->
+    <select id="queryCompStaff" resultType="com.zerody.user.vo.AppUserVo">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			join sys_company_info sci on sci.id = ssi.comp_id
+            <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.compId neq null and param.compId neq ''">
+                    sci.id = #{param.compId}
+                </if>
+            </where>
     </select>
 
 

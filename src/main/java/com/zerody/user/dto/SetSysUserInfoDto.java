@@ -5,6 +5,7 @@ import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /**
      * 企业ID
      */
-    @NotEmpty(message = "请选择企业！")
+    @NotBlank(message = "请选择企业！")
     private String companyId;
 
     /**
@@ -46,7 +47,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     private String departId;
 
     /**
-     * 员工状态
+     * 员工状态(状态  0合约中、 1已解约、 3合作中')
      */
     private Integer status;
 
@@ -69,6 +70,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 离职原因
      */
     private String leaveReason;
+
     /**
      * 入职时间
      */
@@ -80,20 +82,24 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private Integer workingYears;
 
-
     /**
      * 荣耀
      */
     private List<StaffHistoryDto> staffHistoryHonor;
+
     /**
-         * 惩罚
+     * 惩罚
      */
     private List<StaffHistoryDto> staffHistoryPunishment;
+
     /**
      * 关系
      */
     private List<SysStaffRelationDto> staffRelationDtoList;
 
+    /**
+     * 家庭成员
+     */
     private List<FamilyMember> familyMembers;
 
     /**

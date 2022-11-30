@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.service.SysCompanyInfoService;
@@ -21,7 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhangpingping
@@ -130,13 +133,16 @@ public class SysAddressBookController {
             if (StringUtils.isEmpty(id)) {
                 id = UserUtils.getUser().getCompanyId();
             }
-            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryDepartInfo(id);
+            DepartInfoDto departInfoDto = new DepartInfoDto();
+            departInfoDto.setCompId(id);
+            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
             return R.success(departInfoVoList);
         } catch (Exception e) {
             log.error("获取部门错误:{}", JSON.toJSONString(id), e);
             return R.error("获取部门失败,请求异常");
         }
     }
+
 
     /***
      * @description 团队
@@ -151,13 +157,78 @@ public class SysAddressBookController {
             if (StringUtils.isEmpty(id)) {
                 id = UserUtils.getUser().getCompanyId();
             }
-            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(id, departmentId);
+            DepartInfoDto departInfoDto = new DepartInfoDto();
+            departInfoDto.setCompId(id);
+            departInfoDto.setDepartmentId(departmentId);
+            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(departInfoDto);
             return R.success(departInfoVoList);
+        } catch (DefaultException e) {
+            log.error("获取团队错误:{}", JSON.toJSONString(id),JSON.toJSONString(departmentId), e.getMessage());
+            return R.error("获取团队失败,请求异常");
         } catch (Exception e) {
-            log.error("获取团队错误:{}", JSON.toJSONString(id),JSON.toJSONString(departmentId), e);
+            log.error("获取团队错误:{}", e, e);
             return R.error("获取团队失败,请求异常");
         }
     }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取企业下的部门
+     * @Date: 2022/11/28 16:57
+     */
+    @GetMapping(value = "/get-depart-info")
+    public DataResult<Map<String, Object>> getDepartInfo(DepartInfoDto departInfoDto) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            String compId = departInfoDto.getCompId();
+            if (StringUtils.isEmpty(compId)) {
+                compId = UserUtils.getUser().getCompanyId();
+            }
+            departInfoDto.setCompId(compId);
+            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
+            map.put("departmentList", departInfoVoList);
+            map.put("departmentCount", departInfoVoList.size());
+            return R.success(map);
+        } catch (DefaultException e) {
+            log.error("获取企业下的部门 部门数量错误:{}", e.getMessage());
+            return R.error("获取企业下的部门 部门数量失败,请求异常");
+        } catch (Exception e) {
+            log.error("获取企业下的部门 部门数量错误:{}", e, e);
+            return R.error("获取企业下的部门 部门数量,请求异常");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取企业团队信息
+    * @Date: 2022/11/28 17:24
+    */
+    @GetMapping(value = "/get-team")
+    public DataResult<Map<String, Object>> getTeam(DepartInfoDto departInfoDto) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            String compId = departInfoDto.getCompId();
+            if (StringUtils.isEmpty(compId)) {
+                compId = UserUtils.getUser().getCompanyId();
+            }
+            departInfoDto.setCompId(compId);
+            List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryTeam(departInfoDto);
+            map.put("departmentList", departInfoVoList);
+            map.put("departmentCount", departInfoVoList.size());
+            return R.success(map);
+        } catch (DefaultException e) {
+            log.error("获取企业团队信息错误:{}", e.getMessage());
+            return R.error("获取企业团队信息,请求异常");
+        } catch (Exception e) {
+            log.error("获取企业团队信息错误:{}", e, e);
+            return R.error("获取企业团队信息,请求异常");
+        }
+    }
+
 
     /**
      * 按企业获取员工
@@ -182,8 +253,11 @@ public class SysAddressBookController {
             }
 
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
+        } catch (DefaultException e) {
+            log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());
+            return R.error("获取员工失败,请求异常");
         } catch (Exception e) {
-            log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e);
+            log.error("获取员工错误:{}", e, e);
             return R.error("获取员工失败,请求异常");
         }
     }
