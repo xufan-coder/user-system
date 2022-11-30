@@ -36,6 +36,10 @@ public class DepartInfoVo {
      * 负责人名称
      */
     private String userName;
+    /**
+     * 员工类型(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
+     */
+    private String userType;
 
 
 }
