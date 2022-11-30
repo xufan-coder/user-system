@@ -429,4 +429,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**查询离职伙伴信息*/
     LeaveUserInfoVo getLeaveUserInfo(@Param("userId") String userId);
+
+
+    LeaveUserInfoVo getLeaveUserByPhone(@Param("phone") String phone);
 }

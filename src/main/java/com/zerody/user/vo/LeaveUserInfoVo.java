@@ -35,4 +35,8 @@ public class LeaveUserInfoVo {
 
     /**部门名称*/
     private String departName;
+
+    private String companyId;
+
+    private String companyName;
 }

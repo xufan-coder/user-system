@@ -228,6 +228,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (flag) {
             throw new DefaultException("该手机号已存在！");
         }
+
+
+        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
+        if(leave != null){
+            throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
+                    "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+        }
+
         StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfo)) {
             String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());

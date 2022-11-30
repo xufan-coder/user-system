@@ -210,4 +210,5 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
     List<StaffInfoByAddressBookVo> getAllUser(@Param("searchName")String searchName);
+
 }
