@@ -417,15 +417,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return staff;
     }
 
-    public void saveFile(List<String> cooperationFiles,String userId,String type){
+    public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
-        for (String s : cooperationFiles) {
+        for (CommonFile s : cooperationFiles) {
             file = new CommonFile();
             file.setConnectId(userId);
             file.setId(UUIDutils.getUUID32());
             file.setFileType(type);
-            file.setFileUrl(s);
+            file.setFileUrl(s.getFileUrl());
+            file.setFileName(s.getFileName());
+            file.setFormat(s.getFormat());
             file.setCreateTime(new Date());
             files.add(file);
         }
@@ -1225,7 +1227,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
         fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
         fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
-        userInfo.setCooperationFiles(this.commonFileService.list(fileQw).stream().map(s->s.getFileUrl()).collect(Collectors.toList()));
+        userInfo.setCooperationFiles(this.commonFileService.list(fileQw));
 
 
 

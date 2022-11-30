@@ -20,8 +20,19 @@ public class CommonFile {
      */
     private String connectId;
 
+
     /**
-     * 图片路径
+     * 文件名称
+     */
+    private String fileName;
+
+    /**
+    *   文件格式
+    */
+    private String format;
+
+    /**
+     * 文件路径路径
      */
     private String fileUrl;
 

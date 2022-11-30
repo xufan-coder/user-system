@@ -1,6 +1,7 @@
 package com.zerody.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UserResume;
@@ -149,5 +150,5 @@ public class SetSysUserInfoDto extends SysUserInfo {
     private List<String> diplomas;
 
     /** 合作申请表 */
-    private List<String> cooperationFiles;
+    private List<CommonFile> cooperationFiles;
 }
