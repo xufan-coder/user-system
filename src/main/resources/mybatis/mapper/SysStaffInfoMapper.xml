@@ -1140,4 +1140,15 @@
 
         where id = #{staffId}
     </update>
+
+    <select id="getLeaveUserInfo" resultType="com.zerody.user.vo.LeaveUserInfoVo">
+        select si.user_id,ui.user_name, ui.phone_number as 'mobile',ui.certificate_card as 'id_card',
+        urs.role_name, di.depart_name, si.date_left as 'leave_time',si.leave_reason
+        from sys_staff_info si
+        join sys_user_info ui on si.user_id = ui.id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = si.id
+        left join union_staff_depart sd on sd.staff_id = si.id
+        left join sys_department_info di on sd.department_id = di.id
+        where si.`status` = 1 and si.user_id = #{userId}
+    </select>
 </mapper>

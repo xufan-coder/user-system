@@ -411,4 +411,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      */
     UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
 
+    /**查询离职伙伴信息*/
+    LeaveUserInfoVo getLeaveUserInfo(@Param("userId") String userId);
 }

@@ -140,7 +140,7 @@
         <where>
             sdi.status = 0 and sdi.comp_id = #{user.companyId}
             <if test="user.deptId neq null and user.deptId neq ''">
-                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'\_%')
+                and (id = #{user.deptId} or sdi.id like concat('',#{user.deptId},'\_%'))
             </if>
         </where>
     </select>

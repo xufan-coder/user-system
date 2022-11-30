@@ -176,4 +176,8 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
     List<StaffInfoByAddressBookVo> getAllUser();
+
+    /**获取离职伙伴信息*/
+    LeaveUserInfoVo getQuitUserInfo(String userId);
+
 }
