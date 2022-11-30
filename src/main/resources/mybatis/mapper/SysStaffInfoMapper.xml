@@ -46,6 +46,7 @@
       AND comp_id = #{compId}
   </select>
 
+    <!--分页查询员工-->
     <select id="getPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         DISTINCT sui.id AS id,
