@@ -2772,6 +2772,51 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
+    public Map<String, Object> getSameDept(String userId, String chooseUserId) {
+        Map<String, Object> map =new HashMap<>();
+        StaffInfoVo staffInfo = this.getStaffInfo(userId);
+        StaffInfoVo staffInfo1 = this.getStaffInfo(chooseUserId);
+        if(DataUtil.isNotEmpty(staffInfo)&&DataUtil.isNotEmpty(staffInfo1)){
+            if(!staffInfo.getDepartId().equals(staffInfo1.getDepartId())){
+                map.put("otherDept",YesNo.YES);
+            }else {
+                if(DataUtil.isNotEmpty(staffInfo1.getDepartId())){
+                    String[] s1 = staffInfo1.getDepartId().split("_");
+                    String[] s = staffInfo.getDepartId().split("_");
+                    if(s1[0].equals(s[0])){
+                        map.put("sameDept",YesNo.YES);
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public List<String> getLeaderUserId(String userId) {
+        List<String> result =new ArrayList<>();
+        StaffInfoVo staffInfo = this.getStaffInfo(userId);
+        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
+        //团队长
+        SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
+
+        SysStaffInfo byId = this.getById(leader.getAdminAccount());
+        if(DataUtil.isNotEmpty(byId)){
+            result.add(byId.getUserId());
+        }
+
+        //副总
+        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+        SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
+        SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
+        if(DataUtil.isNotEmpty(byId1)){
+            result.add(byId1.getUserId());
+        }
+        return result;
+    }
+
+    @Override
     public List<AppUserVo> querySysStaffInfoList(String departmentId) {
         return this.sysStaffInfoMapper.querySysStaffInfoList(departmentId);
     }
