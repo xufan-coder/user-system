@@ -34,6 +34,7 @@
         sdi.id AS departmentId,
         ssis.user_name,
         sci.id AS copmId,
+        ssi.user_type,
         sui.id AS userId
         FROM
         sys_company_info AS sci
@@ -70,6 +71,7 @@
         sdi.id AS departmentId,
         ssis.user_name,
         sci.id AS copmId,
+        ssi.user_type,
         sui.id AS userId
         FROM
         sys_company_info AS sci
@@ -105,6 +107,7 @@
         SELECT
         sui.id AS id,
         ssi.avatar AS avatar,
+        ssi.user_type,
         ssi.user_name AS userName,
         sui.phone_number AS phone,
         sjp.position_name AS positionName,

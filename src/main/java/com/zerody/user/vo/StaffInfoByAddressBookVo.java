@@ -6,10 +6,12 @@ import lombok.Data;
  * @author zhangpingping
  * @date 2021年09月25日 12:00
  */
- @Data
+@Data
 public class StaffInfoByAddressBookVo {
 
-    /** user id */
+    /**
+     * user id
+     */
     private String id;
 
     /**
@@ -17,10 +19,14 @@ public class StaffInfoByAddressBookVo {
      */
     private String staffId;
 
-    /** 用户姓名 */
+    /**
+     * 用户姓名
+     */
     private String userName;
 
-    /** 头像 */
+    /**
+     * 头像
+     */
     private String avatar;
 
     /**
@@ -38,7 +44,6 @@ public class StaffInfoByAddressBookVo {
      */
     private String companyName;
 
-
     /**
      * 岗位名称
      */
@@ -53,4 +58,10 @@ public class StaffInfoByAddressBookVo {
      * 角色
      */
     private String roleName;
+
+    /**
+     * 员工类型(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
+     */
+    private String userType;
+
 }
