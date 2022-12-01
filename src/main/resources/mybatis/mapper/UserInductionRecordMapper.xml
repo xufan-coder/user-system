@@ -5,7 +5,9 @@
     <select id="getInductionPage" resultType="com.zerody.user.vo.UserInductionRecordVo">
         select ui.id,sui.user_name as 'approveName',
         ui.approve_state as 'approveState',
-        ui.sign_time as 'approveTime'
+        ui.sign_time as 'approveTime',
+        ui.process_id,
+        ui.process_key
 		from user_induction_record ui
 		join sys_user_info sui on ui.leave_user_id = sui.id
 		<where>
