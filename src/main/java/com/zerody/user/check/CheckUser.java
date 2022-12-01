@@ -33,9 +33,6 @@ public class CheckUser {
         if (!sysUserInfo.getPhoneNumber().matches("\\d{11}")) {
             throw new DefaultException("手机号码长度不正确");
         }
-        if (StringUtils.isBlank(sysUserInfo.getAvatar())) {
-            throw new DefaultException("个人照片不能为空");
-        }
         if (StringUtils.isNotEmpty(sysUserInfo.getCertificateCard())) {
             if (!IdCardUtil.validate18Idcard(sysUserInfo.getCertificateCard())) {
                 throw new DefaultException("身份证不合法");
@@ -68,14 +65,17 @@ public class CheckUser {
                 }
             }
         }
-
-        if (StringUtils.isBlank(sysUserInfo.getIdCardFront())) {
-            throw new DefaultException("身份证照片国徽面(正面)不能为空");
+        if(sysUserInfo.getStatus()!=1){
+            if (StringUtils.isBlank(sysUserInfo.getAvatar())) {
+                throw new DefaultException("个人照片不能为空");
+            }
+            if (StringUtils.isBlank(sysUserInfo.getIdCardFront())) {
+                throw new DefaultException("身份证照片国徽面(正面)不能为空");
+            }
+            if (StringUtils.isBlank(sysUserInfo.getIdCardReverse())) {
+                throw new DefaultException("身份证照片人像面(反面)不能为空");
+            }
         }
-        if (StringUtils.isBlank(sysUserInfo.getIdCardReverse())) {
-            throw new DefaultException("身份证照片人像面(反面)不能为空");
-        }
-
     }
 
     public static void checkParamList(SetSysUserInfoDto setSysUserInfoDto) {
