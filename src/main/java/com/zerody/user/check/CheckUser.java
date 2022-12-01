@@ -84,9 +84,9 @@ public class CheckUser {
         if (DataUtil.isEmpty(complianceCommitments)) {
             throw new DefaultException("请上传合规承诺书！");
         }
-        if (DataUtil.isEmpty(diplomas)) {
-            throw new DefaultException("请上传学历证书！");
-        }
+//        if (DataUtil.isEmpty(diplomas)) {
+//            throw new DefaultException("请上传学历证书！");
+//        }
 
         List<UserResume> userResumes = setSysUserInfoDto.getUserResumes();
         if (DataUtil.isEmpty(userResumes)) {
