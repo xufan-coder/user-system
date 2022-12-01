@@ -157,4 +157,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
 
     /** 合作申请表 */
     private List<CommonFile> cooperationFiles;
+
+    /**终端*/
+    private String terminals;
 }

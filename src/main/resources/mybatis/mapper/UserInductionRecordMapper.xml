@@ -15,8 +15,8 @@
             <if test="queryDto.userId neq null and queryDto.userId neq ''">
                 and ui.create_by = #{queryDto.userId}
             </if>
-            <if test="queryDto.startTime neq null and queryDto.startTime neq ''">
-                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;= #{queryDto.startTime}
+            <if test="queryDto.beginTime neq null and queryDto.beginTime neq ''">
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;= #{queryDto.beginTime}
             </if>
             <if test="queryDto.endTime neq null and queryDto.endTime neq ''">
                 and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt;= #{queryDto.endTime}
