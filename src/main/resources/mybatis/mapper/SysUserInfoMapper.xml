@@ -305,7 +305,7 @@
                 sui.status IN (0, 1, 3)
             </if>-->
             <choose>
-                <when test="param.isQuit neq null and param.isQuit eq = 1"> sui.status = 1</when>
+                <when test="param.isQuit neq null and param.isQuit eq 1"> sui.status = 1</when>
                 <when test="param.isShowLeave eq null or param.isShowLeave eq 0">  sui.status IN (0, 3)</when>
                 <when test="param.isShowLeave neq null and param.isShowLeave eq 1">  sui.status IN (0, 1, 3)</when>
             </choose>
