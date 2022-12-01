@@ -82,9 +82,14 @@ public class SysUserInfoVo {
 
 
     /**
-     * 证件号码
+     * 脱敏身份证 证件号码
      */
     private String certificateCard;
+
+    /**
+     * 身份证 证件号码
+     */
+    private String identityCardNum;
 
     /**
      * 身份证地址
