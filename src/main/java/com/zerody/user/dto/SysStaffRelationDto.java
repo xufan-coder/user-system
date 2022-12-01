@@ -11,6 +11,9 @@ import java.util.List;
 @Data
 public class SysStaffRelationDto {
 
+    /**
+     * 成员id
+     */
     private String id;
     /**
      * 员工ID

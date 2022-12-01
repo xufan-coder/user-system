@@ -1629,5 +1629,45 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("获取所有管理层账户出错!");
         }
     }
+    /**
+    *
+    *  @description   查询所有在职伙伴（通讯录：小微集团）
+    *  @author        YeChangWei
+    *  @date          2022/11/28 15:05
+    *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
+    */
+    @GetMapping("/company/all-user")
+    public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(@RequestParam("searchName") String searchName) {
+        try {
+            List<StaffInfoByAddressBookVo> user = sysStaffInfoService.getAllUser(searchName);
+            return R.success(user);
+        } catch (DefaultException e){
+            log.error("查询所有在职伙伴错误:{}",e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询所有在职伙伴错误:{} ", e, e);
+            return R.error("查询所有在职伙伴错误:{} ");
+        }
+    }
+
+    /**
+     * @author kuang
+     * @description 查询离职伙伴信息
+     **/
+    @GetMapping("/leave/info")
+    public DataResult<LeaveUserInfoVo> getLeaveInfo(String userId){
+
+        try {
+            LeaveUserInfoVo infoVo = this.sysStaffInfoService.getQuitUserInfo(userId);
+            return R.success(infoVo);
+        } catch (DefaultException e) {
+            log.error("查询离职伙伴出错:{}---入参:{}", e.getMessage(),userId);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("删除员工下级线索出错:{}---入参:{}", e,userId, e);
+            return R.error("删除员工下级线索出错！请求异常");
+        }
+
+    }
 
 }
