@@ -22,10 +22,7 @@ import com.zerody.common.enums.customer.MaritalStatusEnum;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
-import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.PhoneHomeLocationUtils;
-import com.zerody.common.util.UUIDutils;
-import com.zerody.common.util.UserUtils;
+import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
@@ -2833,6 +2830,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(byId1)){
             result.add(byId1.getUserId());
         }
+        log.info("结果：{}",JsonUtils.toString(result));
         return result;
     }
 
