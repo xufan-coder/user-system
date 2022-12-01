@@ -238,9 +238,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         log.info("添加伙伴入参---{}", JSON.toJSONString(sysUserInfo));
+
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
-        CheckUser.checkParamList(setSysUserInfoDto);
+        //离职不校验参数
+        if(setSysUserInfoDto.getStatus()!=1){
+            CheckUser.checkParamList(setSysUserInfoDto);
+        }
         //查看手机号或登录名是否被占用
         Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
         if (flag) {
@@ -431,13 +435,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             file.setCreateTime(new Date());
             files.add(file);
         }
-        if(DataUtil.isNotEmpty(files)){
             QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
             remQ.lambda().eq(CommonFile::getConnectId, userId);
             remQ.lambda().eq(CommonFile::getFileType, type);
             this.commonFileService.addFiles(remQ, files);
-        }
-
     }
 
     public void saveImage(List<String> images,String userId,String type){
@@ -452,13 +453,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             image.setCreateTime(new Date());
             imageAdds.add(image);
         }
-        if(DataUtil.isNotEmpty(imageAdds)){
             QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
             imageRemoveQw.lambda().eq(Image::getConnectId, userId);
             imageRemoveQw.lambda().eq(Image::getImageType, type);
             this.imageService.addImages(imageRemoveQw, imageAdds);
-        }
-
     }
 
     @Override
@@ -734,8 +732,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
-        CheckUser.checkParam(sysUserInfo,setSysUserInfoDto.getFamilyMembers());
-        CheckUser.checkParamList(setSysUserInfoDto);
+        CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
+        //离职不校验参数
+        if(setSysUserInfoDto.getStatus()!=1){
+            CheckUser.checkParamList(setSysUserInfoDto);
+        }
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
