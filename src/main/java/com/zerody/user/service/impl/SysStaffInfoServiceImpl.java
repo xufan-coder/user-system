@@ -732,8 +732,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
         sysUserInfo.setId(setSysUserInfoDto.getId());
         //参数校验
-        CheckUser.checkParam(sysUserInfo,setSysUserInfoDto.getFamilyMembers());
-        CheckUser.checkParamList(setSysUserInfoDto);
+        CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
+        //离职不校验参数
+        if(setSysUserInfoDto.getStatus()!=1){
+            CheckUser.checkParamList(setSysUserInfoDto);
+        }
         //查看手机号或登录名是否被占用
         List<SysUserInfo> users = sysUserInfoMapper.selectUserByPhoneOrLogName(sysUserInfo);
         if (users != null && users.size() > 0) {
