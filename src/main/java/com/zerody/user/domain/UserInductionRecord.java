@@ -40,19 +40,25 @@ public class UserInductionRecord {
 
     private String roleId;
 
+    /**离职时间*/
     private Date leaveTime;
 
+    /**离职原因*/
     private String leaveReason;
 
     /**签约时间*/
     private Date signTime;
 
+    /**签约部门*/
     private String signDept;
 
+    /**签约部门id*/
     private String signDeptId;
 
+    /**签约角色*/
     private String signRole;
 
+    /**签约角色*/
     private String signRoleId;
 
     /**签约原因*/
@@ -61,14 +67,8 @@ public class UserInductionRecord {
     /**企业id*/
     private String companyId;
 
-    /**部门id*/
-    private String departId;
-
     /**申请状态*/
     private String approveState;
-
-    /**入职伙伴id*/
-    private String userId;
 
     /**流程id*/
     private String processId;
