@@ -15,4 +15,6 @@ public interface UserInductionRecordService extends IService<UserInductionRecord
     Page<UserInductionRecordVo> getInductionPage(UserInductionPage queryDto);
 
     UserInductionRecordInfoVo getInductionInfo(String id);
+
+    UserInductionRecord addOrUpdateRecord(UserInductionRecord param);
 }
