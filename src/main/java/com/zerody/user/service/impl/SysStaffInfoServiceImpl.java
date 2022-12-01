@@ -37,6 +37,7 @@ import com.zerody.customer.api.dto.SetUserDepartDto;
 import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.log.api.constant.DataCodeType;
+import com.zerody.log.api.constant.SystemCodeType;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -261,11 +262,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
 
-        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
-        if(leave != null){
-            throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
-                    "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+        if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
+                SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
+            if(leave != null){
+                throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
+                        "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+            }
         }
+
 
         StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfo)) {
@@ -762,6 +767,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (!oldUserInfo.getStatus().equals(setSysUserInfoDto.getStatus())) {
             sysUserInfo.setStatusEdit(YesNo.YES);
         }
+        //修改离职伙伴为在职时判断
+        if(oldUserInfo.getStatus() == 1 && !oldUserInfo.getStatus().equals(setSysUserInfoDto.getStatus())) {
+            // 并且是pc端操作
+            if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
+                    SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
+                if(leave != null){
+                    throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
+                            "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+                }
+            }
+        }
+
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard());
         if (DataUtil.isNotEmpty(staffInfoIdCard) && !staffInfoIdCard.getUserId().equals(setSysUserInfoDto.getId())) {
             String hintContent = "该身份证号码已在“".concat(staffInfoIdCard.getCompanyName());

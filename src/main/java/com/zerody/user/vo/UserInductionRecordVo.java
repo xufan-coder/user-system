@@ -24,4 +24,8 @@ public class UserInductionRecordVo {
     /**申请状态*/
     private String approveState;
 
+    private String processKey;
+
+    private String processId;
+
 }
