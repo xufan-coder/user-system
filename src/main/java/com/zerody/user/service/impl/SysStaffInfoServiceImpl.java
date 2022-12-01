@@ -2406,6 +2406,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
         if (DataUtil.isNotEmpty(ceoInfo)) {
             ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
+            ceoInfo.setIdentityCardNum(ceoInfo.getCertificateCard());
             ceoInfo.setPhoneNumber(CommonUtils.mobileEncrypt(ceoInfo.getPhoneNumber()));
             ceoInfo.setCertificateCard(CommonUtils.idEncrypt( ceoInfo.getCertificateCard()));
             if (StringUtils.isNotEmpty(ceoInfo.getImState())) {
