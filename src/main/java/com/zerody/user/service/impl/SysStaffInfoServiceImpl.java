@@ -431,13 +431,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             file.setCreateTime(new Date());
             files.add(file);
         }
-        if(DataUtil.isNotEmpty(files)){
             QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
             remQ.lambda().eq(CommonFile::getConnectId, userId);
             remQ.lambda().eq(CommonFile::getFileType, type);
             this.commonFileService.addFiles(remQ, files);
-        }
-
     }
 
     public void saveImage(List<String> images,String userId,String type){
@@ -452,13 +449,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             image.setCreateTime(new Date());
             imageAdds.add(image);
         }
-        if(DataUtil.isNotEmpty(imageAdds)){
             QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
             imageRemoveQw.lambda().eq(Image::getConnectId, userId);
             imageRemoveQw.lambda().eq(Image::getImageType, type);
             this.imageService.addImages(imageRemoveQw, imageAdds);
-        }
-
     }
 
     @Override
