@@ -1598,6 +1598,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
             }
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(phone);
+            if(leave != null){
+                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
+                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
+                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+            }
             //身份证号码校验
             String cardId = row[14];
             //验证身份证
@@ -1838,6 +1844,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //手机号码判断是否已注册账户
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
+            }
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(phone);
+            if(leave != null){
+                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
+                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
+                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
             }
             //身份证号码校验
             String cardId = row[13];

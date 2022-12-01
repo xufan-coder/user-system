@@ -1,6 +1,7 @@
 package com.zerody.user.listener;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.flow.api.event.FlowEvent;
 import com.zerody.flow.api.event.FlowEventData;
@@ -8,9 +9,16 @@ import com.zerody.flow.api.event.FlowEventType;
 import com.zerody.flow.api.event.TaskData;
 import com.zerody.flow.api.state.FlowState;
 import com.zerody.flow.client.event.FlowEventHandler;
+import com.zerody.user.domain.UserInductionRecord;
+import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.service.UserInductionRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * 流程结束监听器
@@ -21,6 +29,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class InductionProcessEvent implements FlowEventHandler {
     private static final Logger log = LoggerFactory.getLogger(InductionProcessEvent.class);
+
+    @Autowired
+    private UserInductionRecordService inductionRecordService;
 
     @Override
     public void handle(FlowEventData eventData) {
@@ -34,16 +45,29 @@ public class InductionProcessEvent implements FlowEventHandler {
         //监听流程变量
         FlowState flowState = eventData.getFlowData().getFlowState();
         if(DataUtil.isNotEmpty(flowState)) {
-            if (flowState.getState() == FlowState.repealed.getState()) {
-               // 撤销业务代码处理
 
-            }else  if (flowState.getState() == FlowState.approved.getState()) {
+            QueryWrapper<UserInductionRecord> qw =new QueryWrapper<>();
+            qw.lambda().eq(UserInductionRecord::getProcessId,processInstId);
+            UserInductionRecord induction = inductionRecordService.getOne(qw);
+            if(DataUtil.isNotEmpty(induction)) {
+
+                induction.setUpdateTime(new Date());
+
+                if (flowState.getState() == FlowState.repealed.getState()) {
+                    // 撤销业务代码处理
+                    induction.setApproveState(ApproveStatusEnum.REVOKE.name());
+                    inductionRecordService.updateById(induction);
+                }else  if (flowState.getState() == FlowState.approved.getState()) {
                 // 审批通过业务代码处理
-
-            }else if (flowState.getState() == FlowState.rejected.getState()) {
+                    induction.setApproveState(ApproveStatusEnum.SUCCESS.name());
+                    inductionRecordService.updateById(induction);
+                }else if (flowState.getState() == FlowState.rejected.getState()) {
                 // 拒绝业务代码处理
-
+                    induction.setApproveState(ApproveStatusEnum.FAIL.name());
+                    inductionRecordService.updateById(induction);
+                }
             }
+
         }
 
         FlowEventType eventType = eventData.getEventType();

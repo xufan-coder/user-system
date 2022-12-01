@@ -21,8 +21,39 @@ public class UserInductionRecord {
     /**离职伙伴id*/
     private String leaveUserId;
 
+    /**伙伴名称*/
+    private String userName;
+
+    /**身份证号*/
+    private String certificateCard;
+
+    /**手机号码*/
+    private String mobile;
+
+    /**所属部门*/
+    private String deptName;
+
+    private String deptId;
+
+    /**所属角色*/
+    private String roleName;
+
+    private String roleId;
+
+    private Date leaveTime;
+
+    private String leaveReason;
+
     /**签约时间*/
     private Date signTime;
+
+    private String signDept;
+
+    private String signDeptId;
+
+    private String signRole;
+
+    private String signRoleId;
 
     /**签约原因*/
     private String signReason;
@@ -32,12 +63,6 @@ public class UserInductionRecord {
 
     /**部门id*/
     private String departId;
-
-    /**角色id*/
-    private String roleId;
-
-    /**角色名称*/
-    private String roleName;
 
     /**申请状态*/
     private String approveState;
@@ -50,18 +75,6 @@ public class UserInductionRecord {
 
     /**流程key*/
     private String processKey;
-
-    /**  `leave_user_id` varchar(50) DEFAULT NULL COMMENT '离职伙伴id',
-     `sign_time` datetime DEFAULT NULL COMMENT '签约时间',
-     `sign_reason` varchar(1000) DEFAULT NULL COMMENT '签约原因',
-     `company_id` varchar(50) DEFAULT NULL COMMENT '企业id',
-     `depart_id` varchar(50) DEFAULT NULL COMMENT '部门id',
-     `role_id` varchar(50) DEFAULT NULL COMMENT '角色id',
-     `role_name` varchar(50) DEFAULT NULL COMMENT '角色名称',
-     `approve_state` varchar(50) DEFAULT NULL COMMENT '申请状态',
-     `user_id` varchar(50) DEFAULT NULL COMMENT '当前伙伴id',
-     `process_id` varchar(50) DEFAULT NULL COMMENT '流程id',
-     `process_key` varchar(50) DEFAULT NULL COMMENT '流程key',*/
 
     /**
      * 是否删除(0存在 1删除)
