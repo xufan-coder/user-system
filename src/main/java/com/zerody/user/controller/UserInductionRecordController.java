@@ -80,7 +80,7 @@ public class UserInductionRecordController {
      * @author DaBai
      * @date 2022/12/1  11:41
      */
-    @PostMapping("/addOrUpdate")
+    @PostMapping("/add")
     public DataResult<UserInductionRecord> addOrUpdate(@RequestBody UserInductionRecord param){
         try {
             UserInductionRecord data= this.inductionRecordService.addOrUpdateRecord(param);

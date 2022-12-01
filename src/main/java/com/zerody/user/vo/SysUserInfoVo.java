@@ -2,7 +2,9 @@ package com.zerody.user.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.customer.EducationBackgroundEnum;
+import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.FamilyMember;
+import com.zerody.user.domain.UserResume;
 import lombok.Data;
 
 import java.util.Date;
@@ -338,4 +340,26 @@ public class SysUserInfoVo {
      * 是否钻石会员（0-否 1-是）
      */
     private Integer isDiamondMember;
+
+    /**
+     * 个人履历
+     */
+    private List<UserResume> userResumes;
+
+
+    /** 身份证照片国徽面(正面) */
+
+    private String idCardFront;
+
+    /** 身份证照片人像面(反面) */
+    private String idCardReverse;
+
+    /** 合规承诺书 */
+    private List<String> complianceCommitments;
+
+    /** 学历证书 */
+    private List<String> diplomas;
+
+    /** 合作申请表 */
+    private List<CommonFile> cooperationFiles;
 }
