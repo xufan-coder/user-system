@@ -281,4 +281,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     UnionRoleStaff getUnionRoleStaff(String userId);
 
     AdminUserAllVo getAdminUserAll();
+
+    List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param);
 }
