@@ -211,4 +211,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     */
     List<StaffInfoByAddressBookVo> getAllUser(@Param("searchName")String searchName);
 
+    @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
+    void updateLeaveState(@Param("userId")  String userId);
 }
