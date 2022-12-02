@@ -36,10 +36,30 @@ public class PositionRecordController {
             List<PositionRecordListVo> vos = this.service.queryPositionRecord(certificateCard);
             return R.success(vos);
         } catch (DefaultException e){
-            log.error("查询任职记录错误!", e , e);
+            log.error("查询任职记录错误!:{}", e.getMessage());
             return R.error(e.getMessage());
         } catch (Exception e){
-            log.error("查询任职记录错误!", e , e);
+            log.error("查询任职记录错误!:{}", e , e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /***
+     * @description 查询任职记录
+     * @author luolujin
+     * @date 2022/11/8
+     * @return
+     */
+    @GetMapping("/get/list/{userId}")
+    public DataResult<List<PositionRecordListVo>> getPositionRecord(@PathVariable("userId") String userId) {
+        try {
+            List<PositionRecordListVo> vos = this.service.getPositionRecord(userId);
+            return R.success(vos);
+        } catch (DefaultException e){
+            log.error("查询任职记录错误!:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("查询任职记录错误!:{}", e , e);
             return R.error(e.getMessage());
         }
     }
