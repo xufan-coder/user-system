@@ -1637,7 +1637,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
     */
     @GetMapping("/company/all-user")
-    public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(@RequestParam("searchName") String searchName) {
+    public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(@RequestParam(value ="searchName" , required = false) String searchName) {
         try {
             List<StaffInfoByAddressBookVo> user = sysStaffInfoService.getAllUser(searchName);
             return R.success(user);
@@ -1668,6 +1668,28 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("删除员工下级线索出错！请求异常");
         }
 
+    }
+
+    /**
+     *
+     *
+     * @author               kuang
+     * @description          查询所有离职伙伴
+     */
+    @GetMapping("/leave/all")
+    public DataResult<List<SubordinateUserQueryVo>> getLeaveUser(SubordinateUserQueryDto param) {
+        try {
+            // SubordinateUserQueryDto param = new SubordinateUserQueryDto();
+            param.setCompanyId(UserUtils.getUser().getCompanyId());
+            List<SubordinateUserQueryVo> result = this.sysUserInfoService.getLeaveUser(param);
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("查询所有离职伙伴出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询所有离职伙伴出错:{}",e,e);
+            return R.error("查询所有离职伙伴出错"+ e);
+        }
     }
 
 }
