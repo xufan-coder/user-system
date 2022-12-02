@@ -9,6 +9,7 @@ import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UseControlDto;
 import com.zerody.user.dto.UserInductionPage;
 import com.zerody.user.service.UserInductionRecordService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.UserBirthdayTemplateVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
 import com.zerody.user.vo.UserInductionRecordVo;
@@ -28,6 +29,9 @@ public class UserInductionRecordController {
     @Autowired
     private UserInductionRecordService inductionRecordService;
 
+    @Autowired
+    private CheckUtil checkUtil;
+
     /**
      * @author kuang
      * @description 入职申请列表
@@ -38,6 +42,7 @@ public class UserInductionRecordController {
 
         try {
             queryDto.setUserId(queryDto.getUserId());
+            this.checkUtil.setFiltrateTime(queryDto);
             Page<UserInductionRecordVo> page = this.inductionRecordService.getInductionPage(queryDto);
             return R.success(page);
         } catch (DefaultException e) {

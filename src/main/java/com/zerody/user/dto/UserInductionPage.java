@@ -1,22 +1,17 @@
 package com.zerody.user.dto;
 
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.user.dto.bean.SetTimePeriodPage;
 import lombok.Data;
 
 /**
  * @author kuang
  */
 @Data
-public class UserInductionPage extends PageQueryDto {
+public class UserInductionPage extends SetTimePeriodPage {
 
     /**入职申请状态*/
     private String approveState;
-
-    /**开始时间*/
-    private String  startTime;
-
-    /**结束时间*/
-    private String endTime;
 
     private String userId;
 
