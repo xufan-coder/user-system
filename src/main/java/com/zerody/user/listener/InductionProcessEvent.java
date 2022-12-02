@@ -59,8 +59,7 @@ public class InductionProcessEvent implements FlowEventHandler {
                     inductionRecordService.updateById(induction);
                 }else  if (flowState.getState() == FlowState.approved.getState()) {
                 // 审批通过业务代码处理
-                    induction.setApproveState(ApproveStatusEnum.SUCCESS.name());
-                    inductionRecordService.updateById(induction);
+                    inductionRecordService.doRenewInduction(induction);
                 }else if (flowState.getState() == FlowState.rejected.getState()) {
                 // 拒绝业务代码处理
                     induction.setApproveState(ApproveStatusEnum.FAIL.name());

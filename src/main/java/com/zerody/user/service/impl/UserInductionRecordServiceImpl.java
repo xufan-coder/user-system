@@ -1,16 +1,25 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
-import com.zerody.user.domain.UserInductionRecord;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.customer.api.dto.SetUserDepartDto;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserInductionPage;
 import com.zerody.user.enums.ApproveStatusEnum;
-import com.zerody.user.mapper.SysStaffInfoMapper;
-import com.zerody.user.mapper.UserInductionRecordMapper;
+import com.zerody.user.mapper.*;
+import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.UnionStaffDeparService;
 import com.zerody.user.service.UserInductionRecordService;
 import com.zerody.user.vo.LeaveUserInfoVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
@@ -18,7 +27,10 @@ import com.zerody.user.vo.UserInductionRecordVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author kuang
@@ -28,6 +40,15 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
 
     @Autowired
     private SysStaffInfoMapper sysStaffInfoMapper;
+
+    @Autowired
+    private SysUserInfoMapper sysUserInfoMapper;
+
+    @Autowired
+    private UnionStaffDepartMapper staffDepartMapper;
+
+    @Autowired
+    private UnionRoleStaffMapper unionRoleStaffMapper;
 
     @Override
     public Page<UserInductionRecordVo> getInductionPage(UserInductionPage queryDto) {
@@ -65,6 +86,45 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
             this.updateById(param);
         }
         return param;
+    }
+
+    @Override
+    public void doRenewInduction(UserInductionRecord induction) {
+
+        induction.setApproveState(ApproveStatusEnum.SUCCESS.name());
+        this.updateById(induction);
+
+        // 更新伙伴的部门id
+        String staffId = sysStaffInfoMapper.getStaffIdByUserId(induction.getLeaveUserId());
+        QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
+        usdQW.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+        UnionStaffDepart dep = this.staffDepartMapper.selectOne(usdQW);
+        if (DataUtil.isNotEmpty(dep)) {
+            dep.setDepartmentId(induction.getSignDeptId());
+            this.staffDepartMapper.updateById(dep);
+        }else {
+            dep = new UnionStaffDepart();
+            dep.setId(UUIDutils.getUUID32());
+            dep.setDepartmentId(induction.getSignDeptId());
+            this.staffDepartMapper.insert(dep);
+        }
+
+        // 更新伙伴的角色
+        QueryWrapper<UnionRoleStaff> ursQW = new QueryWrapper<>();
+        ursQW.lambda().eq(UnionRoleStaff::getStaffId, staffId);
+        unionRoleStaffMapper.delete(ursQW);
+        UnionRoleStaff rs = new UnionRoleStaff();
+        //给员工赋予角色
+        rs.setStaffId(staffId);
+        rs.setRoleId(induction.getSignRoleId());
+        rs.setRoleName(induction.getSignRole());
+        this.unionRoleStaffMapper.insert(rs);
+
+        // 更新伙伴的状态 && 更新离职时间  离职原因  staff
+        this.sysStaffInfoMapper.updateLeaveInfo(staffId);
+        this.sysUserInfoMapper.updateLeaveState(induction.getLeaveUserId());
+
+
     }
 
 }

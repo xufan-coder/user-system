@@ -17,4 +17,6 @@ public interface UserInductionRecordService extends IService<UserInductionRecord
     UserInductionRecordInfoVo getInductionInfo(String id);
 
     UserInductionRecord addOrUpdateRecord(UserInductionRecord param);
+
+    void doRenewInduction(UserInductionRecord induction);
 }
