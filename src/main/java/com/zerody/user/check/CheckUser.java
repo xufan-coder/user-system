@@ -105,9 +105,9 @@ public class CheckUser {
                 if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getWorkDuration())) {
                     throw new DefaultException("履历" + index + "任职时间为空");
                 }
-                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getJobDescription())) {
-                    throw new DefaultException("履历" + index + "工作职责为空");
-                }
+//                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getJobDescription())) {
+//                    throw new DefaultException("履历" + index + "工作职责为空");
+//                }
             }
         }
     }
