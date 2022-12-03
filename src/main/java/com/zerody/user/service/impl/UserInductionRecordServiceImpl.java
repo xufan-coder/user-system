@@ -50,6 +50,9 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
 
+    @Autowired
+    private UnionStaffPositionMapper unionStaffPositionMapper;
+
     @Override
     public Page<UserInductionRecordVo> getInductionPage(UserInductionPage queryDto) {
 
@@ -119,6 +122,12 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         rs.setRoleId(induction.getSignRoleId());
         rs.setRoleName(induction.getSignRole());
         this.unionRoleStaffMapper.insert(rs);
+
+        // 更新员工岗位
+        QueryWrapper<UnionStaffPosition> spQw = new QueryWrapper<>();
+        spQw.lambda().eq(UnionStaffPosition::getStaffId, staffId);
+        unionStaffPositionMapper.delete(spQw);
+        
 
         // 更新伙伴的状态 && 更新离职时间  离职原因  staff
         this.sysStaffInfoMapper.updateLeaveInfo(staffId);
