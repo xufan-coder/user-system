@@ -288,7 +288,8 @@
                sjp.position_name AS positionName,
                urs.role_name     AS roleName,
                sci.company_name  AS companyName,
-               ssi.avatar
+               ssi.avatar,
+               ssi.status
         FROM sys_user_info AS sui
                  JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
                  JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
@@ -588,7 +589,8 @@
         urs.role_name AS roleName,
         sdi.depart_name AS departName,
         sci.company_name AS companyName,
-        ssi.id AS staffId
+        ssi.id AS staffId,
+        ssi.status
         FROM
          sys_user_info sui
         LEFT JOIN sys_staff_info ssi ON ssi.user_id= sui.id
@@ -622,7 +624,8 @@
         sjp.position_name AS positionName,
         urs.role_name     AS roleName,
         sci.company_name  AS companyName,
-        ssi.avatar
+        ssi.avatar,
+        ssi.status
         FROM sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
