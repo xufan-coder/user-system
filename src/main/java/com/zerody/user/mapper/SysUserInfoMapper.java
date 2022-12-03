@@ -213,4 +213,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
     @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
     void updateLeaveState(@Param("userId")  String userId);
+
+    List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param);
 }

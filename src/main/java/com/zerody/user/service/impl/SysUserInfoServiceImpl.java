@@ -898,7 +898,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param){
-        return this.sysUserInfoMapper.getSubordinateUser(param);
+        return this.sysUserInfoMapper.getLeaveUser(param);
     }
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {

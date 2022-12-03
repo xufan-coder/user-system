@@ -1681,6 +1681,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         try {
             // SubordinateUserQueryDto param = new SubordinateUserQueryDto();
             param.setCompanyId(UserUtils.getUser().getCompanyId());
+            param.setUserId(UserUtils.getUser().getUserId());
             List<SubordinateUserQueryVo> result = this.sysUserInfoService.getLeaveUser(param);
             return R.success(result);
         } catch (DefaultException e){
