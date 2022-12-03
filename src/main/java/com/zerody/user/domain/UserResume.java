@@ -12,6 +12,9 @@ public class UserResume {
 
     private String id;
 
+    /**
+     * 用户id
+     */
     private String userId;
 
     /**
@@ -34,6 +37,9 @@ public class UserResume {
     */
     private String jobDescription;
 
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
 

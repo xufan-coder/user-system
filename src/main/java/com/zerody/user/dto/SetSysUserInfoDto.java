@@ -141,23 +141,33 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private List<UserResume> userResumes;
 
-
-    /** 身份证照片国徽面(正面) */
-
+    /**
+     * 身份证照片国徽面(正面)
+     */
     private String idCardFront;
 
-    /** 身份证照片人像面(反面) */
+    /**
+     * 身份证照片人像面(反面)
+     */
     private String idCardReverse;
 
-    /** 合规承诺书 */
+    /**
+     * 合规承诺书
+     */
     private List<String> complianceCommitments;
 
-    /** 学历证书 */
+    /**
+     * 学历证书
+     */
     private List<String> diplomas;
 
-    /** 合作申请表 */
+    /**
+     * 合作申请表
+     */
     private List<CommonFile> cooperationFiles;
 
-    /**终端*/
+    /**
+     * 终端
+     */
     private String terminals;
 }
