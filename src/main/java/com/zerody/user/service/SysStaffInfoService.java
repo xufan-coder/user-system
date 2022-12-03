@@ -11,10 +11,7 @@ import com.zerody.user.api.vo.UserCopyResultVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -212,7 +209,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @date          2022/11/28 17:34
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
-    List<StaffInfoByAddressBookVo> getAllUser(String searchName);
+    List<StaffInfoByAddressBookVo> getAllUser(ComUserQueryDto queryDto);
 
     Map<String, Object> getSameDept(String userId, String chooseUserId);
 
