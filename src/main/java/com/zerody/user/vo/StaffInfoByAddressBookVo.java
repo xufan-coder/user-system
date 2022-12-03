@@ -64,4 +64,7 @@ public class StaffInfoByAddressBookVo {
      */
     private String userType;
 
+    /**伙伴状态*/
+    private Integer status;
+
 }
