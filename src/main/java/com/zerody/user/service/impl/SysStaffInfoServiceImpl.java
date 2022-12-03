@@ -2979,8 +2979,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return info;
     }
     @Override
-    public List<StaffInfoByAddressBookVo> getAllUser(String searchName) {
-        List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser(searchName);
+    public List<StaffInfoByAddressBookVo> getAllUser(ComUserQueryDto queryDto) {
+        List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser(queryDto);
         return staffInfoVos;
     }
     @Override

@@ -37,4 +37,10 @@ public class StaffByCompanyDto {
      */
     private String userType;
 
+    /**查询伙伴状态  0-查询有效伙伴   1-查询含离职伙伴*/
+    private Integer lsShowLeave;
+
+    /**是否查询离职伙伴   0-否 1-是*/
+    private Integer isQuit;
+
 }

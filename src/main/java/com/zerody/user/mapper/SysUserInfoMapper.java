@@ -7,6 +7,7 @@ import com.zerody.user.api.vo.UserIdentifierQueryVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.dto.ComUserQueryDto;
 import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.vo.*;
@@ -209,7 +210,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     *  @date          2022/11/28 17:40
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
-    List<StaffInfoByAddressBookVo> getAllUser(@Param("searchName")String searchName);
+    List<StaffInfoByAddressBookVo> getAllUser(@Param("queryDto") ComUserQueryDto queryDto);
 
     @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
     void updateLeaveState(@Param("userId")  String userId);

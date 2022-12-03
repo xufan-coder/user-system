@@ -1637,9 +1637,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
     */
     @GetMapping("/company/all-user")
-    public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(@RequestParam(value ="searchName" , required = false) String searchName) {
+    public DataResult<List<StaffInfoByAddressBookVo>> getAllUser(ComUserQueryDto queryDto) {
         try {
-            List<StaffInfoByAddressBookVo> user = sysStaffInfoService.getAllUser(searchName);
+            List<StaffInfoByAddressBookVo> user = sysStaffInfoService.getAllUser(queryDto);
             return R.success(user);
         } catch (DefaultException e){
             log.error("查询所有在职伙伴错误:{}",e.getMessage());
@@ -1674,9 +1674,9 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      *
      *
      * @author               kuang
-     * @description          查询所有离职伙伴
+     * @description          查询企业所有伙伴
      */
-    @GetMapping("/leave/all")
+    @GetMapping("/com/all")
     public DataResult<List<SubordinateUserQueryVo>> getLeaveUser(SubordinateUserQueryDto param) {
         try {
             // SubordinateUserQueryDto param = new SubordinateUserQueryDto();
