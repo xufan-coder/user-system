@@ -2991,13 +2991,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(staffInfo)&&DataUtil.isNotEmpty(staffInfo1)){
             if(!staffInfo.getDepartId().equals(staffInfo1.getDepartId())){
                 map.put("otherDept",YesNo.YES);
-            }else {
-                if(DataUtil.isNotEmpty(staffInfo1.getDepartId())){
-                    String[] s1 = staffInfo1.getDepartId().split("_");
-                    String[] s = staffInfo.getDepartId().split("_");
-                    if(s1[0].equals(s[0])){
-                        map.put("sameDept",YesNo.YES);
-                    }
+            }
+            if(DataUtil.isNotEmpty(staffInfo1.getDepartId())){
+                String[] s1 = staffInfo1.getDepartId().split("_");
+                String[] s = staffInfo.getDepartId().split("_");
+                if(s1[0].equals(s[0])){
+                    map.put("sameDept",YesNo.YES);
                 }
             }
         }
