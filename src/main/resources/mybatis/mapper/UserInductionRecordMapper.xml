@@ -24,6 +24,7 @@
                 and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt;= #{queryDto.endTime}
             </if>
         </where>
+        order by ui.sign_time desc
     </select>
 
     <select id="getInductionInfo" resultType="com.zerody.user.vo.UserInductionRecordInfoVo">
