@@ -17,7 +17,7 @@ public class UserInductionRecordInfoVo {
     private String leaveUserId;
 
     /**签约时间*/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date signTime;
 
     private String companyId;
