@@ -18,7 +18,7 @@ public class UserInductionRecordVo {
     private String approveName;
 
     /**申请时间*/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date approveTime;
 
     /**申请状态*/
