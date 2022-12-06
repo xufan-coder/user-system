@@ -203,11 +203,12 @@ public class SysStaffInfoController {
     /**
      * @Author: chenKeFeng
      * @param
-     * @Description: app添加伙伴1111111
+     * @Description: app添加伙伴
      * @Date: 2022/11/28 23:58
      */
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        log.info("app添加伙伴入参 {}", setSysUserInfoDto);
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
@@ -229,6 +230,7 @@ public class SysStaffInfoController {
     */
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        log.info("app编辑伙伴入参 {}", setSysUserInfoDto);
         try {
             UserVo user = UserUtils.getUser();
             sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
@@ -244,7 +246,7 @@ public class SysStaffInfoController {
 
 
     /**
-    *    根据员工id查询员工信息
+    *    根据员工id查询员工详情信息
     */
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
