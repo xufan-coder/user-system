@@ -130,7 +130,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         
 
         // 更新伙伴的状态 && 更新离职时间  离职原因  staff
-        this.sysStaffInfoMapper.updateLeaveInfo(staffId);
+        this.sysStaffInfoMapper.updateLeaveInfo(staffId,induction.getSignTime());
         this.sysUserInfoMapper.updateLeaveState(induction.getLeaveUserId());
 
 
