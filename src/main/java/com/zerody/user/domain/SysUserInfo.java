@@ -30,7 +30,7 @@ public class SysUserInfo extends BaseModel {
     private String userName;
 
     /**
-     * 性别
+     * 性别(0:男，1:女，3:未知)
      **/
     @CheckCompare(value = "gender", name = "性别")
     private Integer gender;
