@@ -79,6 +79,7 @@ public class CheckUser {
     }
 
     public static void checkParamList(SetSysUserInfoDto setSysUserInfoDto) {
+        //合规承诺书
         List<String> complianceCommitments = setSysUserInfoDto.getComplianceCommitments();
         List<String> diplomas = setSysUserInfoDto.getDiplomas();
         if (DataUtil.isEmpty(complianceCommitments)) {
