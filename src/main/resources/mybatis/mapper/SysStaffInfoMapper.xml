@@ -1189,9 +1189,11 @@
     <select id="getLeaveUserByPhone" resultType="com.zerody.user.vo.LeaveUserInfoVo">
         select si.user_id,sc.company_name,di.depart_name
         from sys_staff_info si
+        join sys_user_info sui on si.user_id = sui.id
         left join sys_company_info sc on si.comp_id = sc.id
         left join union_staff_depart sd on sd.staff_id = si.id
         left join sys_department_info di on sd.department_id = di.id
-        where si.`status` = 1 and si.user_id = #{userId}
+        where si.`status` = 1 and sui.phone_number = #{phone}
+        order by sui.create_time desc limit 1
     </select>
 </mapper>
