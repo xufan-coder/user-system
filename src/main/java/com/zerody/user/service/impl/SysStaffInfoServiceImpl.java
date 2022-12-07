@@ -264,7 +264,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
+
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getPhoneNumber());
             if(leave != null){
                 throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
                         "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
@@ -772,7 +773,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             // 并且是pc端操作
             if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                     SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getUrgentPhone());
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getPhoneNumber());
                 if(leave != null){
                     throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
                             "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
