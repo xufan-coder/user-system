@@ -431,7 +431,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     LeaveUserInfoVo getLeaveUserInfo(@Param("userId") String userId);
 
 
-    LeaveUserInfoVo getLeaveUserByPhone(@Param("phone") String phone);
+    LeaveUserInfoVo getLeaveUserByCard(@Param("card") String card);
 
     @Select({ "<script> update sys_staff_info set date_join = #{signTime}, leave_reason = '',date_left = null, status = 0 where id=#{staffId} </script>" })
     void updateLeaveInfo(@Param("staffId") String staffId,@Param("signTime") Date signTime);
