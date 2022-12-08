@@ -264,7 +264,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getPhoneNumber());
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard());
             if(leave != null){
                 throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" — "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
                         "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
@@ -775,7 +775,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             // 并且是pc端操作
             if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                     SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(setSysUserInfoDto.getPhoneNumber());
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard());
                 if(leave != null){
                     throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
                             "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
@@ -1743,12 +1743,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
             }
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(phone);
-            if(leave != null){
-                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
-                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
-                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
-            }
 
             //手机号码判断是否是内控名单
             MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
@@ -1773,6 +1767,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                         errorStr.append("”存在");
                     }
                 }
+            }
+
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
+            if(leave != null){
+                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
+                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
+                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
             }
             //先校验企业存不存在，企业不存在则不需要在校验部门岗位角色
             String companyName = row[2];
@@ -1997,12 +1998,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (fild && sysUserInfoMapper.selectUserByPhone(phone)) {
                 errorStr.append("此手机号码已注册过账户,");
             }
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByPhone(phone);
-            if(leave != null){
-                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
-                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
-                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
-            }
 
             //手机号码判断是否是内控名单
             MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
@@ -2027,6 +2022,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                         errorStr.append("”存在");
                     }
                 }
+            }
+
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
+            if(leave != null){
+                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
+                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
+                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
             }
 
             String departName = row[2];
