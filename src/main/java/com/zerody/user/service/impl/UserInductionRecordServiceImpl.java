@@ -77,6 +77,14 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
     @Override
     public UserInductionRecord addOrUpdateRecord(UserInductionRecord param) {
         if (StringUtils.isEmpty(param.getId())) {
+            //判断是否已在申请中
+            QueryWrapper<UserInductionRecord> qw = new QueryWrapper<>();
+            qw.lambda().eq(UserInductionRecord::getUserId, param.getUserId());
+            qw.lambda().eq(UserInductionRecord::getApproveState,ApproveStatusEnum.APPROVAL.name());
+            qw.lambda().eq(UserInductionRecord::getDeleted,YesNo.NO);
+            if(DataUtil.isNotEmpty(this.getOne(qw))){
+                throw  new DefaultException("该伙伴正在申请中!");
+            }
             //保存
             param.setCreateTime(new Date());
             param.setApproveState(ApproveStatusEnum.APPROVAL.name());
@@ -128,7 +136,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         QueryWrapper<UnionStaffPosition> spQw = new QueryWrapper<>();
         spQw.lambda().eq(UnionStaffPosition::getStaffId, staffId);
         unionStaffPositionMapper.delete(spQw);
-        
+
 
         // 更新伙伴的状态 && 更新离职时间  离职原因  staff
         this.sysStaffInfoMapper.updateLeaveInfo(staffId,induction.getSignTime());
