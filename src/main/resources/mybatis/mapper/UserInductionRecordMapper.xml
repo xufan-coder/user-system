@@ -18,10 +18,10 @@
                 and ui.create_by = #{queryDto.userId}
             </if>
             <if test="queryDto.begin neq null and queryDto.begin neq ''">
-                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;= #{queryDto.begin}
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;=  DATE_FORMAT(#{queryDto.begin},'%Y-%m-%d')
             </if>
             <if test="queryDto.end neq null and queryDto.end neq ''">
-                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt;= #{queryDto.end}
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{queryDto.end},'%Y-%m-%d')
             </if>
         </where>
         order by ui.sign_time desc, ui.create_time desc
