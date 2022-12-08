@@ -27,7 +27,7 @@ public class BaseModel {
     private String id;
 
     /**
-     * /状态:0生效、1离职、2删除 3合作
+     * 状态:0生效、1离职、2删除 3合作
      */
     @TableField("status")
     private Integer status;
