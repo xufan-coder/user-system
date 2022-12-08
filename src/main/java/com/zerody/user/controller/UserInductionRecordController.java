@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.UserInductionRecord;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UseControlDto;
@@ -41,7 +42,7 @@ public class UserInductionRecordController {
     public DataResult<Page<UserInductionRecordVo>> getInductionPage(UserInductionPage queryDto){
 
         try {
-            queryDto.setUserId(queryDto.getUserId());
+            queryDto.setUserId(UserUtils.getUserId());
             this.checkUtil.setFiltrateTime(queryDto);
             Page<UserInductionRecordVo> page = this.inductionRecordService.getInductionPage(queryDto);
             return R.success(page);
