@@ -377,7 +377,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             });
         }
 
-
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -444,6 +443,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
+        if (CollectionUtils.isEmpty(cooperationFiles)) {
+            return;
+        }
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
         for (CommonFile s : cooperationFiles) {
@@ -457,10 +459,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             file.setCreateTime(new Date());
             files.add(file);
         }
-            QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
-            remQ.lambda().eq(CommonFile::getConnectId, userId);
-            remQ.lambda().eq(CommonFile::getFileType, type);
-            this.commonFileService.addFiles(remQ, files);
+        QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
+        remQ.lambda().eq(CommonFile::getConnectId, userId);
+        remQ.lambda().eq(CommonFile::getFileType, type);
+        //删除之前的文件，再批量新增文件
+        this.commonFileService.addFiles(remQ, files);
     }
 
     public void saveImage(List<String> images,String userId,String type){
@@ -475,10 +478,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             image.setCreateTime(new Date());
             imageAdds.add(image);
         }
-            QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
-            imageRemoveQw.lambda().eq(Image::getConnectId, userId);
-            imageRemoveQw.lambda().eq(Image::getImageType, type);
-            this.imageService.addImages(imageRemoveQw, imageAdds);
+        QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+        imageRemoveQw.lambda().eq(Image::getConnectId, userId);
+        imageRemoveQw.lambda().eq(Image::getImageType, type);
+        this.imageService.addImages(imageRemoveQw, imageAdds);
     }
 
     @Override

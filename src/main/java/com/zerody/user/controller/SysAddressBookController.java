@@ -112,8 +112,11 @@ public class SysAddressBookController {
             }
             List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.queryAddressBook(null,isProData);
             return R.success(sysAddressBookVos);
+        } catch (DefaultException e) {
+            log.error("获取公司错误:{}", e.getMessage());
+            return R.error("获取公司失败,请求异常");
         } catch (Exception e) {
-            log.error("获取公司错误:{}", e);
+            log.error("获取公司错误:{}", e, e);
             return R.error("获取公司失败,请求异常");
         }
     }
@@ -137,8 +140,11 @@ public class SysAddressBookController {
             departInfoDto.setCompId(id);
             List<DepartInfoVo> departInfoVoList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
             return R.success(departInfoVoList);
+        } catch (DefaultException e) {
+            log.error("获取部门错误:{}", JSON.toJSONString(id), e.getMessage());
+            return R.error("获取部门失败,请求异常");
         } catch (Exception e) {
-            log.error("获取部门错误:{}", JSON.toJSONString(id), e);
+            log.error("获取部门错误:{}", e, e);
             return R.error("获取部门失败,请求异常");
         }
     }

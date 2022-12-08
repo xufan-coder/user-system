@@ -25,6 +25,11 @@ public class DepartInfoDto {
     private String userType;
 
     /**
+     * 状态:0生效、1离职、2删除 3合作
+     */
+    private Integer status;
+
+    /**
      * 用户名称
      */
     private String userName;
