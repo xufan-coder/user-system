@@ -11,8 +11,7 @@ import lombok.Data;
 public class UserInductionPage extends SetTimePeriodPage {
 
     /**入职申请状态*/
-    private String approveState;
-
+    private String approvalState;
     private String userId;
 
     private String departId;
