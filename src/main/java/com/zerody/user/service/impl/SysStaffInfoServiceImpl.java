@@ -3016,26 +3016,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
         //团队长
         SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isEmpty(leader)){
-            return null;
-        }
-        SysStaffInfo byId = this.getById(leader.getAdminAccount());
-        if(DataUtil.isNotEmpty(byId)){
-            result.add(byId.getUserId());
+        if(DataUtil.isNotEmpty(leader)) {
+            SysStaffInfo byId = this.getById(leader.getAdminAccount());
+            if (DataUtil.isNotEmpty(byId)) {
+                result.add(byId.getUserId());
+            }
         }
 
         //副总
         qw.clear();
         qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
         SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isEmpty(leader1)){
-            return null;
-        }
         if(DataUtil.isNotEmpty(leader1)){
             SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
             if(DataUtil.isNotEmpty(byId1)){
                 result.add(byId1.getUserId());
             }
+        }
+        if(DataUtil.isEmpty(result)){
+            return null;
         }
         return result;
     }
