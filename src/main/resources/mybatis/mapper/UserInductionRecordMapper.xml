@@ -11,17 +11,17 @@
 		from user_induction_record ui
 		join sys_user_info sui on ui.leave_user_id = sui.id
 		<where>
-            <if test="queryDto.approveState neq null and queryDto.approveState neq ''">
-                and ui.approve_state = #{queryDto.approveState}
+            <if test="queryDto.approvalState neq null and queryDto.approvalState neq ''">
+                and ui.approve_state = #{queryDto.approvalState}
             </if>
             <if test="queryDto.userId neq null and queryDto.userId neq ''">
                 and ui.create_by = #{queryDto.userId}
             </if>
-            <if test="queryDto.beginTime neq null and queryDto.beginTime neq ''">
-                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;= #{queryDto.beginTime}
+            <if test="queryDto.begin neq null ">
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;=  DATE_FORMAT(#{queryDto.begin},'%Y-%m-%d')
             </if>
-            <if test="queryDto.endTime neq null and queryDto.endTime neq ''">
-                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt;= #{queryDto.endTime}
+            <if test="queryDto.end neq null ">
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt; DATE_FORMAT(#{queryDto.end},'%Y-%m-%d')
             </if>
         </where>
         order by ui.sign_time desc, ui.create_time desc
