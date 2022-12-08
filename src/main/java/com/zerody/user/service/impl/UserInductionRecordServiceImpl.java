@@ -81,6 +81,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
             param.setCreateTime(new Date());
             param.setApproveState(ApproveStatusEnum.APPROVAL.name());
             param.setDeleted(YesNo.NO);
+            param.setCreateBy(param.getUserId());
             param.setId(UUIDutils.getUUID32());
             this.save(param);
         }else {
