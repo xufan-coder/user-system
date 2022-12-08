@@ -76,6 +76,9 @@ public class UserInductionRecord {
     /**流程key*/
     private String processKey;
 
+    /**伙伴id*/
+    private String userId;
+
     /**
      * 是否删除(0存在 1删除)
      */
