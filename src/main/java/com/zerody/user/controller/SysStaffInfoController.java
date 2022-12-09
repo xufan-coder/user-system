@@ -311,7 +311,7 @@ public class SysStaffInfoController {
 
 
     /**
-     *    根据用户id查询员工信息
+     *  根据用户id查询员工信息
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){

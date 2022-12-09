@@ -2448,7 +2448,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
 
-
         QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
         fmQw.lambda().eq(FamilyMember::getUserId, userInfo.getId());
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
