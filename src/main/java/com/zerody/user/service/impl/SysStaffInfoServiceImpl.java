@@ -393,6 +393,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             rs.setRoleName(obj.get("roleName").toString());
             unionRoleStaffMapper.insert(rs);
         }
+
         //岗位
         String positionName = null;
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())) {
