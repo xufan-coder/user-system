@@ -75,7 +75,7 @@ public class BosStaffInfoVo {
 
 
     /**
-     * 员工状态
+     * 员工状态 0在职、1离职、3合作
      */
     private Integer staffStatus;
 

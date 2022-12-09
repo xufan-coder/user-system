@@ -129,7 +129,8 @@ public class SysUserInfoVo {
     private String description;
 
     /**
-     * 状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+     * 状态: 用户: 1.enable,0. disable ,-1 deleted；
+     * 员工:0.生效、1.离职、2.删除、3.合作
      */
     private Integer status;
 
