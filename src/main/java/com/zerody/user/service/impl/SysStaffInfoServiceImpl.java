@@ -265,8 +265,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard());
             if(leave != null){
-                throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" — "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
-                        "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                        "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
             }
         }
 
@@ -780,8 +780,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
                 LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard());
                 if(leave != null){
-                    throw new DefaultException("该伙伴是原["+leave.getCompanyName() +" —— "+ leave.getDepartName()+"]，不允许直接办理二次入职，" +
-                            "请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                            "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
                 }
             }
         }
@@ -1772,9 +1772,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
             if(leave != null){
-                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
-                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
-                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+                errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
+                        append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
+                        append("（暂不支持行政办理二次签约）");
             }
             //先校验企业存不存在，企业不存在则不需要在校验部门岗位角色
             String companyName = row[2];
@@ -2027,9 +2027,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
             if(leave != null){
-                errorStr.append("该伙伴是原[").append(leave.getCompanyName()).append(" —— ").
-                        append(leave.getDepartName()).append("]，不允许直接办理二次入职，").
-                        append("请联系团队长在CRM-APP【伙伴签约申请】发起审批!");
+                errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
+                        append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
+                        append("（暂不支持行政办理二次签约）");
             }
 
             String departName = row[2];
@@ -2436,6 +2436,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setImStateName(imState.getDictName());
             }
         }
+        //推荐人
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
@@ -2459,11 +2460,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加合规承诺书、学历证书
         getLetterOfUndertakingAndDiplomas(userInfo);
 
-        //查询关系
+        //查询企业内部关系信息
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
         List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());

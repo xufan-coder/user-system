@@ -209,7 +209,7 @@ public class SysStaffInfoController {
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         log.info("app添加伙伴入参 {}", setSysUserInfoDto);
-        log.info("合作申请表 {}", setSysUserInfoDto.getCooperationFiles());
+        log.info("企业内部关系信息 {}", setSysUserInfoDto.getStaffRelationDtoList());
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
