@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.UserResume;
@@ -32,6 +33,7 @@ public class UserResumeServiceImpl extends ServiceImpl<UserResumeMapper, UserRes
         }
         //先删除后保存
         for (UserResume userResume : userResumes) {
+            userResume.setId(UUIDutils.getUUID32());
             userResume.setUserId(staffInfoVo.getUserId());
             userResume.setCreateTime(new Date());
         }
