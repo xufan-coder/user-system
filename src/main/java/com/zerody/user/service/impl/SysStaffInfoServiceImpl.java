@@ -261,7 +261,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("该手机号已存在！");
         }
 
-
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard());
@@ -303,6 +302,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //  设置修改名称状态 添加默认 没有修改
         sysUserInfo.setIsUpdateName(YesNo.NO);
         sysUserInfoMapper.insert(sysUserInfo);
+
         //用户信息保存添加登录信息
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         SysLoginInfo logInfo = new SysLoginInfo();
@@ -340,15 +340,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         log.info("添加员工入库参数--{}", JSON.toJSONString(staff));
-        staff.setStatus(StatusEnum.activity.getValue());
+        //staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());
         this.saveOrUpdate(staff);
+
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
+        //批量信息家庭成员
         this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
 
         //荣耀记录
