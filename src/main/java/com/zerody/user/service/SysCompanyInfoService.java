@@ -11,9 +11,11 @@ import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.company.SysCompanyQueryDto;
 import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SalesmanRoleInfoVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.SysCompanyNameQueryVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -72,4 +74,6 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<SysComapnyInfoVo> getSysCompanyAll();
 
     List<SysComapnyInfoVo> getAllStructure();
+
+    List<SysCompanyNameQueryVo> getAllCompanyName(SysCompanyQueryDto param);
 }
