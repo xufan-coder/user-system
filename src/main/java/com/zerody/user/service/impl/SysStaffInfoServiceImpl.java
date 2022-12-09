@@ -2436,6 +2436,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setImStateName(imState.getDictName());
             }
         }
+        //推荐人
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(userInfo.getRecommendId());
@@ -2459,11 +2460,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //添加合规承诺书、学历证书
         getLetterOfUndertakingAndDiplomas(userInfo);
 
-        //查询关系
+        //查询企业内部关系信息
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
         List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
+
         AdminVo admin = this.getIsAdmin(user);
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
