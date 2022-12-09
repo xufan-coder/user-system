@@ -321,6 +321,11 @@ public class SysUserInfoVo {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateJoin;
 
+    /**
+     * 最高学历 枚举转换
+     *
+     * @return
+     */
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }

@@ -221,6 +221,7 @@
         </where>
     </select>
 
+    <!--通过用户id查询员工-->
     <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
