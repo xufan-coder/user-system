@@ -349,4 +349,22 @@
       sci.status = 0
       and sci.is_pro_data=1
   </select>
+
+  <select id="getAllCompanyName" resultType="com.zerody.user.vo.SysCompanyNameQueryVo">
+      SELECT
+      sci.id,
+      sci.company_name AS `name`
+      FROM
+      sys_company_info AS sci
+      <where>
+          sci.status = 0
+          and sci.is_pro_data=1
+          <if test="param.ids neq null and param.ids.size() gt 0">
+              AND sci.id
+              <foreach collection="param.ids" item="id" open="IN (" separator="," close=")">
+                  #{id}
+              </foreach>
+          </if>
+      </where>
+    </select>
 </mapper>
