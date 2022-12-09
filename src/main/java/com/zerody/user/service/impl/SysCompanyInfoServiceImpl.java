@@ -315,8 +315,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             return companys;
         }
         List<String> companyIds = null;
-        if (UserUtils.getUser().isBackAdmin()) {
+        if (UserUtils.getUser().isBack()) {
             companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
+
+        if (UserUtils.getUser().isCEO()) {
+            companyIds = this.checkUtil.setCeoCompany(UserUtils.getUser().getUserId());
         }
         //如果不是crm系统就查全部企业
         companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
