@@ -248,7 +248,7 @@ public class SysStaffInfoController {
 
 
     /**
-    *    根据员工id查询员工详情信息
+    *  根据员工id查询员工详情信息
     */
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
@@ -309,13 +309,23 @@ public class SysStaffInfoController {
     }
 
 
-
     /**
-     *  根据用户id查询员工信息
+     * 根据用户id查询员工信息
+     *
+     * @param userId 用户id
+     * @return
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
-        return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+        try {
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+        } catch (DefaultException e) {
+            log.error("根据用户id查询员工信息出错:{}", e.getMessage());
+            return R.error("根据用户id查询员工信息");
+        } catch (Exception e) {
+            log.error("根据用户id查询员工信息出错:{}", e, e);
+            return R.error("根据用户id查询员工信息");
+        }
     }
 
 
