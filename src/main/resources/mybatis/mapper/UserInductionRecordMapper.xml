@@ -11,8 +11,8 @@
 		from user_induction_record ui
 		join sys_user_info sui on ui.leave_user_id = sui.id
 		<where>
-            <if test="queryDto.approvalState neq null and queryDto.approvalState neq ''">
-                and ui.approve_state = #{queryDto.approvalState}
+            <if test="queryDto.approveState neq null and queryDto.approveState neq ''">
+                and ui.approve_state = #{queryDto.approveState}
             </if>
             <if test="queryDto.userId neq null and queryDto.userId neq ''">
                 and ui.create_by = #{queryDto.userId}
