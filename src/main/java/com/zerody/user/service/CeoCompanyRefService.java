@@ -23,6 +23,12 @@ public interface CeoCompanyRefService extends IService<CeoCompanyRef> {
 
 	void saveBackCompanyRef(BackRefDto data);
 
+	/**
+	 * 获取后台管理员以及关联企业信息
+	 *
+	 * @param id 后台管理员id
+	 * @return 后台管理员信息(关联企业)
+	 */
 	BackUserRefVo getBackRef(String id);
 
 	/**

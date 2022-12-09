@@ -37,7 +37,7 @@ public class UserImportErrorDataDto {
     /** 状态 */
     private String status;
 
-    /** 性别 */
+    /** 性别(0:男，1:女，3:未知) */
     private String gender;
 
     /** 籍贯 */

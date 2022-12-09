@@ -1,12 +1,13 @@
 package com.zerody.user.check;
 
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.PhoneHomeLocationUtils;
-import com.zerody.common.util.ResultCodeEnum;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UserResume;
+import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.util.IdCardUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,6 +63,52 @@ public class CheckUser {
                 if (!m.matches()) {
                     throw new DefaultException("家庭成员" + index + "联系电话不合法");
                 }
+            }
+        }
+        if(sysUserInfo.getStatus()!=1){
+            if (StringUtils.isBlank(sysUserInfo.getAvatar())) {
+                throw new DefaultException("个人照片不能为空");
+            }
+            if (StringUtils.isBlank(sysUserInfo.getIdCardFront())) {
+                throw new DefaultException("身份证照片国徽面(正面)不能为空");
+            }
+            if (StringUtils.isBlank(sysUserInfo.getIdCardReverse())) {
+                throw new DefaultException("身份证照片人像面(反面)不能为空");
+            }
+        }
+    }
+
+    public static void checkParamList(SetSysUserInfoDto setSysUserInfoDto) {
+        //合规承诺书
+        List<String> complianceCommitments = setSysUserInfoDto.getComplianceCommitments();
+        List<String> diplomas = setSysUserInfoDto.getDiplomas();
+        if (DataUtil.isEmpty(complianceCommitments)) {
+            throw new DefaultException("请上传合规承诺书！");
+        }
+//        if (DataUtil.isEmpty(diplomas)) {
+//            throw new DefaultException("请上传学历证书！");
+//        }
+
+        List<UserResume> userResumes = setSysUserInfoDto.getUserResumes();
+        if (DataUtil.isEmpty(userResumes)) {
+            throw new DefaultException("请填写履历！");
+        }
+        if (CollectionUtils.isNotEmpty(userResumes)) {
+            Iterator<UserResume> iterator = userResumes.iterator();
+            for (int index = 1; iterator.hasNext(); index++){
+                UserResume resume = iterator.next();
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getCompanyName())) {
+                    throw new DefaultException("履历" + index + "任职企业为空");
+                }
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getPost())) {
+                    throw new DefaultException("履历" + index + "任职岗位为空");
+                }
+                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getWorkDuration())) {
+                    throw new DefaultException("履历" + index + "任职时间为空");
+                }
+//                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getJobDescription())) {
+//                    throw new DefaultException("履历" + index + "工作职责为空");
+//                }
             }
         }
     }

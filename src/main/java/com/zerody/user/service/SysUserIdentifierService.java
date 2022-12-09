@@ -33,6 +33,12 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
 
     void addApproveByProcess(String id, Integer state);
 
+    /**
+     * 解绑设备
+     *
+     * @param userId 需要解绑的伙伴id
+     * @param updateUserId 当前登录用户id
+     */
     void addUnbound(String userId,String updateUserId);
 
     Page<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto);

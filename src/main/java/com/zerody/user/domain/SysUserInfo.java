@@ -6,171 +6,219 @@ import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
+ * 伙伴(员工)信息表
  *
- *
- * @author               PengQiang
- * @description          DELL
- * @date                 2021/1/19 14:28
  * @param
+ * @author PengQiang
+ * @description DELL
+ * @date 2021/1/19 14:28
  * @return
  */
 @Data
-public class  SysUserInfo extends BaseModel {
+public class SysUserInfo extends BaseModel {
 
-    /** 用户名 **/
-    @NotEmpty(message = "用户名不能为空")
-    @CheckCompare(value = "userName",name = "名称")
+    /**
+     * 用户名
+     **/
+    @NotBlank(message = "用户名不能为空")
+    @CheckCompare(value = "userName", name = "名称")
     private String userName;
 
-    /** 性别 **/
-    @CheckCompare(value = "gender",name = "性别")
+    /**
+     * 性别(0:男，1:女，3:未知)
+     **/
+    @CheckCompare(value = "gender", name = "性别")
     private Integer gender;
 
-    /** 手机号 **/
-    @NotEmpty(message = "手机号不能为空")
+    /**
+     * 手机号
+     **/
+    @NotBlank(message = "手机号不能为空")
     @Size(max = 11, min = 11, message = "手机号必须为11位")
-    @CheckCompare(value = "phoneNumber",name = "手机号")
+    @CheckCompare(value = "phoneNumber", name = "手机号")
     private String phoneNumber;
 
-    /** 邮箱 **/
-    @CheckCompare(value = "email",name = "邮箱")
+    /**
+     * 邮箱
+     **/
+    @CheckCompare(value = "email", name = "邮箱")
     private String email;
 
-
-    /** 昵称 **/
-    @CheckCompare(value = "nickname",name = "昵称")
+    /**
+     * 昵称
+     **/
+    @CheckCompare(value = "nickname", name = "昵称")
     private String nickname;
 
-    /** 头像(相对路径) **/
+    /**
+     * 头像(相对路径)
+     **/
     private String avatar;
 
-    /** 出生日期 **/
+    /**
+     * 出生日期
+     **/
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
-    @CheckCompare(value = "birthday",name = "出生日期")
+    @CheckCompare(value = "birthday", name = "出生日期")
     private Date birthday;
 
-
-    /** 证件号码 **/
-    @CheckCompare(value = "certificateCard",name = "证件号码")
+    /**
+     * 证件号码
+     **/
+    @CheckCompare(value = "certificateCard", name = "证件号码")
     private String certificateCard;
 
-
-    /** 身份证地址 **/
-    @CheckCompare(value = "certificateCardAddress",name = "身份证地址")
+    /**
+     * 身份证地址
+     **/
+    @CheckCompare(value = "certificateCardAddress", name = "身份证地址")
     private String certificateCardAddress;
 
-    /** 省市区 **/
+    /**
+     * 省市区
+     **/
     private String provCityDistrict;
 
-    /** 联系地址 **/
-    @CheckCompare(value = "contactAddress",name = "居住地址")
+    /**
+     * 联系地址
+     **/
+    @CheckCompare(value = "contactAddress", name = "居住地址")
     private String contactAddress;
 
-    /** 注册时间 **/
+    /**
+     * 注册时间
+     **/
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date registerTime;
 
-    /** 民族 **/
-    @CheckCompare(value = "nation",name = "民族")
+    /**
+     * 民族
+     **/
+    @CheckCompare(value = "nation", name = "民族")
     private String nation;
 
-    /** 籍贯 **/
-    @CheckCompare(value = "ancestral",name = "籍贯")
+    /**
+     * 籍贯
+     **/
+    @CheckCompare(value = "ancestral", name = "籍贯")
     private String ancestral;
 
-    /** 备注 **/
-    @CheckCompare(value = "description",name = "备注")
+    /**
+     * 备注
+     **/
+    @CheckCompare(value = "description", name = "备注")
     private String description;
 
-    /** 状态: 1.enable,0. disable ,-1 deleted **/
-    @CheckCompare(value = "status",name = "状态")
+    /**
+     * 状态: 1.enable,0. disable ,-1 deleted
+     **/
+    @CheckCompare(value = "status", name = "状态")
     private Integer status;
 
-    /** 最高学历 **/
-    @CheckCompare(value = "highestEducation",name = "最高学历")
+    /**
+     * 最高学历
+     **/
+    @CheckCompare(value = "highestEducation", name = "最高学历")
     private String highestEducation;
 
-    /** 毕业院校 **/
-    @CheckCompare(value = "graduatedFrom",name = "毕业院校")
+    /**
+     * 毕业院校
+     **/
+    @CheckCompare(value = "graduatedFrom", name = "毕业院校")
     private String graduatedFrom;
 
-    /** 所学专业 **/
-    @CheckCompare(value = "major",name = "所学专业")
+    /**
+     * 所学专业
+     **/
+    @CheckCompare(value = "major", name = "所学专业")
     private String major;
 
-    /** 婚姻状态 **/
-    @CheckCompare(value = "maritalStatus",name = "婚姻状态")
+    /**
+     * 婚姻状态
+     **/
+    @CheckCompare(value = "maritalStatus", name = "婚姻状态")
     private Integer maritalStatus;
 
-    /** crmOpenId **/
+    /**
+     * crmOpenId
+     **/
     private String crmOpenId;
 
-    /** scrmOpenId **/
+    /**
+     * scrmOpenId
+     **/
     private String scrmOpenId;
 
     /**
-    *   微信unionId
-    */
+     * 微信unionId
+     */
     private String unionId;
 
     /**
-    *   紧急联系人姓名
-    */
-    @CheckCompare(value = "urgentName",name = "紧急联系人姓名")
+     * 紧急联系人姓名
+     */
+    @CheckCompare(value = "urgentName", name = "紧急联系人姓名")
     private String urgentName;
 
     /**
-    *   '紧急联系人关系'
-    */
-    @CheckCompare(value = "urgentRelation",name = "紧急联系人关系")
+     * '紧急联系人关系'
+     */
+    @CheckCompare(value = "urgentRelation", name = "紧急联系人关系")
     private String urgentRelation;
 
     /**
-    *   '紧急联系人电话'
-    */
-    @CheckCompare(value = "urgentPhone",name = "紧急联系人电话")
+     * '紧急联系人电话'
+     */
+    @CheckCompare(value = "urgentPhone", name = "紧急联系人电话")
     private String urgentPhone;
 
     /**
-    *   '家庭成员姓名'
-    */
-    @CheckCompare(value = "familyName",name = "家庭成员姓名")
+     * '家庭成员姓名'
+     */
+    @CheckCompare(value = "familyName", name = "家庭成员姓名")
     private String familyName;
 
     /**
-    *   '家庭成员关系'
-    */
-    @CheckCompare(value = "familyName",name = "家庭成员姓名")
+     * '家庭成员关系'
+     */
+    @CheckCompare(value = "familyName", name = "家庭成员姓名")
     private String familyRelation;
 
     /**
-    *   '家庭成员电话'
-    */
-    @CheckCompare(value = "familyPhone",name = "家庭成员电话")
+     * '家庭成员电话'
+     */
+    @CheckCompare(value = "familyPhone", name = "家庭成员电话")
     private String familyPhone;
 
     /**
-    *   '家庭成员职业'
-    */
-    @CheckCompare(value = "familyJob",name = "家庭成员职业")
+     * '家庭成员职业'
+     */
+    @CheckCompare(value = "familyJob", name = "家庭成员职业")
     private String familyJob;
 
     /**
-    *   '家庭成员地址'
-    */
+     * '家庭成员地址'
+     */
     private String familyAddr;
 
-    /** 业绩查看密码 */
+    /**
+     * 业绩查看密码
+     */
     private String performanceShowPassword;
 
-    /** 是否有签单 */
+    /**
+     * 是否有签单
+     */
     private Integer isSignOrder;
 
-    /** 角色名称 */
+    /**
+     * 角色名称
+     */
     @TableField(exist = false)
     private String roleName;
 
@@ -184,7 +232,9 @@ public class  SysUserInfo extends BaseModel {
      */
     private Integer isDeleted;
 
-    /** 是否修改用户名称名称(1.是，0.否) */
+    /**
+     * 是否修改用户名称名称(1.是，0.否)
+     */
     private Integer isUpdateName;
 
     /**
@@ -197,16 +247,31 @@ public class  SysUserInfo extends BaseModel {
      */
     private String imState;
 
-    /**顾问关联同步(0-未同步 1-已同步)*/
+    /**
+     * 顾问关联同步(0-未同步 1-已同步)
+     */
     private Integer adviserPush;
 
-    /**生日月*/
+    /**
+     * 生日月
+     */
     private Integer birthdayMonth;
-    /**生日天*/
+    /**
+     * 生日天
+     */
     private Integer birthdayDay;
 
     /**
      * 用户状态是否修改(1.是、0.否)
      */
     private Integer statusEdit;
+
+
+    /** 身份证照片国徽面(正面) */
+
+    private String idCardFront;
+
+    /** 身份证照片人像面(反面) */
+    private String idCardReverse;
+
 }

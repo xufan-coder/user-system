@@ -48,7 +48,7 @@
                cui.position,
                cui.company,
                cui.remark,
-                cui.im_state
+               cui.im_state
         FROM ceo_user_info AS cui
         <where>
             cui.id = #{userId}
