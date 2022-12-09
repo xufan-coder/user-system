@@ -8,10 +8,8 @@ import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
-import com.zerody.user.vo.CustomerQueryDimensionalityVo;
-import com.zerody.user.vo.ReportFormsQueryVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.UserStructureVo;
+import com.zerody.user.dto.company.SysCompanyQueryDto;
+import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -163,4 +161,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<SysComapnyInfoVo> getSysCompanyAll();
 
     List<SysComapnyInfoVo> getProCompnay();
+
+    List<SysCompanyNameQueryVo> getAllCompanyName(@Param("param") SysCompanyQueryDto param);
 }

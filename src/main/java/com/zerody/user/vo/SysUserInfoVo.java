@@ -280,7 +280,6 @@ public class SysUserInfoVo {
      */
     private Boolean isCompanyAdmin;
 
-
     /**
      * 是否为部门管理员(true：是；false：否)
      */
