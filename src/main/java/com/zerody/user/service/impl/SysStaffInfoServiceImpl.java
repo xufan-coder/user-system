@@ -1273,8 +1273,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
         userInfo.setCooperationFiles(this.commonFileService.list(fileQw));
 
-
-
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
@@ -2425,7 +2423,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             return ceoInfo;
         }
+        //通过用户id查询员工
         SysUserInfoVo userInfo = sysStaffInfoMapper.selectStaffByUserId(userId);
+
         if (DataUtil.isEmpty(userInfo)) {
             log.error("用户信息不存在！" + userId);
             throw new DefaultException("用户信息不存在");
@@ -2454,8 +2454,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
 
-        //获取荣耀和惩罚记录
+        //获取荣耀和惩罚记录、家庭成员
         getRecord(userInfo.getStaffId(), userInfo);
+        //添加合规承诺书、学历证书
+        getLetterOfUndertakingAndDiplomas(userInfo);
+
         //查询关系
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
@@ -3113,9 +3116,46 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     /**
+     * 添加合规承诺书、学历证书
+     *
+     * @param userInfo 用户信息
+     */
+    private void getLetterOfUndertakingAndDiplomas(SysUserInfoVo userInfo){
+        //合规承诺书
+        QueryWrapper<Image> imageQw = new QueryWrapper<>();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+
+        //学历证书
+        imageQw.clear();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+
+        //合作申请表
+        QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
+        fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
+        fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+        fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
+        userInfo.setCooperationFiles(this.commonFileService.list(fileQw));
+    }
+
+    /**
      * 获取荣耀和惩罚记录
+     *
+     * @param id 员工id
+     * @param userInfo 用户信息
      */
     private void getRecord(String id, SysUserInfoVo userInfo) {
+        //家庭成员
+        QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
+        fmQw.lambda().eq(FamilyMember::getUserId, userInfo.getId());
+        fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
+        userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
+
         //荣耀记录
         if(Objects.nonNull(userInfo)) {
             StaffHistoryQueryDto staffHonor = new StaffHistoryQueryDto();

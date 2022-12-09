@@ -129,7 +129,8 @@ public class SysUserInfoVo {
     private String description;
 
     /**
-     * 状态: 用户: 1.enable,0. disable ,-1 deleted；员工:0.生效、1.离职、2.删除、3.合作
+     * 状态: 用户: 1.enable,0. disable ,-1 deleted；
+     * 员工:0.生效、1.离职、2.删除、3.合作
      */
     private Integer status;
 
@@ -320,6 +321,11 @@ public class SysUserInfoVo {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date dateJoin;
 
+    /**
+     * 最高学历 枚举转换
+     *
+     * @return
+     */
     public String getHighestEducationString() {
         return EducationBackgroundEnum.getTextByCode(this.highestEducation);
     }

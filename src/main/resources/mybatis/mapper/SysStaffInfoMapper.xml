@@ -58,7 +58,7 @@
         sdi.depart_name AS departName,
         ssi.id AS staffId,
         urs.role_name AS roleName,
-        sui.status AS staffStatus,
+        ssi.status AS staffStatus,
         sui.status = 0 AS activity,
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
@@ -168,7 +168,7 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.STATUS,
+        ssi.status,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -221,6 +221,7 @@
         </where>
     </select>
 
+    <!--通过用户id查询员工-->
     <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
