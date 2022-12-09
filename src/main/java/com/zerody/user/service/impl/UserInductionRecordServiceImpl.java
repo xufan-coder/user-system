@@ -13,6 +13,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.customer.api.dto.SetUserDepartDto;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserInductionPage;
 import com.zerody.user.enums.ApproveStatusEnum;
@@ -85,6 +86,14 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
             if(DataUtil.isNotEmpty(this.getOne(qw))){
                 throw  new DefaultException("该伙伴正在申请中!");
             }
+
+            //  通过手机号 或者身份证号判断是否有因为调职在其他公司任职的伙伴账号
+
+            Boolean isTrue = sysUserInfoMapper.getByMobileOrCard(param.getMobile() , param.getCertificateCard());
+            if(isTrue){
+                throw new DefaultException("该伙伴已在其他公司任职!");
+            }
+
             //保存
             param.setCreateTime(new Date());
             param.setApproveState(ApproveStatusEnum.APPROVAL.name());
