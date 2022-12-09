@@ -269,7 +269,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.pullMq(identifier.getUserId(),null,null);
         }
         SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
-        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除设备绑定", DataCodeType.PARTNER_UNBIND);
+        UserLogUtil.addUserLog(userInfo,null,"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
 
     @Override
@@ -421,8 +421,11 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Override
     public SysUserIdentifierVo getUserIdentifierInfo(String userId){
+        //获取用户登录设备详情
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
+
         SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
+        //用户登录信息
         QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
         loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
         SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
@@ -437,8 +440,10 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 identifierVo.setLastLoginTime(logInfo.getLoginTime());
             }
         }else {
+            //查询员工详情信息
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             if(Objects.isNull(user)) {
+                //获取ceo详情
                 CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
                 identifierVo.setUsername(ceo.getUserName());
                 identifierVo.setMobile(ceo.getPhoneNumber());

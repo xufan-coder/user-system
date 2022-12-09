@@ -5,12 +5,16 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * app版本内容信息表
+ *
  * @author zhangpingping
  * @date 2021年12月16日 14:10
  */
 @Data
 public class AppVersionInfo {
-    /***/
+    /**
+     * id
+     */
     private String id;
     /**
      * 标题

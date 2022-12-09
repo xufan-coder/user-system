@@ -131,8 +131,8 @@ public class UserInfoComparDto {
     @CheckCompare(value = "userName",name = "名称")
     private String userName;
 
-    /** 性别 **/
-    @CheckCompare(value = "gender",name = "性别")
+    /** 性别(0:男，1:女，3:未知)**/
+    @CheckCompare(value = "gender",name = "性别(0:男，1:女，3:未知)")
     private Integer gender;
 
     /** 手机号 **/

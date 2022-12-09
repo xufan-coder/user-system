@@ -11,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
+ * 轮播图表
+ *
  * @author yumiaoxia
  * @since 2021-07-06
  */

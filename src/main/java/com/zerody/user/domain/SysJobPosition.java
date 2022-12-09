@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 岗位信息表
  *
  * @author               PengQiang
  * @description          DELL
@@ -39,5 +39,8 @@ public class SysJobPosition  extends BaseModel {
     /** 备注/描述 **/
     private String positionDesc;
 
+    /**
+     * 是否操作岗位(1是 0否)
+     */
     private Integer isEdit;
 }

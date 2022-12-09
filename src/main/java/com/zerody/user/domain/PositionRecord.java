@@ -8,6 +8,13 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+/**
+* @Author: chenKeFeng
+* @param
+* @Description: 任职记录表
+* @Date: 2022/11/25 11:05
+*/
+
 @Data
 public class PositionRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
