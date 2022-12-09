@@ -65,7 +65,7 @@ public class CheckUser {
                 }
             }
         }
-        if(sysUserInfo.getStatus()!=1){
+        if(DataUtil.isNotEmpty(sysUserInfo.getStatus()) && sysUserInfo.getStatus()!=1){
             if (StringUtils.isBlank(sysUserInfo.getAvatar())) {
                 throw new DefaultException("个人照片不能为空");
             }
