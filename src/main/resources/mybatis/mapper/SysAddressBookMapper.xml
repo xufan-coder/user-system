@@ -140,11 +140,11 @@
             <if test="param.companyId != null and param.companyId != ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.userType neq null">
-                and ssi.user_type=#{param.userType}
+            <if test="param.userType neq null and neq ''">
+                and ssi.user_type = #{param.userType}
             </if>
             <if test="param.status neq null">
-                and ssi.status=#{param.status}
+                and ssi.status = #{param.status}
             </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
                 and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))

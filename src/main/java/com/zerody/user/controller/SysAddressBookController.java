@@ -257,8 +257,7 @@ public class SysAddressBookController {
                 }
                 staffByCompanyDto.setIsProData(byId.getIsProData());
             }
-            
-            log.info("/get/by-company   请求入参---{}", staffByCompanyDto);
+
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());
