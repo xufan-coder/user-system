@@ -316,6 +316,7 @@ public class SysStaffInfoController {
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
+        log.info("根据用户id查询员工信息入参 {}", userId);
         try {
             return R.success(sysStaffInfoService.selectStaffByUserId(userId));
         } catch (DefaultException e) {

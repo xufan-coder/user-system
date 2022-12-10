@@ -2450,10 +2450,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         user.setUserId(userInfo.getId());
         user.setCompanyId(userInfo.getCompanyId());
 
+        //家庭成员实体
         QueryWrapper<FamilyMember> fmQw = new QueryWrapper<>();
         fmQw.lambda().eq(FamilyMember::getUserId, userInfo.getId());
         fmQw.lambda().orderByDesc(FamilyMember::getOrderNum);
         userInfo.setFamilyMembers(this.familyMemberService.list(fmQw));
+
+        //个人履历
+        QueryWrapper<UserResume> rq = new QueryWrapper<>();
+        rq.lambda().eq(UserResume::getUserId, userInfo.getId());
+        rq.lambda().orderByDesc(UserResume::getCreateTime);
+        userInfo.setUserResumes(this.userResumeService.list(rq));
 
         //获取荣耀和惩罚记录、家庭成员
         getRecord(userInfo.getStaffId(), userInfo);
