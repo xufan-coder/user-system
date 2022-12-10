@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.util.Date;
 /**
+ * 个人履历
+ *
  * @author  DaBai
  * @date  2022/11/28 14:05
  */
