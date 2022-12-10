@@ -81,9 +81,8 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
 
             SysUserInfo userInfo = sysUserInfoMapper.selectById(param.getLeaveUserId());
             Boolean isTrue = sysUserInfoMapper.getByMobileOrCard(userInfo.getPhoneNumber() , userInfo.getCertificateCard());
-            log.info("伙伴手机号: {}----------{}----------{}",userInfo.getPhoneNumber() , userInfo.getCertificateCard(),isTrue);
             if(isTrue){
-                throw new DefaultException("该伙伴已在其他公司任职!"+ userInfo.getPhoneNumber() + "===="+ userInfo.getCertificateCard()+"=====" +isTrue);
+                throw new DefaultException("该伙伴已在其他公司任职!");
             }
 
             //保存
