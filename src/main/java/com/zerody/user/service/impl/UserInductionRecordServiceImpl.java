@@ -16,6 +16,7 @@ import com.zerody.user.service.UserInductionRecordService;
 import com.zerody.user.vo.LeaveUserInfoVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
 import com.zerody.user.vo.UserInductionRecordVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.Date;
  * @author kuang
  */
 @Service
+@Slf4j
 public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRecordMapper, UserInductionRecord> implements UserInductionRecordService {
 
     @Autowired
@@ -79,6 +81,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
 
             SysUserInfo userInfo = sysUserInfoMapper.selectById(param.getLeaveUserId());
             Boolean isTrue = sysUserInfoMapper.getByMobileOrCard(userInfo.getPhoneNumber() , userInfo.getCertificateCard());
+            log.info("伙伴手机号: {}----------{}----------{}",userInfo.getPhoneNumber() , userInfo.getCertificateCard(),isTrue);
             if(isTrue){
                 throw new DefaultException("该伙伴已在其他公司任职!");
             }
