@@ -139,7 +139,7 @@ public class SysUserInfo extends BaseModel {
     private String major;
 
     /**
-     * 婚姻状态
+     * 婚姻状态(未婚0 ，已婚1， 2离婚)
      **/
     @CheckCompare(value = "maritalStatus", name = "婚姻状态")
     private Integer maritalStatus;

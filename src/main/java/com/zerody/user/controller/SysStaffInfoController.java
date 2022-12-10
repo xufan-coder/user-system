@@ -222,7 +222,6 @@ public class SysStaffInfoController {
         }
     }
 
-
     /**
     * @Author: chenKeFeng
     * @param
@@ -232,7 +231,7 @@ public class SysStaffInfoController {
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         log.info("app编辑伙伴入参： {}", setSysUserInfoDto);
-        log.info("edit注册时间： {}", setSysUserInfoDto.getRegisterTime());
+        log.info("update企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             UserVo user = UserUtils.getUser();
             sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
