@@ -1,26 +1,17 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.customer.api.dto.SetUserDepartDto;
-import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserInductionPage;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.mapper.*;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.SysUserInfoService;
-import com.zerody.user.service.UnionStaffDeparService;
 import com.zerody.user.service.UserInductionRecordService;
 import com.zerody.user.vo.LeaveUserInfoVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
@@ -28,10 +19,7 @@ import com.zerody.user.vo.UserInductionRecordVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * @author kuang
@@ -80,7 +68,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         if (StringUtils.isEmpty(param.getId())) {
             //判断是否已在申请中
             QueryWrapper<UserInductionRecord> qw = new QueryWrapper<>();
-            qw.lambda().eq(UserInductionRecord::getUserId, param.getLeaveUserId());
+            qw.lambda().eq(UserInductionRecord::getLeaveUserId, param.getLeaveUserId());
             qw.lambda().eq(UserInductionRecord::getApproveState,ApproveStatusEnum.APPROVAL.name());
             qw.lambda().eq(UserInductionRecord::getDeleted,YesNo.NO);
             if(DataUtil.isNotEmpty(this.getOne(qw))){
@@ -89,7 +77,8 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
 
             //  通过手机号 或者身份证号判断是否有因为调职在其他公司任职的伙伴账号
 
-            Boolean isTrue = sysUserInfoMapper.getByMobileOrCard(param.getMobile() , param.getCertificateCard());
+            SysUserInfo userInfo = sysUserInfoMapper.selectById(param.getLeaveUserId());
+            Boolean isTrue = sysUserInfoMapper.getByMobileOrCard(userInfo.getPhoneNumber() , userInfo.getCertificateCard());
             if(isTrue){
                 throw new DefaultException("该伙伴已在其他公司任职!");
             }
@@ -99,6 +88,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
             param.setApproveState(ApproveStatusEnum.APPROVAL.name());
             param.setDeleted(YesNo.NO);
             param.setCreateBy(param.getUserId());
+            param.setCertificateCard(userInfo.getCertificateCard());
             param.setId(UUIDutils.getUUID32());
             this.save(param);
         }else {
