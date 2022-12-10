@@ -356,9 +356,7 @@ public class SysUserInfoVo {
      */
     private List<UserResume> userResumes;
 
-
     /** 身份证照片国徽面(正面) */
-
     private String idCardFront;
 
     /** 身份证照片人像面(反面) */

@@ -20,7 +20,6 @@ public class CommonFile {
      */
     private String connectId;
 
-
     /**
      * 文件名称
      */
