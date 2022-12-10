@@ -659,7 +659,7 @@
          SELECT count(1) > 0
         FROM sys_user_info
         WHERE  `status` in (0, 3) and  (  phone_number = #{mobile}
-        <if test="certificateCard neq null and certificateCard new ''">
+        <if test="certificateCard neq null and certificateCard neq ''">
             or certificate_card = #{certificateCard}
         </if>
         )
