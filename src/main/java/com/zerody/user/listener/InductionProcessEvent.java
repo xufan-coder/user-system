@@ -11,6 +11,7 @@ import com.zerody.flow.api.state.FlowState;
 import com.zerody.flow.client.event.FlowEventHandler;
 import com.zerody.user.domain.UserInductionRecord;
 import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.handler.ImMessageHandler;
 import com.zerody.user.service.UserInductionRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,8 @@ public class InductionProcessEvent implements FlowEventHandler {
 
     @Autowired
     private UserInductionRecordService inductionRecordService;
-
+    @Autowired
+    private ImMessageHandler imMessageHandler;
     @Override
     public void handle(FlowEventData eventData) {
         log.info("全局处理器收到消息-【{}】业务-结束的【{}】：{}",
@@ -68,7 +70,7 @@ public class InductionProcessEvent implements FlowEventHandler {
             }
 
         }
-
+        imMessageHandler.handle(eventData);
         FlowEventType eventType = eventData.getEventType();
         log.info("【事件类型】:{}", eventType.getStateName());
         log.debug("【流程变量】：{}", eventData.getVariables());
