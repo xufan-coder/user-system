@@ -209,6 +209,7 @@ public class SysStaffInfoController {
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         log.info("app添加伙伴入参 {}", setSysUserInfoDto);
+        log.info("企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
@@ -320,11 +321,11 @@ public class SysStaffInfoController {
         try {
             return R.success(sysStaffInfoService.selectStaffByUserId(userId));
         } catch (DefaultException e) {
-            log.error("根据用户id查询员工信息出错:{}", e.getMessage());
-            return R.error("根据用户id查询员工信息");
+            log.error("查询员工信息出错:{}", e.getMessage());
+            return R.error("查询员工信息信息");
         } catch (Exception e) {
-            log.error("根据用户id查询员工信息出错:{}", e, e);
-            return R.error("根据用户id查询员工信息");
+            log.error("查询员工信息出错:{}", e, e);
+            return R.error("查询员工信息信息");
         }
     }
 
