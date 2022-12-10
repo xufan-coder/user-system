@@ -339,6 +339,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setUserId(sysUserInfo.getId());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
+        staff.setDateLeft(setSysUserInfoDto.getDateLeft());
+        staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         log.info("添加员工入库参数--{}", JSON.toJSONString(staff));
         //staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
