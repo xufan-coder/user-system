@@ -208,8 +208,6 @@ public class SysStaffInfoController {
      */
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
-        log.info("app添加伙伴入参 {}", setSysUserInfoDto);
-        log.info("企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
@@ -230,8 +228,6 @@ public class SysStaffInfoController {
     */
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
-        log.info("app编辑伙伴入参： {}", setSysUserInfoDto);
-        log.info("update企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             UserVo user = UserUtils.getUser();
             sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
