@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.util.Date;
 /**
+ * 个人履历
+ *
  * @author  DaBai
  * @date  2022/11/28 14:05
  */
@@ -12,6 +14,9 @@ public class UserResume {
 
     private String id;
 
+    /**
+     * 用户id
+     */
     private String userId;
 
     /**
@@ -34,6 +39,9 @@ public class UserResume {
     */
     private String jobDescription;
 
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
 

@@ -46,6 +46,7 @@
       AND comp_id = #{compId}
   </select>
 
+    <!--分页查询员工-->
     <select id="getPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         DISTINCT sui.id AS id,
@@ -57,7 +58,7 @@
         sdi.depart_name AS departName,
         ssi.id AS staffId,
         urs.role_name AS roleName,
-        sui.status AS staffStatus,
+        ssi.status AS staffStatus,
         sui.status = 0 AS activity,
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
@@ -150,6 +151,7 @@
         </where>
     </select>
 
+    <!--查看员工详情-->
     <select id="selectStaffById" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
@@ -166,7 +168,7 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.STATUS,
+        ssi.status,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -219,8 +221,10 @@
         </where>
     </select>
 
+    <!--通过用户id查询员工-->
     <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
+        sui.id,
         sci.company_name,
         ssi.id staffId,
         sui.user_name,
@@ -1134,6 +1138,35 @@
     </select>
 
 
+    <!--获取员工信息-->
+    <select id="querySysStaffInfoList" resultType="com.zerody.user.vo.AppUserVo" parameterType="java.lang.String">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			left join union_staff_depart usd on usd.staff_id = ssi.id
+			left join sys_department_info sdi on sdi.id = usd.department_id
+			join sys_company_info sci on sci.id = sdi.comp_id
+		    <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.departmentId neq null and param.departmentId neq ''">
+                    sdi.id = #{param.departmentId}
+                </if>
+            </where>
+    </select>
+
+    <!--查询企业下的员工信息-->
+    <select id="queryCompStaff" resultType="com.zerody.user.vo.AppUserVo">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			join sys_company_info sci on sci.id = ssi.comp_id
+            <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.compId neq null and param.compId neq ''">
+                    sci.id = #{param.compId}
+                </if>
+            </where>
+    </select>
+
+
     <update id="updateStatus">
         update sys_staff_info set status = #{status}, date_left = now()
         <if test="leaveReason neq null and leaveReason neq ''">
@@ -1142,4 +1175,27 @@
 
         where id = #{staffId}
     </update>
+
+    <select id="getLeaveUserInfo" resultType="com.zerody.user.vo.LeaveUserInfoVo">
+        select si.user_id,ui.user_name, ui.phone_number as 'mobile',ui.certificate_card as 'id_card',
+        urs.role_name, di.depart_name, si.date_left as 'leave_time',si.leave_reason
+        from sys_staff_info si
+        join sys_user_info ui on si.user_id = ui.id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = si.id
+        left join union_staff_depart sd on sd.staff_id = si.id
+        left join sys_department_info di on sd.department_id = di.id
+        where si.`status` = 1 and si.user_id = #{userId}
+    </select>
+
+
+    <select id="getLeaveUserByCard" resultType="com.zerody.user.vo.LeaveUserInfoVo">
+        select si.user_id,sc.company_name,di.depart_name
+        from sys_staff_info si
+        join sys_user_info sui on si.user_id = sui.id
+        left join sys_company_info sc on si.comp_id = sc.id
+        left join union_staff_depart sd on sd.staff_id = si.id
+        left join sys_department_info di on sd.department_id = di.id
+        where si.`status` = 1 and sui.certificate_card = #{card}
+        order by sui.create_time desc limit 1
+    </select>
 </mapper>

@@ -17,11 +17,13 @@ import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.company.SysCompanyQueryDto;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SalesmanRoleInfoVo;
 import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.SysCompanyNameQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -444,6 +447,39 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         } catch (Exception e) {
             log.error("获取企业组织架构出错:{}", e, e);
             return R.error("获取企业组织架构出错");
+        }
+    }
+
+    /**
+     *
+     *
+     * @author               PengQiang
+     * @description          企业列表(名称、id)
+     * @date                 2022/12/9 16:12
+     * @param                []
+     * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.SysCompanyNameQueryVo>>
+     */
+    @GetMapping("/get/all-company/comp-name")
+    public DataResult<List<SysCompanyNameQueryVo>> getAllCompanyName() {
+        try {
+            SysCompanyQueryDto param = new SysCompanyQueryDto();
+            List<String> companyIds = new ArrayList<>();
+            UserVo user = UserUtils.getUser();
+            companyIds.add(user.getCompanyId());
+            if (user.isBack()) {
+                companyIds = checkUtil.setBackCompany(user.getUserId());
+            }
+            if (user.isCEO()) {
+                companyIds = this.checkUtil.setCeoCompany(user.getUserId());
+            }
+            List<SysCompanyNameQueryVo> data = this.sysCompanyInfoService.getAllCompanyName(param);
+            return R.success(data);
+        } catch (DefaultException e) {
+            log.warn("获取关联企业校验：{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.warn("获取关联企业出错：{}", e, e);
+            return R.error(e.getMessage());
         }
     }
 }

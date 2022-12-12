@@ -88,7 +88,6 @@ public class SysStaffRelationServiceImpl extends ServiceImpl<SysStaffRelationMap
     public SysStaffInfoRelationVo queryRelationList(SysStaffRelationDto sysStaffRelationDto) {
         SysStaffInfoRelationVo sysStaffInfoRelationVo=new SysStaffInfoRelationVo();
         List<SysStaffRelationVo> sysStaffRelationVos = this.baseMapper.queryRelationList(sysStaffRelationDto);
-        log.info("关系查询:{}", JSON.toJSONString(sysStaffRelationVos));
         sysStaffRelationVos.forEach(item -> {
             if (DataUtil.isNotEmpty(item.getStaffUserId())) {
                 StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(item.getStaffUserId());

@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.SysAddressBookService;
@@ -7,7 +8,7 @@ import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
 import com.zerody.user.vo.SysAddressBookVo;
-import groovy.util.logging.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,19 +31,18 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
-    public List<DepartInfoVo> queryDepartInfo(String id) {
-        List<DepartInfoVo> departInfoVos= sysMailListMapper.queryDepartInfo(id);
-        return departInfoVos;
+    public List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto) {
+        return sysMailListMapper.queryDepartInfo(departInfoDto);
     }
 
     @Override
-    public List<DepartInfoVo> queryTeam(String id,String departmentId) {
-        List<DepartInfoVo> departInfoVoList=sysMailListMapper.queryTeam(id,departmentId);
-        return departInfoVoList;
+    public List<DepartInfoVo> queryTeam(DepartInfoDto departInfoDto) {
+        return sysMailListMapper.queryTeam(departInfoDto);
     }
 
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
+        log.info("/get/by-company   请求入参---{}", staffByCompanyDto);
         return sysMailListMapper.getStaffByCompany(staffByCompanyDto);
     }
 }

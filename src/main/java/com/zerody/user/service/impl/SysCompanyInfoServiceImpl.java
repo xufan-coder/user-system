@@ -29,6 +29,7 @@ import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
+import com.zerody.user.dto.company.SysCompanyQueryDto;
 import com.zerody.user.enums.UserLoginStatusEnum;
 import com.zerody.user.feign.CardFeignService;
 import com.zerody.user.feign.ContractFeignService;
@@ -314,8 +315,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             return companys;
         }
         List<String> companyIds = null;
-        if (UserUtils.getUser().isBackAdmin()) {
+        if (UserUtils.getUser().isBack()) {
             companyIds = this.checkUtil.setBackCompany(UserUtils.getUser().getUserId());
+        }
+
+        if (UserUtils.getUser().isCEO()) {
+            companyIds = this.checkUtil.setCeoCompany(UserUtils.getUser().getUserId());
         }
         //如果不是crm系统就查全部企业
         companys = sysCompanyInfoMapper.getAllCompnay(companyIds);
@@ -770,6 +775,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             c.setDeparts(departmentInfoService.getAllDepPersonByCompanyId(c.getId()));
         });
         return structure;
+    }
+
+    @Override
+    public List<SysCompanyNameQueryVo> getAllCompanyName(SysCompanyQueryDto param) {
+        return this.sysCompanyInfoMapper.getAllCompanyName(param);
     }
 
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){

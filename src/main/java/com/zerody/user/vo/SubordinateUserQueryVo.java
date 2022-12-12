@@ -11,12 +11,24 @@ import lombok.Data;
 @Data
 public class SubordinateUserQueryVo {
 
+    /**
+     * userId
+     */
     private String userId;
 
+    /**
+     * 用户名称
+     */
     private  String userName;
 
+    /**
+     * 电话
+     */
     private String mobile;
 
+    /**
+     * 部门名称
+     */
     private String departName;
     /**
      * 岗位名称
@@ -33,8 +45,15 @@ public class SubordinateUserQueryVo {
      */
     private String companyName;
 
-    /**企业id*/
+    /**
+     * 企业id
+     */
     private String companyId;
 
+    /**
+     * 头衔
+     */
     private String avatar;
+
+    private Integer status;
 }

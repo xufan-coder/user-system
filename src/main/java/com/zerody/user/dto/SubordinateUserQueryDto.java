@@ -31,4 +31,7 @@ public class SubordinateUserQueryDto {
 
     /**部门名称*/
     private String departName;
+
+    /**是否查询离职伙伴   0-否 1-是*/
+    private Integer isQuit;
 }

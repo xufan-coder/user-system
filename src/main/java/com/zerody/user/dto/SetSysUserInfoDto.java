@@ -7,6 +7,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UserResume;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -24,7 +25,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /**
      * 企业ID
      */
-    @NotEmpty(message = "请选择企业！")
+    @NotBlank(message = "请选择企业！")
     private String companyId;
 
     /**
@@ -48,7 +49,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
     private String departId;
 
     /**
-     * 员工状态
+     * 员工状态(状态  0合约中、 1已解约、 3合作中')
      */
     private Integer status;
 
@@ -71,6 +72,7 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 离职原因
      */
     private String leaveReason;
+
     /**
      * 入职时间
      */
@@ -82,20 +84,24 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private Integer workingYears;
 
-
     /**
      * 荣耀
      */
     private List<StaffHistoryDto> staffHistoryHonor;
+
     /**
-         * 惩罚
+     * 惩罚
      */
     private List<StaffHistoryDto> staffHistoryPunishment;
+
     /**
-     * 关系
+     * 企业内部关系信息
      */
     private List<SysStaffRelationDto> staffRelationDtoList;
 
+    /**
+     * 家庭成员
+     */
     private List<FamilyMember> familyMembers;
 
     /**
@@ -135,20 +141,33 @@ public class SetSysUserInfoDto extends SysUserInfo {
      */
     private List<UserResume> userResumes;
 
-
-    /** 身份证照片国徽面(正面) */
-
+    /**
+     * 身份证照片国徽面(正面)
+     */
     private String idCardFront;
 
-    /** 身份证照片人像面(反面) */
+    /**
+     * 身份证照片人像面(反面)
+     */
     private String idCardReverse;
 
-    /** 合规承诺书 */
+    /**
+     * 合规承诺书
+     */
     private List<String> complianceCommitments;
 
-    /** 学历证书 */
+    /**
+     * 学历证书
+     */
     private List<String> diplomas;
 
-    /** 合作申请表 */
+    /**
+     * 合作申请表
+     */
     private List<CommonFile> cooperationFiles;
+
+    /**
+     * 终端
+     */
+    private String terminals;
 }

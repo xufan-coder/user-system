@@ -65,7 +65,7 @@ public class CheckUser {
                 }
             }
         }
-        if(sysUserInfo.getStatus()!=1){
+        if(DataUtil.isNotEmpty(sysUserInfo.getStatus()) && sysUserInfo.getStatus()!=1){
             if (StringUtils.isBlank(sysUserInfo.getAvatar())) {
                 throw new DefaultException("个人照片不能为空");
             }
@@ -79,6 +79,7 @@ public class CheckUser {
     }
 
     public static void checkParamList(SetSysUserInfoDto setSysUserInfoDto) {
+        //合规承诺书
         List<String> complianceCommitments = setSysUserInfoDto.getComplianceCommitments();
         List<String> diplomas = setSysUserInfoDto.getDiplomas();
         if (DataUtil.isEmpty(complianceCommitments)) {
@@ -105,9 +106,9 @@ public class CheckUser {
                 if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getWorkDuration())) {
                     throw new DefaultException("履历" + index + "任职时间为空");
                 }
-                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getJobDescription())) {
-                    throw new DefaultException("履历" + index + "工作职责为空");
-                }
+//                if (io.micrometer.core.instrument.util.StringUtils.isEmpty(resume.getJobDescription())) {
+//                    throw new DefaultException("履历" + index + "工作职责为空");
+//                }
             }
         }
     }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.UserInductionRecordMapper" >
+
+    <select id="getInductionPage" resultType="com.zerody.user.vo.UserInductionRecordVo">
+        select ui.id,sui.user_name as 'approveName',
+        ui.approve_state as 'approveState',
+        ui.sign_time as 'approveTime',
+        ui.process_id,
+        ui.process_key
+		from user_induction_record ui
+		join sys_user_info sui on ui.leave_user_id = sui.id
+		<where>
+            <if test="queryDto.approveState neq null and queryDto.approveState neq ''">
+                and ui.approve_state = #{queryDto.approveState}
+            </if>
+            <if test="queryDto.userId neq null and queryDto.userId neq ''">
+                and ui.create_by = #{queryDto.userId}
+            </if>
+            <if test="queryDto.begin neq null ">
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &gt;=  DATE_FORMAT(#{queryDto.begin},'%Y-%m-%d')
+            </if>
+            <if test="queryDto.end neq null ">
+                and DATE_FORMAT(ui.sign_time,'%Y-%m-%d') &lt; DATE_FORMAT(#{queryDto.end},'%Y-%m-%d')
+            </if>
+        </where>
+        order by ui.sign_time desc, ui.create_time desc
+    </select>
+
+    <select id="getInductionInfo" resultType="com.zerody.user.vo.UserInductionRecordInfoVo">
+        select ui.id,ui.sign_time,ui.sign_reason,ui.company_id,ui.depart_id, di.depart_name,
+		ui.role_name,ui.role_id,ui.leave_user_id
+		from user_induction_record ui
+		left join sys_department_info di on ui.depart_id = di.id
+		where ui.id = #{id}
+    </select>
+</mapper>
