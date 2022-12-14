@@ -214,7 +214,7 @@ public class SysStaffInfoController {
         } catch (DefaultException e){
             log.error("app添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("app添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("添加合作伙伴失败,请求异常");
         }
@@ -252,7 +252,7 @@ public class SysStaffInfoController {
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
@@ -272,7 +272,7 @@ public class SysStaffInfoController {
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("获取app伙伴详情错误:{}", e, e);
             return R.error("获取app伙伴详情,请求异常");
         }

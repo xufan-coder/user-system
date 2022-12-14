@@ -93,7 +93,7 @@ public class SysUserInfo extends BaseModel {
     /**
      * 注册时间
      **/
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date registerTime;
 
     /**
@@ -121,7 +121,9 @@ public class SysUserInfo extends BaseModel {
     private Integer status;
 
     /**
-     * 最高学历
+     * 最高学历(枚举)
+     * PRIMARY_SCHOOL("小学"), JUNIOR_HIGH("初中"), TECHNICAL_SECONDARY("中专"), SENIOR_HIGH("高中"),
+     * JUNIOR_COLLEGE("大专"), REGULAR_COLLEGE("本科"), MASTER("硕士"), DOCTOR("博士");
      **/
     @CheckCompare(value = "highestEducation", name = "最高学历")
     private String highestEducation;
@@ -267,11 +269,14 @@ public class SysUserInfo extends BaseModel {
     private Integer statusEdit;
 
 
-    /** 身份证照片国徽面(正面) */
-
+    /**
+     * 身份证照片国徽面(正面)
+     */
     private String idCardFront;
 
-    /** 身份证照片人像面(反面) */
+    /**
+     * 身份证照片人像面(反面)
+     */
     private String idCardReverse;
 
 }
