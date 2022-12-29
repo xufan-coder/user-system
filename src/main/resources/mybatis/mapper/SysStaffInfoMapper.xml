@@ -67,6 +67,7 @@
         sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
+        sui.use_state,
         ssi.is_diamond_member
         FROM
         sys_user_info sui
