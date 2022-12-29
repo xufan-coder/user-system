@@ -110,6 +110,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult getUserInfoById(@PathVariable String id){
         return R.success(sysUserInfoService.getUserInfoById(id));
     }
+
     /**
      * 根据用户ID查询单个用户(白名单)
      */
