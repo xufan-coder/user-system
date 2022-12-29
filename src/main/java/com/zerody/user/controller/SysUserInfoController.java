@@ -1693,4 +1693,20 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+    *   获取所有培训班次
+    */
+    @GetMapping("/train-list/get")
+    public DataResult<List<String>> getUserAllTrainNo() {
+        try {
+            List<String> result = this.sysUserInfoService.getUserAllTrainNo();
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取所有培训班次出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取所有培训班次出错:{}",e,e);
+            return R.error("获取所有培训班次出错"+ e);
+        }
+    }
 }

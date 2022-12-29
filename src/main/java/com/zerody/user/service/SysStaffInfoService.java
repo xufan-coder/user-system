@@ -112,10 +112,10 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
 
     CopyStaffInfoVo selectStaffInfo(String staffId);
-    
+
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 根据用户id查询员工信息
     * @Date: 2022/12/9 9:55
     */
