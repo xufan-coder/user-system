@@ -284,4 +284,9 @@ public class SysUserInfo extends BaseModel {
     */
     private String trainNo;
 
+    /**
+     * 账号状态 0正常   1已冻结
+     */
+    private Integer useState;
+
 }

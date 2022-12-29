@@ -119,6 +119,9 @@
             <if test="staff.trainNo neq null">
                 AND sui.train_no = #{staff.trainNo}
             </if>
+              <if test="staff.useState neq null">
+                AND sui.use_state = #{staff.useState}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
