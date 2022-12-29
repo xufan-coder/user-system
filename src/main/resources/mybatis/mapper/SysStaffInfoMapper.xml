@@ -116,6 +116,9 @@
             <if test="staff.isDiamondMember neq null">
                 AND ssi.is_diamond_member = #{staff.isDiamondMember}
             </if>
+            <if test="staff.trainNo neq null">
+                AND sui.train_no = #{staff.trainNo}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
@@ -205,7 +208,8 @@
         sui.im_state,
         ssi.is_diamond_member,
         sui.id_card_reverse,
-        sui.id_card_front
+        sui.id_card_front,
+        sui.train_no
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id

@@ -279,4 +279,9 @@ public class SysUserInfo extends BaseModel {
      */
     private String idCardReverse;
 
+    /**
+    *    培训班次
+    */
+    private String trainNo;
+
 }

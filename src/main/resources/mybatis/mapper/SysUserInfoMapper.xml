@@ -193,6 +193,7 @@
                sdi.id            AS departId,
                sdi.depart_name   AS departName,
                sjp.id            AS positionId,
+               sui.id_card_front    AS idCardFront,
                sjp.position_name AS positionName
         FROM sys_user_info sui
                  LEFT JOIN sys_staff_info ssi ON sui.id = ssi.user_id

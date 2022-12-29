@@ -223,4 +223,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**获取离职伙伴信息*/
     LeaveUserInfoVo getQuitUserInfo(String userId);
+
+    void updateIdCard(IdCardUpdateDto dto);
 }
