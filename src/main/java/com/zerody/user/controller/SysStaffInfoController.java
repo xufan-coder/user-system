@@ -14,6 +14,7 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
+import com.zerody.user.dto.IdCardUpdateDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
@@ -196,6 +197,23 @@ public class SysStaffInfoController {
         }  catch (Exception e) {
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("修改员工信息失败,请求异常");
+        }
+    }
+
+    /**
+    *   APP上传修改身份证照片
+    */
+    @PutMapping("/id-card/update")
+    public DataResult<Object> updateIdCard(@Validated @RequestBody IdCardUpdateDto dto){
+        try {
+            sysStaffInfoService.updateIdCard(dto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("app上传身份证错误:{}" , e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("app上传身份证错误:{} ", e);
+            return R.error("上传身份证错误,请求异常");
         }
     }
 

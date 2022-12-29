@@ -116,6 +116,11 @@ public class BosStaffInfoVo {
     private String resumeUrl;
 
     /**
+     * 账号状态
+     */
+    private Integer useState;
+
+    /**
      * 企业id 集合
      */
     @TableField(exist = false)
