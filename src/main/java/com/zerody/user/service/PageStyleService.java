@@ -1,6 +1,8 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.user.domain.PageStyle;
 import com.zerody.user.dto.PageStyleDto;
 import com.zerody.user.vo.PageStyleVo;
@@ -35,5 +37,13 @@ public interface PageStyleService extends IService<PageStyle> {
     *  @date          2022/12/30 13:47
     *  @return        java.lang.String
     */
-    PageStyle getNowPageStyle(Date time);
+    PageStyle getNowPageStyle();
+    /**
+    *
+    *  @description   分页查询所有页面风格
+    *  @author        YeChangWei
+    *  @date          2022/12/30 16:20
+    *  @return        com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.PageStyleVo>
+    */
+    IPage<PageStyleVo> getAllPageStyle(PageQueryDto dto);
 }

@@ -1,7 +1,10 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.PageStyle;
@@ -49,8 +52,15 @@ public class PageStyleServiceImpl extends ServiceImpl<PageStyleMapper, PageStyle
     }
 
     @Override
-    public PageStyle getNowPageStyle(Date time) {
-        PageStyle pageStyle = this.baseMapper.getNowPageStyle(time);
+    public PageStyle getNowPageStyle() {
+        PageStyle pageStyle = this.baseMapper.getNowPageStyle();
         return pageStyle;
+    }
+
+    @Override
+    public IPage<PageStyleVo> getAllPageStyle(PageQueryDto dto) {
+        IPage<PageStyleVo> page = new Page<>(dto.getCurrent(),dto.getSize());
+        IPage<PageStyleVo> pageVo = this.baseMapper.getAllPageStyle(page);
+        return pageVo;
     }
 }

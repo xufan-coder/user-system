@@ -1,6 +1,8 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
@@ -104,7 +106,7 @@ public class PageStyleController {
     @GetMapping("/get-now")
     public DataResult<PageStyle> getNowPageStyle(){
         try {
-            PageStyle pageStyle = this.pageStyleService.getNowPageStyle(new Date());
+            PageStyle pageStyle = this.pageStyleService.getNowPageStyle();
             return R.success(pageStyle);
         } catch (DefaultException e) {
             log.error("获取当前时段的页面风格错误：{}", e.getMessage());
@@ -112,6 +114,26 @@ public class PageStyleController {
         } catch (Exception e) {
             log.error("获取当前时段的页面风格错误：{}", e, e);
             return R.error("获取当前时段的页面风格错误！");
+        }
+    }
+    /**
+    *
+    *  @description    分页查询所有页面风格
+    *  @author        YeChangWei
+    *  @date          2022/12/30 16:08
+    *  @return        com.zerody.common.api.bean.DataResult<com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.PageStyleVo>>
+    */
+    @GetMapping("/get-page")
+    public DataResult<IPage<PageStyleVo>> getAllPageStyle(PageQueryDto dto){
+        try {
+            IPage<PageStyleVo> styleVoIPage = this.pageStyleService.getAllPageStyle(dto);
+            return R.success(styleVoIPage);
+        } catch (DefaultException e) {
+            log.error("分页查询所有页面风格错误：{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("分页查询所有页面风格错误：{}", e, e);
+            return R.error("分页查询所有页面风格错误！");
         }
     }
 
