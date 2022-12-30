@@ -25,14 +25,16 @@ public class PageStyleServiceImpl extends ServiceImpl<PageStyleMapper, PageStyle
     public void updatePageStyle(PageStyleDto dto) {
         PageStyle pageStyle = new PageStyle();
         BeanUtils.copyProperties(dto,pageStyle);
-        PageStyle one = this.baseMapper.selectOne(null);
-        if(DataUtil.isNotEmpty(one)){
+        this.updateById(pageStyle);
+
+       /* PageStyle one = this.getById(dto.getId());
+       if(DataUtil.isNotEmpty(one)){
             pageStyle.setId(one.getId());
             this.baseMapper.updateById(pageStyle);
         } else {
             pageStyle.setCreateTime(new Date());
             this.baseMapper.insert(pageStyle);
-        }
+        }*/
     }
 
     @Override

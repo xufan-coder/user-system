@@ -9,6 +9,8 @@ import com.zerody.user.dto.PageStyleDto;
 import com.zerody.user.service.PageStyleService;
 import com.zerody.user.vo.PageStyleVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +36,12 @@ public class PageStyleController {
     *  @date          2022/12/30 9:55
     *  @return        com.zerody.common.api.bean.DataResult<java.lang.Object>
     */
-    @PostMapping("/add-or-update")
+    @Update("/update")
     public DataResult<Object> updatePageStyle(@RequestBody @Valid PageStyleDto dto){
         try {
+            if(StringUtils.isEmpty(dto.getId())){
+                return R.error("id不能为空");
+            }
             if(DataUtil.isEmpty(dto.getState())){
                 return R.error("状态不能为空");
             }
@@ -47,18 +52,15 @@ public class PageStyleController {
                 return R.error("结束时间不能为空");
             }
             //生效时间是否晚于当前时间
-            boolean b = dto.getStartTime().before(new Date());
-            if(b == true){
+            if(dto.getStartTime().before(new Date())){
                 return R.error("生效时间不能小于当前时间");
             }
             //结束时间是否晚于当前时间
-            boolean t = dto.getEndTime().before(new Date());
-            if(t == true){
+            if(dto.getEndTime().before(new Date())){
                 return R.error("结束时间不能小于当前时间");
             }
             //结束时间是否晚于生效时间
-            boolean n = dto.getEndTime().before(dto.getStartTime());
-            if(n == true){
+            if(dto.getEndTime().before(dto.getStartTime())){
                 return R.error("结束时间不能小于生效时间");
             }
             this.pageStyleService.updatePageStyle(dto);

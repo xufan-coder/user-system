@@ -14,6 +14,8 @@ import java.util.Date;
 @Data
 public class PageStyleDto {
 
+    private String id;
+
     /**
      * 页面样式名称
      */
