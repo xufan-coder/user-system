@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @Data
-public class BosStaffInfoVo {
+public class  BosStaffInfoVo {
 
     /**
      * ID
