@@ -151,16 +151,22 @@
 
     <select id="updateInternalControl" resultType="com.zerody.user.vo.InternalControlVo">
         select
-            ssi.user_id,
-            ssi.user_name,
-            ssi.id AS staffId,
-            sci.company_name,
-            sui.phone_number AS phone,
-            sci.id is not null AS isInternalControl
+        ssi.user_id,
+        ssi.user_name,
+        ssi.id AS staffId,
+        sci.company_name,
+        sui.phone_number AS phone,
+        sci.id is not null AS isInternalControl,
+        sui.certificate_card,
+        sdi.depart_name,
+        urs.role_name
         from
         sys_staff_info AS ssi
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
         LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
+        LEFT JOIN union_staff_depart AS usd ON ssi.id=usd.staff_id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id=usd.department_id
+        LEFT JOIN union_role_staff AS urs ON ssi.id=urs.staff_id
         <where>
             (ssi.status=0 or ssi.status=2)
             <if test="param.phoneNumber neq null and param.phoneNumber neq ''">

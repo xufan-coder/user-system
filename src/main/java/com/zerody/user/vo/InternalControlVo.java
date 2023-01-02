@@ -23,4 +23,13 @@ public class InternalControlVo {
     /** 公司名称 **/
     private String companyName;
 
+    /** 部门名称 **/
+    private String departName;
+
+    /** 角色名 **/
+    private String roleName;
+
+    /** 证件号码 **/
+    private String certificateCard;
+
 }
