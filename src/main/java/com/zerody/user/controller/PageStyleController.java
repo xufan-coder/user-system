@@ -38,7 +38,7 @@ public class PageStyleController {
     *  @date          2022/12/30 9:55
     *  @return        com.zerody.common.api.bean.DataResult<java.lang.Object>
     */
-    @Update("/update")
+    @PutMapping("/update")
     public DataResult<Object> updatePageStyle(@RequestBody @Valid PageStyleDto dto){
         try {
             if(StringUtils.isEmpty(dto.getId())){
