@@ -15,6 +15,8 @@ import com.zerody.user.vo.PageStyleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -28,6 +30,12 @@ public class PageStyleServiceImpl extends ServiceImpl<PageStyleMapper, PageStyle
     public void updatePageStyle(PageStyleDto dto) {
         PageStyle pageStyle = new PageStyle();
         BeanUtils.copyProperties(dto,pageStyle);
+        try {
+            pageStyle.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dto.getStartTime()));
+            pageStyle.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dto.getEndTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.updateById(pageStyle);
 
        /* PageStyle one = this.getById(dto.getId());
