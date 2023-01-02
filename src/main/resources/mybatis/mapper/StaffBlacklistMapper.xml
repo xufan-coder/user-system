@@ -162,13 +162,13 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
         LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
         <where>
+            (ssi.status=0 or ssi.status=2)
             <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
                 AND sui.phone_number = #{param.phoneNumber}
             </if>
             <if test="param.certificateCard neq null and param.certificateCard neq ''">
                 AND sui.certificate_card = #{param.certificateCard}
             </if>
-            AND ssi.status=0 or ssi.status=2
         </where>
 
     </select>
