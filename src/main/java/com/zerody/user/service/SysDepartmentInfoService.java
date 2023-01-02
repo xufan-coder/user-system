@@ -211,4 +211,12 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
     List<SysDepartmentInfoVo>  getAllDepByDepartId(String companyId,String departId,Integer isDepartAdmin);
 
     List<SysDepartmentInfoVo> getAllDepPersonByCompanyId(String companyId);
+    /**
+    *
+    *  @description   查询当前企业下的所有部门
+    *  @author        YeChangWei
+    *  @date          2023/1/2 16:08
+    *  @return        java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
+    */
+    List<String> getAllDepByCompany(String companyId);
 }
