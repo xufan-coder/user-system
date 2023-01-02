@@ -26,6 +26,7 @@ import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
@@ -36,10 +37,7 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.util.UserLogUtil;
-import com.zerody.user.vo.BlackListCount;
-import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
-import com.zerody.user.vo.MobileBlacklistQueryVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -609,6 +607,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         }
         this.updateBatchById(list);
         return list;
+    }
+
+    @Override
+    public InternalControlVo updateInternalControl(InternalControlDto internalControlDto) {
+        InternalControlVo vo = this.baseMapper.updateInternalControl(internalControlDto);
+        return vo;
     }
 
     @Override
