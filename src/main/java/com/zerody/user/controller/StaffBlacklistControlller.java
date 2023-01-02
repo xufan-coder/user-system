@@ -397,7 +397,7 @@ public class StaffBlacklistControlller {
      * @date  2022/12/30
      */
     @GetMapping("/internal/control")
-    public DataResult<InternalControlVo> updateInternalControl(@RequestBody InternalControlDto internalControlDto) {
+    public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
         try {
             InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
             return R.success(internalControlVo);
