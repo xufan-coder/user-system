@@ -213,6 +213,7 @@
         ssi.is_diamond_member,
         sui.id_card_reverse,
         sui.id_card_front,
+        sui.use_state,
         sui.train_no
         FROM
         sys_user_info sui
