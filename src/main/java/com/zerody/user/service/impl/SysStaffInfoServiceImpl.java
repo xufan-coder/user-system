@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -894,8 +895,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         saveImage(setSysUserInfoDto.getDiplomas(),staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
         //合作申请表
         saveFile(setSysUserInfoDto.getCooperationFiles(),staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
-
-
 
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
@@ -2998,6 +2997,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         return info;
     }
+
+    @Override
+    public void updateIdCard(IdCardUpdateDto dto) {
+        //上传伙伴身份证
+        LambdaUpdateWrapper<SysUserInfo> uw=new LambdaUpdateWrapper<>();
+        uw.eq(BaseModel::getId,dto.getUserId())
+                .set(SysUserInfo::getIdCardFront,dto.getIdCardFront())
+                .set(SysUserInfo::getIdCardReverse,dto.getIdCardReverse());
+        this.sysUserInfoService.update(uw);
+    }
+
     @Override
     public List<StaffInfoByAddressBookVo> getAllUser(ComUserQueryDto queryDto) {
         List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser(queryDto);

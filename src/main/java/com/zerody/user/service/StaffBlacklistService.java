@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,4 +97,6 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     void doRelieveByMobile(String mobile, Integer state,String relieveId);
 
     List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param);
+
+    InternalControlVo updateInternalControl(InternalControlDto internalControlDto);
 }

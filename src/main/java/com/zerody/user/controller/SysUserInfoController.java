@@ -110,6 +110,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     public DataResult getUserInfoById(@PathVariable String id){
         return R.success(sysUserInfoService.getUserInfoById(id));
     }
+
     /**
      * 根据用户ID查询单个用户(白名单)
      */
@@ -1693,4 +1694,20 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    /**
+    *   获取所有培训班次
+    */
+    @GetMapping("/train-list/get")
+    public DataResult<List<String>> getUserAllTrainNo() {
+        try {
+            List<String> result = this.sysUserInfoService.getUserAllTrainNo();
+            return R.success(result);
+        } catch (DefaultException e){
+            log.error("获取所有培训班次出错:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("获取所有培训班次出错:{}",e,e);
+            return R.error("获取所有培训班次出错"+ e);
+        }
+    }
 }

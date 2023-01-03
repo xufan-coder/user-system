@@ -26,8 +26,10 @@ import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.service.*;
@@ -35,10 +37,7 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
 import com.zerody.user.util.UserLogUtil;
-import com.zerody.user.vo.BlackListCount;
-import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
-import com.zerody.user.vo.MobileBlacklistQueryVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -93,6 +92,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private CeoCompanyRefMapper ceoCompanyRefMapper;
+
+    @Autowired
+    private OauthFeignService oauthFeignService;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -285,6 +287,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         ImportResultInfo importInfo ;
         Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> reasons = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        List<SysUserInfo> users = new ArrayList<>();
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             String[] rowData = dataList.get(rowIndex);
             boolean rowEmpty = true;
@@ -326,10 +330,54 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     errors.add(importInfo);
                     continue;
                 }
+                reasons.put(entity.getMobile(), entity.getReason());
+                QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
+                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getIdCardFront, rowData[2]));
+                List<SysUserInfo> datas = this.userInfoService.list(usersQw);
+                if (DataUtil.isNotEmpty(datas)) {
+                    entity.setType(1);
+                    users.addAll(datas);
+                }
                 entitys.add(entity);
             } catch (Exception e) {
                 log.error("内控名单导入出错：{}",e ,e);
             }
+        }
+        List<String> userIds = new ArrayList<>();
+        List<SysUserInfo> userUpdate = new ArrayList<>();
+        List<SysStaffInfo> staffInfos = new ArrayList<>();
+        if (DataUtil.isNotEmpty(users)) {
+            users.forEach(u -> {
+                userIds.add(u.getId());
+                // 如果是在职状态 设置为离职(已解约)
+                if (u.getStatus() == StatusEnum.activity.getValue() || u.getStatus() == StatusEnum.teamwork.getValue()) {
+                    u.setStatus(StatusEnum.stop.getValue());
+                    userUpdate.add(u);
+                    //设置原因
+                    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                    staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
+                    staffQw.lambda().last("limit 0,1");
+                    SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
+                    if (DataUtil.isEmpty(staff)) {
+                        return;
+                    }
+                    staff.setDateLeft(new Date());
+                    staff.setStatus(StatusEnum.stop.getValue());
+                    staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
+                    staffInfos.add(staff);
+                }
+            });
+        }
+        //修改用户状态
+        if (DataUtil.isNotEmpty(userUpdate)) {
+            this.userInfoService.updateBatchById(userUpdate);
+        }
+        if (DataUtil.isNotEmpty(staffInfos)) {
+            this.staffInfoService.updateBatchById(staffInfos);
+        }
+        //删除token
+        if (DataUtil.isNotEmpty(userIds)) {
+            this.oauthFeignService.removeToken(userIds);
         }
         this.saveBatch(entitys);
         this.importResultInfoService.saveBatch(errors);
@@ -559,6 +607,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         }
         this.updateBatchById(list);
         return list;
+    }
+
+    @Override
+    public InternalControlVo updateInternalControl(InternalControlDto internalControlDto) {
+        InternalControlVo vo = this.baseMapper.updateInternalControl(internalControlDto);
+        return vo;
     }
 
     @Override

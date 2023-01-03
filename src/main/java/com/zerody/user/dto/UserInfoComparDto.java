@@ -187,7 +187,11 @@ public class UserInfoComparDto {
     @CheckCompare(value = "description",name = "备注")
     private String description;
 
-    /** 最高学历 **/
+    /**
+     * 最高学历(枚举)
+     * PRIMARY_SCHOOL("小学"), JUNIOR_HIGH("初中"), TECHNICAL_SECONDARY("中专"), SENIOR_HIGH("高中"),
+     * JUNIOR_COLLEGE("大专"), REGULAR_COLLEGE("本科"), MASTER("硕士"), DOCTOR("博士");
+     **/
     @CheckCompare(value = "highestEducation",name = "最高学历")
     private String highestEducation;
 

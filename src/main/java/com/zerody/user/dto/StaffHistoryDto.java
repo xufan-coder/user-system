@@ -26,7 +26,7 @@ public class StaffHistoryDto {
     @NotEmpty(message = "伙伴ID不能为空")
     private String staffId;
     /**
-     * 类型
+     * 类型(HONOR:荣耀，PUNISHMENT:惩罚)
      */
     @NotEmpty(message = "类型不能为空")
     private String type;

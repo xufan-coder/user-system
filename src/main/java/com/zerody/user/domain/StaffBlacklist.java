@@ -48,13 +48,15 @@ public class StaffBlacklist {
     /** 流程key */
     private String processKey;
 
+    /**
+     * 修改时间
+     */
     private Date updateTime;
 
     /** 提交人姓名 */
     private String submitUserName;
 
     /** 黑名单类型：1企业内部 2外部人员 */
-
     private Integer type;
 
     /** 是否已审批/能否解除0未审批 -1 审批中，1已审批 */
@@ -74,6 +76,9 @@ public class StaffBlacklist {
     /** 视频 */
     private String video;
 
+    /**
+     * 企业名称
+     */
     @TableField(exist = false)
     private String companyName;
 
