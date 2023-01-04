@@ -3,19 +3,15 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
-import com.zerody.common.bean.DataResult;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
-import com.zerody.user.domain.SysUserInfo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.dto.UserPerformanceReviewsPageDto;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.*;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +20,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @author PengQiang
@@ -45,8 +40,13 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
         return sb.toString();
     }
 
+    /**
+     * 新增伙伴
+     *
+     * @param setSysUserInfoDto
+     * @return
+     */
     SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto);
-
 
 
     UserCopyResultVo doCopyStaffInner(UserCopyDto param);
@@ -59,8 +59,14 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateStaffStatus(String userId, Integer status, String leaveReason);
 
 
-    void updateStaff(SetSysUserInfoDto setSysUserInfoDto);
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
 
+    /**
+     * 获取伙伴详情
+     *
+     * @param id 员工id
+     * @return
+     */
     SysUserInfoVo selectStaffById(String id);
 
     void deleteStaffById(String staffId);
@@ -107,6 +113,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     CopyStaffInfoVo selectStaffInfo(String staffId);
 
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 根据用户id查询员工信息
+    * @Date: 2022/12/9 9:55
+    */
     SysUserInfoVo selectStaffByUserId(String userId);
 
     IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto);
@@ -164,4 +176,53 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     */
     SysStaffInfo getUserInfo(String id);
 
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 10:13
+    */
+    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取员工信息
+    * @Date: 2022/11/28 9:31
+    */
+    List<AppUserVo> querySysStaffInfoList(String departmentId);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 查询企业下的员工信息
+     * @Date: 2022/11/28 10:21
+     */
+    List<AppUserVo> queryCompStaff(String compId);
+
+    /**
+     * 根据用户id 校验是否为企业负责人
+     *
+     * @param userId
+     * @return
+     */
+    Boolean checkCompInCharge(String userId);
+
+    /**
+    *
+    *  @description   查询所有在职伙伴
+    *  @author        YeChangWei
+    *  @date          2022/11/28 17:34
+    *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+    */
+    List<StaffInfoByAddressBookVo> getAllUser(ComUserQueryDto queryDto);
+
+    Map<String, Object> getSameDept(String userId, String chooseUserId);
+
+    List<String> getLeaderUserId(String userId);
+
+    /**获取离职伙伴信息*/
+    LeaveUserInfoVo getQuitUserInfo(String userId);
+
+    void updateIdCard(IdCardUpdateDto dto);
 }

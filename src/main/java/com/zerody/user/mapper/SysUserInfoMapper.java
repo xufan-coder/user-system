@@ -6,12 +6,13 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserIdentifierQueryVo;
 import com.zerody.user.domain.SysDepartmentInfo;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
+import com.zerody.user.dto.ComUserQueryDto;
 import com.zerody.user.dto.SubordinateUserQueryDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Map;
@@ -186,4 +187,35 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<AppUserNotPushVo> getBirthdayUserIds(@Param("month") String month,@Param("day") String day,@Param("userId") String userId);
 
     List<StaffInfoVo> getAllDuytUser();
+    /**
+    *
+    *  @description   通过客户负责人id查询角色
+    *  @author        YeChangWei
+    *  @date          2022/11/8 18:18
+    *  @return        com.zerody.user.domain.UnionRoleStaff
+    */
+    UnionRoleStaff getUserIdUnionRoleStaff(@Param("userId") String userId);
+    /**
+    *
+    *  @description   查询所有在职人员 or 入职时间是在当天的
+    *  @author        YeChangWei
+    *  @date          2022/11/10 14:20
+    *  @return        java.util.List<com.zerody.user.vo.AppUserNotPushVo>
+    */
+    List<AppUserNotPushVo> getAnniversaryUserList(@Param("userId") String userId);
+    /**
+    *
+    *  @description   查询所有在职伙伴
+    *  @author        YeChangWei
+    *  @date          2022/11/28 17:40
+    *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+    */
+    List<StaffInfoByAddressBookVo> getAllUser(@Param("queryDto") ComUserQueryDto queryDto);
+
+    @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
+    void updateLeaveState(@Param("userId")  String userId);
+
+    List<SubordinateUserQueryVo> getLeaveUser(@Param("param") SubordinateUserQueryDto param);
+
+    Boolean getByMobileOrCard(@Param("mobile") String mobile, @Param("certificateCard") String certificateCard);
 }

@@ -2,8 +2,6 @@ package com.zerody.user.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author kuang
  */
@@ -17,5 +15,10 @@ public class BirthdayGreetingCardDto {
     private Integer sort;
 
     private Integer state;
+
+    /**
+     *   贺卡类型 0-生日 1-入职
+     */
+    private Integer type;
 
 }

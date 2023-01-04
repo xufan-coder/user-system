@@ -24,6 +24,7 @@
 		sui.phone_number  AS mobile,
 		urs.role_name     AS roleName,
 		sci.company_name  AS companyName,
+		sci.id 			  as companyId,
 		ssi.avatar
 		FROM company_admin AS ca
 		JOIN sys_staff_info AS ssi  ON ssi.id =ca.staff_id
@@ -31,7 +32,10 @@
 		LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
 		where
-			sui.status IN (0, 3) AND ca.company_id = #{companyId}
+			sui.status IN (0, 3)
+			<if test="companyId neq null and companyId neq ''">
+				AND ca.company_id = #{companyId}
+			</if>
 	</select>
 	<select id="getAdminInfoByCompanyId" resultType="com.zerody.user.api.vo.StaffInfoVo">
 		SELECT
@@ -62,6 +66,7 @@
 		WHERE ca.company_id = #{companyId}
 	</select>
 
+	<!--获取总经理-->
 	<select id="getCompanyAdmin" resultType="com.zerody.user.vo.CompanyAdminVo">
 		SELECT ssi.user_id,ssi.user_name,ssi.avatar
 		from company_admin ca

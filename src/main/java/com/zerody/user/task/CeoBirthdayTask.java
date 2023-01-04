@@ -5,8 +5,6 @@ import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.util.UserUtils;
-import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendRobotMessageDto;
@@ -15,18 +13,12 @@ import com.zerody.im.util.IM;
 import com.zerody.user.config.BirthdayMsgConfig;
 import com.zerody.user.domain.UserBirthdayTemplate;
 import com.zerody.user.dto.FlowMessageDto;
-import com.zerody.user.feign.JPushFeignService;
-import com.zerody.user.mapper.SysDepartmentInfoMapper;
-import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.CompanyAdminService;
-import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserBirthdayTemplateService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.AppCeoUserNotPushVo;
-import com.zerody.user.vo.AppUserNotPushVo;
 import com.zerody.user.vo.CompanyAdminVo;
-import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,7 +65,7 @@ public class CeoBirthdayTask {
     @XxlJob("ceo_user_birthday_task")
     public ReturnT<String> execute(String param){
         // 获取当前时间 时分
-        UserBirthdayTemplate template = userBirthdayTemplateService.getTimeTemplate(new Date());
+        UserBirthdayTemplate template = userBirthdayTemplateService.getTimeTemplate(new Date(),YesNo.NO);
         // 进入推送时间 查询生日伙伴进行推送
         if(template != null) {
             // 获取当天日期  月-日
@@ -108,8 +100,8 @@ public class CeoBirthdayTask {
 
                 //推送给其他ceo  不包含自己
                 List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
-                log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
-                log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
+                //log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
+                //log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
                 for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {

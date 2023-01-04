@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+
 /**
-    * 呼叫控制配置
-    */
+ * 呼叫控制配置
+ * @author  DaBai
+ * @date  2022/11/9 10:22
+ */
+
 @Data
 public class CallControl {
     /**

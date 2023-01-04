@@ -172,4 +172,18 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     * @Date: 2022/10/20 16:46
     */
     List<CompanyAdminVo> queryVicePresident(@Param("companyIds") List<String> companyIds);
+
+    List<CompanyAdminVo> getTopLeader(@Param("deptId")String deptId);
+
+    List<DepartInfoVo> getAllDepList();
+    /**
+     *
+     * 查询当前企业下的所有部门
+     * @author               PengQiang
+     * @description          DELL
+     * @date                 2021/1/19 14:53
+     * @param                companyId
+     * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
+     */
+    List<String> getAllDepByCompany(String companyId);
 }

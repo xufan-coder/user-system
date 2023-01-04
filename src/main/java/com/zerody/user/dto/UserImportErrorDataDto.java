@@ -37,7 +37,7 @@ public class UserImportErrorDataDto {
     /** 状态 */
     private String status;
 
-    /** 性别 */
+    /** 性别(0:男，1:女，3:未知) */
     private String gender;
 
     /** 籍贯 */
@@ -64,7 +64,11 @@ public class UserImportErrorDataDto {
     /** 邮箱 */
     private String email;
 
-    /** 学历 */
+    /**
+     * 最高学历(枚举)
+     * PRIMARY_SCHOOL("小学"), JUNIOR_HIGH("初中"), TECHNICAL_SECONDARY("中专"), SENIOR_HIGH("高中"),
+     * JUNIOR_COLLEGE("大专"), REGULAR_COLLEGE("本科"), MASTER("硕士"), DOCTOR("博士");
+     **/
     private String highestEducation;
 
     /** 毕业院校 */

@@ -14,28 +14,30 @@ import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
+import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
 import com.zerody.user.util.IdCardUtil;
-import com.zerody.user.vo.BlackListCount;
-import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
-import com.zerody.user.vo.MobileBlacklistQueryVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
+import com.zerody.user.util.UserLogUtil;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -91,6 +93,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private CeoCompanyRefMapper ceoCompanyRefMapper;
 
+    @Autowired
+    private OauthFeignService oauthFeignService;
+
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
@@ -116,6 +121,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         blac.setState(StaffBlacklistApproveState.BLOCK.name());
         blac.setId(UUIDutils.getUUID32());
         this.save(blac);
+        QueryWrapper<SysStaffInfo> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SysStaffInfo::getUserId,param.getBlacklist().getUserId());
+
         List<String> images = param.getImages();
         List<Image> imageAdds = new ArrayList<>();
         Image image;
@@ -282,6 +290,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         ImportResultInfo importInfo ;
         Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> reasons = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        List<SysUserInfo> users = new ArrayList<>();
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             String[] rowData = dataList.get(rowIndex);
             boolean rowEmpty = true;
@@ -323,10 +333,54 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     errors.add(importInfo);
                     continue;
                 }
+                reasons.put(entity.getMobile(), entity.getReason());
+                QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
+                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getIdCardFront, rowData[2]));
+                List<SysUserInfo> datas = this.userInfoService.list(usersQw);
+                if (DataUtil.isNotEmpty(datas)) {
+                    entity.setType(1);
+                    users.addAll(datas);
+                }
                 entitys.add(entity);
             } catch (Exception e) {
                 log.error("内控名单导入出错：{}",e ,e);
             }
+        }
+        List<String> userIds = new ArrayList<>();
+        List<SysUserInfo> userUpdate = new ArrayList<>();
+        List<SysStaffInfo> staffInfos = new ArrayList<>();
+        if (DataUtil.isNotEmpty(users)) {
+            users.forEach(u -> {
+                userIds.add(u.getId());
+                // 如果是在职状态 设置为离职(已解约)
+                if (u.getStatus() == StatusEnum.activity.getValue() || u.getStatus() == StatusEnum.teamwork.getValue()) {
+                    u.setStatus(StatusEnum.stop.getValue());
+                    userUpdate.add(u);
+                    //设置原因
+                    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                    staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
+                    staffQw.lambda().last("limit 0,1");
+                    SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
+                    if (DataUtil.isEmpty(staff)) {
+                        return;
+                    }
+                    staff.setDateLeft(new Date());
+                    staff.setStatus(StatusEnum.stop.getValue());
+                    staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
+                    staffInfos.add(staff);
+                }
+            });
+        }
+        //修改用户状态
+        if (DataUtil.isNotEmpty(userUpdate)) {
+            this.userInfoService.updateBatchById(userUpdate);
+        }
+        if (DataUtil.isNotEmpty(staffInfos)) {
+            this.staffInfoService.updateBatchById(staffInfos);
+        }
+        //删除token
+        if (DataUtil.isNotEmpty(userIds)) {
+            this.oauthFeignService.removeToken(userIds);
         }
         this.saveBatch(entitys);
         this.importResultInfoService.saveBatch(errors);
@@ -441,7 +495,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());
             blac.setMobile(staff.getMobile());
-
+            blac.setIdentityCard(staff.getIdentityCard());
             blac.setCreateTime(new Date());
             blac.setApprovalTime(new Date());
             blac.setState(StaffBlacklistApproveState.BLOCK.name());
@@ -489,6 +543,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         } else {
             this.updateById(blac);
         }
+
+        SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
+        UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
     }
 
@@ -513,6 +570,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 //                "SELECT ssi.user_id FROM sys_staff_info AS ssi  WHERE ssi.id = '".concat(staffId).concat("'")
 //        );
 //        this.userInfoService.update(userUw);
+        StaffBlacklist staffBlack = this.getById(id);
+        SysUserInfo userInfo = this.userInfoService.getById(staffBlack.getUserId());
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除伙伴内控名单",DataCodeType.PARTNER_LOCK);
     }
     @Override
     public void doRelieve(String id,Integer state) {
@@ -524,9 +584,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public void doRelieveByMobile(String mobile,Integer state) {
+    public void doRelieveByMobile(String mobile,Integer state,String relieveId) {
         UpdateWrapper<StaffBlacklist> relieveUw = new UpdateWrapper<>();
         relieveUw.lambda().eq(StaffBlacklist::getMobile, mobile);
+        relieveUw.lambda().eq(StaffBlacklist::getRelieveId, relieveId);
         relieveUw.lambda().set(StaffBlacklist::getIsApprove, state);
         relieveUw.lambda().set(StaffBlacklist::getUpdateTime, new Date());
         this.update(relieveUw);
@@ -536,17 +597,25 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     public List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param) {
         QueryWrapper<StaffBlacklist> qw = new QueryWrapper<>();
         qw.lambda().eq(StaffBlacklist::getMobile, param.getMobile());
-        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.RELIEVE.name());
+        qw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
         List<StaffBlacklist> list = this.list(qw);
 
         for (StaffBlacklist staffBlacklist : list) {
-            staffBlacklist.setRelieveId(param.getRelieveId());
-            staffBlacklist.setRelieveKey(param.getRelieveKey());
-            staffBlacklist.setIsApprove(param.getIsApprove());
-            staffBlacklist.setUpdateTime(new Date());
+            if(DataUtil.isEmpty(staffBlacklist.getRelieveId())){
+                staffBlacklist.setRelieveId(param.getRelieveId());
+                staffBlacklist.setRelieveKey(param.getRelieveKey());
+                staffBlacklist.setIsApprove(param.getIsApprove());
+                staffBlacklist.setUpdateTime(new Date());
+            }
         }
-        this.saveBatch(list);
+        this.updateBatchById(list);
         return list;
+    }
+
+    @Override
+    public InternalControlVo updateInternalControl(InternalControlDto internalControlDto) {
+        InternalControlVo vo = this.baseMapper.updateInternalControl(internalControlDto);
+        return vo;
     }
 
     @Override

@@ -11,6 +11,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 伙伴账户推送app
+ *
  * @author  DaBai
  * @date  2021/7/9 16:15
  */
@@ -21,9 +23,9 @@ public class AppUserPush implements java.io.Serializable {
   		/**id**/
 		@TableId(type = IdType.UUID)
 		private String id;
-  		/**user_id**/
+  		/**用户ID**/
 		private String userId;
-		/**user_id**/
+		/**企业Id**/
 		private String compId;
   		/**创建时间**/
 		@JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

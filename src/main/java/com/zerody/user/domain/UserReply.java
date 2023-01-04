@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 问题回复记录表
+ *
  * @author kuang
  */
 @Data

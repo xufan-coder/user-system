@@ -140,7 +140,7 @@
         <where>
             sdi.status = 0 and sdi.comp_id = #{user.companyId}
             <if test="user.deptId neq null and user.deptId neq ''">
-                and id = #{user.deptId} or sdi.parent_id like concat('',#{user.deptId},'\_%')
+                and (id = #{user.deptId} or sdi.id like concat('',#{user.deptId},'\_%'))
             </if>
         </where>
     </select>
@@ -418,5 +418,43 @@
         <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+
+        <!--获取副总-->
+    <select id="getTopLeader" resultType="com.zerody.user.vo.CompanyAdminVo">
+        SELECT
+        sui.id as 'userId',sui.user_name,sui.avatar,sdi.comp_id as companyId
+        FROM
+        sys_department_info AS sdi
+        JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        where sdi.status = 0 and ( LENGTH(sdi.parent_id) = 0 or sdi.parent_id is null )
+        and sdi.id= #{deptId};
+    </select>
+
+    <select id="getAllDepList" resultType="com.zerody.user.api.vo.DepartInfoVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name,
+            ssi.id AS admin_staff_id,
+            ssi.user_id AS admin_user_id,
+            ssi.user_name AS admin_user_name,
+            sdi.parent_id AS parent_depart_id
+        FROM
+            sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+         where sdi.status = 0 and ssi.user_id is not null
+    </select>
+
+    <select id="getAllDepByCompany" resultType="String">
+        SELECT
+        sdi.id
+        FROM
+        sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        <where>
+            sdi.status = 0 and sdi.comp_id = #{companyId}
+        </where>
     </select>
 </mapper>

@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @Data
-public class BosStaffInfoVo {
+public class  BosStaffInfoVo {
 
     /**
      * ID
@@ -73,30 +73,58 @@ public class BosStaffInfoVo {
      */
     private Integer isDiamondMember;
 
-
     /**
-     * 员工状态
+     * 员工状态 0在职、1离职、3合作
      */
     private Integer staffStatus;
 
-    /** 头像(相对路径) **/
+    /**
+     * 头像(相对路径)
+     **/
     private String avatar;
+
+    /**
+     * 是否查看完整的手机号
+     */
     private Integer isShowMobile;
 
     private Boolean isAdmin;
 
+    /**
+     * 是否为黑名单
+     */
     private Boolean isBlock;
 
+    /**
+     * 员工头像
+     */
     private String staffAvatar;
 
+    /**
+     * 用户头像
+     */
     private String userAvatar;
+
+    /**
+     * 评价
+     */
     private String evaluate;
+
+    /**
+     * 判断是否有简历
+     */
     private String resumeUrl;
 
+    /**
+     * 账号状态
+     */
+    private Integer useState;
+
+    /**
+     * 企业id 集合
+     */
     @TableField(exist = false)
     private List<String> companys;
-
-
 
     public String getStaffStatusString() {
         if (DataUtil.isEmpty(this.staffStatus)) {
@@ -119,5 +147,5 @@ public class BosStaffInfoVo {
     public String getPhoneFull() {
         return this.phone;
     }
-    /** 员工状态 */
+
 }

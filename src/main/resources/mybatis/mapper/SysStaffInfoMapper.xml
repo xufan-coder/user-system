@@ -46,6 +46,7 @@
       AND comp_id = #{compId}
   </select>
 
+    <!--分页查询员工-->
     <select id="getPageAllStaff" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         DISTINCT sui.id AS id,
@@ -57,7 +58,7 @@
         sdi.depart_name AS departName,
         ssi.id AS staffId,
         urs.role_name AS roleName,
-        sui.status AS staffStatus,
+        ssi.status AS staffStatus,
         sui.status = 0 AS activity,
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
@@ -66,6 +67,7 @@
         sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
+        sui.use_state,
         ssi.is_diamond_member
         FROM
         sys_user_info sui
@@ -76,7 +78,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
-        LEFT JOIN staff_blacklist AS sb ON sb.user_id = sui.id AND sb.state = 'BLOCK'
+        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card)  AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="staff.companyId != null and staff.companyId != ''">
@@ -115,9 +117,16 @@
             <if test="staff.isDiamondMember neq null">
                 AND ssi.is_diamond_member = #{staff.isDiamondMember}
             </if>
+            <if test="staff.trainNo neq null">
+                AND sui.train_no = #{staff.trainNo}
+            </if>
+              <if test="staff.useState neq null">
+                AND sui.use_state = #{staff.useState}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>
+
     <select id="selectUserByCompanyId" resultType="java.lang.String">
         SELECT
 			sui.id
@@ -149,6 +158,7 @@
         </where>
     </select>
 
+    <!--查看员工详情-->
     <select id="selectStaffById" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
         sci.company_name,
@@ -165,7 +175,7 @@
         sui.prov_city_district,
         sui.contact_address,
         sui.register_time,
-        sui.STATUS,
+        ssi.status,
         sui.nation,
         sui.ancestral,
         urs.role_name,
@@ -200,7 +210,11 @@
         ssi.working_years,
         ssi.date_left,
         sui.im_state,
-        ssi.is_diamond_member
+        ssi.is_diamond_member,
+        sui.id_card_reverse,
+        sui.id_card_front,
+        sui.use_state,
+        sui.train_no
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -216,8 +230,10 @@
         </where>
     </select>
 
+    <!--通过用户id查询员工-->
     <select id="selectStaffByUserId" resultType="com.zerody.user.vo.SysUserInfoVo">
         SELECT
+        sui.id,
         sci.company_name,
         ssi.id staffId,
         sui.user_name,
@@ -359,6 +375,7 @@
         </where>
     </select>
 
+    <!--分页获取平台管理员列表-->
     <select id="selectAdmins" resultType="com.zerody.user.vo.BosStaffInfoVo">
         SELECT
         aui.id AS id,
@@ -1102,6 +1119,64 @@
         where sui.status in (0, 3) and comp_id = #{companyId}
     </select>
 
+
+    <!--伙伴数据统计-->
+    <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatistics" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
+        select
+        count(IF(ssi.user_type =0, 1 ,NULL)) as managerNum,
+        count(IF(ssi.user_type =3, 1 ,NULL)) as vicePresidentNum,
+        count(IF(ssi.user_type =2, 1 ,NULL)) as teamLeaderNum,
+        count(IF(ssi.user_type =1, 1 ,NULL)) as partnerNum,
+        count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
+        count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
+        from sys_staff_info as ssi
+        left join union_staff_depart as usd on usd.staff_id = ssi.id
+        left join sys_user_info as sui on sui.id = ssi.user_id
+        <where>
+            ssi.deleted = 0 and sui.status != -1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                and ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <!--获取员工信息-->
+    <select id="querySysStaffInfoList" resultType="com.zerody.user.vo.AppUserVo" parameterType="java.lang.String">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			left join union_staff_depart usd on usd.staff_id = ssi.id
+			left join sys_department_info sdi on sdi.id = usd.department_id
+			join sys_company_info sci on sci.id = sdi.comp_id
+		    <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.departmentId neq null and param.departmentId neq ''">
+                    sdi.id = #{param.departmentId}
+                </if>
+            </where>
+    </select>
+
+    <!--查询企业下的员工信息-->
+    <select id="queryCompStaff" resultType="com.zerody.user.vo.AppUserVo">
+        select ssi.user_name, sui.avatar, sui.phone_number, sci.company_name, ssi.id as staff_id from sys_staff_info ssi
+			left join sys_user_info sui on sui.id = ssi.user_id
+			join sys_company_info sci on sci.id = ssi.comp_id
+            <where>
+                ssi.deleted = 0 and sui.status != -1
+                <if test="param.compId neq null and param.compId neq ''">
+                    sci.id = #{param.compId}
+                </if>
+            </where>
+    </select>
+
+
     <update id="updateStatus">
         update sys_staff_info set status = #{status}, date_left = now()
         <if test="leaveReason neq null and leaveReason neq ''">
@@ -1110,4 +1185,27 @@
 
         where id = #{staffId}
     </update>
+
+    <select id="getLeaveUserInfo" resultType="com.zerody.user.vo.LeaveUserInfoVo">
+        select si.user_id,ui.user_name, ui.phone_number as 'mobile',ui.certificate_card as 'id_card',
+        urs.role_name, di.depart_name, si.date_left as 'leave_time',si.leave_reason
+        from sys_staff_info si
+        join sys_user_info ui on si.user_id = ui.id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = si.id
+        left join union_staff_depart sd on sd.staff_id = si.id
+        left join sys_department_info di on sd.department_id = di.id
+        where si.`status` = 1 and si.user_id = #{userId}
+    </select>
+
+
+    <select id="getLeaveUserByCard" resultType="com.zerody.user.vo.LeaveUserInfoVo">
+        select si.user_id,sc.company_name,di.depart_name
+        from sys_staff_info si
+        join sys_user_info sui on si.user_id = sui.id
+        left join sys_company_info sc on si.comp_id = sc.id
+        left join union_staff_depart sd on sd.staff_id = si.id
+        left join sys_department_info di on sd.department_id = di.id
+        where si.`status` = 1 and sui.certificate_card = #{card}
+        order by sui.create_time desc limit 1
+    </select>
 </mapper>

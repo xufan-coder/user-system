@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 伙伴生日模板关联月份
  *
  * @author               kuang
  * @description          伙伴生日模板关联月份
@@ -19,6 +20,9 @@ public class UnionBirthdayMonth {
 
     /**月份*/
     private Integer month;
+
+    /**年份*/
+    private String year;
 
     /**创建时间**/
     private Date createTime;

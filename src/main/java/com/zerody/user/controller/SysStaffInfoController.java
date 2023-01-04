@@ -7,12 +7,14 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
+import com.zerody.user.dto.IdCardUpdateDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
@@ -145,6 +147,8 @@ public class SysStaffInfoController {
     public DataResult<IPage<BosStaffInfoVo>> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto){
         return R.success(sysStaffInfoService.getPageAllSuperiorStaff(sysStaffInfoPageDto));
     }
+
+
     /**
     *   添加员工
     */
@@ -154,13 +158,14 @@ public class SysStaffInfoController {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
-            log.error("添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e);
+            log.error("添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e.getMessage());
             return R.error(e.getMessage());
         }  catch (Exception e) {
             log.error("添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("添加合作伙伴失败,请求异常");
         }
     }
+
 
     //修改员工状态
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
@@ -183,7 +188,8 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
-            sysStaffInfoService.updateStaff(setSysUserInfoDto);
+            UserVo user = UserUtils.getUser();
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -195,27 +201,145 @@ public class SysStaffInfoController {
     }
 
     /**
-    *    根据员工id查询员工信息
+    *   APP上传修改身份证照片
+    */
+    @PutMapping("/id-card/update")
+    public DataResult<Object> updateIdCard(@Validated @RequestBody IdCardUpdateDto dto){
+        try {
+            sysStaffInfoService.updateIdCard(dto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("app上传身份证错误:{}" , e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("app上传身份证错误:{} ", e);
+            return R.error("上传身份证错误,请求异常");
+        }
+    }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: app添加伙伴
+     * @Date: 2022/11/28 23:58
+     */
+    @PostMapping("/app-add")
+    public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        try {
+            sysStaffInfoService.addStaff(setSysUserInfoDto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("app添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("app添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error("添加合作伙伴失败,请求异常");
+        }
+    }
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: app编辑伙伴
+    * @Date: 2022/11/28 23:59
+    */
+    @PutMapping("/app-update")
+    public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        try {
+            UserVo user = UserUtils.getUser();
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
+            return R.error("修改员工信息失败,请求异常");
+        }
+    }
+
+
+    /**
+    *  根据员工id查询员工详情信息
     */
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         try {
             return R.success(sysStaffInfoService.selectStaffById(staffId));
         } catch (DefaultException e){
-            log.error("根据员工id查询员工信息:{}", e, e);
+            log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
     }
 
+
     /**
-     *    根据用户id查询员工信息
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取app伙伴详情
+    * @Date: 2022/11/26 11:08
+    */
+    @GetMapping("/get-app/{id}")
+    public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
+        try {
+            return R.success(sysStaffInfoService.selectStaffById(id));
+        } catch (DefaultException e){
+            log.error("获取app伙伴详情错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取app伙伴详情错误:{}", e, e);
+            return R.error("获取app伙伴详情,请求异常");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取企业下的员工
+    * @Date: 2022/11/28 9:40
+    */
+    @GetMapping("/get-app-staff")
+    public DataResult<List<AppUserVo>> querySysStaffInfoList(String compId) {
+        try {
+            UserVo user = UserUtils.getUser();
+            if (DataUtil.isEmpty(compId)) {
+                compId = user.getCompanyId();
+            }
+            //获取该企业下的员工
+            return R.success(this.sysStaffInfoService.queryCompStaff(compId));
+        } catch (DefaultException e) {
+            log.error("获取下属员工出错:{}", e.getMessage());
+            return R.error( e.getMessage());
+        } catch (Exception e) {
+            log.error("获取下属员工出错:{}", e, e);
+            return R.error("获取下属员工出错");
+        }
+    }
+
+
+    /**
+     * 根据用户id查询员工信息
+     *
+     * @param userId 用户id
+     * @return
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
-        return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+        log.info("根据用户id查询员工信息入参 {}", userId);
+        try {
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+        } catch (DefaultException e) {
+            log.error("查询员工信息出错:{}", e.getMessage());
+            return R.error("查询员工信息信息");
+        } catch (Exception e) {
+            log.error("查询员工信息出错:{}", e, e);
+            return R.error("查询员工信息信息");
+        }
     }
 
 
@@ -452,4 +576,73 @@ public class SysStaffInfoController {
         return R.success(sysStaffInfoDetailsVo);
     }
 
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 伙伴数据统计
+    * @Date: 2022/11/11 9:51
+    */
+    @GetMapping("/statistics-users")
+    public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
+        try {
+            UserStatistics userStatistics = new UserStatistics();
+            if (DataUtil.isEmpty(userInfoDto.getDepartId())) {
+                return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
+            } else {
+                return R.success(userStatistics);
+            }
+        } catch (Exception e) {
+            log.error("伙伴数据统计出错:{}", e.getMessage());
+            return R.error("伙伴数据统计出错" + e.getMessage());
+        }
+    }
+
+
+    /**************************************************************************************************
+     **
+     * 原子服务判断是否其他部门，是否相同副总
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/same-dept")
+    public DataResult<Object> getSameDept(@RequestParam(name = "userId") String userId,@RequestParam(name = "chooseUserId") String chooseUserId){
+        try {
+            Map<String,Object> map =sysStaffInfoService.getSameDept(userId,chooseUserId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("判断部门错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根判断部门错误:{}", e, e);
+            return R.error("判断部门错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
+     * 原子服务查询伙伴的所属团队长和副总id
+     *
+     * @param userId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/leader-user-id")
+    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId){
+        try {
+            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            return R.success(leadersId);
+        } catch (DefaultException e){
+            log.error("查询伙伴的所属团队长和副总错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询伙伴的所属团队长和副总错误:{}", e, e);
+            return R.error("查询伙伴的所属团队长和副总错误");
+        }
+    }
 }

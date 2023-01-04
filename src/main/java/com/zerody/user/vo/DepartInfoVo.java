@@ -29,13 +29,17 @@ public class DepartInfoVo {
      */
     private String companyName;
     /**
-     * 用户ID
+     * 用户Id
      */
     private String userId;
     /**
      * 负责人名称
      */
     private String userName;
+    /**
+     * 员工类型(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
+     */
+    private String userType;
 
 
 }

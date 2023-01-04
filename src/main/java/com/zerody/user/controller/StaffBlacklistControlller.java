@@ -9,12 +9,14 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -68,9 +70,11 @@ public class StaffBlacklistControlller {
      * @date  2022/11/8 12:03
      */
     @PostMapping("/emp/relieve-mobile/{mobile}")
-    public DataResult<Object> doRelieveByMobile(@PathVariable("mobile") String mobile,@RequestParam("state") Integer state){
+    public DataResult<Object> doRelieveByMobile(@PathVariable("mobile") String mobile,
+                                                @RequestParam("state") Integer state,
+                                                @RequestParam("relieveId") String relieveId){
         try {
-            this.service.doRelieveByMobile(mobile,state);
+            this.service.doRelieveByMobile(mobile,state,relieveId);
             return R.success();
         } catch (DefaultException e) {
             log.error("解除黑名单出错：{}", e, e);
@@ -189,11 +193,11 @@ public class StaffBlacklistControlller {
     @GetMapping("/all/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAllPage(FrameworkBlacListQueryPageDto param){
         try {
-            if (!UserUtils.getUser().isBackAdmin()) {
-                if(DataUtil.isEmpty(param.getCompanyId())) {
-                    param.setCompanyId(UserUtils.getUser().getCompanyId());
-                }
-            }
+//            if (!UserUtils.getUser().isBackAdmin()) {
+//                if(DataUtil.isEmpty(param.getCompanyId())) {
+//                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+//                }
+//            }
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
@@ -384,6 +388,25 @@ public class StaffBlacklistControlller {
         } catch (Exception e) {
             log.error("修改伙伴黑名单所属企业错误：{}", e, e);
             return R.error("修改伙伴黑名单所属企业错误" + e.getMessage());
+        }
+    }
+
+    /**
+     * 根据身份证或者手机号码查询是否存在
+     * @author  luolujin
+     * @date  2022/12/30
+     */
+    @GetMapping("/internal/control")
+    public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
+        try {
+            InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
+            return R.success(internalControlVo);
+        } catch (DefaultException e) {
+            log.error("根据身份证或者手机号码查询是否存在：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("根据身份证或者手机号码查询是否存在错误：{}", e, e);
+            return R.error("根据身份证或者手机号码查询是否存在错误" + e.getMessage());
         }
     }
 }

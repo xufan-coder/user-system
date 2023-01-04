@@ -7,14 +7,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.card.api.dto.UserCardDto;
-import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.oauth.api.vo.SysAuthRoleInfoVo;
@@ -22,7 +18,6 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CardUserInfo;
-import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.domain.CeoCompanyRef;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
@@ -145,64 +140,64 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         smsDto.setSign(smsSign);
         //生成基础名片信息
         //先查询改手机号是否存在绑定了的名片用户
-        QueryWrapper<CardUserInfo> qw=new QueryWrapper<>();
-        qw.lambda().eq(CardUserInfo::getPhoneNumber,ceoUserInfo.getPhoneNumber());
-        List<CardUserInfo> cardUserInfos = cardUserInfoMapper.selectList(qw);
-        CardUserInfo cardUserInfo=null;
-        if(DataUtil.isNotEmpty(cardUserInfos)){
+//        QueryWrapper<CardUserInfo> qw=new QueryWrapper<>();
+//        qw.lambda().eq(CardUserInfo::getPhoneNumber,ceoUserInfo.getPhoneNumber());
+//        List<CardUserInfo> cardUserInfos = cardUserInfoMapper.selectList(qw);
+//        CardUserInfo cardUserInfo=null;
+//        if(DataUtil.isNotEmpty(cardUserInfos)){
             //如果内部员工先注册的名片用户，则检查是否制作了名片
-            cardUserInfo = cardUserInfos.get(0);
+//            cardUserInfo = cardUserInfos.get(0);
             //如果没创建名片，则帮该员工创建一个名片
-            DataResult<UserCardDto> cardByUserId = cardFeignService.getCardByUserId(cardUserInfo.getId());
-            if(!cardByUserId.isSuccess()){
-                throw new DefaultException("名片服务异常！");
-            }
-            UserCardDto data = cardByUserId.getData();
-            if(DataUtil.isEmpty(data)){
-                //生成基础名片信息
-                saveCard(ceoUserInfo,cardUserInfo);
-            }else {
-                    //把名片账户的名片绑定该新用户
-                UserCardReplaceDto userReplace = new UserCardReplaceDto();
-                userReplace.setNewUserId(ceoUserInfo.getId());
-                userReplace.setCardUserId(cardUserInfo.getId());
-                this.cardFeignService.updateUserBycardUser(userReplace);
-                //并且把关联改了
-                QueryWrapper<CardUserUnionUser> quW=new QueryWrapper<>();
-                quW.lambda().eq(CardUserUnionUser::getCardId,cardUserInfo.getId());
-                CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(quW);
-                if(DataUtil.isNotEmpty(cardUserUnionUser)){
-                    UpdateWrapper<CardUserUnionUser> uw=new UpdateWrapper<>();
-                    uw.lambda().eq(CardUserUnionUser::getId,cardUserUnionUser.getId());
-                    uw.lambda().set(CardUserUnionUser::getUserId,ceoUserInfo.getId());
-                    cardUserUnionCrmUserMapper.update(null,uw);
-                }else {
-                    //关联内部员工信息
-                    CardUserUnionUser cuu=new CardUserUnionUser();
-                    cuu.setId(UUIDutils.getUUID32());
-                    cuu.setCardId(cardUserInfo.getId());
-                    cuu.setUserId(ceoUserInfo.getId());
-                    cardUserUnionCrmUserMapper.insert(cuu);
-                }
-                }
-        }else {
-            cardUserInfo=new CardUserInfo();
-            cardUserInfo.setUserName(ceoUserInfo.getUserName());
-            cardUserInfo.setPhoneNumber(ceoUserInfo.getPhoneNumber());
-            cardUserInfo.setUserPwd(ceoUserInfo.getUserPwd());
-            cardUserInfo.setCreateBy(UserUtils.getUserId());
-            cardUserInfo.setCreateTime(new Date());
-            cardUserInfo.setStatus(StatusEnum.activity.getValue());
-            cardUserInfoMapper.insert(cardUserInfo);
-            //生成基础名片信息
-            saveCard(ceoUserInfo,cardUserInfo);
-            //关联内部员工信息
-            CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
-            cardUserUnionUser.setId(UUIDutils.getUUID32());
-            cardUserUnionUser.setCardId(cardUserInfo.getId());
-            cardUserUnionUser.setUserId(ceoUserInfo.getId());
-            cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
-        }
+//            DataResult<UserCardDto> cardByUserId = cardFeignService.getCardByUserId(cardUserInfo.getId());
+//            if(!cardByUserId.isSuccess()){
+//                throw new DefaultException("名片服务异常！");
+//            }
+//            UserCardDto data = cardByUserId.getData();
+//            if(DataUtil.isEmpty(data)){
+//                //生成基础名片信息
+//                saveCard(ceoUserInfo,cardUserInfo);
+//            }else {
+//                    //把名片账户的名片绑定该新用户
+//                UserCardReplaceDto userReplace = new UserCardReplaceDto();
+//                userReplace.setNewUserId(ceoUserInfo.getId());
+//                userReplace.setCardUserId(cardUserInfo.getId());
+//                this.cardFeignService.updateUserBycardUser(userReplace);
+//                //并且把关联改了
+//                QueryWrapper<CardUserUnionUser> quW=new QueryWrapper<>();
+//                quW.lambda().eq(CardUserUnionUser::getCardId,cardUserInfo.getId());
+//                CardUserUnionUser cardUserUnionUser = cardUserUnionCrmUserMapper.selectOne(quW);
+//                if(DataUtil.isNotEmpty(cardUserUnionUser)){
+//                    UpdateWrapper<CardUserUnionUser> uw=new UpdateWrapper<>();
+//                    uw.lambda().eq(CardUserUnionUser::getId,cardUserUnionUser.getId());
+//                    uw.lambda().set(CardUserUnionUser::getUserId,ceoUserInfo.getId());
+//                    cardUserUnionCrmUserMapper.update(null,uw);
+//                }else {
+//                    //关联内部员工信息
+//                    CardUserUnionUser cuu=new CardUserUnionUser();
+//                    cuu.setId(UUIDutils.getUUID32());
+//                    cuu.setCardId(cardUserInfo.getId());
+//                    cuu.setUserId(ceoUserInfo.getId());
+//                    cardUserUnionCrmUserMapper.insert(cuu);
+//                }
+//                }
+//        }else {
+//            cardUserInfo=new CardUserInfo();
+//            cardUserInfo.setUserName(ceoUserInfo.getUserName());
+//            cardUserInfo.setPhoneNumber(ceoUserInfo.getPhoneNumber());
+//            cardUserInfo.setUserPwd(ceoUserInfo.getUserPwd());
+//            cardUserInfo.setCreateBy(UserUtils.getUserId());
+//            cardUserInfo.setCreateTime(new Date());
+//            cardUserInfo.setStatus(StatusEnum.activity.getValue());
+//            cardUserInfoMapper.insert(cardUserInfo);
+//            //生成基础名片信息
+//            saveCard(ceoUserInfo,cardUserInfo);
+//            //关联内部员工信息
+//            CardUserUnionUser cardUserUnionUser=new CardUserUnionUser();
+//            cardUserUnionUser.setId(UUIDutils.getUUID32());
+//            cardUserUnionUser.setCardId(cardUserInfo.getId());
+//            cardUserUnionUser.setUserId(ceoUserInfo.getId());
+//            cardUserUnionCrmUserMapper.insert(cardUserUnionUser);
+//        }
         //最后发送短信
         smsFeignService.sendSms(smsDto);
     }
@@ -296,6 +291,21 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         return arrayList;
     }
 
+    @Override
+    public List<CeoUserVo> queryCeoList() {
+        List<CeoUserVo> list =new ArrayList<>();
+        LambdaQueryWrapper<CeoUserInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CeoUserInfo::getStatus, YesNo.NO);
+        wrapper.eq(CeoUserInfo::getDeleted, YesNo.NO);
+        List<CeoUserInfo> ceoUserInfos = this.baseMapper.selectList(wrapper);
+        for (CeoUserInfo ceoUserInfo : ceoUserInfos) {
+            CeoUserVo ceoUserInfoVo = new CeoUserVo();
+            BeanUtils.copyProperties(ceoUserInfo, ceoUserInfoVo);
+            list.add(ceoUserInfoVo);
+        }
+        return list;
+    }
+
 
     @Override
     public List<SubordinateUserQueryVo> getList() {
@@ -348,23 +358,23 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
 
     public void saveCard(CeoUserInfo ceoUserInfo, CardUserInfo cardUserInfo){
         //生成基础名片信息
-        UserCardDto cardDto=new UserCardDto();
-        cardDto.setMobile(cardUserInfo.getPhoneNumber());
-        cardDto.setUserName(cardUserInfo.getUserName());
-        cardDto.setCompany(ceoUserInfo.getCompany());
-        cardDto.setPosition(ceoUserInfo.getPosition());
-        //crm用户ID
-        cardDto.setUserId(ceoUserInfo.getId());
-        //名片用户ID
-        cardDto.setCustomerUserId(cardUserInfo.getId());
-        cardDto.setAvatar(ceoUserInfo.getAvatar());
-        cardDto.setCustomerUserId(cardUserInfo.getId());
-        cardDto.setCreateBy(UserUtils.getUserId());
-
-        cardDto.setAddressDetail(ceoUserInfo.getContactAddress());
-        DataResult<String> card = cardFeignService.createCard(cardDto);
-        if(!card.isSuccess()){
-            throw new DefaultException("服务异常！");
-        }
+//        UserCardDto cardDto=new UserCardDto();
+//        cardDto.setMobile(cardUserInfo.getPhoneNumber());
+//        cardDto.setUserName(cardUserInfo.getUserName());
+//        cardDto.setCompany(ceoUserInfo.getCompany());
+//        cardDto.setPosition(ceoUserInfo.getPosition());
+//        //crm用户ID
+//        cardDto.setUserId(ceoUserInfo.getId());
+//        //名片用户ID
+//        cardDto.setCustomerUserId(cardUserInfo.getId());
+//        cardDto.setAvatar(ceoUserInfo.getAvatar());
+//        cardDto.setCustomerUserId(cardUserInfo.getId());
+//        cardDto.setCreateBy(UserUtils.getUserId());
+//
+//        cardDto.setAddressDetail(ceoUserInfo.getContactAddress());
+//        DataResult<String> card = cardFeignService.createCard(cardDto);
+//        if(!card.isSuccess()){
+//            throw new DefaultException("服务异常！");
+//        }
     }
 }

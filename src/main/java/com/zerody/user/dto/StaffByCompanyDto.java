@@ -32,6 +32,19 @@ public class StaffByCompanyDto {
     *   标记企业
     */
     private Integer isProData;
+    /**
+     * 员工类型(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
+     */
+    private String userType;
+    /**
+     * 状态:0生效、1离职、2删除 3合作
+     */
+    private Integer status;
 
+    /**查询伙伴状态  0-查询有效伙伴   1-查询含离职伙伴*/
+    private Integer isShowLeave;
+
+    /**是否查询离职伙伴   0-否 1-是*/
+    private Integer isQuit;
 
 }

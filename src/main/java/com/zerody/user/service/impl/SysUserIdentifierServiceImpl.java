@@ -22,6 +22,7 @@ import com.zerody.flow.api.dto.process.StopProcessDto;
 import com.zerody.flow.api.dto.task.TaskFormDto;
 import com.zerody.flow.api.state.TaskAction;
 import com.zerody.jpush.api.dto.AuroraPushDto;
+import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.AdminUserInfo;
 import com.zerody.user.domain.SysLoginInfo;
@@ -37,6 +38,7 @@ import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysUserIdentifierService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.UserLogUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.SysStaffInfoDetailsVo;
 import com.zerody.user.vo.SysUserIdentifierVo;
@@ -266,6 +268,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.checkUtil.removeUserToken(identifier.getUserId());
             this.pullMq(identifier.getUserId(),null,null);
         }
+        SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
+        UserLogUtil.addUserLog(userInfo,null,"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
 
     @Override
@@ -352,6 +356,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 //                throw new DefaultException(dataResult.getMessage());
             }
         }
+
+        SysUserInfo userInfo = sysUserInfoService.getById(userId);
+        UserLogUtil.addUserLog(userInfo,UserUtils.getUser(),"解除设备绑定", DataCodeType.PARTNER_UNBIND);
         log.info("账号设备解绑  ——> 入参：{}", JSON.toJSONString(identifier));
     }
 
@@ -414,8 +421,11 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Override
     public SysUserIdentifierVo getUserIdentifierInfo(String userId){
+        //获取用户登录设备详情
         SysUserIdentifier identifier = this.getIdentifierInfo(userId);
+
         SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
+        //用户登录信息
         QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
         loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
         SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
@@ -430,8 +440,10 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 identifierVo.setLastLoginTime(logInfo.getLoginTime());
             }
         }else {
+            //查询员工详情信息
             SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
             if(Objects.isNull(user)) {
+                //获取ceo详情
                 CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
                 identifierVo.setUsername(ceo.getUserName());
                 identifierVo.setMobile(ceo.getPhoneNumber());
