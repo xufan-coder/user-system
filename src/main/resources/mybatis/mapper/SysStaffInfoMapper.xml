@@ -637,7 +637,8 @@
         urs.role_id,
         urs.role_name,
         ssi.id AS `staff_id`,
-        ssi.status
+        ssi.status,
+        sui.create_time
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
