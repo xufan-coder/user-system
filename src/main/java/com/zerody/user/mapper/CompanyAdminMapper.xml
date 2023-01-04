@@ -66,6 +66,7 @@
 		WHERE ca.company_id = #{companyId}
 	</select>
 
+	<!--获取总经理-->
 	<select id="getCompanyAdmin" resultType="com.zerody.user.vo.CompanyAdminVo">
 		SELECT ssi.user_id,ssi.user_name,ssi.avatar
 		from company_admin ca

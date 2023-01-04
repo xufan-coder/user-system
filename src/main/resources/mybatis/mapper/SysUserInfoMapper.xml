@@ -533,7 +533,8 @@
                sui.status,
                sdi.id            AS `depart_id`,
                ssi.evaluate,
-               ssi.resume_url
+               ssi.resume_url,
+                sui.create_time
         FROM sys_user_info sui
                  JOIN sys_staff_info ssi ON sui.id = ssi.user_id
                  LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id

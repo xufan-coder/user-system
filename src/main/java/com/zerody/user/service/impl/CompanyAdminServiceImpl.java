@@ -77,6 +77,7 @@ public class CompanyAdminServiceImpl extends ServiceImpl<CompanyAdminMapper, Com
 
 	@Override
 	public List<CompanyAdminVo> getCompanyAdmin(List<String> companyIds) {
+		//获取总经理
 		List<CompanyAdminVo> array =  this.baseMapper.getCompanyAdmin(companyIds);
 		//获取副总
 		List<CompanyAdminVo> companyAdminList = sysDepartmentInfoMapper.queryVicePresident(companyIds);
