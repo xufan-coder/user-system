@@ -121,6 +121,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         blac.setState(StaffBlacklistApproveState.BLOCK.name());
         blac.setId(UUIDutils.getUUID32());
         this.save(blac);
+        QueryWrapper<SysStaffInfo> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SysStaffInfo::getUserId,param.getBlacklist().getUserId());
+
         List<String> images = param.getImages();
         List<Image> imageAdds = new ArrayList<>();
         Image image;
@@ -492,7 +495,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());
             blac.setMobile(staff.getMobile());
-
+            blac.setIdentityCard(staff.getIdentityCard());
             blac.setCreateTime(new Date());
             blac.setApprovalTime(new Date());
             blac.setState(StaffBlacklistApproveState.BLOCK.name());
