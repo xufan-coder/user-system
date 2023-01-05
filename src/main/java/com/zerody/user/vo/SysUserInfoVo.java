@@ -380,5 +380,5 @@ public class SysUserInfoVo {
     /**
      *    账号状态
      */
-    private String useState;
+    private Integer useState;
 }
