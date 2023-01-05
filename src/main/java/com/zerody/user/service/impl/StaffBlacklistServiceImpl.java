@@ -358,7 +358,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (DataUtil.isNotEmpty(users)) {
             users.forEach(u -> {
                 //手机号码、身份证已添加加 就不在添加
-                if (DataUtil.isEmpty(mobileMap.get(u.getId())) && DataUtil.isEmpty(idCradMap.get(u.getCertificateCard()))) {
+                if (DataUtil.isEmpty(mobileMap.get(u.getPhoneNumber())) && DataUtil.isEmpty(idCradMap.get(u.getCertificateCard()))) {
                     StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
                     //添加为内部内控名单
                     StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
