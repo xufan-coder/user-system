@@ -55,17 +55,13 @@ public class PageStyleController {
                 return R.error("结束时间不能为空");
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            //生效时间是否晚于当前时间
+          /*  //生效时间是否晚于当前时间
             if(format.parse(dto.getStartTime()).before(new Date())){
                 return R.error("生效时间不能小于当前时间");
             }
             //结束时间是否晚于当前时间
             if(format.parse(dto.getEndTime()).before(new Date())){
                 return R.error("结束时间不能小于当前时间");
-            }
-            //结束时间是否晚于生效时间
-            if(format.parse(dto.getEndTime()).before(format.parse(dto.getStartTime()))){
-                return R.error("结束时间不能小于生效时间");
             }
             //生效时间是否晚于当前时间
                 if(format.parse(dto.getStartTime()).before(new Date())){
@@ -74,7 +70,7 @@ public class PageStyleController {
             //结束时间是否晚于当前时间
             if(format.parse(dto.getEndTime()).before(new Date())){
                 return R.error("结束时间不能小于当前时间");
-            }
+            }*/
             //结束时间是否晚于生效时间
             if(format.parse(dto.getEndTime()).before(format.parse(dto.getStartTime()))){
                 return R.error("结束时间不能小于生效时间");

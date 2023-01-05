@@ -121,6 +121,11 @@ public class  BosStaffInfoVo {
     private Integer useState;
 
     /**
+     * 培训班次
+     */
+    private String trainNo;
+
+    /**
      * 企业id 集合
      */
     @TableField(exist = false)

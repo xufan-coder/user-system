@@ -167,7 +167,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      *
      *
      * @author               PengQiang
-     * @description          查询所有在用户
+     * @description          查询所有在职用户
      * @date                 2022/9/5 9:46
      * @param                []
      * @return               com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
@@ -179,11 +179,11 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             List<StaffInfoVo> duytUser = sysStaffInfoService.getAllDuytUserInner();
             return R.success(duytUser);
         } catch (DefaultException e){
-            log.error("内部接口复查询所有在职错误:{}", e, e);
-            return R.error(e.getMessage());
+            log.error("内部接口查询所有在职伙伴错误:{}", e.getMessage());
+            return R.error("内部接口查询所有在职伙伴错误");
         }  catch (Exception e) {
-            log.error("内部接口复查询所有在职错误:{} ", e, e);
-            return R.error(e.getMessage());
+            log.error("内部接口查询所有在职伙伴错误:{} ", e, e);
+            return R.error("内部接口查询所有在职伙伴错误");
         }
     }
 
