@@ -166,6 +166,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<SysUserInfo> getJobUser(String parentId);
 
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 查询所有在职用户
+     * @Date: 2023/1/4 21:14
+     */
     List<StaffInfoVo> getAllDuytUserInner();
 
     /**
