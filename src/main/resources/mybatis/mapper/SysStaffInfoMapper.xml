@@ -68,6 +68,7 @@
         ssi.evaluate,
         ssi.resume_url,
         sui.use_state,
+        sui.train_no,
         ssi.is_diamond_member
         FROM
         sys_user_info sui
