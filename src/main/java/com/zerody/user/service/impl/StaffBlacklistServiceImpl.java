@@ -30,6 +30,7 @@ import com.zerody.user.dto.InternalControlDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
+import com.zerody.user.handler.blacklist.BlacklistParamHandle;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.service.*;
@@ -121,6 +122,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         blac.setState(StaffBlacklistApproveState.BLOCK.name());
         blac.setId(UUIDutils.getUUID32());
         this.save(blac);
+        QueryWrapper<SysStaffInfo> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(SysStaffInfo::getUserId,param.getBlacklist().getUserId());
+
         List<String> images = param.getImages();
         List<Image> imageAdds = new ArrayList<>();
         Image image;
@@ -288,6 +292,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> reasons = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> reasonsIdCard = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         List<SysUserInfo> users = new ArrayList<>();
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             String[] rowData = dataList.get(rowIndex);
@@ -331,12 +336,14 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     continue;
                 }
                 reasons.put(entity.getMobile(), entity.getReason());
+                reasonsIdCard.put(entity.getIdentityCard(), entity.getReason());
+                //查询出该手机号码或身份证的历史账号
                 QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
-                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getIdCardFront, rowData[2]));
+                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getCertificateCard, rowData[2]));
                 List<SysUserInfo> datas = this.userInfoService.list(usersQw);
                 if (DataUtil.isNotEmpty(datas)) {
-                    entity.setType(1);
                     users.addAll(datas);
+                    continue;
                 }
                 entitys.add(entity);
             } catch (Exception e) {
@@ -346,26 +353,49 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         List<String> userIds = new ArrayList<>();
         List<SysUserInfo> userUpdate = new ArrayList<>();
         List<SysStaffInfo> staffInfos = new ArrayList<>();
+        Map<String, String> mobileMap = new HashMap<>();
+        Map<String, String> idCradMap = new HashMap<>();
         if (DataUtil.isNotEmpty(users)) {
             users.forEach(u -> {
-                userIds.add(u.getId());
                 // 如果是在职状态 设置为离职(已解约)
-                if (u.getStatus() == StatusEnum.activity.getValue() || u.getStatus() == StatusEnum.teamwork.getValue()) {
-                    u.setStatus(StatusEnum.stop.getValue());
-                    userUpdate.add(u);
-                    //设置原因
-                    QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-                    staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
-                    staffQw.lambda().last("limit 0,1");
-                    SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
-                    if (DataUtil.isEmpty(staff)) {
-                        return;
-                    }
-                    staff.setDateLeft(new Date());
-                    staff.setStatus(StatusEnum.stop.getValue());
-                    staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
-                    staffInfos.add(staff);
+                if (u.getStatus() == StatusEnum.stop.getValue()) {
+                    return;
                 }
+                //设置为离职
+                u.setStatus(StatusEnum.stop.getValue());
+                userUpdate.add(u);
+                //查询员工信息
+                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+                staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
+                staffQw.lambda().last("limit 0,1");
+                SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
+                if (DataUtil.isEmpty(staff)) {
+                    return;
+                }
+                //设置离职原因
+                staff.setDateLeft(new Date());
+                staff.setStatus(StatusEnum.stop.getValue());
+                staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
+                staffInfos.add(staff);
+                userIds.add(u.getId());
+                //发送消息 离职转移客户
+                StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+                staffDimissionInfo.setUserId(u.getId());
+                staffDimissionInfo.setOperationUserId(user.getUserId());
+                staffDimissionInfo.setOperationUserName(user.getUserName());
+                this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+                //手机号码、身份证已添加加 就不在添加
+                if (DataUtil.isNotEmpty(mobileMap.get(u.getId())) && DataUtil.isNotEmpty(idCradMap.get(u.getCertificateCard()))) {
+                    return;
+                }
+                StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
+                //添加为内部内控名单
+                StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
+                entity2.setReason(reasons.get(entity2.getMobile()));
+                if (DataUtil.isEmpty(entity2.getReason())) {
+                    entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
+                }
+                entitys.add(entity2);
             });
         }
         //修改用户状态
@@ -492,7 +522,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());
             blac.setMobile(staff.getMobile());
-
+            blac.setIdentityCard(staff.getIdentityCard());
             blac.setCreateTime(new Date());
             blac.setApprovalTime(new Date());
             blac.setState(StaffBlacklistApproveState.BLOCK.name());

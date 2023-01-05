@@ -68,6 +68,7 @@
         ssi.evaluate,
         ssi.resume_url,
         sui.use_state,
+        sui.train_no,
         ssi.is_diamond_member
         FROM
         sys_user_info sui
@@ -78,7 +79,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
-        LEFT JOIN staff_blacklist AS sb ON sb.mobile = sui.phone_number AND sb.state = 'BLOCK'
+        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card)  AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="staff.companyId != null and staff.companyId != ''">
@@ -213,6 +214,7 @@
         ssi.is_diamond_member,
         sui.id_card_reverse,
         sui.id_card_front,
+        sui.use_state,
         sui.train_no
         FROM
         sys_user_info sui
@@ -282,6 +284,8 @@
         ssi.date_join,
         ssi.date_left,
         sui.im_state,
+        sui.use_state,
+        sui.train_no,
         sui.avatar AS user_avatar
         FROM
         sys_user_info sui
@@ -653,7 +657,8 @@
         urs.role_id,
         urs.role_name,
         ssi.id AS `staff_id`,
-        ssi.status
+        ssi.status,
+        sui.create_time
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id

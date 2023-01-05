@@ -30,11 +30,11 @@ public class PageStyleDto {
     /**
      * 生效时间
      */
-    private Date startTime;
+    private String startTime;
     /**
      * 失效时间
      */
-    private Date endTime;
+    private String endTime;
     /**
      * 状态（0停用 1启用）
      */

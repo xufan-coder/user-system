@@ -377,4 +377,8 @@ public class SysUserInfoVo {
      *    培训班次
      */
     private String trainNo;
+    /**
+     *    账号状态
+     */
+    private Integer useState;
 }
