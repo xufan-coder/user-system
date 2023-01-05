@@ -449,9 +449,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
-        if (CollectionUtils.isEmpty(cooperationFiles)) {
+  /*      if (CollectionUtils.isEmpty(cooperationFiles)) {
             return;
-        }
+        }*/
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
         for (CommonFile s : cooperationFiles) {
