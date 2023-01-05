@@ -247,6 +247,7 @@ public class SysStaffInfoController {
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
+            log.info("app编辑伙伴  ——> 入参：{}", JSON.toJSONString(setSysUserInfoDto));
             UserVo user = UserUtils.getUser();
             sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
             return R.success();
