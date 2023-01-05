@@ -3042,7 +3042,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<String> getLeaderUserId(String userId) {
+    public List<String> getLeaderUserId(String userId,Integer sameDept) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
@@ -3057,15 +3057,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         //副总
-        qw.clear();
-        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
-        SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isNotEmpty(leader1)){
-            SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
-            if(DataUtil.isNotEmpty(byId1)){
-                result.add(byId1.getUserId());
+        if(sameDept==null || sameDept != YesNo.YES){
+            qw.clear();
+            qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+            SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
+            if(DataUtil.isNotEmpty(leader1)){
+                SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
+                if(DataUtil.isNotEmpty(byId1)){
+                    result.add(byId1.getUserId());
+                }
             }
         }
+
         if(DataUtil.isEmpty(result)){
             return null;
         }

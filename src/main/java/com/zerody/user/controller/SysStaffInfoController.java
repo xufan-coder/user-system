@@ -628,14 +628,15 @@ public class SysStaffInfoController {
      * 原子服务查询伙伴的所属团队长和副总id
      *
      * @param userId
+     * @param sameDept 是否是相同副总 1相同 null或者其他值为不同
      * @return {@link null }
      * @author DaBai
      * @date 2022/11/30  10:36
      */
     @GetMapping("/get/leader-user-id")
-    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId){
+    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId,@RequestParam(name = "sameDept",required = false) Integer sameDept){
         try {
-            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId,sameDept);
             return R.success(leadersId);
         } catch (DefaultException e){
             log.error("查询伙伴的所属团队长和副总错误:{}", e.getMessage());
