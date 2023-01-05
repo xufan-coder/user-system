@@ -366,6 +366,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     if (DataUtil.isEmpty(entity2.getReason())) {
                         entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
                     }
+                    mobileMap.put(entity2.getMobile(), entity2.getMobile());
+                    idCradMap.put(entity2.getIdentityCard(), entity2.getIdentityCard());
                     entitys.add(entity2);
                 }
                 StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
