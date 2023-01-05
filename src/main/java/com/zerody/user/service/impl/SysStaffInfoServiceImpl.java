@@ -824,6 +824,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfoMapper.updateById(sysUserInfo);
+        //处理null修改问题
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
+        userUw.lambda().eq(SysUserInfo::getId, sysUserInfo.getId());
+        //处理null修改问题
+        this.sysUserInfoService.update(userUw);
+
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
         SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQW);
