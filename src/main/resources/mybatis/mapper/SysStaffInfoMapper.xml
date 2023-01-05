@@ -283,6 +283,8 @@
         ssi.date_join,
         ssi.date_left,
         sui.im_state,
+        sui.use_state,
+        sui.train_no,
         sui.avatar AS user_avatar
         FROM
         sys_user_info sui
