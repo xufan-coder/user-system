@@ -357,6 +357,25 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         Map<String, String> idCradMap = new HashMap<>();
         if (DataUtil.isNotEmpty(users)) {
             users.forEach(u -> {
+                //手机号码、身份证已添加加 就不在添加
+                if (DataUtil.isEmpty(mobileMap.get(u.getId())) && DataUtil.isEmpty(idCradMap.get(u.getCertificateCard()))) {
+                    StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
+                    //添加为内部内控名单
+                    StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
+                    entity2.setReason(reasons.get(entity2.getMobile()));
+                    if (DataUtil.isEmpty(entity2.getReason())) {
+                        entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
+                    }
+                    entitys.add(entity2);
+                }
+                StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
+                //添加为内部内控名单
+                StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
+                entity2.setReason(reasons.get(entity2.getMobile()));
+                if (DataUtil.isEmpty(entity2.getReason())) {
+                    entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
+                }
+                entitys.add(entity2);
                 // 如果是在职状态 设置为离职(已解约)
                 if (u.getStatus() == StatusEnum.stop.getValue()) {
                     return;
@@ -384,18 +403,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 staffDimissionInfo.setOperationUserId(user.getUserId());
                 staffDimissionInfo.setOperationUserName(user.getUserName());
                 this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
-                //手机号码、身份证已添加加 就不在添加
-                if (DataUtil.isNotEmpty(mobileMap.get(u.getId())) && DataUtil.isNotEmpty(idCradMap.get(u.getCertificateCard()))) {
-                    return;
-                }
-                StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
-                //添加为内部内控名单
-                StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
-                entity2.setReason(reasons.get(entity2.getMobile()));
-                if (DataUtil.isEmpty(entity2.getReason())) {
-                    entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
-                }
-                entitys.add(entity2);
+
             });
         }
         //修改用户状态

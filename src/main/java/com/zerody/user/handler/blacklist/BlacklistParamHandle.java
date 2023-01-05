@@ -1,6 +1,7 @@
 package com.zerody.user.handler.blacklist;
 
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
+import com.zerody.common.util.UUIDutils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.StaffBlacklist;
@@ -21,6 +22,7 @@ public class BlacklistParamHandle {
 
     public static StaffBlacklist insideStaffBlacklistParam(StaffInfoVo staff, UserVo loginUser) {
         StaffBlacklist entity = new StaffBlacklist();
+        entity.setId(UUIDutils.getUUID32());
         entity.setType(1);
         entity.setCompanyId(staff.getCompanyId());
         entity.setApprovalTime(new Date());
