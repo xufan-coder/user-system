@@ -339,7 +339,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 reasonsIdCard.put(entity.getIdentityCard(), entity.getReason());
                 //查询出该手机号码或身份证的历史账号
                 QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
-                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getIdCardFront, rowData[2]));
+                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getCertificateCard, rowData[2]));
                 List<SysUserInfo> datas = this.userInfoService.list(usersQw);
                 if (DataUtil.isNotEmpty(datas)) {
                     users.addAll(datas);
