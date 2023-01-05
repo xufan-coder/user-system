@@ -292,6 +292,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         Map<String, String> mobiles = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> idCards = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         Map<String, String> reasons = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
+        Map<String, String> reasonsIdCard = Maps.newHashMapWithExpectedSize(dataList.size()  - 1);
         List<SysUserInfo> users = new ArrayList<>();
         for (int rowIndex = 0; rowIndex < dataList.size(); rowIndex++) {
             String[] rowData = dataList.get(rowIndex);
@@ -335,6 +336,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     continue;
                 }
                 reasons.put(entity.getMobile(), entity.getReason());
+                reasonsIdCard.put(entity.getIdentityCard(), entity.getReason());
                 //查询出该手机号码或身份证的历史账号
                 QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
                 usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getIdCardFront, rowData[2]));
@@ -389,6 +391,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
                 //添加为内部内控名单
                 StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
+                entity2.setReason(reasons.get(entity2.getMobile()));
+                if (DataUtil.isEmpty(entity2.getReason())) {
+                    entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
+                }
                 entitys.add(entity2);
             });
         }
