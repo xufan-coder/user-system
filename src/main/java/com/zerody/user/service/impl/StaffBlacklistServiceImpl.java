@@ -370,14 +370,6 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     idCradMap.put(entity2.getIdentityCard(), entity2.getIdentityCard());
                     entitys.add(entity2);
                 }
-                StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
-                //添加为内部内控名单
-                StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
-                entity2.setReason(reasons.get(entity2.getMobile()));
-                if (DataUtil.isEmpty(entity2.getReason())) {
-                    entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
-                }
-                entitys.add(entity2);
                 // 如果是在职状态 设置为离职(已解约)
                 if (u.getStatus() == StatusEnum.stop.getValue()) {
                     return;
