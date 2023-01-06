@@ -10,7 +10,7 @@
         end_time,
         create_time,
         state,
-        deleted
+        `type`
         FROM page_style
         WHERE
         deleted = 0 AND state = 1
@@ -26,7 +26,7 @@
         end_time,
         create_time,
         state,
-        deleted
+        `type`
         FROM page_style
         WHERE
         deleted = 0
