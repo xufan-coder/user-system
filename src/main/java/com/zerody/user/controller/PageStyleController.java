@@ -12,13 +12,11 @@ import com.zerody.user.service.PageStyleService;
 import com.zerody.user.vo.PageStyleVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @Author: YeChangWei
@@ -55,25 +53,8 @@ public class PageStyleController {
                 return R.error("结束时间不能为空");
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-          /*  //生效时间是否晚于当前时间
-            if(format.parse(dto.getStartTime()).before(new Date())){
-                return R.error("生效时间不能小于当前时间");
-            }
-            //结束时间是否晚于当前时间
-            if(format.parse(dto.getEndTime()).before(new Date())){
-                return R.error("结束时间不能小于当前时间");
-            }
-            //生效时间是否晚于当前时间
-                if(format.parse(dto.getStartTime()).before(new Date())){
-                return R.error("生效时间不能小于当前时间");
-            }
-            //结束时间是否晚于当前时间
-            if(format.parse(dto.getEndTime()).before(new Date())){
-                return R.error("结束时间不能小于当前时间");
-            }*/
-            //结束时间是否晚于生效时间
             if(format.parse(dto.getEndTime()).before(format.parse(dto.getStartTime()))){
-                return R.error("结束时间不能小于生效时间");
+                return R.error("失效时间不能小于生效时间");
             }
             this.pageStyleService.updatePageStyle(dto);
             return R.success();
