@@ -633,6 +633,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             total.setMonthLoansNum(total.getMonthLoansNum() + rfq.getMonthLoansNum());
             total.setMonthPerformance(new BigDecimal(total.getMonthPerformance()).add(new BigDecimal(rfq.getMonthPerformance())).toString());
             total.setMonthPerformanceNum(total.getMonthPerformanceNum() + rfq.getMonthPerformanceNum());
+            total.setLargeSignNumber(total.getLargeSignNumber() + rfq.getLargeSignNumber());
+            total.setLargeSignMoney(new BigDecimal(total.getLargeSignMoney()).add(new BigDecimal(rfq.getLargeSignMoney())).toString());
             rfq.count();
             //每次之后清零
             num = 0;
