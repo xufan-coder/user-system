@@ -522,6 +522,8 @@
             and sui.id = #{userId}
         </if>
     </select>
+
+    <!--查询所有在职用户-->
     <select id="getAllDuytUser" resultType="com.zerody.user.api.vo.StaffInfoVo">
         SELECT sui.id            AS user_id,
                ssi.comp_id       AS company_id,
@@ -533,7 +535,9 @@
                sui.status,
                sdi.id            AS `depart_id`,
                ssi.evaluate,
-               ssi.resume_url
+               ssi.user_type,
+               ssi.resume_url,
+               sui.create_time
         FROM sys_user_info sui
                  JOIN sys_staff_info ssi ON sui.id = ssi.user_id
                  LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id

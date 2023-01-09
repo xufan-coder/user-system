@@ -68,6 +68,7 @@
         ssi.evaluate,
         ssi.resume_url,
         sui.use_state,
+        sui.train_no,
         ssi.is_diamond_member
         FROM
         sys_user_info sui
@@ -283,6 +284,8 @@
         ssi.date_join,
         ssi.date_left,
         sui.im_state,
+        sui.use_state,
+        sui.train_no,
         sui.avatar AS user_avatar
         FROM
         sys_user_info sui
@@ -654,7 +657,8 @@
         urs.role_id,
         urs.role_name,
         ssi.id AS `staff_id`,
-        ssi.status
+        ssi.status,
+        sui.create_time
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
