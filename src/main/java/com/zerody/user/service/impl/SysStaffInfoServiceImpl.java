@@ -1752,7 +1752,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             //手机号码判断是否是内控名单
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
+            dto.setMobile(phone);
+            dto.setIdentityCard(row[14]);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
@@ -2007,7 +2010,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             //手机号码判断是否是内控名单
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
+            dto.setMobile(phone);
+            dto.setIdentityCard(row[13]);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
