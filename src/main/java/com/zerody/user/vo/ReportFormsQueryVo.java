@@ -328,7 +328,7 @@ public class ReportFormsQueryVo {
         if (StringUtils.isEmpty(this.largeSignMoney) || "0.00".equals(this.largeSignMoney)) {
             return "0";
         }
-        return "0";
+        return this.largeSignMoney;
     }
 
     /**
