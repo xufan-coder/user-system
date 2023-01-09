@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
+import com.zerody.user.dto.MobileAndIdentityCardDto;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
@@ -38,7 +39,7 @@ public interface StaffBlacklistMapper extends BaseMapper<StaffBlacklist> {
      * @param                mobile
      * @return               com.zerody.user.vo.MobileBlacklistQueryVo
      */
-    List<String> getBlacklistByMobile(@Param("mobile") String mobile);
+    List<String> getBlacklistByMobile(@Param("param") MobileAndIdentityCardDto param);
 
     InternalControlVo updateInternalControl(@Param("param") InternalControlDto param);
 }

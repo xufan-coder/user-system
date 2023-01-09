@@ -10,6 +10,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
+import com.zerody.user.dto.MobileAndIdentityCardDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
@@ -312,10 +313,10 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @GetMapping("/get-by-mobile")
-    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(@RequestParam("mobile") String mobile){
+    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(MobileAndIdentityCardDto dto){
         try {
 
-            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(mobile);
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("根据手机号码查询是否被拉黑出错：{}", e, e);

@@ -27,6 +27,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
+import com.zerody.user.dto.MobileAndIdentityCardDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
@@ -648,9 +649,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public MobileBlacklistQueryVo getBlacklistByMobile(String mobile) {
+    public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto) {
         MobileBlacklistQueryVo  result = new MobileBlacklistQueryVo();
-        List<String> companys = this.baseMapper.getBlacklistByMobile(mobile);
+        List<String> companys = this.baseMapper.getBlacklistByMobile(dto);
         result.setIsBlock(CollectionUtils.isNotEmpty(companys));
         result.setCompanyNames(companys);
         return result;

@@ -139,12 +139,16 @@
             sci.company_name
         FROM
             staff_blacklist AS sb
-        JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
-        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        JOIN sys_company_info AS sci ON sci.id = sb.company_id
         <where>
             sb.state = 'BLOCK'
             AND
-            sb.mobile = #{mobile}
+            (
+            sb.mobile = #{param.mobile}
+            OR
+            sb.identity_card=#{param.IdentityCard}
+            )
+            limit 0,1
         </where>
     </select>
 
