@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.PageStyleMapper" >
+    <select id="getNowPageStyle" resultType="com.zerody.user.domain.PageStyle">
+        SELECT
+        id,
+        `name`,
+        picture_url,
+        start_time,
+        end_time,
+        create_time,
+        state,
+        `type`
+        FROM page_style
+        WHERE
+        deleted = 0 AND state = 1
+        AND NOW() &gt; start_time
+        AND NOW() &lt; end_time
+    </select>
+    <select id="getAllPageStyle" resultType="com.zerody.user.vo.PageStyleVo">
+     SELECT
+        id,
+        `name`,
+        picture_url,
+        start_time,
+        end_time,
+        create_time,
+        state,
+        `type`
+        FROM page_style
+        WHERE
+        deleted = 0
+    </select>
+</mapper>

@@ -36,7 +36,7 @@ public class CommonFile {
     private String fileUrl;
 
     /**
-     * 类型
+     * 类型(COOPERATION-APPLICATION-FORM:合作申请类型)
      */
     private String fileType;
 

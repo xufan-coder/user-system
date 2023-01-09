@@ -68,4 +68,21 @@ public class LoginUserInfoVo {
     *    岗位名称
     */
     private String positionName;
+
+    /**
+     *   是否有上传身份证照片
+     */
+    private Boolean hasIdCard;
+
+    /**
+     *   身份证正面
+     */
+    private String idCardFront;
+
+    public Boolean getHasIdCard() {
+        if(this.idCardFront!=null){
+            return true;
+        }
+        return false;
+    }
 }

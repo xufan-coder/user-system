@@ -112,10 +112,10 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
 
     CopyStaffInfoVo selectStaffInfo(String staffId);
-    
+
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 根据用户id查询员工信息
     * @Date: 2022/12/9 9:55
     */
@@ -166,6 +166,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<SysUserInfo> getJobUser(String parentId);
 
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 查询所有在职用户
+     * @Date: 2023/1/4 21:14
+     */
     List<StaffInfoVo> getAllDuytUserInner();
 
     /**
@@ -219,8 +225,10 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     Map<String, Object> getSameDept(String userId, String chooseUserId);
 
-    List<String> getLeaderUserId(String userId);
+    List<String> getLeaderUserId(String userId,Integer sameDept);
 
     /**获取离职伙伴信息*/
     LeaveUserInfoVo getQuitUserInfo(String userId);
+
+    void updateIdCard(IdCardUpdateDto dto);
 }

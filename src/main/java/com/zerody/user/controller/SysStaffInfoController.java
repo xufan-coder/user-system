@@ -14,6 +14,7 @@ import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
+import com.zerody.user.dto.IdCardUpdateDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.dto.SysStaffInfoPageDto;
 import com.zerody.user.enums.TemplateTypeEnum;
@@ -199,6 +200,23 @@ public class SysStaffInfoController {
         }
     }
 
+    /**
+    *   APP上传修改身份证照片
+    */
+    @PutMapping("/id-card/update")
+    public DataResult<Object> updateIdCard(@Validated @RequestBody IdCardUpdateDto dto){
+        try {
+            sysStaffInfoService.updateIdCard(dto);
+            return R.success();
+        } catch (DefaultException e){
+            log.error("app上传身份证错误:{}" , e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("app上传身份证错误:{} ", e);
+            return R.error("上传身份证错误,请求异常");
+        }
+    }
+
 
     /**
      * @Author: chenKeFeng
@@ -208,15 +226,13 @@ public class SysStaffInfoController {
      */
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
-        log.info("app添加伙伴入参 {}", setSysUserInfoDto);
-        log.info("企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e){
             log.error("app添加伙伴错误:{}" + JSON.toJSONString(setSysUserInfoDto), e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("app添加伙伴错误:{} "+ JSON.toJSONString(setSysUserInfoDto), e);
             return R.error("添加合作伙伴失败,请求异常");
         }
@@ -230,8 +246,6 @@ public class SysStaffInfoController {
     */
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
-        log.info("app编辑伙伴入参： {}", setSysUserInfoDto);
-        log.info("update企业内部关系信息入参---{}", JSON.toJSONString(setSysUserInfoDto.getStaffRelationDtoList()));
         try {
             UserVo user = UserUtils.getUser();
             sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
@@ -256,7 +270,7 @@ public class SysStaffInfoController {
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("根据员工id查询员工信息:{}", e, e);
             return R.error("根据员工id查询员工信息,请求异常");
         }
@@ -276,7 +290,7 @@ public class SysStaffInfoController {
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("获取app伙伴详情错误:{}", e, e);
             return R.error("获取app伙伴详情,请求异常");
         }
@@ -614,14 +628,15 @@ public class SysStaffInfoController {
      * 原子服务查询伙伴的所属团队长和副总id
      *
      * @param userId
+     * @param sameDept 是否是相同副总 1相同 null或者其他值为不同
      * @return {@link null }
      * @author DaBai
      * @date 2022/11/30  10:36
      */
     @GetMapping("/get/leader-user-id")
-    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId){
+    public DataResult<List<String>> getLeaderUserId(@RequestParam(name = "userId") String userId,@RequestParam(name = "sameDept",required = false) Integer sameDept){
         try {
-            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            List<String> leadersId =sysStaffInfoService.getLeaderUserId(userId,sameDept);
             return R.success(leadersId);
         } catch (DefaultException e){
             log.error("查询伙伴的所属团队长和副总错误:{}", e.getMessage());

@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -900,6 +901,19 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param){
         return this.sysUserInfoMapper.getLeaveUser(param);
     }
+
+    @Override
+    public List<String> getUserAllTrainNo() {
+        LambdaQueryWrapper<SysUserInfo> qw =new LambdaQueryWrapper<>();
+        qw.eq(SysUserInfo::getIsDeleted,YesNo.NO);
+        qw.ne(SysUserInfo::getStatus,-1);
+        qw.isNotNull(SysUserInfo::getTrainNo);
+        qw.groupBy(SysUserInfo::getTrainNo);
+        qw.orderByDesc(SysUserInfo::getTrainNo);
+        List<SysUserInfo> list = this.list(qw);
+        return list.stream().map(SysUserInfo::getTrainNo).collect(Collectors.toList());
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

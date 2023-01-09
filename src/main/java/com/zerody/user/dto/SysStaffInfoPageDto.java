@@ -71,5 +71,14 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
      */
     private Integer isDiamondMember;
 
+    /**
+    *   培训班次
+    */
+    private String trainNo;
+
+    /**
+     * 账号状态 0正常   1已冻结
+     */
+    private Integer useState;
 
 }

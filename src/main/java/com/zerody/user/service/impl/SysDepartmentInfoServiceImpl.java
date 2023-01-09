@@ -636,6 +636,12 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return depPersons;
     }
 
+    @Override
+    public List<String> getAllDepByCompany(String companyId) {
+        List<String> departmentInfoVos = this.sysDepartmentInfoMapper.getAllDepByCompany(companyId);
+        return departmentInfoVos;
+    }
+
     private void getStructureChildrens(List<UserStructureVo> list) {
         if (CollectionUtils.isEmpty(list)) {
             return;
