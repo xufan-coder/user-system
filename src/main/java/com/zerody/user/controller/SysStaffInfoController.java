@@ -663,6 +663,7 @@ public class SysStaffInfoController {
             Integer isCharge =sysStaffInfoService.getCheckUserId(userId,chargeId);
             return R.success(isCharge);
         } catch (DefaultException e){
+            log.info(":{判断原负责人与当前用户的上级是否一致入参：{}-----{}", userId, chargeId);
             log.error("判断原负责人与当前用户的上级是否一致错误:{}", e.getMessage());
             return R.error(e.getMessage());
         }  catch (Exception e) {
