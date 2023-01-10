@@ -3097,8 +3097,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //团队长
         SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
         if(DataUtil.isNotEmpty(leader)) {
-            StaffInfoVo byId = this.getStaffInfo(leader.getAdminAccount());
-            if (DataUtil.isNotEmpty(byId) && chargeId.equals(leader.getAdminAccount())) {
+            if ( chargeId.equals(leader.getAdminAccount())) {
                 return YesNo.YES;
             }
         }
