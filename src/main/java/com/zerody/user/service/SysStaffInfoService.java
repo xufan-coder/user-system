@@ -231,4 +231,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     LeaveUserInfoVo getQuitUserInfo(String userId);
 
     void updateIdCard(IdCardUpdateDto dto);
+
+    Integer getCheckUserId(String userId, String chargeId);
 }
