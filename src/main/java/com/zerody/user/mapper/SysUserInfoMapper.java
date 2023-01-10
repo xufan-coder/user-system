@@ -224,4 +224,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<SubordinateUserQueryVo> getLeaveUser(@Param("param") SubordinateUserQueryDto param);
 
     Boolean getByMobileOrCard(@Param("mobile") String mobile, @Param("certificateCard") String certificateCard);
+
+    List<String> getUserAllTrainNo(@Param("companyId")String companyId);
 }

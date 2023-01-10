@@ -903,15 +903,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     }
 
     @Override
-    public List<String> getUserAllTrainNo() {
-        LambdaQueryWrapper<SysUserInfo> qw =new LambdaQueryWrapper<>();
-        qw.eq(SysUserInfo::getIsDeleted,YesNo.NO);
-        qw.ne(SysUserInfo::getStatus,-1);
-        qw.isNotNull(SysUserInfo::getTrainNo);
-        qw.groupBy(SysUserInfo::getTrainNo);
-        qw.orderByDesc(SysUserInfo::getTrainNo);
-        List<SysUserInfo> list = this.list(qw);
-        return list.stream().map(SysUserInfo::getTrainNo).collect(Collectors.toList());
+    public List<String> getUserAllTrainNo(String companyId) {
+        List<String> list= this.sysUserInfoMapper.getUserAllTrainNo(companyId);
+        return list;
     }
 
     //递归获取上级 不包含企业管理员

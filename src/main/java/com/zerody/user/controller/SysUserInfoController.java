@@ -1700,7 +1700,8 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     @GetMapping("/train-list/get")
     public DataResult<List<String>> getUserAllTrainNo() {
         try {
-            List<String> result = this.sysUserInfoService.getUserAllTrainNo();
+            String companyId = UserUtils.getUser().getCompanyId();
+            List<String> result = this.sysUserInfoService.getUserAllTrainNo(companyId);
             return R.success(result);
         } catch (DefaultException e){
             log.error("获取所有培训班次出错:{}",e,e);

@@ -669,4 +669,20 @@
         </if>
         )
     </select>
+
+    <select id="getUserAllTrainNo" resultType="String">
+        SELECT
+        sui.train_no
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        where
+        sui.is_deleted=0
+         <if test="companyId neq null and companyId neq ''">
+           and ssi.comp_id = #{companyId}
+        </if>
+        and sui.train_no != null
+        and sui.status !=-1
+        group by sui.train_no
+        order by sui.train_no desc
+    </select>
 </mapper>
