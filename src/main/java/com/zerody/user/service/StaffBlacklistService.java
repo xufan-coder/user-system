@@ -6,6 +6,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
+import com.zerody.user.dto.MobileAndIdentityCardDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
@@ -65,10 +66,10 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @author               PengQiang
      * @description          DELL
      * @date                 2021/8/5 15:53
-     * @param                mobile
+     * @param
      * @return               com.zerody.user.vo.MobileBlacklistQueryVo
      */
-    MobileBlacklistQueryVo getBlacklistByMobile(String mobile);
+    MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto);
 
     /**
      * 【行政角色添加黑名单】

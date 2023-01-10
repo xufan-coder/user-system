@@ -46,4 +46,8 @@ public class PageStyle {
      * 删除状态（0未删除 1已删除）
      */
     private Integer deleted;
+    /**
+     * 风格类型
+     */
+    private String type;
 }
