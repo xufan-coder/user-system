@@ -680,7 +680,7 @@
          <if test="companyId neq null and companyId neq ''">
            and ssi.comp_id = #{companyId}
         </if>
-        and sui.train_no != null
+        and sui.train_no is not null
         and sui.status !=-1
         group by sui.train_no
         order by sui.train_no desc
