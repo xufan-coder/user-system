@@ -646,4 +646,29 @@ public class SysStaffInfoController {
             return R.error("查询伙伴的所属团队长和副总错误");
         }
     }
+
+    /**************************************************************************************************
+     **
+     * 原子服务判断原负责人与当前用户的上级是否一致
+     *
+     * @param userId 当前用户
+     * @param chooseUserId  原负责人
+     * @return {@link null }
+     * @author kuang
+     * @date 2023/01/10  10:36
+     */
+    @GetMapping("/get/check-user-id")
+    public DataResult<Object> getCheckUserId(@RequestParam(name = "userId") String userId,@RequestParam(name = "chargeId") String chargeId){
+        try {
+            Integer isCharge =sysStaffInfoService.getCheckUserId(userId,chargeId);
+            return R.success(isCharge);
+        } catch (DefaultException e){
+            log.info(":{判断原负责人与当前用户的上级是否一致入参：{}-----{}", userId, chargeId);
+            log.error("判断原负责人与当前用户的上级是否一致错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("判断原负责人与当前用户的上级是否一致错误:{}", e, e);
+            return R.error("判断原负责人与当前用户的上级是否一致错误");
+        }
+    }
 }
