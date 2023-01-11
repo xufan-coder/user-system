@@ -301,6 +301,13 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         for (CeoUserInfo ceoUserInfo : ceoUserInfos) {
             CeoUserVo ceoUserInfoVo = new CeoUserVo();
             BeanUtils.copyProperties(ceoUserInfo, ceoUserInfoVo);
+            //获取ceo关联的企业信息
+            List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getBackRefById(ceoUserInfo.getId());
+            if (DataUtil.isNotEmpty(ceoCompanyList)) {
+                List<String> companyIds = ceoCompanyList.stream().map(CeoCompanyRef::getCompanyId).distinct().collect(Collectors.toList());
+                ceoUserInfoVo.setCompanyIds(companyIds);
+            }
+
             list.add(ceoUserInfoVo);
         }
         return list;
