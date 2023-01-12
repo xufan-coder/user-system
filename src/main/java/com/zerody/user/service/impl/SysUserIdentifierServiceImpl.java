@@ -263,9 +263,12 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         this.updateById(identifier);
 
         if(state.equals(YesNo.NO)){
+            log.info("--------------(No)----------------");
             this.addIdentifier(identifier);
         }else {
+            log.info("--------------(Yes)----------------");
             this.checkUtil.removeUserToken(identifier.getUserId());
+            log.info("--------------(pullMq)----------------");
             this.pullMq(identifier.getUserId(),null,null);
         }
         log.info("——————————解除设备绑定消息 ---------------");
