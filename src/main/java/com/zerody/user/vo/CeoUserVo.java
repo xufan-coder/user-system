@@ -4,6 +4,7 @@ import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author : chenKeFeng
@@ -44,6 +45,10 @@ public class CeoUserVo extends BaseModel {
      * 企业名称
      */
     private String company;
+    /**
+     * ceo关联的企业
+     */
+    private List<String> companyIds;
     /**
      * 出生日期
      */

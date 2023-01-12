@@ -446,7 +446,8 @@
          where sdi.status = 0 and ssi.user_id is not null
     </select>
 
-    <select id="getAllDepByCompany" resultType="String">
+    <!--查询当前企业下的所有部门-->
+    <select id="getAllDepByCompany" resultType="java.lang.String">
         SELECT
         sdi.id
         FROM

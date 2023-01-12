@@ -2476,7 +2476,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //获取荣耀和惩罚记录、家庭成员
         getRecord(userInfo.getStaffId(), userInfo);
-        //添加合规承诺书、学历证书
+        //添加合规承诺书、学历证书、合作申请表
         getLetterOfUndertakingAndDiplomas(userInfo);
 
         //查询企业内部关系信息

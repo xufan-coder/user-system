@@ -514,6 +514,7 @@ public class SysDepartmentInfoController implements DepartRemoteService {
     *  @date          2023/1/2 16:02
     *  @return        com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
     */
+    @Override
     @GetMapping("/get/all-depart/inner")
     public DataResult<List<String>> getAllDepByCompany(@RequestParam("companyId") String companyId){
         try {
