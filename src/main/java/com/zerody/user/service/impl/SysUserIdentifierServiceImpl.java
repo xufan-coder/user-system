@@ -268,6 +268,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
             this.checkUtil.removeUserToken(identifier.getUserId());
             this.pullMq(identifier.getUserId(),null,null);
         }
+        log.info("——————————解除设备绑定消息 ---------------");
         SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
         UserLogUtil.addUserLog(userInfo,null,"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
