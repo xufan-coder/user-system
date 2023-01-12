@@ -678,7 +678,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             }
         }
         List<String[]> exportData = new ArrayList<>();
-        final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
+        final String[] header = {param.getTitle(), timePeriodStr + "签单/笔数", "百万签单", "总共签单/笔数", timePeriodStr + "审批数额/笔数"
                 , "总审批额/笔数", timePeriodStr + "放款额/笔数", "总放款额/笔数", "邀约人数", "上门人数"};
         String[] rowData;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -687,6 +687,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             int index = 0;
             rowData[index++] = info.getName();
             rowData[index++] = info.getSignMoney() + "/" + info.getSignNum() + "笔";
+            rowData[index++] = info.getLargeSignMoney() + "/" + info.getLargeSignNumber() + "笔";
             rowData[index++] = info.getSignMoneyTotal() + "/" + info.getSignNumTotal() + "笔";
             rowData[index++] = info.getApproveMoney() + "/" + info.getApproveNum() + "笔";
             rowData[index++] = info.getApproveMoneyTotal() + "/" + info.getApproveNumTotal() + "笔";
