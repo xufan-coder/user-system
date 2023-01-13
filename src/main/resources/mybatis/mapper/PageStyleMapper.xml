@@ -46,7 +46,11 @@
         FROM page_style
         WHERE
         deleted = 0 AND state = 1
-        AND end_time > #{startTime}
+        and (
+        (end_time  &gt; #{startTime} and start_time &lt;  #{startTime} )
+         or
+        ( end_time &lt; #{endTime} and start_time  &gt; #{startTime})
+        )
         limit 1
     </select>
 </mapper>

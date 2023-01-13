@@ -34,5 +34,5 @@ public interface PageStyleMapper extends BaseMapper<PageStyle> {
      * @param endTime
      * @return
      */
-    PageStyle getNowPageStyleEstimate(@Param("startTime") String startTime);
+    PageStyle getNowPageStyleEstimate(@Param("startTime") String startTime,@Param("endTime") String endTime);
 }
