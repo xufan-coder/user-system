@@ -16,6 +16,8 @@
         deleted = 0 AND state = 1
         AND NOW() &gt; start_time
         AND NOW() &lt; end_time
+        ORDER BY start_time asc
+        limit 1
     </select>
     <select id="getAllPageStyle" resultType="com.zerody.user.vo.PageStyleVo">
      SELECT
