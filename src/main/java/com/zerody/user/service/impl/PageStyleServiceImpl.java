@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.PageStyle;
 import com.zerody.user.dto.PageStyleDto;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @Author: YeChangWei
@@ -28,6 +28,10 @@ public class PageStyleServiceImpl extends ServiceImpl<PageStyleMapper, PageStyle
 
     @Override
     public void updatePageStyle(PageStyleDto dto) {
+        PageStyle style = this.baseMapper.getNowPageStyleEstimate(dto.getStartTime());
+        if(dto.getState() == YesNo.YES && DataUtil.isNotEmpty(style)){
+            throw new DefaultException("生效时间范围已存在");
+        }
         PageStyle pageStyle = new PageStyle();
         BeanUtils.copyProperties(dto,pageStyle);
         try {
