@@ -312,7 +312,6 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         return list;
     }
 
-
     @Override
     public List<SubordinateUserQueryVo> getList() {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
