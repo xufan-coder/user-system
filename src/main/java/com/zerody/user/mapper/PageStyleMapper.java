@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.domain.PageStyle;
 import com.zerody.user.vo.PageStyleVo;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -27,4 +28,11 @@ public interface PageStyleMapper extends BaseMapper<PageStyle> {
     *  @return        com.baomidou.mybatisplus.core.metadata.IPage<com.zerody.user.vo.PageStyleVo>
     */
     IPage<PageStyleVo> getAllPageStyle(IPage<PageStyleVo> page);
+
+    /**
+     *  页面风格
+     * @param endTime
+     * @return
+     */
+    PageStyle getNowPageStyleEstimate(@Param("startTime") String startTime);
 }

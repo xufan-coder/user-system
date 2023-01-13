@@ -33,4 +33,20 @@
         WHERE
         deleted = 0
     </select>
+    <select id="getNowPageStyleEstimate" resultType="com.zerody.user.domain.PageStyle">
+         SELECT
+        id,
+        `name`,
+        picture_url,
+        start_time,
+        end_time,
+        create_time,
+        state,
+        `type`
+        FROM page_style
+        WHERE
+        deleted = 0 AND state = 1
+        AND end_time > #{startTime}
+        limit 1
+    </select>
 </mapper>
