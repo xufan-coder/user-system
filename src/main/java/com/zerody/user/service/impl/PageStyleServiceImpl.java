@@ -28,7 +28,7 @@ public class PageStyleServiceImpl extends ServiceImpl<PageStyleMapper, PageStyle
 
     @Override
     public void updatePageStyle(PageStyleDto dto) {
-        PageStyle style = this.baseMapper.getNowPageStyleEstimate(dto.getStartTime());
+        PageStyle style = this.baseMapper.getNowPageStyleEstimate(dto.getStartTime(),dto.getEndTime());
         if(dto.getState() == YesNo.YES && DataUtil.isNotEmpty(style)){
             throw new DefaultException("生效时间范围已存在");
         }
