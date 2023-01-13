@@ -112,10 +112,10 @@ public class CeoUserInfoController {
         try {
             return R.success(ceoUserInfoService.queryCeoList());
         } catch (DefaultException e) {
-            log.error("描述获取ceo账号出错:{}", e.getMessage());
+            log.error("获取ceo账号出错:{}", e.getMessage());
             return R.error("获取ceo账号出错");
         } catch (Exception e) {
-            log.error("描述获取ceo账号出错:{}", e, e);
+            log.error("获取ceo账号出错:{}", e, e);
             return R.error("获取ceo账号出错");
         }
     }

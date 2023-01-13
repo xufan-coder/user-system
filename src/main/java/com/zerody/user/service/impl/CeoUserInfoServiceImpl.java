@@ -307,7 +307,6 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
                 List<String> companyIds = ceoCompanyList.stream().map(CeoCompanyRef::getCompanyId).distinct().collect(Collectors.toList());
                 ceoUserInfoVo.setCompanyIds(companyIds);
             }
-
             list.add(ceoUserInfoVo);
         }
         return list;
