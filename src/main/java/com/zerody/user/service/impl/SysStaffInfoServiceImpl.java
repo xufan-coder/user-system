@@ -3082,13 +3082,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             return null;
         }
 
-        if(sameDept != null && sameDept == YesNo.YES){
-            result = result.stream().distinct().collect(Collectors.toList());
-            if (!result.contains(userId)) {
-                return result;
-            }
-            result.remove(userId);
+        //if(sameDept != null && sameDept == YesNo.YES){
+        result = result.stream().distinct().collect(Collectors.toList());
+        if (!result.contains(userId)) {
+            return result;
         }
+        result.remove(userId);
+        //}
         return result;
     }
 
