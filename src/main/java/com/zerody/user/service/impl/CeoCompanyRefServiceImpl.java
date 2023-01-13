@@ -132,7 +132,7 @@ public class CeoCompanyRefServiceImpl extends ServiceImpl<CeoCompanyRefMapper, C
     public List<CeoCompanyRef> getBackRefById(String ceoId) {
         LambdaQueryWrapper<CeoCompanyRef> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CeoCompanyRef::getCeoId, ceoId);
-        //wrapper.eq(CeoCompanyRef::getType , YesNo.YES);
+        wrapper.eq(CeoCompanyRef::getType , YesNo.YES);
         return this.baseMapper.selectList(wrapper);
     }
 }
