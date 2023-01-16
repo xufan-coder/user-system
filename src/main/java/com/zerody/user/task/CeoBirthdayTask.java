@@ -100,8 +100,8 @@ public class CeoBirthdayTask {
 
                 //推送给其他ceo  不包含自己
                 List<AppCeoUserNotPushVo> otherCeoBirthdayUser = this.ceoUserInfoService.getCeoBirthdayUserIds(null,null);
-                log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
-                log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
+                //log.info("otherCeoBirthdayUser {}" ,otherCeoBirthdayUser);
+                //log.info("推送给其他ceo条数 {}" ,otherCeoBirthdayUser.size());
                 for (AppCeoUserNotPushVo otherCeo : otherCeoBirthdayUser) {
                     // 过滤当前生日的ceo
                     if(ceoUser.getCeoId().equals(otherCeo.getCeoId())) {

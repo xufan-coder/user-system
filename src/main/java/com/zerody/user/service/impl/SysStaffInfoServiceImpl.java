@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -448,9 +449,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
-        if (CollectionUtils.isEmpty(cooperationFiles)) {
+  /*      if (CollectionUtils.isEmpty(cooperationFiles)) {
             return;
-        }
+        }*/
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
         for (CommonFile s : cooperationFiles) {
@@ -823,6 +824,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfoMapper.updateById(sysUserInfo);
+        //处理null修改问题
+        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+        userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
+        userUw.lambda().eq(SysUserInfo::getId, sysUserInfo.getId());
+        //处理null修改问题
+        this.sysUserInfoService.update(userUw);
+
         QueryWrapper<SysLoginInfo> loginQW = new QueryWrapper<>();
         loginQW.lambda().eq(SysLoginInfo::getUserId, sysUserInfo.getId());
         SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQW);
@@ -894,8 +902,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         saveImage(setSysUserInfoDto.getDiplomas(),staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
         //合作申请表
         saveFile(setSysUserInfoDto.getCooperationFiles(),staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
-
-
 
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();
@@ -1746,7 +1752,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             //手机号码判断是否是内控名单
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
+            dto.setMobile(phone);
+            dto.setIdentityCard(row[14]);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
@@ -2001,7 +2010,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             //手机号码判断是否是内控名单
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(phone);
+            MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
+            dto.setMobile(phone);
+            dto.setIdentityCard(row[13]);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
@@ -2464,7 +2476,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //获取荣耀和惩罚记录、家庭成员
         getRecord(userInfo.getStaffId(), userInfo);
-        //添加合规承诺书、学历证书
+        //添加合规承诺书、学历证书、合作申请表
         getLetterOfUndertakingAndDiplomas(userInfo);
 
         //查询企业内部关系信息
@@ -2478,6 +2490,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setIsCompanyAdmin(admin.getIsCompanyAdmin());
         userInfo.setIsDepartAdmin(admin.getIsDepartAdmin());
         userInfo.setSensitivePhone(userInfo.getPhoneNumber());
+        userInfo.setIdentityCardNum(userInfo.getCertificateCard());
         userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
         userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
         if (admin.getIsCompanyAdmin()) {
@@ -2998,6 +3011,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         return info;
     }
+
+    @Override
+    public void updateIdCard(IdCardUpdateDto dto) {
+        //上传伙伴身份证
+        LambdaUpdateWrapper<SysUserInfo> uw=new LambdaUpdateWrapper<>();
+        uw.eq(BaseModel::getId,dto.getUserId())
+                .set(SysUserInfo::getIdCardFront,dto.getIdCardFront())
+                .set(SysUserInfo::getIdCardReverse,dto.getIdCardReverse());
+        this.sysUserInfoService.update(uw);
+    }
+
     @Override
     public List<StaffInfoByAddressBookVo> getAllUser(ComUserQueryDto queryDto) {
         List<StaffInfoByAddressBookVo> staffInfoVos = this.sysUserInfoMapper.getAllUser(queryDto);
@@ -3024,7 +3048,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<String> getLeaderUserId(String userId) {
+    public List<String> getLeaderUserId(String userId,Integer sameDept) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
@@ -3039,22 +3063,50 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         //副总
-        qw.clear();
-        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
-        SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isNotEmpty(leader1)){
-            SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
-            if(DataUtil.isNotEmpty(byId1)){
-                result.add(byId1.getUserId());
+        if(sameDept==null || sameDept != YesNo.YES){
+
+            if(staffInfo.getDepartId() != null) {
+                qw.clear();
+                qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+                SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
+                if(DataUtil.isNotEmpty(leader1)){
+                    SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
+                    if(DataUtil.isNotEmpty(byId1)){
+                        result.add(byId1.getUserId());
+                    }
+                }
             }
         }
+
         if(DataUtil.isEmpty(result)){
             return null;
         }
+
+        //if(sameDept != null && sameDept == YesNo.YES){
+        result = result.stream().distinct().collect(Collectors.toList());
+        if (!result.contains(userId)) {
+            return result;
+        }
+        result.remove(userId);
+        //}
         return result;
     }
 
-
+    @Override
+    public Integer getCheckUserId(String userId, String chargeId){
+        StaffInfoVo staffInfo = this.getStaffInfo(userId);
+        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
+        //团队长
+        SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
+        if(DataUtil.isNotEmpty(leader)) {
+            SysStaffInfo byId = this.getById(leader.getAdminAccount());
+            if (DataUtil.isNotEmpty(byId) && chargeId.equals(byId.getUserId())) {
+                return YesNo.YES;
+            }
+        }
+        return YesNo.NO;
+    }
 
 
 

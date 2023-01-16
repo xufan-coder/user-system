@@ -186,6 +186,12 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
 
     List<AppUserNotPushVo> getBirthdayUserIds(@Param("month") String month,@Param("day") String day,@Param("userId") String userId);
 
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 查询所有在职用户
+    * @Date: 2023/1/4 21:14
+    */
     List<StaffInfoVo> getAllDuytUser();
     /**
     *
@@ -218,4 +224,6 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<SubordinateUserQueryVo> getLeaveUser(@Param("param") SubordinateUserQueryDto param);
 
     Boolean getByMobileOrCard(@Param("mobile") String mobile, @Param("certificateCard") String certificateCard);
+
+    List<String> getUserAllTrainNo(@Param("companyId")String companyId);
 }

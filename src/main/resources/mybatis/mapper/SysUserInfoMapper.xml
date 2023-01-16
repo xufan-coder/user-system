@@ -193,6 +193,7 @@
                sdi.id            AS departId,
                sdi.depart_name   AS departName,
                sjp.id            AS positionId,
+               sui.id_card_front    AS idCardFront,
                sjp.position_name AS positionName
         FROM sys_user_info sui
                  LEFT JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -521,6 +522,8 @@
             and sui.id = #{userId}
         </if>
     </select>
+
+    <!--查询所有在职用户-->
     <select id="getAllDuytUser" resultType="com.zerody.user.api.vo.StaffInfoVo">
         SELECT sui.id            AS user_id,
                ssi.comp_id       AS company_id,
@@ -532,7 +535,9 @@
                sui.status,
                sdi.id            AS `depart_id`,
                ssi.evaluate,
-               ssi.resume_url
+               ssi.user_type,
+               ssi.resume_url,
+               sui.create_time
         FROM sys_user_info sui
                  JOIN sys_staff_info ssi ON sui.id = ssi.user_id
                  LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
@@ -663,5 +668,21 @@
             or certificate_card = #{certificateCard}
         </if>
         )
+    </select>
+
+    <select id="getUserAllTrainNo" resultType="String">
+        SELECT
+        sui.train_no
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        where
+        sui.is_deleted=0
+         <if test="companyId neq null and companyId neq ''">
+           and ssi.comp_id = #{companyId}
+        </if>
+        and sui.train_no is not null
+        and sui.status !=-1
+        group by sui.train_no
+        order by sui.train_no desc
     </select>
 </mapper>

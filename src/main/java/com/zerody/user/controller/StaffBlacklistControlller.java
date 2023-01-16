@@ -9,12 +9,15 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
+import com.zerody.user.dto.InternalControlDto;
+import com.zerody.user.dto.MobileAndIdentityCardDto;
 import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -310,10 +313,10 @@ public class StaffBlacklistControlller {
      * @return               com.zerody.common.api.bean.DataResult<java.lang.Object>
      */
     @GetMapping("/get-by-mobile")
-    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(@RequestParam("mobile") String mobile){
+    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(MobileAndIdentityCardDto dto){
         try {
 
-            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(mobile);
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
@@ -386,6 +389,25 @@ public class StaffBlacklistControlller {
         } catch (Exception e) {
             log.error("修改伙伴黑名单所属企业错误：{}", e, e);
             return R.error("修改伙伴黑名单所属企业错误" + e.getMessage());
+        }
+    }
+
+    /**
+     * 根据身份证或者手机号码查询是否存在
+     * @author  luolujin
+     * @date  2022/12/30
+     */
+    @GetMapping("/internal/control")
+    public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
+        try {
+            InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
+            return R.success(internalControlVo);
+        } catch (DefaultException e) {
+            log.error("根据身份证或者手机号码查询是否存在：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("根据身份证或者手机号码查询是否存在错误：{}", e, e);
+            return R.error("根据身份证或者手机号码查询是否存在错误" + e.getMessage());
         }
     }
 }

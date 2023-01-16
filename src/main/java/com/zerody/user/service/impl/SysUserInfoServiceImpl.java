@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -900,6 +901,13 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param){
         return this.sysUserInfoMapper.getLeaveUser(param);
     }
+
+    @Override
+    public List<String> getUserAllTrainNo(String companyId) {
+        List<String> list= this.sysUserInfoMapper.getUserAllTrainNo(companyId);
+        return list;
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

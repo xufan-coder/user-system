@@ -20,5 +20,11 @@ public interface CompanyAdminMapper extends  BaseMapper<CompanyAdmin>{
 
     StaffInfoVo getAdminInfoByCompanyId(@Param("companyId") String companyId);
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 获取总经理
+    * @Date: 2023/1/3 17:32
+    */
     List<CompanyAdminVo> getCompanyAdmin(@Param("companyIds") List<String> companyIds);
 }

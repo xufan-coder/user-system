@@ -445,4 +445,17 @@
         LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
          where sdi.status = 0 and ssi.user_id is not null
     </select>
+
+    <!--查询当前企业下的所有部门-->
+    <select id="getAllDepByCompany" resultType="java.lang.String">
+        SELECT
+        sdi.id
+        FROM
+        sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+        LEFT JOIN sys_user_info AS sui ON sui.id = ssi.user_id AND sui.status != -1
+        <where>
+            sdi.status = 0 and sdi.comp_id = #{companyId}
+        </where>
+    </select>
 </mapper>

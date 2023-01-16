@@ -312,6 +312,8 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
                 throw new DefaultException(dataResult.getMessage());
             }
         }
+        SysUserInfo userInfo = sysUserInfoService.getById(identifier.getUserId());
+        UserLogUtil.addUserLog(userInfo,user,"解除设备绑定", DataCodeType.PARTNER_UNBIND);
     }
     private void  updateIdentifier(SysUserIdentifier identifier, String userId){
         SysUserInfo user = sysUserInfoService.getById(userId);

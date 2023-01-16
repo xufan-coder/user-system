@@ -1,6 +1,5 @@
-package com.zerody.user.domain;
+package com.zerody.user.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
 
@@ -8,13 +7,12 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 总裁用户表
- *
- * @author  DaBai
- * @date  2021/4/20 14:25
+ * @author : chenKeFeng
+ * @date : 2023/1/4 9:50
  */
 @Data
-public class CeoUserInfo extends BaseModel {
+public class CeoUserVo extends BaseModel {
+
     /**
      * 名片用户id
      */
@@ -47,6 +45,10 @@ public class CeoUserInfo extends BaseModel {
      * 企业名称
      */
     private String company;
+    /**
+     * ceo关联的企业
+     */
+    private List<String> companyIds;
     /**
      * 出生日期
      */
@@ -137,11 +139,5 @@ public class CeoUserInfo extends BaseModel {
      * im状态
      */
     private String imState;
-
-    /**
-     * 企业id集合
-     */
-    @TableField(exist = false)
-    private List<String> companys;
 
 }

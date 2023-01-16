@@ -7,14 +7,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.card.api.dto.UserCardDto;
-import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
-import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.oauth.api.vo.SysAuthRoleInfoVo;
@@ -22,7 +18,6 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.CardUserInfo;
-import com.zerody.user.domain.CardUserUnionUser;
 import com.zerody.user.domain.CeoCompanyRef;
 import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.base.BaseModel;
@@ -296,6 +291,26 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         return arrayList;
     }
 
+    @Override
+    public List<CeoUserVo> queryCeoList() {
+        List<CeoUserVo> list =new ArrayList<>();
+        LambdaQueryWrapper<CeoUserInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CeoUserInfo::getStatus, YesNo.NO);
+        wrapper.eq(CeoUserInfo::getDeleted, YesNo.NO);
+        List<CeoUserInfo> ceoUserInfos = this.baseMapper.selectList(wrapper);
+        for (CeoUserInfo ceoUserInfo : ceoUserInfos) {
+            CeoUserVo ceoUserInfoVo = new CeoUserVo();
+            BeanUtils.copyProperties(ceoUserInfo, ceoUserInfoVo);
+            //获取ceo关联的企业信息
+            List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getBackRefById(ceoUserInfo.getId());
+            if (DataUtil.isNotEmpty(ceoCompanyList)) {
+                List<String> companyIds = ceoCompanyList.stream().map(CeoCompanyRef::getCompanyId).distinct().collect(Collectors.toList());
+                ceoUserInfoVo.setCompanyIds(companyIds);
+            }
+            list.add(ceoUserInfoVo);
+        }
+        return list;
+    }
 
     @Override
     public List<SubordinateUserQueryVo> getList() {

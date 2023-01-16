@@ -11,6 +11,7 @@ import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.dto.CeoUserInfoPageDto;
 import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.vo.AppCeoUserNotPushVo;
+import com.zerody.user.vo.CeoUserVo;
 import com.zerody.user.vo.SubordinateUserQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +99,26 @@ public class CeoUserInfoController {
         ceoUserInfoService.deleteCeoUserById(id);
         return R.success();
     }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取ceo账号
+    * @Date: 2023/1/4 10:07
+    */
+    @GetMapping("/get-ceo-list/inner")
+    public DataResult<List<CeoUserVo>> queryCeoList() {
+        try {
+            return R.success(ceoUserInfoService.queryCeoList());
+        } catch (DefaultException e) {
+            log.error("获取ceo账号出错:{}", e.getMessage());
+            return R.error("获取ceo账号出错");
+        } catch (Exception e) {
+            log.error("获取ceo账号出错:{}", e, e);
+            return R.error("获取ceo账号出错");
+        }
+    }
+
 
 }

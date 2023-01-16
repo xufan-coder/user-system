@@ -42,7 +42,6 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
 
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
-        log.info("/get/by-company   请求入参---{}", staffByCompanyDto);
         return sysMailListMapper.getStaffByCompany(staffByCompanyDto);
     }
 }

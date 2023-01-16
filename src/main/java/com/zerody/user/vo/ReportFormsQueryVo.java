@@ -131,6 +131,16 @@ public class ReportFormsQueryVo {
     /** 当月放款笔数 */
     private Integer monthLoansNum = 0;
 
+    /**
+     * 大额签单总金额
+     */
+    private String largeSignMoney;
+
+    /**
+     * 大额签单笔数
+     */
+    private Integer largeSignNumber = 0;
+
     public String getSignMoney() {
         if (StringUtils.isEmpty(this.signMoney) || "0.00".equals(this.signMoney)) {
             return "0";
@@ -307,6 +317,29 @@ public class ReportFormsQueryVo {
             return 0;
         }
         return this.paymentUserNum;
+    }
+
+
+
+    /**
+     * 大额签单总金额
+     */
+    public String getLargeSignMoney() {
+        if (StringUtils.isEmpty(this.largeSignMoney) || "0.00".equals(this.largeSignMoney)) {
+            return "0";
+        }
+        return this.largeSignMoney;
+    }
+
+    /**
+     * 大额签单笔数
+     */
+    public Integer getLargeSignNumber() {
+
+        if (DataUtil.isEmpty(this.largeSignNumber)) {
+            return 0;
+        }
+        return this.largeSignNumber;
     }
 
     public void count() {

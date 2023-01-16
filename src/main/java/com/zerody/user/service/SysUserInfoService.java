@@ -283,4 +283,6 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     AdminUserAllVo getAdminUserAll();
 
     List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param);
+
+    List<String> getUserAllTrainNo(String companyId);
 }

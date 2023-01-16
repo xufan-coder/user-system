@@ -507,5 +507,26 @@ public class SysDepartmentInfoController implements DepartRemoteService {
             return R.error("获取下级部门出错,请求异常");
         }
     }
+    /**
+    *
+    *  @description   查询当前企业下的所有部门
+    *  @author        YeChangWei
+    *  @date          2023/1/2 16:02
+    *  @return        com.zerody.common.api.bean.DataResult<com.zerody.user.vo.SysDepartmentInfoVo>
+    */
+    @Override
+    @GetMapping("/get/all-depart/inner")
+    public DataResult<List<String>> getAllDepByCompany(@RequestParam("companyId") String companyId){
+        try {
+            List<String> departmentInfoVos = this.sysDepartmentInfoService.getAllDepByCompany(companyId);
+            return R.success(departmentInfoVos);
+        } catch (DefaultException e) {
+            log.error("查询当前企业下的所有部门出错:{}", e.getMessage(),e);
+            return R.error(e.getMessage());
+        } catch (Exception e){
+            log.error("查询当前企业下的所有部门出错:{}", e.getMessage(),e);
+            return R.error("查询当前企业下的所有部门出错,请求异常");
+        }
+    }
 
 }

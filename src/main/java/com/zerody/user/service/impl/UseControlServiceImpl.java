@@ -12,6 +12,7 @@ import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.CallControlRecord;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UseControl;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UseControlDto;
@@ -19,6 +20,7 @@ import com.zerody.user.dto.UseControlTimeDto;
 import com.zerody.user.enums.WeeKEnum;
 import com.zerody.user.mapper.UseControlMapper;
 import com.zerody.user.service.CallControlRecordService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.UseControlService;
 import com.zerody.user.service.UsersUseControlService;
 import com.zerody.user.vo.UseControlTimeVo;
@@ -52,6 +54,8 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
     private SpringUtil springUtil;
     @Autowired
     private CallControlRecordService callControlRecordService;
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
     @Override
     public void addOrUpdate(UseControlDto param) {
         //是否全局关闭
@@ -122,6 +126,16 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         if(DataUtil.isNotEmpty(one)){
             throw new DefaultException("您已被禁止登录系统，如有疑问请联系公司行政人员！");
         }
+        //2.1增加校验账号是否被冻结
+        SysUserInfo userById = sysUserInfoService.getUserById(userId);
+        if(DataUtil.isNotEmpty(userById)){
+           // 账号状态 0正常   1已冻结
+            if(userById.getUseState().equals(1)){
+                throw new DefaultException("您的账号已被冻结，请联系管理员！");
+            }
+        }
+
+
         //3再校验此人白名单
         qw.clear();
         qw.lambda().eq(UsersUseControl::getUserId,userId).eq(UsersUseControl::getType,2);
