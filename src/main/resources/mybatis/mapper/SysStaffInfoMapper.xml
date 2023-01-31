@@ -1126,10 +1126,10 @@
     <!--伙伴数据统计-->
     <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatistics" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
-        count(IF(ssi.user_type =0, 1 ,NULL)) as managerNum,
-        count(IF(ssi.user_type =3, 1 ,NULL)) as vicePresidentNum,
-        count(IF(ssi.user_type =2, 1 ,NULL)) as teamLeaderNum,
-        count(IF(ssi.user_type =1, 1 ,NULL)) as partnerNum,
+        count(IF(ssi.user_type =0 and ssi.status !=1, 1 ,NULL)) as managerNum,
+        count(IF(ssi.user_type =3 and ssi.status !=1, 1 ,NULL)) as vicePresidentNum,
+        count(IF(ssi.user_type =2 and ssi.status !=1, 1 ,NULL)) as teamLeaderNum,
+        count(IF(ssi.user_type =1 and ssi.status !=1, 1 ,NULL)) as partnerNum,
         count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
         count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
         count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
