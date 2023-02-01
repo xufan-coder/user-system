@@ -579,7 +579,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             this.updateById(blac);
         }
 
-        appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(blac.getId()));
+        appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(blac.getUserId()));
         SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
         UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
