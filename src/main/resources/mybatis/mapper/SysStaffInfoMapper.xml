@@ -1122,7 +1122,6 @@
         where sui.status in (0, 3) and comp_id = #{companyId}
     </select>
 
-
     <!--伙伴数据统计-->
     <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatistics" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
