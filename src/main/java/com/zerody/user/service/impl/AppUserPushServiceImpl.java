@@ -66,6 +66,7 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 		dto.setAvatar(sysLoginUserInfoVo.getAvatar());
 		dto.setCrmCompanyName(sysLoginUserInfoVo.getCompanyName());
 		dto.setCrmDeptName(sysLoginUserInfoVo.getDeptName());
+		dto.setUserType(sysLoginUserInfoVo.getUserType());
 		DataResult<Void> voidDataResult = partnerFeignService.partRegisters(dto);
 		if(!voidDataResult.isSuccess()){
 			log.error("推送失败："+user.getUserId()+"------"+voidDataResult.getMessage());
