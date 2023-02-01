@@ -32,6 +32,7 @@ import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.handler.blacklist.BlacklistParamHandle;
+import com.zerody.user.handler.user.SysUserDimissionHandle;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
 import com.zerody.user.service.*;
@@ -97,6 +98,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private OauthFeignService oauthFeignService;
+
+    @Autowired
+    private AppUserPushService appUserPushService;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -398,7 +402,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 staffDimissionInfo.setOperationUserId(user.getUserId());
                 staffDimissionInfo.setOperationUserName(user.getUserName());
                 this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
-
+                appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(u.getId()));
             });
         }
         //修改用户状态
@@ -574,6 +578,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             this.updateById(blac);
         }
 
+        appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(blac.getId()));
         SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
         UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
