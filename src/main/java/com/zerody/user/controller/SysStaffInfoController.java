@@ -587,12 +587,7 @@ public class SysStaffInfoController {
     @GetMapping("/statistics-users")
     public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
         try {
-            UserStatistics userStatistics = new UserStatistics();
-            if (DataUtil.isEmpty(userInfoDto.getDepartId())) {
-                return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
-            } else {
-                return R.success(userStatistics);
-            }
+            return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
         } catch (Exception e) {
             log.error("伙伴数据统计出错:{}", e.getMessage());
             return R.error("伙伴数据统计出错" + e.getMessage());

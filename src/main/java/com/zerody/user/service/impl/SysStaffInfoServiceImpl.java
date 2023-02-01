@@ -59,6 +59,7 @@ import com.zerody.user.enums.StaffGenderEnum;
 import com.zerody.user.enums.StaffHistoryTypeEnum;
 import com.zerody.user.enums.StaffStatusEnum;
 import com.zerody.user.feign.*;
+import com.zerody.user.handler.user.SysUserDimissionHandle;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.BaseService;
@@ -743,6 +744,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.checkUtil.removeUserToken(userId);
         }
 
+        appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(userId));
         UserLogUtil.addUserLog(oldUserInfo,UserUtils.getUser(),status, DataCodeType.PARTNER_MODIFY);
     }
 
@@ -1093,12 +1095,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //  员工为离职状态时 增加app推送
         //离职时， 添加伙伴的任职记录
         if (StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
-            AppUserPush appUserPush = appUserPushService.getByUserId(sysUserInfo.getId());
-            if (DataUtil.isNotEmpty(appUserPush)) {
-                appUserPush.setResigned(YesNo.YES);
-                appUserPush.setUpdateTime(new Date());
-                appUserPushService.updateById(appUserPush);
-            }
+            appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(sysUserInfo.getId()));
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
             staffDimissionInfo.setUserId(setSysUserInfoDto.getId());
             staffDimissionInfo.setOperationUserId(UserUtils.getUser().getUserId());
