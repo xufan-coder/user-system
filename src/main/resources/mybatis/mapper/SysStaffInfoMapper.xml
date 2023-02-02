@@ -1133,7 +1133,8 @@
         count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
         count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
-        left join union_staff_depart as usd on usd.staff_id = ssi.id
+        join union_staff_depart as usd on usd.staff_id = ssi.id
+        left join sys_company_info as sci  on sci.id = ssi.comp_id and sci.status=0 and sci.is_pro_data =1
         left join sys_user_info as sui on sui.id = ssi.user_id
         <where>
             ssi.deleted = 0 and sui.status != -1
