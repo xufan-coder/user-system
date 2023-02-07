@@ -41,6 +41,7 @@ public class StaffLeaveApproveTask {
                 sysStaffInfoService.updateStaffStatus(user.getUserId(), StatusEnum.stop.getValue(), user.getReason());
             }
         } catch (Exception e) {
+            log.error("离职出错:{}", e, e);
             r.setMsg(e.getMessage());
         }
         return r;
