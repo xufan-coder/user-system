@@ -776,7 +776,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (!oldUserInfo.getStatus().equals(setSysUserInfoDto.getStatus())) {
             sysUserInfo.setStatusEdit(YesNo.YES);
         }
-        SysUserDimissionHandle.isUpdateDimission(user, setSysUserInfoDto.getId(), setSysUserInfoDto.getStatus(), oldUserInfo.getStatus());
+        SysUserDimissionHandle.isUpdateDimission(user, setSysUserInfoDto.getId(), oldUserInfo.getStatus(), setSysUserInfoDto.getStatus());
         //修改离职伙伴为在职时判断
         if(oldUserInfo.getStatus() == 1 && !oldUserInfo.getStatus().equals(setSysUserInfoDto.getStatus())) {
             // 并且是pc端操作
