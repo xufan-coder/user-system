@@ -45,7 +45,10 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
 
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
-        SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
+        SysUserInfoVo sysUserInfoVo = null;
+        if (DataUtil.isEmpty(data.getUserId())) {
+            sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(data.getUserId());
+        }
         if(DataUtil.isNotEmpty(data.getId())){
             data.setApprovalTime(new Date());
             this.updateById(data);
