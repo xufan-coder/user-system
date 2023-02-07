@@ -56,7 +56,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    void updateStaffStatus(String userId, Integer status, String leaveReason);
+    void updateStaffStatus(String userId, Integer status, String leaveReason, UserVo user);
 
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;

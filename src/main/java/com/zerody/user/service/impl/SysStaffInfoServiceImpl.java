@@ -717,7 +717,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status, String leaveReason) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason,UserVo user) {
         if (StringUtils.isEmpty(userId)) {
             throw new DefaultException("用户idid不能为空");
         }
@@ -759,7 +759,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
-        UserLogUtil.addUserLog(oldUserInfo,UserUtils.getUser(),status, DataCodeType.PARTNER_MODIFY);
+        UserLogUtil.addUserLog(oldUserInfo ,user ,status, DataCodeType.PARTNER_MODIFY);
     }
 
 
