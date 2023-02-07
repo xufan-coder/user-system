@@ -49,23 +49,6 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
         if(DataUtil.isNotEmpty(data.getId())){
             data.setApprovalTime(new Date());
             this.updateById(data);
-            if(DataUtil.isNotEmpty(sysUserInfoVo) && sysUserInfoVo.getStatus()==1){
-                //添加一条任职记录
-                PositionRecord positionRecord = new PositionRecord();
-                positionRecord.setId(UUIDutils.getUUID32());
-                positionRecord.setCertificateCard(sysUserInfoVo.getCertificateCard());
-                positionRecord.setCompanyId(sysUserInfoVo.getCompanyId());
-                positionRecord.setCompanyName(sysUserInfoVo.getCompanyName());
-                positionRecord.setUserId(sysUserInfoVo.getId());
-                positionRecord.setUserName(sysUserInfoVo.getUserName());
-                positionRecord.setPositionTime(sysUserInfoVo.getDateJoin());
-                positionRecord.setCreateTime(new Date());
-                positionRecord.setRoleName(sysUserInfoVo.getRoleName());
-                positionRecord.setQuitTime(new Date());
-                positionRecord.setQuitReason(data.getReason());
-                positionRecordService.save(positionRecord);
-            }
-
         }else {
             if(DataUtil.isNotEmpty(data.getUserId())){
                 if(DataUtil.isNotEmpty(sysUserInfoVo)){
@@ -79,7 +62,6 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     data.setPositionName(sysUserInfoVo.getPositionName());
                 }
             }
-
             data.setCreateTime(new Date());
             this.save(data);
         }

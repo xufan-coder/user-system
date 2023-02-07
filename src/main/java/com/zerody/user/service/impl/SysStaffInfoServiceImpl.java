@@ -725,6 +725,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("状态不能为空");
         }
 
+        StaffInfoVo leaveUser = getStaffInfo(userId);
         SysUserInfo oldUserInfo = sysUserInfoMapper.selectById(userId);
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setId(userId);
@@ -743,7 +744,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (StatusEnum.stop.getValue() == status.intValue() || StatusEnum.deleted.getValue() == status.intValue()) {
             this.checkUtil.removeUserToken(userId);
         }
-
+        //添加一条任职记录
+        PositionRecord positionRecord = new PositionRecord();
+        positionRecord.setId(UUIDutils.getUUID32());
+        positionRecord.setCertificateCard(leaveUser.getIdentityCard());
+        positionRecord.setCompanyId(leaveUser.getCompanyId());
+        positionRecord.setCompanyName(leaveUser.getCompanyName());
+        positionRecord.setUserId(leaveUser.getUserId());
+        positionRecord.setUserName(leaveUser.getUserName());
+        positionRecord.setPositionTime(new Date());
+        positionRecord.setCreateTime(new Date());
+        positionRecord.setRoleName(leaveUser.getRoleName());
+        positionRecord.setQuitTime(new Date());
+        positionRecord.setQuitReason(leaveReason);
+        positionRecordService.save(positionRecord);
         appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(userId));
         UserLogUtil.addUserLog(oldUserInfo,UserUtils.getUser(),status, DataCodeType.PARTNER_MODIFY);
     }
