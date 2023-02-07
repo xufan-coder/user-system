@@ -85,7 +85,7 @@ public class SysUserDimissionHandle {
      * @param                newStatus 修改数据
      * @return               void
      */
-    public static void isDimission(UserVo user, String userId, int oldStatus, int newStatus) {
+    public static void isUpdateDimission(UserVo user, String userId, int oldStatus, int newStatus) {
         //token为空 或者 后台操作就直接通过
         if (DataUtil.isEmpty(user) || user.isBack()) {
             return;
