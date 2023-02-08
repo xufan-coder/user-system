@@ -452,21 +452,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
-  /*      if (CollectionUtils.isEmpty(cooperationFiles)) {
-            return;
-        }*/
+
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
-        for (CommonFile s : cooperationFiles) {
-            file = new CommonFile();
-            file.setConnectId(userId);
-            file.setId(UUIDutils.getUUID32());
-            file.setFileType(type);
-            file.setFileUrl(s.getFileUrl());
-            file.setFileName(s.getFileName());
-            file.setFormat(s.getFormat());
-            file.setCreateTime(new Date());
-            files.add(file);
+        if(DataUtil.isNotEmpty(cooperationFiles)) {
+            for (CommonFile s : cooperationFiles) {
+                file = new CommonFile();
+                file.setConnectId(userId);
+                file.setId(UUIDutils.getUUID32());
+                file.setFileType(type);
+                file.setFileUrl(s.getFileUrl());
+                file.setFileName(s.getFileName());
+                file.setFormat(s.getFormat());
+                file.setCreateTime(new Date());
+                files.add(file);
+            }
         }
         QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
         remQ.lambda().eq(CommonFile::getConnectId, userId);
@@ -478,14 +478,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void saveImage(List<String> images,String userId,String type){
         List<Image> imageAdds = new ArrayList<>();
         Image image;
-        for (String s : images) {
-            image = new Image();
-            image.setConnectId(userId);
-            image.setId(UUIDutils.getUUID32());
-            image.setImageType(type);
-            image.setImageUrl(s);
-            image.setCreateTime(new Date());
-            imageAdds.add(image);
+        if(DataUtil.isNotEmpty(images)) {
+            for (String s : images) {
+                image = new Image();
+                image.setConnectId(userId);
+                image.setId(UUIDutils.getUUID32());
+                image.setImageType(type);
+                image.setImageUrl(s);
+                image.setCreateTime(new Date());
+                imageAdds.add(image);
+            }
         }
         QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
         imageRemoveQw.lambda().eq(Image::getConnectId, userId);

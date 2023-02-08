@@ -32,11 +32,13 @@ public class UserResumeServiceImpl extends ServiceImpl<UserResumeMapper, UserRes
             this.remove(rq);
         }
         //先删除后保存
-        for (UserResume userResume : userResumes) {
-            userResume.setId(UUIDutils.getUUID32());
-            userResume.setUserId(staffInfoVo.getUserId());
-            userResume.setCreateTime(new Date());
+        if(DataUtil.isNotEmpty(userResumes)){
+            for (UserResume userResume : userResumes) {
+                userResume.setId(UUIDutils.getUUID32());
+                userResume.setUserId(staffInfoVo.getUserId());
+                userResume.setCreateTime(new Date());
+            }
+            this.saveBatch(userResumes);
         }
-        this.saveBatch(userResumes);
     }
 }
