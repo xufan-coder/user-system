@@ -179,6 +179,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         userInfoDto.setCompanyId(sysCompanyInfo.getId());
         userInfoDto.setPhoneNumber(sysCompanyInfo.getContactPhone());
         userInfoDto.setUserName(sysCompanyInfo.getContactName());
+        userInfoDto.setCertificateCard(sysCompanyInfo.getCertificateCard());
         SysStaffInfo staff = this.sysStaffInfoService.addStaff(userInfoDto);
         CompanyAdmin admin = new CompanyAdmin();
         admin.setId(UUIDutils.getUUID32());
@@ -294,7 +295,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staffQw.lambda().eq(SysStaffInfo::getCompId, company.getId());
         staffQw.lambda().ne(SysStaffInfo::getStatus, StatusEnum.deleted.getValue());
         List<SysStaffInfo> staffs = this.sysStaffInfoMapper.selectList(staffQw);
-
+        if (DataUtil.isEmpty(staffs)) {
+            return;
+        }
         List<String> userIds = staffs.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setIsDeleted(YesNo.YES);
