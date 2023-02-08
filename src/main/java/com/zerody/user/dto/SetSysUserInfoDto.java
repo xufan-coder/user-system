@@ -57,6 +57,11 @@ public class SetSysUserInfoDto extends SysUserInfo {
      * 头像
      */
     private String avatar;
+    /**
+     * 头像
+     */
+    private String staffAvatar;
+
 
     /**
      * 员工评价
