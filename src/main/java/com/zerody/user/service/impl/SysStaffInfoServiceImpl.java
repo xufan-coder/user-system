@@ -254,8 +254,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
         //离职不校验参数
-        if(setSysUserInfoDto.getStatus()!=1){
-            CheckUser.checkParamList(setSysUserInfoDto);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getStatus())){
+            if(setSysUserInfoDto.getStatus()!=1){
+                CheckUser.checkParamList(setSysUserInfoDto);
+            }
         }
         //查看手机号或登录名是否被占用
         Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
@@ -450,21 +452,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
-  /*      if (CollectionUtils.isEmpty(cooperationFiles)) {
-            return;
-        }*/
+
         List<CommonFile> files = new ArrayList<>();
         CommonFile file;
-        for (CommonFile s : cooperationFiles) {
-            file = new CommonFile();
-            file.setConnectId(userId);
-            file.setId(UUIDutils.getUUID32());
-            file.setFileType(type);
-            file.setFileUrl(s.getFileUrl());
-            file.setFileName(s.getFileName());
-            file.setFormat(s.getFormat());
-            file.setCreateTime(new Date());
-            files.add(file);
+        if(DataUtil.isNotEmpty(cooperationFiles)) {
+            for (CommonFile s : cooperationFiles) {
+                file = new CommonFile();
+                file.setConnectId(userId);
+                file.setId(UUIDutils.getUUID32());
+                file.setFileType(type);
+                file.setFileUrl(s.getFileUrl());
+                file.setFileName(s.getFileName());
+                file.setFormat(s.getFormat());
+                file.setCreateTime(new Date());
+                files.add(file);
+            }
         }
         QueryWrapper<CommonFile> remQ = new QueryWrapper<>();
         remQ.lambda().eq(CommonFile::getConnectId, userId);
@@ -476,14 +478,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void saveImage(List<String> images,String userId,String type){
         List<Image> imageAdds = new ArrayList<>();
         Image image;
-        for (String s : images) {
-            image = new Image();
-            image.setConnectId(userId);
-            image.setId(UUIDutils.getUUID32());
-            image.setImageType(type);
-            image.setImageUrl(s);
-            image.setCreateTime(new Date());
-            imageAdds.add(image);
+        if(DataUtil.isNotEmpty(images)) {
+            for (String s : images) {
+                image = new Image();
+                image.setConnectId(userId);
+                image.setId(UUIDutils.getUUID32());
+                image.setImageType(type);
+                image.setImageUrl(s);
+                image.setCreateTime(new Date());
+                imageAdds.add(image);
+            }
         }
         QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
         imageRemoveQw.lambda().eq(Image::getConnectId, userId);
