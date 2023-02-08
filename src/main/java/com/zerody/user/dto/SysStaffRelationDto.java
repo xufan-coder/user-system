@@ -39,6 +39,10 @@ public class SysStaffRelationDto {
      * 描述
      */
     private String desc;
+
+    private String describe;
+
+
     /**
      * 关系员工ID
      */

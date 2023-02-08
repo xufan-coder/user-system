@@ -603,7 +603,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
+        //家庭成员
         this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
+        //履历
+        this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
+        //添加关系
+        if (DataUtil.isNotEmpty(setSysUserInfoDto.getStaffRelationDtoList())) {
+            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
+                item.setRelationStaffId(staff.getId());
+                item.setRelationStaffName(sysUserInfo.getUserName());
+                item.setRelationUserId(sysUserInfo.getId());
+                item.setStaffUserId(sysUserInfo.getId());
+                item.setDesc(item.getDescribe());
+                sysStaffRelationService.addRelation(item);
+            });
+        }
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
@@ -618,15 +632,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
                 item.setStaffId(staff.getId());
                 staffHistoryService.addStaffHistory(item);
-            });
-        }
-        //添加关系
-        if (Objects.nonNull(setSysUserInfoDto.getStaffRelationDtoList())) {
-            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
-                item.setRelationStaffId(setSysUserInfoDto.getStaffId());
-                item.setRelationStaffName(setSysUserInfoDto.getUserName());
-                item.setStaffUserId(sysUserInfo.getId());
-                sysStaffRelationService.addRelation(item);
             });
         }
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
@@ -3656,6 +3661,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         commonFileQw.lambda().eq(CommonFile::getConnectId, param.getOldUserId());
         commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
         userInfoDto.setCooperationFiles(this.commonFileService.list(commonFileQw));
+
+        QueryWrapper<SysStaffRelation> relationQw = new QueryWrapper<>();
+        relationQw.lambda().eq(SysStaffRelation::getRelationUserId, param.getOldUserId());
+        relationQw.lambda().eq(SysStaffRelation::getDeletd, YesNo.NO);
+        List<SysStaffRelation> relations = this.sysStaffRelationService.list(relationQw);
+        if (DataUtil.isNotEmpty(relations)) {
+            List<SysStaffRelationDto> relationDtos = Transformer.toList(SysStaffRelationDto.class).apply(relations).done();
+            userInfoDto.setStaffRelationDtoList(relationDtos);
+        }
         return userInfoDto;
     }
 }
