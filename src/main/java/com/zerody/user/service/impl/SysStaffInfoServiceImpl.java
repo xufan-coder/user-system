@@ -3139,9 +3139,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
         if(DataUtil.isNotEmpty(staffInfo)){
             map.put("level",staffInfo.getUserType());
-            if(1!=staffInfo.getUserType()){
-                map.put("sendNotice",YesNo.YES);
-            }
         }
         return map;
     }
