@@ -658,6 +658,7 @@
         urs.role_name,
         ssi.id AS `staff_id`,
         ssi.status,
+        ssi.user_type,
         sui.create_time
         FROM
         sys_staff_info AS ssi
