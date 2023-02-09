@@ -233,4 +233,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateIdCard(IdCardUpdateDto dto);
 
     Integer getCheckUserId(String userId, String chargeId);
+
+    Map<String, Object> getChargeLevel(String chargeId);
 }

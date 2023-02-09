@@ -3132,6 +3132,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return YesNo.NO;
     }
 
+    @Override
+    public Map<String, Object> getChargeLevel(String chargeId) {
+        StaffInfoVo staffInfo = this.getStaffInfo(chargeId);
+            Map<String, Object> map =new HashMap<>();
+            //(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
+        if(DataUtil.isNotEmpty(staffInfo)){
+            map.put("level",staffInfo.getUserType());
+            if(1!=staffInfo.getUserType()){
+                map.put("sendNotice",YesNo.YES);
+            }
+        }
+        return map;
+    }
 
 
     private String getStaffIdByUserId(String userId) {
