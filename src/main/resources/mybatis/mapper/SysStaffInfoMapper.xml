@@ -658,6 +658,7 @@
         urs.role_name,
         ssi.id AS `staff_id`,
         ssi.status,
+        ssi.user_type,
         sui.create_time
         FROM
         sys_staff_info AS ssi
@@ -1072,6 +1073,8 @@
     </select>
     <select id="getUserInfoByUserId" resultType="com.zerody.user.dto.SetSysUserInfoDto">
         SELECT
+            sui.id,
+            ssi.id AS staff_id,
             sui.avatar,
             ssi.avatar AS staff_avatar,
             sui.user_name,
@@ -1108,7 +1111,10 @@
             ssi.recommend_type,
             ssi.recommend_id,
             ssi.integral,
-            ssi.working_years
+            ssi.working_years,
+            sui.id_card_front,
+            sui.id_card_reverse,
+            sui.train_no
         FROM sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         WHERE
