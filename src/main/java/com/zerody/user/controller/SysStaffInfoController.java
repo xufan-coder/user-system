@@ -644,6 +644,29 @@ public class SysStaffInfoController {
 
     /**************************************************************************************************
      **
+     * 原子服务查询伙伴副总id
+     *
+     * @param userId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/deputy-user-id")
+    public DataResult<String> getLeaderUserId(@RequestParam(name = "userId") String userId){
+        try {
+            String leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            return R.success(leadersId);
+        } catch (DefaultException e){
+            log.error("查询伙伴的所属副总错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询伙伴的所属副总错误:{}", e, e);
+            return R.error("查询伙伴的副总错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
      * 原子服务判断原负责人与当前用户的上级是否一致
      *
      * @param userId 当前用户

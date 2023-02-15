@@ -3070,6 +3070,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         return map;
     }
+    @Override
+    public String getLeaderUserId(String userId) {
+        StaffInfoVo staffInfo = this.getStaffInfo(userId);
+        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
+
+            if(staffInfo.getDepartId() != null) {
+                qw.clear();
+                qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+                SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
+                if(DataUtil.isNotEmpty(leader1)){
+                    SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
+                    if(DataUtil.isNotEmpty(byId1)){
+                        return  byId1.getUserId();
+                    }
+                }
+            }
+        return null;
+    }
 
     @Override
     public List<String> getLeaderUserId(String userId,Integer sameDept) {
@@ -3139,7 +3158,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
         if(DataUtil.isNotEmpty(staffInfo)){
             map.put("level",staffInfo.getUserType());
+        }else {
+            //如果有负责人却没有类型，则默认为1
+            map.put("level",1);
         }
+
         return map;
     }
 
