@@ -10,6 +10,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.MQ;
 import com.zerody.common.constant.TimeDimensionality;
+import com.zerody.common.constant.UserTypeInfo;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.UserTypeEnum;
@@ -395,11 +396,11 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         if (StringUtils.isEmpty(dto.getStaffId())) {
             throw new DefaultException("员工id为空");
         }
-        SysStaffInfo staff = this.sysStaffInfoMapper.selectById(dto.getStaffId());
-        if (!staff.getCompId().equals(dto.getId())) {
+        SysStaffInfo newAdminStaff = this.sysStaffInfoMapper.selectById(dto.getStaffId());
+        if (!newAdminStaff.getCompId().equals(dto.getId())) {
             throw new DefaultException("该员工不是该企业下的");
         }
-        SysUserInfo user = this.sysUserInfoMapper.selectById(staff.getUserId());
+        SysUserInfo user = this.sysUserInfoMapper.selectById(newAdminStaff.getUserId());
 
         UpdateWrapper<SysCompanyInfo> comUw = new UpdateWrapper<>();
         comUw.lambda().set(SysCompanyInfo::getContactName, user.getUserName())
@@ -412,8 +413,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         adminQw.lambda().eq(CompanyAdmin::getCompanyId, dto.getId());
         CompanyAdmin admin = this.companyAdminMapper.selectOne(adminQw);
         String oldAdminUserId = null, oldStaffId = null;
+        SysStaffInfo oldAdmin =  null;
         if (DataUtil.isNotEmpty(admin)) {
-            SysStaffInfo oldAdmin = this.sysStaffInfoMapper.selectById(admin.getStaffId());
+            oldAdmin = this.sysStaffInfoMapper.selectById(admin.getStaffId());
             oldAdminUserId = oldAdmin.getUserId();
         }
         Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(dto.getStaffId());
@@ -434,17 +436,24 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
             this.sysStaffInfoService.updateById(staffInfo);
             return;
         }
-        //重置用户类型
-        userTypeMap = UserTypeUtil.getUserTypeByStaffIds(admin.getStaffId());
-        SysStaffInfo staffInfo = new SysStaffInfo();
-        staffInfo.setId(admin.getStaffId());
-        staffInfo.setUserType(userTypeMap.get(admin.getStaffId()));
-        this.sysStaffInfoService.updateById(staffInfo);
+
         admin.setStaffId(dto.getStaffId());
         admin.setUpdateBy(UserUtils.getUserId());
         admin.setUpdateTime(new Date());
         admin.setUpdateUsername(UserUtils.getUserName());
         this.companyAdminMapper.updateById(admin);
+
+        //重置用户类型
+        userTypeMap = UserTypeUtil.getUserTypeByStaffIds(admin.getStaffId());
+        SysStaffInfo staffInfo = new SysStaffInfo();
+        staffInfo.setId(admin.getStaffId());
+        staffInfo.setUserType(userTypeMap.get(admin.getStaffId()));
+        //新的企业负责人
+        this.sysStaffInfoService.updateById(staffInfo);
+        if (DataUtil.isNotEmpty(oldAdmin)) {
+            oldAdmin.setUserType(UserTypeInfo.PARTNER);
+            this.sysStaffInfoService.updateById(oldAdmin);
+        }
         //  设置企业负责人 清除该员工token
         this.checkUtil.removeUserToken(user.getId());
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(oldAdminUserId)) {
