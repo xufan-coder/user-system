@@ -226,6 +226,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     Map<String, Object> getSameDept(String userId, String chooseUserId);
 
     List<String> getLeaderUserId(String userId,Integer sameDept);
+    String getLeaderUserId(String userId);
 
     /**获取离职伙伴信息*/
     LeaveUserInfoVo getQuitUserInfo(String userId);
@@ -233,4 +234,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateIdCard(IdCardUpdateDto dto);
 
     Integer getCheckUserId(String userId, String chargeId);
+
+    Map<String, Object> getChargeLevel(String chargeId);
 }
