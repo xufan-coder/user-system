@@ -58,6 +58,7 @@ public class SysUserInfo extends BaseModel {
     /**
      * 头像(相对路径)
      **/
+    @CheckCompare(value = "avatar", name = "头像")
     private String avatar;
 
     /**
@@ -206,6 +207,7 @@ public class SysUserInfo extends BaseModel {
     /**
      * '家庭成员地址'
      */
+    @CheckCompare(value = "familyAddr", name = "家庭成员地址")
     private String familyAddr;
 
     /**
@@ -222,6 +224,7 @@ public class SysUserInfo extends BaseModel {
      * 角色名称
      */
     @TableField(exist = false)
+    @CheckCompare(value = "roleName", name = "角色")
     private String roleName;
 
     /**
@@ -272,11 +275,13 @@ public class SysUserInfo extends BaseModel {
     /**
      * 身份证照片国徽面(正面)
      */
+    @CheckCompare(value = "idCardFront", name = "身份证照片国徽面")
     private String idCardFront;
 
     /**
      * 身份证照片人像面(反面)
      */
+    @CheckCompare(value = "idCardReverse", name = "身份证照片人像面")
     private String idCardReverse;
 
     /**
