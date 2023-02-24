@@ -29,6 +29,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      * 头像
      */
+    @CheckCompare(value = "avatar",name = "头像")
     private String avatar;
 
     /**
@@ -54,6 +55,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      *  入职时间
      **/
+    @CheckCompare(value = "dateJoin", name = "签约时间")
     private Date dateJoin;
 
     /**
@@ -82,6 +84,7 @@ public class SysStaffInfo extends BaseModel {
     private Integer deleted;
 
     /** 离职原因 */
+    @CheckCompare(value = "leaveReason",name = "离职原因")
     private String leaveReason;
 
 
@@ -111,6 +114,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      * 是否钻石会员（0-否 1-是）
      */
+    @CheckCompare(value = "isDiamondMember",name = "是否钻石会员")
     private Integer isDiamondMember;
 
 }

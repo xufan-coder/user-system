@@ -77,7 +77,7 @@ public class SysUserInfo extends BaseModel {
     /**
      * 身份证地址
      **/
-    @CheckCompare(value = "certificateCardAddress", name = "身份证地址")
+    @CheckCompare(value = "certificateCardAddress", name = "户籍地址")
     private String certificateCardAddress;
 
     /**
@@ -293,6 +293,7 @@ public class SysUserInfo extends BaseModel {
     /**
      * 账号状态 0正常   1已冻结
      */
+    @CheckCompare(value = "useState", name = "账号状态")
     private Integer useState;
 
     /**

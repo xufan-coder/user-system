@@ -164,6 +164,12 @@ public class UserCompareUtil {
         }else if(f.equals(FormatCheseEnum.maritalStatus.name())){
             name1="0".equals(s1)?"未婚":"1".equals(s1)?"已婚":"2".equals(s1)?"离婚":"";
             name2="0".equals(s2)?"未婚":"1".equals(s2)?"已婚":"2".equals(s1)?"离婚":"";
+        }else if(f.equals(FormatCheseEnum.useState.name())){
+            name1="0".equals(s1)?"正常":"1".equals(s1)?"冻结":"";
+            name2="0".equals(s2)?"正常":"1".equals(s2)?"冻结":"";
+        }else if(f.equals(FormatCheseEnum.isDiamondMember.name())){
+            name1="0".equals(s1)?"否":"1".equals(s1)?"是":"";
+            name2="0".equals(s2)?"否":"1".equals(s2)?"是":"";
         }else if(f.equals(FormatCheseEnum.highestEducation.name())){
             name1 = EducationBackgroundEnum.getTextByCode(s1);
             name2 = EducationBackgroundEnum.getTextByCode(s2);

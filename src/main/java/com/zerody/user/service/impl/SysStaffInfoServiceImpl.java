@@ -839,7 +839,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setIsEdit(YesNo.YES);
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
-        sysUserInfo.setAvatar(avatar);
+        sysUserInfo.setAvatar(null);
         //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
         if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
             sysUserInfo.setIsUpdateName(YesNo.YES);
@@ -1091,8 +1091,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //删除该员工的岗位
         QueryWrapper<UnionStaffPosition> uspQW = new QueryWrapper<>();
         uspQW.lambda().eq(UnionStaffPosition::getStaffId, staff.getId());
-        unionStaffPositionMapper.delete(uspQW);
         UnionStaffPosition position = unionStaffPositionMapper.selectOne(uspQW);
+        unionStaffPositionMapper.delete(uspQW);
         if(position !=null) {
             SysJobPosition job = sysJobPositionMapper.selectById(position.getPositionId());
             oldUserInfo.setPositionName(job == null ? "" : job.getPositionName());

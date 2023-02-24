@@ -161,7 +161,7 @@ public class UserInfoComparDto {
 
 
     /** 身份证地址 **/
-    @CheckCompare(value = "certificateCardAddress",name = "身份证地址")
+    @CheckCompare(value = "certificateCardAddress",name = "户籍地址")
     private String certificateCardAddress;
 
     /** 省市区 **/
