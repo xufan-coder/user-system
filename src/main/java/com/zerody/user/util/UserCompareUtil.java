@@ -56,12 +56,14 @@ public class UserCompareUtil {
             //根据注解过滤掉不需要比较的属性
             CheckCompare annotation = getAnnotation(field1[i]);
             if(!DataUtil.isEmpty(annotation)) {
+
                 //遍历属性列表field2
                 for (int j = 0; j < field2.length; j++) {
                     //如果field1[i]属性名与field2[j]属性名内容相同
                     //只是通过名字做了比较，没有比较它们的类型
                     //需要人为的保证两个字段的类型是一致
                     if (field1[i].getName().equals(field2[j].getName())) {
+                        System.out.println(annotation.name());
                         field1[i].setAccessible(true);
                         field2[j].setAccessible(true);
                         //如果field1[i]属性值与field2[j]属性值内容不相同
@@ -190,18 +192,22 @@ public class UserCompareUtil {
     }
 
     public static void main(String[] args) throws ParseException, IllegalAccessException {
-      /*  SysUserInfo oldUserInfo = new SysUserInfo();
+        SysUserInfo oldUserInfo = new SysUserInfo();
         oldUserInfo.setAncestral("银行");
+        oldUserInfo.setIdCardFront("private/2ea37c49e4cda41202a3bcc82d42351a/picture:d0b8faee32974e4bbaa232fadb10e170.png");
+        oldUserInfo.setIdCardReverse("private/2ea37c49e4cda41202a3bcc82d42351a/picture:036df1b6e82541f3a8e34e97bb6004ed.png");
         SetSysUserInfoDto setSysUserInfoDto = new SetSysUserInfoDto();
 
         setSysUserInfoDto.setAncestral("河边");
         setSysUserInfoDto.setAvatar("dddd");
+        setSysUserInfoDto.setIdCardFront("private/2ea37c49e4cda41202a3bcc82d42351a/picture:5f088834cd5d4e129d39af26cac7804d.png");
+        setSysUserInfoDto.setIdCardReverse("private/c64121a66c1a2553e08cfdf098fdc950/picture:cf51a1c6658a478887507aced9d68193.png");
 
         UserInfoComparDto userCompart = new UserInfoComparDto();
         BeanUtils.copyProperties(setSysUserInfoDto,userCompart);
         List<UserCompar> list = compareTwoClass(oldUserInfo,userCompart);
 
-        System.out.println(JSON.toJSONString(list));*/
+      //  System.out.println(JSON.toJSONString(list));
 
         System.out.println( DateUtil.formatyyyyMMddtoString(new Date()));
     }

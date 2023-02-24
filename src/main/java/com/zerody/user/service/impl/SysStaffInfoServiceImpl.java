@@ -839,7 +839,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setIsEdit(YesNo.YES);
         sysUserInfo.setUpdateId(UserUtils.getUserId());
         String avatar = setSysUserInfoDto.getAvatar();
-        sysUserInfo.setAvatar(null);
+        sysUserInfo.setAvatar(avatar);
         //  如果名称有修改就修改名称修改状态 用于定时任务发送MQ消息
         if (!oldUserInfo.getUserName().equals(setSysUserInfoDto.getUserName())) {
             sysUserInfo.setIsUpdateName(YesNo.YES);
@@ -1022,7 +1022,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 if(StringUtils.isNotEmpty(honor)){
                     contentList.add(honor);
                 }
-                contentList.add("");
             }else {
                 List<SysStaffRelationVo> relationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
                 if(relationVos.size() >0) {
@@ -1073,6 +1072,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //给员工赋予角色
         rs.setStaffId(staff.getId());
         rs.setRoleId(setSysUserInfoDto.getRoleId());
+
+        //赋予旧角色进行比对
+        if(userRole !=null){
+            oldUserInfo.setRoleName(userRole.getRoleName());
+        }
+
         //去查询角色名
         DataResult<?> result = oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
         if (!result.isSuccess()) {
@@ -1080,17 +1085,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
         rs.setRoleName(obj.get("roleName").toString());
+        //赋予角色名称
+        setSysUserInfoDto.setRoleName(rs.getRoleName());
         unionRoleStaffMapper.insert(rs);
-        //删除该员工的部门
+        //删除该员工的岗位
         QueryWrapper<UnionStaffPosition> uspQW = new QueryWrapper<>();
         uspQW.lambda().eq(UnionStaffPosition::getStaffId, staff.getId());
         unionStaffPositionMapper.delete(uspQW);
+        UnionStaffPosition position = unionStaffPositionMapper.selectOne(uspQW);
+        if(position !=null) {
+            SysJobPosition job = sysJobPositionMapper.selectById(position.getPositionId());
+            oldUserInfo.setPositionName(job == null ? "" : job.getPositionName());
+        }
         //如果岗位id不为空就给该员工添加部门
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())) {
             UnionStaffPosition sp = new UnionStaffPosition();
             sp.setPositionId(setSysUserInfoDto.getPositionId());
             sp.setStaffId(staff.getId());
             unionStaffPositionMapper.insert(sp);
+            SysJobPosition job = sysJobPositionMapper.selectById(setSysUserInfoDto.getPositionId());
+            setSysUserInfoDto.setPositionName(job == null ? "" : job.getPositionName());
         }
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
@@ -1099,6 +1113,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isNotEmpty(dep)) {
             oldDepart = dep.getDepartmentId();
         }
+
+        //修改部门
         if (!Objects.equals(oldDepart, setSysUserInfoDto.getDepartId())) {
             log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
@@ -1108,7 +1124,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo departInfo = this.sysDepartmentInfoService.getById(userDepart.getDepartId());
             if (DataUtil.isNotEmpty(departInfo)) {
                 userDepart.setDepartName(departInfo.getDepartName());
+                setSysUserInfoDto.setDepartName(departInfo.getDepartName());
             }
+            //赋予旧部门进行比对
+            SysDepartmentInfo oldDept = this.sysDepartmentInfoService.getById(oldDepart);
+            oldUserInfo.setDepartName(oldDept == null ? "":oldDept.getDepartName());
+
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()) {
                 throw new DefaultException("修改线索负责人名称失败!");

@@ -17,21 +17,9 @@ public class StaffHistoryUtil {
     public static String updateHistory(List<StaffHistoryVo> historyVos,List<StaffHistoryDto> newHistoryList, String name) throws ParseException, IllegalAccessException {
 
         StringBuilder honor = new StringBuilder();
-        for(int i=0;i<newHistoryList.size();i++){
-            StaffHistoryDto history = newHistoryList.get(i);
-            if(StringUtils.isEmpty(history.getId())){
-                honor.append("新增").append(name).append("记录:").append(history.getDescribe()).append("    ");
-            }else {
-                for(StaffHistoryVo oldHistory: historyVos){
-                    if(oldHistory.getId().equals(history.getId())){
-                        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,history);
-                        String content = UserCompareUtil.convertCompars(comparList);
-                        if(StringUtils.isNotEmpty(content)){
-                            honor.append("更新").append(name).append("记录").append(i).append(":").append(content).append("    ");;
-                        }
-                        break;
-                    }
-                }
+        for (StaffHistoryDto history : newHistoryList) {
+            if (StringUtils.isEmpty(history.getId())) {
+                honor.append("新增").append(name).append("记录:").append(history.getTime()).append("    ").append(history.getDescribe()).append("    ");
             }
         }
         List<String> newStr = newHistoryList.stream().map(StaffHistoryDto::getId).collect(Collectors.toList());

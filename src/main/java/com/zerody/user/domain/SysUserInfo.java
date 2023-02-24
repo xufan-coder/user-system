@@ -287,11 +287,28 @@ public class SysUserInfo extends BaseModel {
     /**
     *    培训班次
     */
+    @CheckCompare(value = "trainNo", name = "培训班次")
     private String trainNo;
 
     /**
      * 账号状态 0正常   1已冻结
      */
     private Integer useState;
+
+    /**
+     * 岗位名称
+     */
+    @TableField(exist = false)
+    @CheckCompare(value = "roleName", name = "岗位名称")
+    private String positionName;
+
+    /**
+     * 部门名称
+     */
+    @TableField(exist = false)
+    @CheckCompare(value = "roleName", name = "部门名称")
+    private String departName;
+
+
 
 }
