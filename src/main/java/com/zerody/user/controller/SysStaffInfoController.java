@@ -171,7 +171,7 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
     public DataResult<Object> updateStaffStatus(@PathVariable(name = "id") String userId, @PathVariable(name = "status") Integer status){
         try {
-            sysStaffInfoService.updateStaffStatus(userId, status, null);
+            sysStaffInfoService.updateStaffStatus(userId, status, null, UserUtils.getUser());
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工状态错误:{}",e.getMessage());
@@ -644,6 +644,29 @@ public class SysStaffInfoController {
 
     /**************************************************************************************************
      **
+     * 原子服务查询伙伴副总id
+     *
+     * @param userId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/deputy-user-id")
+    public DataResult<String> getLeaderUserId(@RequestParam(name = "userId") String userId){
+        try {
+            String leadersId =sysStaffInfoService.getLeaderUserId(userId);
+            return R.success(leadersId);
+        } catch (DefaultException e){
+            log.error("查询伙伴的所属副总错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询伙伴的所属副总错误:{}", e, e);
+            return R.error("查询伙伴的副总错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
      * 原子服务判断原负责人与当前用户的上级是否一致
      *
      * @param userId 当前用户
@@ -664,6 +687,31 @@ public class SysStaffInfoController {
         }  catch (Exception e) {
             log.error("判断原负责人与当前用户的上级是否一致错误:{}", e, e);
             return R.error("判断原负责人与当前用户的上级是否一致错误");
+        }
+    }
+
+
+
+    /**************************************************************************************************
+     **
+     *  原子服务查询负责人级别
+     *
+     * @param chargeId
+     * @return {@link null }
+     * @author DaBai
+     * @date 2023/2/9  15:25
+     */
+    @GetMapping("/get/charge-level")
+    public DataResult<Object> getChargeLevel(@RequestParam(name = "chargeId") String chargeId){
+        try {
+            Map<String,Object> map =sysStaffInfoService.getChargeLevel(chargeId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("查询负责人级别错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("查询负责人级别错误:{}", e, e);
+            return R.error("查询负责人级别错误");
         }
     }
 }

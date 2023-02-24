@@ -100,7 +100,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             log.error("企业状态修改错误:{}", e.getMessage());
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("企业修改错误:{}", e.getMessage());
+            log.error("企业状态修改错误:{}", e.getMessage());
             return R.error("修改企业登录状态失败,请求异常");
         }
     }
@@ -168,7 +168,7 @@ public class SysCompanyInfoController implements CompanyRemoteService {
             log.error("企业删除错误:{}", e.getMessage());
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("企业修改错误:{}", e.getMessage());
+            log.error("企业删除错误:{}", e.getMessage());
             return R.error("删除企业失败,请求异常");
         }
     }

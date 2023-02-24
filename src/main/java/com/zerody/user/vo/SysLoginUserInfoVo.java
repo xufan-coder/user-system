@@ -91,4 +91,9 @@ public class SysLoginUserInfoVo {
 	 *    企业名称
 	 */
 	private String companyName;
+
+	/**
+	 *    是否管理者
+	 */
+	private Integer userType;
 }

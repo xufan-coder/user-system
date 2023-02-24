@@ -342,6 +342,7 @@
                ui.scrm_open_id   AS scrmOpenId,
                li.last_check_sms AS lastCheckSms,
                ssi.comp_id       AS companyId,
+               ssi.user_type       AS userType,
                ssi.id            AS staffId,
                urs.role_id       AS roleId,
                usd.department_id AS deptId,
