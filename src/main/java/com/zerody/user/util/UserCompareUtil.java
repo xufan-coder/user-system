@@ -173,7 +173,7 @@ public class UserCompareUtil {
         }else if(f.equals(FormatCheseEnum.highestEducation.name())){
             name1 = EducationBackgroundEnum.getTextByCode(s1);
             name2 = EducationBackgroundEnum.getTextByCode(s2);
-        }else if(f.equals(FormatCheseEnum.birthday.name())){
+        }else if(f.equals(FormatCheseEnum.birthday.name()) || f.equals(FormatCheseEnum.dateLeft.name()) || f.equals(FormatCheseEnum.dateJoin.name()) ){
             name1 =val1 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val1) : s1;
             name2 =val2 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val2) : s2;
         }
