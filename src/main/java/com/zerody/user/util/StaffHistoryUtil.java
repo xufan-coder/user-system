@@ -93,7 +93,9 @@ public class StaffHistoryUtil {
             }
             List<UserCompar> comparList = UserCompareUtil.compareTwoClass(resume,history);
             String content = UserCompareUtil.convertCompars(comparList);
-            honor.append("更新了个人履历:").append(i+1).append(":{").append(content).append(" }   ");
+            if(StringUtils.isNotEmpty(content)) {
+                honor.append("更新了个人履历:").append(i + 1).append(":{").append(content).append(" }   ");
+            }
         }
 
         if(oldResumeList.size() > userResumes.size()) {
