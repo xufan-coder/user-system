@@ -156,8 +156,8 @@ public class UserCompareUtil {
         String s2 = val2 == null ? "" : val2.toString();
 
         if (f.equals(FormatCheseEnum.status.name())) {
-            name1="-1".equals(s1)?"已解约":"0".equals(s1)?"合约中":"3".equals(s1) ? "合作":"";
-            name2="-1".equals(s2)?"已解约":"0".equals(s2)?"合约中":"3".equals(s2) ? "合作":"";
+            name1="1".equals(s1)?"已解约":"0".equals(s1)?"合约中":"3".equals(s1) ? "合作":"";
+            name2="1".equals(s2)?"已解约":"0".equals(s2)?"合约中":"3".equals(s2) ? "合作":"";
         }else if(f.equals(FormatCheseEnum.gender.name())){
             name1="1".equals(s1)?"女":"0".equals(s1)?"男":"";
             name2="1".equals(s2)?"女":"0".equals(s2)?"男":"";

@@ -56,4 +56,11 @@ public class FamilyMemberServiceImpl extends ServiceImpl<FamilyMemberMapper, Fam
         entity.setUserId(staff.getUserId());
         this.save(entity);
     }
+
+    @Override
+    public List<FamilyMember> getFamilyList(String userId) {
+        QueryWrapper<FamilyMember> qw = new QueryWrapper<>();
+        qw.lambda().eq(FamilyMember::getUserId, userId);
+        return this.list(qw);
+    }
 }

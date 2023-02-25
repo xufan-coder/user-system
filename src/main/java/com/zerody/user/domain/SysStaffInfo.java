@@ -66,6 +66,7 @@ public class SysStaffInfo extends BaseModel {
     /**
      * 离职时间
      **/
+    @CheckCompare(value = "dateLeft",name = "离职时间")
     private Date dateLeft;
     /**
      * 员工评价

@@ -2,6 +2,7 @@ package com.zerody.user.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.zerody.user.constant.CheckCompare;
 import lombok.Data;
 
 import java.util.Date;
@@ -23,26 +24,31 @@ public class FamilyMember {
     /**
      * 姓名
      */
+    @CheckCompare(value = "name", name = "姓名")
     private String name;
 
     /**
      * 号码
      */
+    @CheckCompare(value = "mobile", name = "号码")
     private String mobile;
 
     /**
      * 关系
      */
+    @CheckCompare(value = "relationship", name = "关系")
     private String relationship;
 
     /**
      * 职位
      */
+    @CheckCompare(value = "profession", name = "职位")
     private String profession;
 
     /**
      * 联系地址
      */
+    @CheckCompare(value = "联系地址", name = "contactAddress")
     private String contactAddress;
 
     /**

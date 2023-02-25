@@ -324,4 +324,9 @@ public class UserInfoComparDto {
      * 部门名称
      */
     private String departName;
+
+    /**
+     * 账号状态 0正常   1已冻结
+     */
+    private Integer useState;
 }

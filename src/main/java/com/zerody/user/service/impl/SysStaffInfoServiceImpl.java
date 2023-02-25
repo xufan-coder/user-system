@@ -921,8 +921,52 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
-        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
 
+        // 获取埋点数据内容
+        List<String> contentList = new ArrayList<>();
+
+        // 处理家庭关系新旧对比
+        List<FamilyMember> familyList = familyMemberService.getFamilyList(staffInfoVo.getUserId());
+        String familyStr = StaffHistoryUtil.updateFamily(familyList,setSysUserInfoDto.getFamilyMembers());
+        if(StringUtils.isNotEmpty(familyStr)){
+            contentList.add(familyStr);
+        }
+
+        //处理个人履历新旧对比
+        List<UserResume>  resumeList = this.userResumeService.getResumeList(staffInfoVo.getUserId());
+        String resumeStr = StaffHistoryUtil.updateResume(resumeList,setSysUserInfoDto.getUserResumes());
+        if(StringUtils.isNotEmpty(resumeStr)){
+            contentList.add(resumeStr);
+        }
+
+        //处理学历证书新旧对比
+        List<String> diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
+        String diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getDiplomas(),"学历证书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getComplianceCommitments(),"合规承若书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.commonFileService.getListFiles(staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+        List<String> newFiles = new ArrayList<>();
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getCooperationFiles())) {
+            newFiles = setSysUserInfoDto.getCooperationFiles().stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+        }
+
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,newFiles,"合作申请表");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+        // 添加家庭关系
+        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
         //添加履历
         this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
         //合规承诺书
@@ -937,8 +981,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
 
-        // 获取埋点数据内容
-        List<String> contentList = new ArrayList<>();
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             List<StaffHistoryDto> newHistoryList = setSysUserInfoDto.getStaffHistoryHonor();
