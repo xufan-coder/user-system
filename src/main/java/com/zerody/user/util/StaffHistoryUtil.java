@@ -83,36 +83,28 @@ public class StaffHistoryUtil {
         StringBuilder honor = new StringBuilder();
         UserResume resume = new UserResume();
 
+        // 比对个人履历的修改项
         for(int i=0;i<userResumes.size();i++){
             UserResume history = userResumes.get(i);
-            if(StringUtils.isEmpty(history.getId())){
-                List<UserCompar> comparList = UserCompareUtil.compareTwoClass(resume,history);
-                String content = UserCompareUtil.convertCompars(comparList);
-                if(StringUtils.isNotEmpty(content)){
-                    honor.append("新增了个人履历:").append(i).append(":").append(content).append("    ");
-                }
+            if(i < oldResumeList.size()-1) {
+                resume = oldResumeList.get(i);
             }else {
-                // 比对个人履历的修改项
-                for(UserResume oldHistory: oldResumeList){
-                    if(oldHistory.getId().equals(history.getId())){
-                        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,history);
-                        String content = UserCompareUtil.convertCompars(comparList);
-                        if(StringUtils.isNotEmpty(content)){
-                            honor.append("更新了个人履历:").append(i).append(":").append(content).append("    ");;
-                        }
-                        break;
-                    }
-                }
+                resume = new UserResume();
             }
+            List<UserCompar> comparList = UserCompareUtil.compareTwoClass(resume,history);
+            String content = UserCompareUtil.convertCompars(comparList);
+            honor.append("更新了个人履历:").append(i+1).append(":{").append(content).append(" }   ");
         }
-        List<String> newStr = userResumes.stream().map(UserResume::getId).collect(Collectors.toList());
-        for(UserResume oldHistory: oldResumeList){
-            if(!newStr.contains(oldHistory.getId())){
+
+        if(oldResumeList.size() > userResumes.size()) {
+            for(int i= userResumes.size()-1; i <oldResumeList.size();i++){
+                UserResume oldHistory = oldResumeList.get(i);
                 List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,resume);
                 String content = UserCompareUtil.convertCompars(comparList);
                 if(StringUtils.isNotEmpty(content)){
-                    honor.append("新增了个人履历:").append(content).append("    ");
+                    honor.append("删除了个人履历").append(i).append(": {").append(content).append(" }   ");
                 }
+               
             }
         }
         return honor.toString();
