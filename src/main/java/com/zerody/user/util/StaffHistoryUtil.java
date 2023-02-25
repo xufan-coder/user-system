@@ -86,7 +86,7 @@ public class StaffHistoryUtil {
         // 比对个人履历的修改项
         for(int i=0;i<userResumes.size();i++){
             UserResume history = userResumes.get(i);
-            if(i < oldResumeList.size()-1) {
+            if(i < oldResumeList.size()) {
                 resume = oldResumeList.get(i);
             }else {
                 resume = new UserResume();
@@ -104,7 +104,7 @@ public class StaffHistoryUtil {
                 if(StringUtils.isNotEmpty(content)){
                     honor.append("删除了个人履历").append(i).append(": {").append(content).append(" }   ");
                 }
-               
+
             }
         }
         return honor.toString();
