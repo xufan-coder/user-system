@@ -94,6 +94,7 @@ public class SysStaffInfo extends BaseModel {
 
     /** 推荐类型 0:公司社招,1员工介绍 */
     @NotEmpty(message = "请选择推荐人")
+    @CheckCompare(value = "recommendType",name = "推荐类型")
     private Integer recommendType;
 
     /** 积分 */

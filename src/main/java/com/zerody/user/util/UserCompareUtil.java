@@ -170,6 +170,9 @@ public class UserCompareUtil {
         }else if(f.equals(FormatCheseEnum.isDiamondMember.name())){
             name1="0".equals(s1)?"否":"1".equals(s1)?"是":"";
             name2="0".equals(s2)?"否":"1".equals(s2)?"是":"";
+        }else if(f.equals(FormatCheseEnum.recommendType.name())){
+            name1="0".equals(s1)?"公司社招":"1".equals(s1)?"员工介绍":"";
+            name2="0".equals(s2)?"公司社招":"1".equals(s2)?"员工介绍":"";
         }else if(f.equals(FormatCheseEnum.highestEducation.name())){
             name1 = EducationBackgroundEnum.getTextByCode(s1);
             name2 = EducationBackgroundEnum.getTextByCode(s2);

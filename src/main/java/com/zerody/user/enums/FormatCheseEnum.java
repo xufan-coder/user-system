@@ -14,7 +14,8 @@ public  enum FormatCheseEnum {
     useState("账号状态"),
     isDiamondMember("是否钻石会员"),
     dateLeft("离职时间"),
-    dateJoin("签约时间")
+    dateJoin("签约时间"),
+    recommendType("推荐类型")
     ;
 
     private String text;
