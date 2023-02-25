@@ -921,8 +921,52 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
-        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
 
+        // 获取埋点数据内容
+        List<String> contentList = new ArrayList<>();
+
+        // 处理家庭关系新旧对比
+        List<FamilyMember> familyList = familyMemberService.getFamilyList(staffInfoVo.getUserId());
+        String familyStr = StaffHistoryUtil.updateFamily(familyList,setSysUserInfoDto.getFamilyMembers());
+        if(StringUtils.isNotEmpty(familyStr)){
+            contentList.add(familyStr);
+        }
+
+        //处理个人履历新旧对比
+        List<UserResume>  resumeList = this.userResumeService.getResumeList(staffInfoVo.getUserId());
+        String resumeStr = StaffHistoryUtil.updateResume(resumeList,setSysUserInfoDto.getUserResumes());
+        if(StringUtils.isNotEmpty(resumeStr)){
+            contentList.add(resumeStr);
+        }
+
+        //处理学历证书新旧对比
+        List<String> diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
+        String diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getDiplomas(),"学历证书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getComplianceCommitments(),"合规承若书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.commonFileService.getListFiles(staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+        List<String> newFiles = new ArrayList<>();
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getCooperationFiles())) {
+            newFiles = setSysUserInfoDto.getCooperationFiles().stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+        }
+
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,newFiles,"合作申请表");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+        // 添加家庭关系
+        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
         //添加履历
         this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
         //合规承诺书
@@ -937,24 +981,37 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
 
-        // 获取埋点数据内容
-        List<String> contentList = new ArrayList<>();
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
+            List<StaffHistoryDto> newHistoryList = setSysUserInfoDto.getStaffHistoryHonor();
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
+
+            // 对比荣耀记录的 新增 编辑 删除操作
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            String honor = StaffHistoryUtil.updateHistory(historyVos,newHistoryList,"荣耀");
+            if(StringUtils.isNotEmpty(honor)){
+                contentList.add(honor);
+            }
+
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.HONOR.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
-            contentList.add("新增了荣耀记录");
+
         } else {
-            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
-            if(historyVos.size() >0) {
-                contentList.add("删除了荣耀记录");
-            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.HONOR.name());
+            StringBuilder honor = new StringBuilder();
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            for(StaffHistoryVo oldHistory: historyVos){
+                honor.append("删除了荣耀记录:[").append(oldHistory.getTime()).append("    ").append(oldHistory.getDescribe()).append("]    ");
+            }
+            if(StringUtils.isNotEmpty(honor.toString())){
+                contentList.add(honor.toString());
+            }
+
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.HONOR.name());
@@ -964,19 +1021,31 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //惩罚记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment()) && setSysUserInfoDto.getStaffHistoryPunishment().size() > 0) {
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+
+            List<StaffHistoryDto> newHistoryList = setSysUserInfoDto.getStaffHistoryPunishment();
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            // 对比惩罚记录的 新增 编辑 删除操作
+            String honor = StaffHistoryUtil.updateHistory(historyVos,newHistoryList,"惩罚");
+            if(StringUtils.isNotEmpty(honor)){
+                contentList.add(honor);
+            }
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
                 item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
                 item.setStaffId(setSysUserInfoDto.getStaffId());
                 this.staffHistoryService.modifyStaffHistory(item);
             });
-            contentList.add("新增了惩罚记录");
         } else {
-            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
-            if(historyVos.size() >0) {
-                contentList.add("删除了惩罚记录");
-            }
             staffHistoryQueryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
+            StringBuilder honor = new StringBuilder();
+            List<StaffHistoryVo> historyVos = this.staffHistoryService.queryStaffHistory(staffHistoryQueryDto);
+            for(StaffHistoryVo oldHistory: historyVos){
+                honor.append("删除了惩罚记录:[").append(oldHistory.getTime()).append("    ").append(oldHistory.getDescribe()).append("]    ");
+            }
+            if(StringUtils.isNotEmpty(honor.toString())){
+                contentList.add(honor.toString());
+            }
+
             this.staffHistoryService.removeStaffHistory(staffHistoryQueryDto);
             StaffHistoryDto staffHistoryDto = new StaffHistoryDto();
             staffHistoryDto.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
@@ -990,7 +1059,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sysStaffRelationDto.setRelationStaffId(setSysUserInfoDto.getStaffId());
             sysStaffRelationDto.setStaffId(setSysUserInfoDto.getStaffId());
             if(setSysUserInfoDto.getStaffRelationDtoList().size() >0) {
-                contentList.add("新增了关系记录");
+                List<SysStaffRelationDto> newRelationVos = setSysUserInfoDto.getStaffRelationDtoList();
+                List<SysStaffRelationVo> relationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
+                String honor = StaffHistoryUtil.updateRelation(relationVos,newRelationVos);
+                if(StringUtils.isNotEmpty(honor)){
+                    contentList.add(honor);
+                }
             }else {
                 List<SysStaffRelationVo> relationVos = this.sysStaffRelationService.queryRelationByListId(sysStaffRelationDto);
                 if(relationVos.size() >0) {
@@ -1041,6 +1115,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //给员工赋予角色
         rs.setStaffId(staff.getId());
         rs.setRoleId(setSysUserInfoDto.getRoleId());
+
+        //赋予旧角色进行比对
+        if(userRole !=null){
+            oldUserInfo.setRoleName(userRole.getRoleName());
+        }
+
         //去查询角色名
         DataResult<?> result = oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
         if (!result.isSuccess()) {
@@ -1048,17 +1128,26 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
         rs.setRoleName(obj.get("roleName").toString());
+        //赋予角色名称
+        setSysUserInfoDto.setRoleName(rs.getRoleName());
         unionRoleStaffMapper.insert(rs);
-        //删除该员工的部门
+        //删除该员工的岗位
         QueryWrapper<UnionStaffPosition> uspQW = new QueryWrapper<>();
         uspQW.lambda().eq(UnionStaffPosition::getStaffId, staff.getId());
+        UnionStaffPosition position = unionStaffPositionMapper.selectOne(uspQW);
         unionStaffPositionMapper.delete(uspQW);
+        if(position !=null) {
+            SysJobPosition job = sysJobPositionMapper.selectById(position.getPositionId());
+            oldUserInfo.setPositionName(job == null ? "" : job.getPositionName());
+        }
         //如果岗位id不为空就给该员工添加部门
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getPositionId())) {
             UnionStaffPosition sp = new UnionStaffPosition();
             sp.setPositionId(setSysUserInfoDto.getPositionId());
             sp.setStaffId(staff.getId());
             unionStaffPositionMapper.insert(sp);
+            SysJobPosition job = sysJobPositionMapper.selectById(setSysUserInfoDto.getPositionId());
+            setSysUserInfoDto.setPositionName(job == null ? "" : job.getPositionName());
         }
         QueryWrapper<UnionStaffDepart> usdQW = new QueryWrapper<>();
         usdQW.lambda().eq(UnionStaffDepart::getStaffId, staff.getId());
@@ -1067,6 +1156,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isNotEmpty(dep)) {
             oldDepart = dep.getDepartmentId();
         }
+
+        //修改部门
         if (!Objects.equals(oldDepart, setSysUserInfoDto.getDepartId())) {
             log.info("员工修改了部门-修改线索客户冗余的部门id-修改的员工id:{}", staff.getId());
             SetUserDepartDto userDepart = new SetUserDepartDto();
@@ -1076,7 +1167,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysDepartmentInfo departInfo = this.sysDepartmentInfoService.getById(userDepart.getDepartId());
             if (DataUtil.isNotEmpty(departInfo)) {
                 userDepart.setDepartName(departInfo.getDepartName());
+                setSysUserInfoDto.setDepartName(departInfo.getDepartName());
             }
+            //赋予旧部门进行比对
+            SysDepartmentInfo oldDept = this.sysDepartmentInfoService.getById(oldDepart);
+            oldUserInfo.setDepartName(oldDept == null ? "":oldDept.getDepartName());
+
             DataResult r = clewService.updateCustomerAndClewDepartIdByUser(userDepart);
             if (!r.isSuccess()) {
                 throw new DefaultException("修改线索负责人名称失败!");
