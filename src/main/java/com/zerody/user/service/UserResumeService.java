@@ -13,4 +13,6 @@ import java.util.List;
 
 public interface UserResumeService extends IService<UserResume> {
     void saveOrUpdateBatchResume(List<UserResume> userResumes, StaffInfoVo staffInfoVo);
+
+    List<UserResume> getResumeList(String userId);
 }
