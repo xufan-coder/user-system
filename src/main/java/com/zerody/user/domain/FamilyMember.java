@@ -48,7 +48,7 @@ public class FamilyMember {
     /**
      * 联系地址
      */
-    @CheckCompare(value = "联系地址", name = "contactAddress")
+    @CheckCompare(value = "contactAddress", name = "联系地址")
     private String contactAddress;
 
     /**
