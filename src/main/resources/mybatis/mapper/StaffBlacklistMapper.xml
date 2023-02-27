@@ -163,6 +163,7 @@
         sci.id is not null AS isInternalControl,
         sui.certificate_card,
         sdi.depart_name,
+        ssi.comp_id as companyId,
         urs.role_name
         from
         sys_staff_info AS ssi
