@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.ConvertImageMapper">
+  <resultMap id="BaseResultMap" type="com.zerody.user.domain.ConvertImage">
+    <!--@mbg.generated-->
+    <!--@Table convert_image-->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="original_file_ulr" jdbcType="VARCHAR" property="originalFileUlr" />
+    <result column="convert_file_ulr" jdbcType="VARCHAR" property="convertFileUlr" />
+    <result column="convert_status" jdbcType="INTEGER" property="convertStatus" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="connect_id" jdbcType="VARCHAR" property="connectId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, original_file_ulr, convert_file_ulr, convert_status, user_id, connect_id, create_time
+  </sql>
+
+  <select id="getHaveNotConvert" resultMap="BaseResultMap">
+    SELECT
+      ci.id,
+      original_file_ulr,
+      convert_file_ulr,
+      1 AS convert_status
+    FROM convert_image AS ci
+    JOIN image AS i ON i.id = ci.connect_id
+    WHERE
+      ci.convert_status = 0
+    ORDER BY ci.create_time
+    LIMIT 0,70
+  </select>
+
+  <select id="getHaveNotConvert2" resultMap="BaseResultMap">
+    SELECT
+      ci.id,
+      original_file_ulr,
+      convert_file_ulr,
+      1 AS convert_status
+    FROM convert_image AS ci
+    JOIN common_file AS i ON i.id = ci.connect_id
+    WHERE
+      ci.convert_status = 0
+    ORDER BY ci.create_time
+    LIMIT 0,30
+  </select>
+</mapper>

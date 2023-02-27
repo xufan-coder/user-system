@@ -1,5 +1,10 @@
 package com.zerody.user.constant;
 
+import com.zerody.common.utils.DataUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 图片类型
  * @author PengQiang
@@ -28,4 +33,43 @@ public class ImageTypeInfo {
      *  学历证书
      */
     public final  static  String DIPLOMA = "DIPLOMA";
+
+    private static Map<String, String> toImageType = new HashMap<>();
+
+    static {
+        toImageType.put(DIPLOMA, DIPLOMA);
+        toImageType.put(COMPLIANCE_COMMITMENT, COMPLIANCE_COMMITMENT);
+    }
+
+    public static boolean isToImageType(String type) {
+        if (DataUtil.isEmpty(type)) {
+            return false;
+        }
+        return DataUtil.isNotEmpty(toImageType.get(type)) ;
+    }
+
+    public static class ImageType{
+
+        public static final String JPG = ".jpg";
+
+        public static final String PNG = ".png";
+        private static Map<String, String> imageType = new HashMap<>();
+
+        static {
+            imageType.put(JPG, JPG);
+            imageType.put(PNG, PNG);
+        }
+
+        public static boolean isImageType(String url) {
+            if (DataUtil.isEmpty(url)) {
+                return Boolean.FALSE;
+            }
+            int suffixIndex = url.lastIndexOf(".");
+            if (suffixIndex == -1 || suffixIndex  == 0) {
+                return Boolean.FALSE;
+            }
+            String suffix = url.substring(suffixIndex, url.length() - 1);
+            return DataUtil.isNotEmpty(suffix);
+        }
+    }
 }

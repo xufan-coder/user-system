@@ -36,6 +36,11 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.zerody.oss</groupId>
+            <artifactId>zerody-oss-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.zerody.customer</groupId>
             <artifactId>zerody-customer-api</artifactId>
             <version>2.0.0-SNAPSHOT</version>

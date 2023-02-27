@@ -1,0 +1,53 @@
+package com.zerody.user.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.constant.MQ;
+import com.zerody.common.mq.RabbitMqService;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.domain.ConvertImage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
+import com.zerody.user.mapper.ConvertImageMapper;
+import com.zerody.user.service.ConvertImageService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *@ClassName ConvertImageServiceImpl
+ *@author    PengQiang
+ *@DateTime  2023/2/24 15:09
+ */
+@Service
+public class ConvertImageServiceImpl extends ServiceImpl<ConvertImageMapper, ConvertImage> implements ConvertImageService{
+
+    @Autowired
+    private RabbitMqService mqService;
+
+    @Override
+    public List<ConvertImage> dohaveNotConvert() {
+
+        List<ConvertImage> list = this.baseMapper.getHaveNotConvert();
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        List<ConvertImage> list2 = this.baseMapper.getHaveNotConvert2();
+        if (DataUtil.isNotEmpty(list2)) {
+            list.addAll(list2);
+        }
+        if (DataUtil.isEmpty(list)) {
+            return list;
+        }
+        this.updateBatchById(list);
+        return list;
+    }
+
+    @Override
+    public void convertToImage(List<ConvertImage> converts) {
+        converts.forEach(image -> {
+            this.mqService.send(JSON.toJSONString(image), MQ.QUEUE_CONVERT_IMAGE);
+        });
+    }
+}
