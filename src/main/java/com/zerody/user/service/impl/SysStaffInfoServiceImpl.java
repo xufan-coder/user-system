@@ -268,7 +268,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard());
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),setSysUserInfoDto.getCompanyId());
             if(leave != null){
                 throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                         "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
@@ -841,7 +841,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             // 并且是pc端操作
             if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                     SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
-                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard());
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),setSysUserInfoDto.getCompanyId());
                 if(leave != null){
                     throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                             "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
@@ -954,8 +954,52 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoVo staffInfoVo = new StaffInfoVo();
         staffInfoVo.setStaffId(staff.getId());
         staffInfoVo.setUserId(sysUserInfo.getId());
-        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
 
+        // 获取埋点数据内容
+        List<String> contentList = new ArrayList<>();
+
+        // 处理家庭关系新旧对比
+        List<FamilyMember> familyList = familyMemberService.getFamilyList(staffInfoVo.getUserId());
+        String familyStr = StaffHistoryUtil.updateFamily(familyList,setSysUserInfoDto.getFamilyMembers());
+        if(StringUtils.isNotEmpty(familyStr)){
+            contentList.add(familyStr);
+        }
+
+        //处理个人履历新旧对比
+        List<UserResume>  resumeList = this.userResumeService.getResumeList(staffInfoVo.getUserId());
+        String resumeStr = StaffHistoryUtil.updateResume(resumeList,setSysUserInfoDto.getUserResumes());
+        if(StringUtils.isNotEmpty(resumeStr)){
+            contentList.add(resumeStr);
+        }
+
+        //处理学历证书新旧对比
+        List<String> diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
+        String diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getDiplomas(),"学历证书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getComplianceCommitments(),"合规承若书");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+
+        // 处理合规承若书新旧对比
+        diplomas =  this.commonFileService.getListFiles(staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+        List<String> newFiles = new ArrayList<>();
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getCooperationFiles())) {
+            newFiles = setSysUserInfoDto.getCooperationFiles().stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+        }
+
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,newFiles,"合作申请表");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }
+        // 添加家庭关系
+        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
         //添加履历
         this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
         //合规承诺书
@@ -970,8 +1014,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffHistoryQueryDto.setStaffId(setSysUserInfoDto.getStaffId());
         staffHistoryQueryDto.setId(setSysUserInfoDto.getStaffId());
 
-        // 获取埋点数据内容
-        List<String> contentList = new ArrayList<>();
+
         //荣耀记录
         if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor()) && setSysUserInfoDto.getStaffHistoryHonor().size() > 0) {
             List<StaffHistoryDto> newHistoryList = setSysUserInfoDto.getStaffHistoryHonor();
@@ -1888,13 +1931,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     }
                 }
             }
-
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
-            if(leave != null){
-                errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
-                        append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
-                        append("（暂不支持行政办理二次签约）");
-            }
             //先校验企业存不存在，企业不存在则不需要在校验部门岗位角色
             String companyName = row[2];
             QueryWrapper<SysCompanyInfo> qw = new QueryWrapper<>();
@@ -1922,6 +1958,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                         unionRoleStaff.setRoleId(obj.get("id").toString());
                         unionRoleStaff.setRoleName(roleName);
                     }
+                }
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,companyId);
+                if(leave != null){
+                    errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
+                            append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
+                            append("（暂不支持行政办理二次签约）");
                 }
 
                 String recommendMobile = row[7];
@@ -2147,7 +2189,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
 
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId);
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,companyId);
             if(leave != null){
                 errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
                         append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").

@@ -1,5 +1,7 @@
 package com.zerody.user.util;
 
+import com.zerody.user.domain.FamilyMember;
+import com.zerody.user.domain.UserResume;
 import com.zerody.user.dto.StaffHistoryDto;
 import com.zerody.user.dto.SysStaffRelationDto;
 import com.zerody.user.vo.StaffHistoryVo;
@@ -61,4 +63,91 @@ public class StaffHistoryUtil {
     }
 
 
+    public static String getDiplomas(List<String> oldDiplomas,List<String> diplomas,String name){
+        StringBuilder honor = new StringBuilder();
+        for(String old : oldDiplomas) {
+            if(!diplomas.contains(old)){
+                honor.append("删除了").append(name).append(":[").append(old).append("]   ");
+            }
+        }
+        for(String d : diplomas) {
+            if(!oldDiplomas.contains(d)){
+                honor.append("新增了").append(name).append(":[").append(d).append("]   ");
+            }
+        }
+        return honor.toString();
+    }
+
+
+    public static String updateResume(List<UserResume> oldResumeList, List<UserResume> userResumes) throws ParseException, IllegalAccessException {
+        StringBuilder honor = new StringBuilder();
+        UserResume resume = new UserResume();
+
+        // 比对个人履历的修改项
+        for(int i=0;i<userResumes.size();i++){
+            UserResume history = userResumes.get(i);
+            if(i < oldResumeList.size()) {
+                resume = oldResumeList.get(i);
+            }else {
+                resume = new UserResume();
+            }
+            List<UserCompar> comparList = UserCompareUtil.compareTwoClass(resume,history);
+            String content = UserCompareUtil.convertCompars(comparList);
+            if(StringUtils.isNotEmpty(content)) {
+                honor.append("更新了个人履历:").append(i + 1).append(":{").append(content).append(" }   ");
+            }
+        }
+
+        if(oldResumeList.size() > userResumes.size()) {
+            for(int i= userResumes.size()-1; i <oldResumeList.size();i++){
+                UserResume oldHistory = oldResumeList.get(i);
+                List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,resume);
+                String content = UserCompareUtil.convertCompars(comparList);
+                if(StringUtils.isNotEmpty(content)){
+                    honor.append("删除了个人履历").append(i).append(": {").append(content).append(" }   ");
+                }
+
+            }
+        }
+        return honor.toString();
+    }
+
+    public static String updateFamily(List<FamilyMember> oldFamilyList, List<FamilyMember> familyMembers) throws ParseException, IllegalAccessException {
+        StringBuilder honor = new StringBuilder();
+        FamilyMember family = new FamilyMember();
+
+        for(int i=0;i<familyMembers.size();i++){
+            FamilyMember history = familyMembers.get(i);
+            if(StringUtils.isEmpty(history.getId())){
+                List<UserCompar> comparList = UserCompareUtil.compareTwoClass(family,history);
+                String content = UserCompareUtil.convertCompars(comparList);
+                if(StringUtils.isNotEmpty(content)){
+                    honor.append("新增了家庭成员:").append(i).append(":").append(content).append("    ");
+                }
+            }else {
+                // 比对个人履历的修改项
+                for(FamilyMember oldHistory: oldFamilyList){
+                    if(oldHistory.getId().equals(history.getId())){
+                        List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,history);
+                        String content = UserCompareUtil.convertCompars(comparList);
+                        if(StringUtils.isNotEmpty(content)){
+                            honor.append("更新了家庭成员:").append(i).append(":").append(content).append("    ");;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        List<String> newStr = familyMembers.stream().map(FamilyMember::getId).collect(Collectors.toList());
+        for(FamilyMember oldHistory: oldFamilyList){
+            if(!newStr.contains(oldHistory.getId())){
+                List<UserCompar> comparList = UserCompareUtil.compareTwoClass(oldHistory,family);
+                String content = UserCompareUtil.convertCompars(comparList);
+                if(StringUtils.isNotEmpty(content)){
+                    honor.append("新增了家庭成员:").append(content).append("    ");
+                }
+            }
+        }
+        return honor.toString();
+    }
 }

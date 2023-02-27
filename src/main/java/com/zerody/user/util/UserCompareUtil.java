@@ -156,8 +156,8 @@ public class UserCompareUtil {
         String s2 = val2 == null ? "" : val2.toString();
 
         if (f.equals(FormatCheseEnum.status.name())) {
-            name1="-1".equals(s1)?"已解约":"0".equals(s1)?"合约中":"3".equals(s1) ? "合作":"";
-            name2="-1".equals(s2)?"已解约":"0".equals(s2)?"合约中":"3".equals(s2) ? "合作":"";
+            name1="1".equals(s1)?"已解约":"0".equals(s1)?"合约中":"3".equals(s1) ? "合作":"";
+            name2="1".equals(s2)?"已解约":"0".equals(s2)?"合约中":"3".equals(s2) ? "合作":"";
         }else if(f.equals(FormatCheseEnum.gender.name())){
             name1="1".equals(s1)?"女":"0".equals(s1)?"男":"";
             name2="1".equals(s2)?"女":"0".equals(s2)?"男":"";
@@ -170,10 +170,13 @@ public class UserCompareUtil {
         }else if(f.equals(FormatCheseEnum.isDiamondMember.name())){
             name1="0".equals(s1)?"否":"1".equals(s1)?"是":"";
             name2="0".equals(s2)?"否":"1".equals(s2)?"是":"";
+        }else if(f.equals(FormatCheseEnum.recommendType.name())){
+            name1="0".equals(s1)?"公司社招":"1".equals(s1)?"员工介绍":"";
+            name2="0".equals(s2)?"公司社招":"1".equals(s2)?"员工介绍":"";
         }else if(f.equals(FormatCheseEnum.highestEducation.name())){
             name1 = EducationBackgroundEnum.getTextByCode(s1);
             name2 = EducationBackgroundEnum.getTextByCode(s2);
-        }else if(f.equals(FormatCheseEnum.birthday.name())){
+        }else if(f.equals(FormatCheseEnum.birthday.name()) || f.equals(FormatCheseEnum.dateLeft.name()) || f.equals(FormatCheseEnum.dateJoin.name()) ){
             name1 =val1 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val1) : s1;
             name2 =val2 instanceof Date ?  DateUtil.formatyyyyMMddtoString((Date)val2) : s2;
         }

@@ -12,7 +12,10 @@ public  enum FormatCheseEnum {
     highestEducation("最高学历"),
     birthday("出生日期"),
     useState("账号状态"),
-    isDiamondMember("是否钻石会员")
+    isDiamondMember("是否钻石会员"),
+    dateLeft("离职时间"),
+    dateJoin("签约时间"),
+    recommendType("推荐类型")
     ;
 
     private String text;
