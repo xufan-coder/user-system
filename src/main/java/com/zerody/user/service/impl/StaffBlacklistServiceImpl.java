@@ -651,6 +651,10 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public InternalControlVo updateInternalControl(InternalControlDto internalControlDto) {
         InternalControlVo vo = this.baseMapper.updateInternalControl(internalControlDto);
+        vo.setIsSameCompany(0);
+        if(vo.getCompanyId().equals(internalControlDto.getCompanyId())){
+            vo.setIsSameCompany(1);
+        }
         return vo;
     }
 

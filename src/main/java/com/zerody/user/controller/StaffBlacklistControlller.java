@@ -400,6 +400,7 @@ public class StaffBlacklistControlller {
     @GetMapping("/internal/control")
     public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
         try {
+            internalControlDto.setCompanyId(UserUtils.getUser().getCompanyId());
             InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
             return R.success(internalControlVo);
         } catch (DefaultException e) {
