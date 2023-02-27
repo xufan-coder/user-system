@@ -7,6 +7,7 @@ import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
@@ -400,7 +401,8 @@ public class StaffBlacklistControlller {
     @GetMapping("/internal/control")
     public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
         try {
-            internalControlDto.setCompanyId(UserUtils.getUser().getCompanyId());
+            UserVo userVo = UserUtils.getUser();
+            internalControlDto.setCompanyId(userVo.getCompanyId());
             InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
             return R.success(internalControlVo);
         } catch (DefaultException e) {
