@@ -3165,6 +3165,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return map;
     }
 
+    @Override
+    public StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId) {
+        return this.sysStaffInfoMapper.getOneStaffInfo(phone, idCard, companyId);
+    }
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);

@@ -435,4 +435,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     @Select({ "<script> update sys_staff_info set date_join = #{signTime}, leave_reason = '',date_left = null, status = 0 where id=#{staffId} </script>" })
     void updateLeaveInfo(@Param("staffId") String staffId,@Param("signTime") Date signTime);
+
+    StaffInfoVo getOneStaffInfo(@Param("phone") String phone, @Param("idCard") String idCard, @Param("companyId") String companyId);
 }

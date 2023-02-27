@@ -342,80 +342,81 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 }
                 reasons.put(entity.getMobile(), entity.getReason());
                 reasonsIdCard.put(entity.getIdentityCard(), entity.getReason());
-                //查询出该手机号码或身份证的历史账号
-                QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
-                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getCertificateCard, rowData[2]));
-                List<SysUserInfo> datas = this.userInfoService.list(usersQw);
-                if (DataUtil.isNotEmpty(datas)) {
-                    users.addAll(datas);
-                    continue;
-                }
+//                //查询出该手机号码或身份证的历史账号 2023-02-27 修改不允许添加系统存在伙伴的手机号导入成为内部内控名单
+//                QueryWrapper<SysUserInfo> usersQw = new QueryWrapper<>();
+//                usersQw.lambda().and(qw -> qw.eq(SysUserInfo::getPhoneNumber, rowData[1]).or().eq(SysUserInfo::getCertificateCard, rowData[2]));
+//                List<SysUserInfo> datas = this.userInfoService.list(usersQw);
+//                if (DataUtil.isNotEmpty(datas)) {
+//                    users.addAll(datas);
+//                    continue;
+//                }
                 entitys.add(entity);
             } catch (Exception e) {
                 log.error("内控名单导入出错：{}",e ,e);
             }
         }
-        List<String> userIds = new ArrayList<>();
-        List<SysUserInfo> userUpdate = new ArrayList<>();
-        List<SysStaffInfo> staffInfos = new ArrayList<>();
-        Map<String, String> mobileMap = new HashMap<>();
-        Map<String, String> idCradMap = new HashMap<>();
-        if (DataUtil.isNotEmpty(users)) {
-            users.forEach(u -> {
-                //手机号码、身份证已添加加 就不在添加
-                if (DataUtil.isEmpty(mobileMap.get(u.getPhoneNumber())) && DataUtil.isEmpty(idCradMap.get(u.getCertificateCard()))) {
-                    StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
-                    //添加为内部内控名单
-                    StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
-                    entity2.setReason(reasons.get(entity2.getMobile()));
-                    if (DataUtil.isEmpty(entity2.getReason())) {
-                        entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
-                    }
-                    mobileMap.put(entity2.getMobile(), entity2.getMobile());
-                    idCradMap.put(entity2.getIdentityCard(), entity2.getIdentityCard());
-                    entitys.add(entity2);
-                }
-                // 如果是在职状态 设置为离职(已解约)
-                if (u.getStatus() == StatusEnum.stop.getValue()) {
-                    return;
-                }
-                //设置为离职
-                u.setStatus(StatusEnum.stop.getValue());
-                userUpdate.add(u);
-                //查询员工信息
-                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
-                staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
-                staffQw.lambda().last("limit 0,1");
-                SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
-                if (DataUtil.isEmpty(staff)) {
-                    return;
-                }
-                //设置离职原因
-                staff.setDateLeft(new Date());
-                staff.setStatus(StatusEnum.stop.getValue());
-                staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
-                staffInfos.add(staff);
-                userIds.add(u.getId());
-                //发送消息 离职转移客户
-                StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
-                staffDimissionInfo.setUserId(u.getId());
-                staffDimissionInfo.setOperationUserId(user.getUserId());
-                staffDimissionInfo.setOperationUserName(user.getUserName());
-                this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
-                appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(u.getId()));
-            });
-        }
+
+//        List<String> userIds = new ArrayList<>();
+//        List<SysUserInfo> userUpdate = new ArrayList<>();
+//        List<SysStaffInfo> staffInfos = new ArrayList<>();
+//        Map<String, String> mobileMap = new HashMap<>();
+//        Map<String, String> idCradMap = new HashMap<>();
+//        if (DataUtil.isNotEmpty(users)) {  // 2023-02-27 修改不允许导入系统内存在的账号
+//            users.forEach(u -> {
+//                //手机号码、身份证已添加加 就不在添加
+//                if (DataUtil.isEmpty(mobileMap.get(u.getPhoneNumber())) && DataUtil.isEmpty(idCradMap.get(u.getCertificateCard()))) {
+//                    StaffInfoVo userInfo = this.staffInfoService.getStaffInfo(u.getId());
+//                    //添加为内部内控名单
+//                    StaffBlacklist entity2 = BlacklistParamHandle.insideStaffBlacklistParam(userInfo, user);
+//                    entity2.setReason(reasons.get(entity2.getMobile()));
+//                    if (DataUtil.isEmpty(entity2.getReason())) {
+//                        entity2.setReason(reasonsIdCard.get(entity2.getIdentityCard()));
+//                    }
+//                    mobileMap.put(entity2.getMobile(), entity2.getMobile());
+//                    idCradMap.put(entity2.getIdentityCard(), entity2.getIdentityCard());
+//                    entitys.add(entity2);
+//                }
+//                // 如果是在职状态 设置为离职(已解约)
+//                if (u.getStatus() == StatusEnum.stop.getValue()) {
+//                    return;
+//                }
+//                //设置为离职
+//                u.setStatus(StatusEnum.stop.getValue());
+//                userUpdate.add(u);
+//                //查询员工信息
+//                QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
+//                staffQw.lambda().eq(SysStaffInfo::getUserId, u.getId());
+//                staffQw.lambda().last("limit 0,1");
+//                SysStaffInfo staff = this.staffInfoService.getOne(staffQw);
+//                if (DataUtil.isEmpty(staff)) {
+//                    return;
+//                }
+//                //设置离职原因
+//                staff.setDateLeft(new Date());
+//                staff.setStatus(StatusEnum.stop.getValue());
+//                staff.setLeaveReason(reasons.get(u.getPhoneNumber()));
+//                staffInfos.add(staff);
+//                userIds.add(u.getId());
+//                //发送消息 离职转移客户
+//                StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
+//                staffDimissionInfo.setUserId(u.getId());
+//                staffDimissionInfo.setOperationUserId(user.getUserId());
+//                staffDimissionInfo.setOperationUserName(user.getUserName());
+//                this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
+//                appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(u.getId()));
+//            });
+//        }
         //修改用户状态
-        if (DataUtil.isNotEmpty(userUpdate)) {
-            this.userInfoService.updateBatchById(userUpdate);
-        }
-        if (DataUtil.isNotEmpty(staffInfos)) {
-            this.staffInfoService.updateBatchById(staffInfos);
-        }
+//        if (DataUtil.isNotEmpty(userUpdate)) {
+//            this.userInfoService.updateBatchById(userUpdate);
+//        }
+//        if (DataUtil.isNotEmpty(staffInfos)) {
+//            this.staffInfoService.updateBatchById(staffInfos);
+//        }
         //删除token
-        if (DataUtil.isNotEmpty(userIds)) {
-            this.oauthFeignService.removeToken(userIds);
-        }
+//        if (DataUtil.isNotEmpty(userIds)) {
+//            this.oauthFeignService.removeToken(userIds);
+//        }
         this.saveBatch(entitys);
         this.importResultInfoService.saveBatch(errors);
         importResult.put("excelRows", excelRows);
@@ -477,6 +478,24 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 entity.setCompanyId(company.getId());
             }
         }
+        StaffInfoVo userInfo = null;
+        if (!user.isBack()) {
+            //2023-02-27 添加判断
+            userInfo = this.staffInfoService.getOneStaffInfo(data[1], data[2], user.getCompanyId());
+            if (DataUtil.isNotEmpty(userInfo)) {
+                String existUser = "当前伙伴已在%s，加入请副总发起-总经理审批";
+                errStr.append(String.format(existUser, userInfo.getDepartmentName()));
+            }
+        }
+        if (DataUtil.isEmpty(userInfo)) {
+            //2023-02-27 添加判断
+            userInfo = this.staffInfoService.getOneStaffInfo(data[1], data[2], null);
+            if (DataUtil.isNotEmpty(userInfo)) {
+                String existUser = "当前伙伴已在%s-%s，加入请副总发起-总经理审批";
+                errStr.append(String.format(existUser, userInfo.getCompanyName(), userInfo.getDepartmentName()));
+            }
+        }
+
         if (StringUtils.isEmpty(data[4])) {
             errStr.append("加入原因必填,");
         }
