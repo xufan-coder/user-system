@@ -43,6 +43,7 @@ import com.zerody.user.util.UserLogUtil;
 import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -651,9 +652,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public InternalControlVo updateInternalControl(InternalControlDto internalControlDto) {
         InternalControlVo vo = this.baseMapper.updateInternalControl(internalControlDto);
-        vo.setIsSameCompany(0);
-        if(vo.getCompanyId().equals(internalControlDto.getCompanyId())){
-            vo.setIsSameCompany(1);
+        if(ObjectUtils.isNotEmpty(vo)){
+            vo.setIsSameCompany(0);
+            if(vo.getCompanyId().equals(internalControlDto.getCompanyId())){
+                vo.setIsSameCompany(1);
+            }
         }
         return vo;
     }
