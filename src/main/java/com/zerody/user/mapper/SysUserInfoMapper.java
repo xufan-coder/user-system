@@ -218,7 +218,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     */
     List<StaffInfoByAddressBookVo> getAllUser(@Param("queryDto") ComUserQueryDto queryDto);
 
-    @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
+    @Select({ "<script> update sys_user_info set status = 0 ,is_edit = 1 where id=#{userId} </script>" })
     void updateLeaveState(@Param("userId")  String userId);
 
     List<SubordinateUserQueryVo> getLeaveUser(@Param("param") SubordinateUserQueryDto param);
