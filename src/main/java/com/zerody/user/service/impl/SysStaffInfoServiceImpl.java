@@ -742,6 +742,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysUserInfo userInfo = new SysUserInfo();
         userInfo.setId(userId);
         userInfo.setStatus(status);
+        userInfo.setIsEdit(YesNo.YES);
         this.sysUserInfoMapper.updateById(userInfo);
         UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
         staffUw.lambda().set(SysStaffInfo::getStatus, status);
