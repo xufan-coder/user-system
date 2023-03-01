@@ -55,10 +55,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
-import com.zerody.user.enums.ImportStateEnum;
-import com.zerody.user.enums.StaffGenderEnum;
-import com.zerody.user.enums.StaffHistoryTypeEnum;
-import com.zerody.user.enums.StaffStatusEnum;
+import com.zerody.user.enums.*;
 import com.zerody.user.feign.*;
 import com.zerody.user.handler.user.SysUserDimissionHandle;
 import com.zerody.user.mapper.*;
@@ -234,6 +231,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private CommonFileService commonFileService;
+
+    @Autowired
+    private ConvertImageService convertImageService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -455,7 +455,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void saveFile(List<CommonFile> cooperationFiles,String userId,String type){
 
         List<CommonFile> files = new ArrayList<>();
+        //图片转换
+        List<ConvertImage> convertImages = new ArrayList<>(cooperationFiles.size());
         CommonFile file;
+        Date now = new Date();
+
         if(DataUtil.isNotEmpty(cooperationFiles)) {
             for (CommonFile s : cooperationFiles) {
                 file = new CommonFile();
@@ -466,6 +470,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 file.setFileName(s.getFileName());
                 file.setFormat(s.getFormat());
                 file.setCreateTime(new Date());
+
+                if (!ImageTypeInfo.ImageType.isImageType(s.getFileUrl())) {
+                    throw new DefaultException("仅支持上传图片");
+                }
+
                 files.add(file);
             }
         }
@@ -474,12 +483,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         remQ.lambda().eq(CommonFile::getFileType, type);
         //删除之前的文件，再批量新增文件
         this.commonFileService.addFiles(remQ, files);
+        if (DataUtil.isNotEmpty(convertImages)) {
+            this.convertImageService.saveBatch(convertImages);
+        }
     }
 
     public void saveImage(List<String> images,String userId,String type){
         List<Image> imageAdds = new ArrayList<>();
+        //图片转换
+        List<ConvertImage> convertImages = new ArrayList<>(images.size());
         Image image;
+        Date now = new Date();
         if(DataUtil.isNotEmpty(images)) {
+
             for (String s : images) {
                 image = new Image();
                 image.setConnectId(userId);
@@ -487,6 +503,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 image.setImageType(type);
                 image.setImageUrl(s);
                 image.setCreateTime(new Date());
+                //需要转换图片的类型
+                if (ImageTypeInfo.isToImageType(type) && !ImageTypeInfo.ImageType.isImageType(s)) {
+                    throw new DefaultException("仅支持上传图片");
+                }
                 imageAdds.add(image);
             }
         }
