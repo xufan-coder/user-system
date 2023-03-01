@@ -25,12 +25,12 @@ public class ConvertImage {
     /**
     * 源文件路径
     */
-    private String originalFileUlr;
+    private String originalFileUrl;
 
     /**
     * 转换文件路径
     */
-    private String convertFileUlr;
+    private String convertFileUrl;
 
     /**
     * 转换状态(0.未转换、1.已转换)

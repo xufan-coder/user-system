@@ -470,15 +470,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 file.setFileName(s.getFileName());
                 file.setFormat(s.getFormat());
                 file.setCreateTime(new Date());
-                //转换中图片替换  目前这个只有这一个类型的文件 以后有要增加判断
-                file.setFileUrl(com.zerody.user.util.FileUtil.uploadOssTemate(TemplateTypeEnum.IMAGE_CONVERT));
-                ConvertImage convertImage = new ConvertImage();
-                convertImage.setConnectId(file.getId());
-                convertImage.setOriginalFileUlr(s.getFileUrl());
-                convertImage.setConvertFileUlr(file.getFileUrl());
-                convertImage.setUserId(userId);
-                convertImage.setCreateTime(now);
-                convertImages.add(convertImage);
+
+                if (!ImageTypeInfo.ImageType.isImageType(s.getFileUrl())) {
+                    throw new DefaultException("仅支持上传图片");
+                }
 
                 files.add(file);
             }
@@ -510,14 +505,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 image.setCreateTime(new Date());
                 //需要转换图片的类型
                 if (ImageTypeInfo.isToImageType(type) && !ImageTypeInfo.ImageType.isImageType(s)) {
-                    image.setImageUrl(com.zerody.user.util.FileUtil.uploadOssTemate(TemplateTypeEnum.IMAGE_CONVERT));
-                    ConvertImage convertImage = new ConvertImage();
-                    convertImage.setConnectId(image.getId());
-                    convertImage.setOriginalFileUlr(s);
-                    convertImage.setConvertFileUlr(image.getImageUrl());
-                    convertImage.setUserId(userId);
-                    convertImage.setCreateTime(now);
-                    convertImages.add(convertImage);
+                    throw new DefaultException("仅支持上传图片");
                 }
                 imageAdds.add(image);
             }
@@ -526,7 +514,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageRemoveQw.lambda().eq(Image::getConnectId, userId);
         imageRemoveQw.lambda().eq(Image::getImageType, type);
         this.imageService.addImages(imageRemoveQw, imageAdds);
-        this.convertImageService.saveBatch(convertImages);
     }
 
     @Override

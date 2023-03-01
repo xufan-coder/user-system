@@ -72,7 +72,7 @@ public class FileUtil {
     public static String uploadOssPrivate(MultipartFile file) {
         SlOssFile data = ossFeignStaicService.fileUploadPrivate2(file).getData();
         if (DataUtil.isNotEmpty(data)) {
-            return data.getFileUrl();
+            return data.getFileKey();
         }
         return null;
     }

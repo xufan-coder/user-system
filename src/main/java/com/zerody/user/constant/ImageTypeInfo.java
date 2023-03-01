@@ -68,8 +68,8 @@ public class ImageTypeInfo {
             if (suffixIndex == -1 || suffixIndex  == 0) {
                 return Boolean.FALSE;
             }
-            String suffix = url.substring(suffixIndex, url.length() - 1);
-            return DataUtil.isNotEmpty(suffix);
+            String suffix = url.substring(suffixIndex);
+            return DataUtil.isNotEmpty(imageType.get(suffix));
         }
     }
 }
