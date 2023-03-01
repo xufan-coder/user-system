@@ -471,10 +471,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 file.setFormat(s.getFormat());
                 file.setCreateTime(new Date());
 
-                if (!ImageTypeInfo.ImageType.isImageType(s.getFileUrl())) {
-                    throw new DefaultException("仅支持上传图片");
-                }
-
                 files.add(file);
             }
         }
@@ -503,10 +499,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 image.setImageType(type);
                 image.setImageUrl(s);
                 image.setCreateTime(new Date());
-                //需要转换图片的类型
-                if (ImageTypeInfo.isToImageType(type) && !ImageTypeInfo.ImageType.isImageType(s)) {
-                    throw new DefaultException("仅支持上传图片");
-                }
                 imageAdds.add(image);
             }
         }
