@@ -939,9 +939,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         // 处理家庭关系新旧对比
         List<FamilyMember> familyList = familyMemberService.getFamilyList(staffInfoVo.getUserId());
-        String familyStr = StaffHistoryUtil.updateFamily(familyList,setSysUserInfoDto.getFamilyMembers());
-        if(StringUtils.isNotEmpty(familyStr)){
-            contentList.add(familyStr);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getFamilyMembers()) && setSysUserInfoDto.getFamilyMembers().size()!=0){
+            String familyStr = StaffHistoryUtil.updateFamily(familyList,setSysUserInfoDto.getFamilyMembers());
+            if(StringUtils.isNotEmpty(familyStr)){
+                contentList.add(familyStr);
+            }
         }
 
         //处理个人履历新旧对比
