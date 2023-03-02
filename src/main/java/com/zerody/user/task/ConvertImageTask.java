@@ -34,9 +34,11 @@ public class ConvertImageTask {
             if (DataUtil.isEmpty(converts)) {
                 return returnT;
             }
+            count = converts.size();
             for (ConvertImage c : converts) {
                 try {
                     this.convertImageService.doConvertToImage(c);
+                    success++;
                 } catch (Exception e) {
                     log.error("转换图片出错:{}", e, e);
                 }
