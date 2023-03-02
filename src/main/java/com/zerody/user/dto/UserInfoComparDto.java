@@ -161,7 +161,7 @@ public class UserInfoComparDto {
 
 
     /** 身份证地址 **/
-    @CheckCompare(value = "certificateCardAddress",name = "身份证地址")
+    @CheckCompare(value = "certificateCardAddress",name = "户籍地址")
     private String certificateCardAddress;
 
     /** 省市区 **/
@@ -298,4 +298,35 @@ public class UserInfoComparDto {
      * 用户状态是否修改(1.是、0.否)
      */
     private Integer statusEdit;
+
+
+    /**
+     * 身份证照片国徽面(正面)
+     */
+    private String idCardFront;
+
+    /**
+     * 身份证照片人像面(反面)
+     */
+    private String idCardReverse;
+
+    /**
+     *    培训班次
+     */
+    private String trainNo;
+
+    /**
+     * 岗位名称
+     */
+    private String positionName;
+
+    /**
+     * 部门名称
+     */
+    private String departName;
+
+    /**
+     * 账号状态 0正常   1已冻结
+     */
+    private Integer useState;
 }

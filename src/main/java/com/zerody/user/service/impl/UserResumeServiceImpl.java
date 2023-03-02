@@ -41,4 +41,11 @@ public class UserResumeServiceImpl extends ServiceImpl<UserResumeMapper, UserRes
             this.saveBatch(userResumes);
         }
     }
+
+    @Override
+    public List<UserResume> getResumeList(String userId) {
+        QueryWrapper<UserResume> rq = new QueryWrapper<>();
+        rq.lambda().eq(UserResume::getUserId, userId);
+        return this.list(rq);
+    }
 }

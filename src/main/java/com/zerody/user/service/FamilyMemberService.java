@@ -17,4 +17,6 @@ public interface FamilyMemberService extends IService<FamilyMember> {
     void addBatchFamilyMember(List<FamilyMember> entitys, StaffInfoVo staff);
 
     void addFamilyMember(FamilyMember entity, StaffInfoVo staff);
+
+    List<FamilyMember> getFamilyList(String userId);
 }
