@@ -22,7 +22,8 @@
       ci.id,
       original_file_url,
       convert_file_url,
-      1 AS convert_status
+      1 AS convert_status,
+      ci.connect_id
     FROM convert_image AS ci
     JOIN image AS i ON i.id = ci.connect_id
     WHERE
@@ -36,7 +37,8 @@
       ci.id,
       original_file_url,
       convert_file_url,
-      1 AS convert_status
+      1 AS convert_status,
+      ci.connect_id
     FROM convert_image AS ci
     JOIN common_file AS i ON i.id = ci.connect_id
     WHERE
