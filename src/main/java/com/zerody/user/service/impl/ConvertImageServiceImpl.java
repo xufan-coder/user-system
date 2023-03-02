@@ -1,21 +1,17 @@
 package com.zerody.user.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
-import com.zerody.common.constant.MQ;
 import com.zerody.common.exception.DefaultException;
-import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.oss.api.feign.OssFeignService;
 import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.ConvertImage;
 import com.zerody.user.domain.Image;
-import com.zerody.user.feign.OssFeignService;
 import com.zerody.user.service.CommonFileService;
 import com.zerody.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
 import com.zerody.user.mapper.ConvertImageMapper;
 import com.zerody.user.service.ConvertImageService;
 
