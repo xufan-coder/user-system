@@ -15,5 +15,5 @@ public interface ConvertImageService extends IService<ConvertImage> {
 
     List<ConvertImage> dohaveNotConvert();
 
-    void convertToImage(List<ConvertImage> converts);
+    void doConvertToImage(ConvertImage convert);
 }
