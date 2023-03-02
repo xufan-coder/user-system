@@ -28,7 +28,7 @@
     WHERE
       ci.convert_status = 0
     ORDER BY ci.create_time
-    LIMIT 0,70
+    LIMIT 0,20
   </select>
 
   <select id="getHaveNotConvert2" resultMap="BaseResultMap">
@@ -42,6 +42,6 @@
     WHERE
       ci.convert_status = 0
     ORDER BY ci.create_time
-    LIMIT 0,30
+    LIMIT 0,10
   </select>
 </mapper>

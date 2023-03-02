@@ -2,10 +2,17 @@ package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.MQ;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.ConvertImage;
+import com.zerody.user.domain.Image;
+import com.zerody.user.feign.OssFeignService;
+import com.zerody.user.service.CommonFileService;
+import com.zerody.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -24,7 +31,13 @@ import java.util.List;
 public class ConvertImageServiceImpl extends ServiceImpl<ConvertImageMapper, ConvertImage> implements ConvertImageService{
 
     @Autowired
-    private RabbitMqService mqService;
+    private OssFeignService ossFeignService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private CommonFileService commonFileService;
 
     @Override
     public List<ConvertImage> dohaveNotConvert() {
@@ -45,9 +58,30 @@ public class ConvertImageServiceImpl extends ServiceImpl<ConvertImageMapper, Con
     }
 
     @Override
-    public void convertToImage(List<ConvertImage> converts) {
-        converts.forEach(image -> {
-            this.mqService.send(JSON.toJSONString(image), MQ.QUEUE_CONVERT_IMAGE);
-        });
+    public void doConvertToImage(ConvertImage convert) {
+        DataResult<String> ossResult = this.ossFeignService.getToImage(convert.getOriginalFileUrl());
+        if (!ossResult.isSuccess() || DataUtil.isEmpty(ossResult.getData())) {
+            throw new DefaultException("转换图片出错");
+        }
+        String newImageUrl = ossResult.getData();
+        Image image = this.imageService.getById(convert.getConnectId());
+        if (DataUtil.isNotEmpty(image)) {
+            image.setImageUrl(newImageUrl);
+            this.imageService.updateById(image);
+            return;
+        }
+        CommonFile file = this.commonFileService.getById(convert.getConnectId());
+        if (DataUtil.isEmpty(file)) {
+            throw new DefaultException("找不到源文件");
+        }
+        if (DataUtil.isNotEmpty(file.getFileName())) {
+            String suffix = newImageUrl.substring(newImageUrl.lastIndexOf("."));
+            String fileName = file.getFileName().substring(0, file.getFileName().lastIndexOf("."));
+            file.setFileName(fileName + suffix);
+        }
+        file.setFileUrl(newImageUrl);
+        this.commonFileService.updateById(file);
+
+
     }
 }
