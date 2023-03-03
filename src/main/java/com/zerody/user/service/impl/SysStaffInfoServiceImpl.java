@@ -67,6 +67,7 @@ import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -730,7 +731,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sysStaffInfoPageDto.setStaffId(departInfo.getAdminAccount());
         }
         IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(), sysStaffInfoPageDto.getPageSize());
-        return sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto, infoVoIPage);
+        IPage<BosStaffInfoVo> vo = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto, infoVoIPage);
+        List<BosStaffInfoVo> records = vo.getRecords();
+        if(DataUtil.isNotEmpty(records) && records.size()!=0){
+            records.forEach(record -> {
+                if(StringUtils.isEmpty(record.getBlackId())){
+                    record.setIsBlock(false);
+                    QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
+                    blacQw.lambda().eq(StaffBlacklist::getUserId,record.getUserId());
+                    blacQw.lambda().eq(StaffBlacklist::getCompanyId, record.getCompId());
+                    blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+                    StaffBlacklist staffBlacklist = this.staffBlacklistService.getOne(blacQw);
+                    if(ObjectUtils.isNotEmpty(staffBlacklist)){
+                        record.setIsBlock(true);
+                    }
+                }
+                record.setIsBlock(true);
+            });
+        }
+        return vo;
     }
 
     @Override
