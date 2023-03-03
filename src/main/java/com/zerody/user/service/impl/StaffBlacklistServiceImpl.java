@@ -513,7 +513,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                         .eq(StringUtils.isNotEmpty( finalStaffInfo.getIdentityCard()), StaffBlacklist::getIdentityCard,
                                 finalStaffInfo.getIdentityCard())
                         );
-                blacQw.lambda().eq(StaffBlacklist::getUserId,finalStaffInfo.getUserId());
+                blacQw.lambda().eq(StaffBlacklist::getUserId,blac.getUserId());
                 blacQw.lambda().eq(StaffBlacklist::getCompanyId, staff.getCompanyId());
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
                 StaffBlacklist oldBlac = this.getOne(blacQw);
