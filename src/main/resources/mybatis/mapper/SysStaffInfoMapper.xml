@@ -51,6 +51,7 @@
         SELECT
         DISTINCT sui.id AS id,
         ssi.comp_id AS compId,
+        ssi.user_id AS userId,
         ssi.user_name AS userName,
         sci.company_name AS companyName,
         sui.phone_number AS phone,
@@ -63,7 +64,7 @@
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
         ssi.id = #{staff.staffId} AS isAdmin,
-        sb.id is not null AS is_block,
+        sb.id AS blackId,
         sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
