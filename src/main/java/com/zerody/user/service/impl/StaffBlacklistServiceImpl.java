@@ -512,8 +512,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                         .or()
                         .eq(StringUtils.isNotEmpty( finalStaffInfo.getIdentityCard()), StaffBlacklist::getIdentityCard,
                                 finalStaffInfo.getIdentityCard())
+                        .or().eq(StringUtils.isNotEmpty(blac.getUserId()),StaffBlacklist::getUserId,blac.getUserId())
                         );
-                blacQw.lambda().eq(StaffBlacklist::getUserId,blac.getUserId());
                 blacQw.lambda().eq(StaffBlacklist::getCompanyId, staff.getCompanyId());
                 blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
                 StaffBlacklist oldBlac = this.getOne(blacQw);
@@ -659,9 +659,14 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto) {
         MobileBlacklistQueryVo  result = new MobileBlacklistQueryVo();
-        List<String> companys = this.baseMapper.getBlacklistByMobile(dto);
+        List<MobileBlacklistQueryVo> companys = this.baseMapper.getBlacklistByMobile(dto);
         result.setIsBlock(CollectionUtils.isNotEmpty(companys));
-        result.setCompanyNames(companys);
+        if(DataUtil.isNotEmpty(companys) && companys.size()!=0){
+            List<String> companyNames = companys.stream().map(MobileBlacklistQueryVo::getCompanyName).collect(Collectors.toList());
+            List<String> reason = companys.stream().map(MobileBlacklistQueryVo::getReason).collect(Collectors.toList());
+            result.setCompanyName(String.join(",",companyNames));
+            result.setReason(String.join(",",reason));
+        }
         return result;
     }
 }
