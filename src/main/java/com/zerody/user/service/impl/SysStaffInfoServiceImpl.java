@@ -732,23 +732,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         IPage<BosStaffInfoVo> infoVoIPage = new Page<>(sysStaffInfoPageDto.getCurrent(), sysStaffInfoPageDto.getPageSize());
         IPage<BosStaffInfoVo> vo = sysStaffInfoMapper.getPageAllStaff(sysStaffInfoPageDto, infoVoIPage);
-        List<BosStaffInfoVo> records = vo.getRecords();
-        if(DataUtil.isNotEmpty(records) && records.size()!=0){
-            records.forEach(record -> {
-                if(StringUtils.isEmpty(record.getBlackId())){
-                    record.setIsBlock(false);
-                    QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
-                    blacQw.lambda().eq(StaffBlacklist::getUserId,record.getUserId());
-                    blacQw.lambda().eq(StaffBlacklist::getCompanyId, record.getCompId());
-                    blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
-                    StaffBlacklist staffBlacklist = this.staffBlacklistService.getOne(blacQw);
-                    if(ObjectUtils.isNotEmpty(staffBlacklist)){
-                        record.setIsBlock(true);
-                    }
-                }
-                record.setIsBlock(true);
-            });
-        }
         return vo;
     }
 

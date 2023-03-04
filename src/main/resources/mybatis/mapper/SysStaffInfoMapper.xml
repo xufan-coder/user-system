@@ -64,7 +64,7 @@
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
         ssi.id = #{staff.staffId} AS isAdmin,
-        sb.id AS blackId,
+        sb.id is not null as is_block,
         sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
@@ -80,7 +80,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id and sjp.status = 0
-        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card)  AND sb.state = 'BLOCK'
+        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card or sb.user_id = sui.id)  AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="staff.companyId != null and staff.companyId != ''">
