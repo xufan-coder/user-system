@@ -18,12 +18,8 @@ public class MobileBlacklistQueryVo {
     private Boolean isBlock;
 
     /** 拉黑的企业名称 */
-    private List<String> companyNames;
+    private String companyName;
 
-    public String getCompanyName(){
-        if (CollectionUtils.isEmpty(this.companyNames)) {
-            return null;
-        }
-        return String.join(",", this.companyNames);
-    }
+    /** 拉黑的原因 */
+    private String reason;
 }

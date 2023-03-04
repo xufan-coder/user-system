@@ -39,7 +39,7 @@ public interface StaffBlacklistMapper extends BaseMapper<StaffBlacklist> {
      * @param                mobile
      * @return               com.zerody.user.vo.MobileBlacklistQueryVo
      */
-    List<String> getBlacklistByMobile(@Param("param") MobileAndIdentityCardDto param);
+    List<MobileBlacklistQueryVo> getBlacklistByMobile(@Param("param") MobileAndIdentityCardDto param);
 
     InternalControlVo updateInternalControl(@Param("param") InternalControlDto param);
 }

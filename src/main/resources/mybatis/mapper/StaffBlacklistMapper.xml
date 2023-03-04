@@ -134,9 +134,10 @@
       ORDER BY sb.approval_time DESC
   </select>
 
-    <select id="getBlacklistByMobile" resultType="java.lang.String">
+    <select id="getBlacklistByMobile" resultType="com.zerody.user.vo.MobileBlacklistQueryVo">
         SELECT
-            sci.company_name
+            sci.company_name,
+            sb.reason
         FROM
             staff_blacklist AS sb
         JOIN sys_company_info AS sci ON sci.id = sb.company_id
