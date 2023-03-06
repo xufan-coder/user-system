@@ -867,6 +867,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfoMapper.updateById(sysUserInfo);
+
+        //判断身份证和手机号码是否被修改
+        if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
+                !oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
+            QueryWrapper<StaffBlacklist> wrapper = new QueryWrapper<>();
+            wrapper.lambda().eq(StaffBlacklist::getUserId,setSysUserInfoDto.getId());
+            wrapper.lambda().last("limit 0,1");
+            StaffBlacklist blacklist = this.staffBlacklistService.getOne(wrapper);
+            //如果该用户存在黑名单中，同时修改黑名单单的身份证和手机信息
+            if(ObjectUtils.isNotEmpty(blacklist)){
+                blacklist.setIdentityCard(setSysUserInfoDto.getCertificateCard());
+                blacklist.setMobile(setSysUserInfoDto.getPhoneNumber());
+                this.staffBlacklistService.updateById(blacklist);
+            }
+        }
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
