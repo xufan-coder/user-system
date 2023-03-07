@@ -1221,4 +1221,24 @@
         where si.`status` = 1 and sui.certificate_card = #{card} and si.comp_id=#{compId}
         order by sui.create_time desc limit 1
     </select>
+    <select id="getOneStaffInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            si.user_id,
+            sc.company_name,
+            di.depart_name AS `department_name`
+        FROM
+        sys_staff_info AS si
+        JOIN sys_user_info AS sui ON si.user_id = sui.id
+        LEFT JOIN sys_company_info AS sc ON si.comp_id = sc.id
+        LEFT JOIN union_staff_depart AS sd ON sd.staff_id = si.id
+        LEFT JOIN sys_department_info AS di ON sd.department_id = di.id
+        WHERE
+
+        (sui.phone_number = #{phone} or sui.certificate_card = #{idCard})
+        <if test="companyId neq null and companyId neq ''">
+            and si.comp_id = #{companyId}
+        </if>
+        ORDER BY sui.create_time DESC
+        LIMIT 0,1
+    </select>
 </mapper>
