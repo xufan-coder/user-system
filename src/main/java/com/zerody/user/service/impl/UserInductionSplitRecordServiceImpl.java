@@ -178,49 +178,11 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
-        //查看手机号或登录名是否被占用
-        Boolean flag = sysUserInfoMapper.selectUserByPhone(sysUserInfo.getPhoneNumber());
-        if (flag) {
-            throw new DefaultException("该手机号已存在！");
-        }
-        // 修改时添加身份证唯一校验 不包含离职账户
-        StaffInfoVo staffInfo = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard(),YesNo.NO);
-        if (DataUtil.isNotEmpty(staffInfo)) {
-            String hintContent = "该身份证号码已在“".concat(staffInfo.getCompanyName());
-            if (org.apache.commons.lang3.StringUtils.isNotEmpty(staffInfo.getDepartmentName())) {
-                hintContent = hintContent.concat("-");
-                hintContent = hintContent.concat(staffInfo.getDepartmentName());
-            }
-            hintContent = hintContent.concat("”存在，请再次确认");
-            throw new DefaultException(hintContent);
-        }
-        //效验通过保存用户信息
-        sysUserInfo.setRegisterTime(new Date());
-        log.info("添加用户入库参数--{}", JSON.toJSONString(sysUserInfo));
-        sysUserInfo.setCreateTime(new Date());
-        sysUserInfo.setCreateUser("系统");
-        sysUserInfo.setStatus(StatusEnum.activity.getValue());
-        String avatar = sysUserInfo.getAvatar();
-        sysUserInfo.setIsEdit(YesNo.YES);
-        //  设置token删除状态 添加默认不删除token
-        sysUserInfo.setIsDeleted(YesNo.NO);
-        //  设置修改名称状态 添加默认 没有修改
-        sysUserInfo.setIsUpdateName(YesNo.NO);
-        sysUserInfoMapper.insert(sysUserInfo);
-        //用户信息保存添加登录信息
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        SysLoginInfo logInfo = new SysLoginInfo();
-        logInfo.setUserId(sysUserInfo.getId());
-        logInfo.setMobileNumber(sysUserInfo.getPhoneNumber());
-        logInfo.setNickname(sysUserInfo.getNickname());
-        logInfo.setAvatar(avatar);
+
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
-        logInfo.setUserPwd(passwordEncoder.encode(MD5Utils.MD5(initPwd)));
-        logInfo.setStatus(StatusEnum.activity.getValue());
-//        logInfo.setCreateId(UserUtils.getUser().getUserId()); //内部调用接口无token
-        log.info("添加用户后生成登录账户入库参数--{}", JSON.toJSONString(logInfo));
-        sysLoginInfoService.addOrUpdateLogin(logInfo);
+        // 新增用户信息
+        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
 
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
@@ -231,7 +193,6 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         staff.setIntegral(setSysUserInfoDto.getIntegral());
         staff.setUserName(sysUserInfo.getUserName());
         staff.setCompId(setSysUserInfoDto.getCompanyId());
-        staff.setStatus(setSysUserInfoDto.getStatus());
         staff.setUserId(sysUserInfo.getId());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
@@ -242,40 +203,20 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.sysStaffInfoService.saveOrUpdate(staff);
 
-        StaffInfoVo staffInfoVo = new StaffInfoVo();
-        staffInfoVo.setStaffId(staff.getId());
-        staffInfoVo.setUserId(sysUserInfo.getId());
-        //家庭成员
-        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
-        //履历
-        this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
-        //添加关系
-        if (DataUtil.isNotEmpty(setSysUserInfoDto.getStaffRelationDtoList())) {
-            setSysUserInfoDto.getStaffRelationDtoList().forEach(item -> {
-                item.setRelationStaffId(staff.getId());
-                item.setRelationStaffName(sysUserInfo.getUserName());
-                item.setRelationUserId(sysUserInfo.getId());
-                item.setStaffUserId(sysUserInfo.getId());
-                item.setDesc(item.getDescribe());
-                sysStaffRelationService.addRelation(item);
-            });
+        //成员关系处理 添加关系 ,荣耀记录,惩罚记录
+        StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
+
+        // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
+        StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
+
+        //部门
+        if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
+            UnionStaffDepart sd = new UnionStaffDepart();
+            sd.setDepartmentId(setSysUserInfoDto.getDepartId());
+            sd.setStaffId(staff.getId());
+            unionStaffDepartMapper.insert(sd);
         }
-        //荣耀记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryHonor())) {
-            setSysUserInfoDto.getStaffHistoryHonor().forEach(item -> {
-                item.setType(StaffHistoryTypeEnum.HONOR.name());
-                item.setStaffId(staff.getId());
-                staffHistoryService.addStaffHistory(item);
-            });
-        }
-        //惩罚记录
-        if (Objects.nonNull(setSysUserInfoDto.getStaffHistoryPunishment())) {
-            setSysUserInfoDto.getStaffHistoryPunishment().forEach(item -> {
-                item.setType(StaffHistoryTypeEnum.PUNISHMENT.name());
-                item.setStaffId(staff.getId());
-                staffHistoryService.addStaffHistory(item);
-            });
-        }
+
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -289,18 +230,6 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
             rs.setRoleName(obj.get("roleName").toString());
             unionRoleStaffMapper.insert(rs);
-        }
-        StaffInfoUtil.saveImage(setSysUserInfoDto.getDiplomas(), sysUserInfo.getId(), ImageTypeInfo.DIPLOMA);
-        StaffInfoUtil.saveImage(setSysUserInfoDto.getComplianceCommitments(), sysUserInfo.getId(), ImageTypeInfo.COMPLIANCE_COMMITMENT);
-        //合作申请表
-        StaffInfoUtil.saveFile(setSysUserInfoDto.getCooperationFiles(), sysUserInfo.getId(), FileTypeInfo.COOPERATION_FILE);
-
-        //部门
-        if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
-            UnionStaffDepart sd = new UnionStaffDepart();
-            sd.setDepartmentId(setSysUserInfoDto.getDepartId());
-            sd.setStaffId(staff.getId());
-            unionStaffDepartMapper.insert(sd);
         }
 
         //推送app账户
