@@ -166,6 +166,10 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
 
     @Override
     public void doRenewInduction(UserInductionSplitRecord induction) {
+
+        induction.setApproveState(ApproveStatusEnum.SUCCESS.name());
+        this.updateById(induction);
+
         //离职旧用户并查询出旧用户的相关信息
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(induction);
 
