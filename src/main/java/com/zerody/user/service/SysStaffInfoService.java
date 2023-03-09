@@ -238,4 +238,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     Map<String, Object> getChargeLevel(String chargeId);
 
     StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId);
+
+    List<String> getDeptLeader(String userId);
 }

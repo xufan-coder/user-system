@@ -621,6 +621,29 @@ public class SysStaffInfoController {
 
     /**************************************************************************************************
      **
+     * 原子服务获取部门领导 包含总经理
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/dept-leader")
+    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId){
+        try {
+            List<String> map =sysStaffInfoService.getDeptLeader(userId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("判断部门错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根判断部门错误:{}", e, e);
+            return R.error("判断部门错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
      * 原子服务查询伙伴的所属团队长和副总id
      *
      * @param userId
