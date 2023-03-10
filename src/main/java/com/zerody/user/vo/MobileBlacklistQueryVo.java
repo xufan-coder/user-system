@@ -20,6 +20,9 @@ public class MobileBlacklistQueryVo {
     /** 企业名称 */
     private String companyName;
 
+    /** 企业id */
+    private String companyId;
+
     /** 拉黑的原因 */
     private String reason;
 

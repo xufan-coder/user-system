@@ -138,12 +138,11 @@
         SELECT
             DISTINCT sui.id AS id,
             ssi.user_name AS userName,
+            ssi.comp_id as companyId,
             sci.company_name AS companyName,
             sui.phone_number,
             sdi.depart_name AS departName,
-            ssi.status AS staffStatus,
-            sb.id is not null as is_block,
-            sb.reason
+            ssi.status
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -151,7 +150,6 @@
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
-        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card)  AND sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="param.mobile neq null and param.mobile neq ''">
