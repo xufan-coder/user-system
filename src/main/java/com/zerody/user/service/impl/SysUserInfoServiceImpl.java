@@ -772,18 +772,21 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public List<SubordinateUserQueryVo> getInnerSuperiorList(UserVo user) {
-        List<SubordinateUserQueryVo> superiorList;
-
-        // 查询ceo账户
-        superiorList = this.ceoUserInfoService.getListCompany(user.getCompanyId());
+        List<SubordinateUserQueryVo> superiorList = this.ceoUserInfoService.getListCompany(user.getCompanyId());
+        if(DataUtil.isEmpty(superiorList)){
+            superiorList = new ArrayList<>();
+        }
         // 团队长
         // 获取总经理账户信息
-        List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(user.getCompanyId());
-        superiorList.addAll(managerList);
+        List<SubordinateUserQueryVo> managerList = this.companyAdminMapper.getAdminList(user.getCompanyId());
+        if(DataUtil.isNotEmpty(managerList) && managerList.size()!=0){
+            superiorList.addAll(managerList);
+        }
         //  副总 伙伴
         List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
-        // 移除自己
-        superiorList.addAll(departList);
+        if(DataUtil.isNotEmpty(departList) && departList.size()!=0){
+            superiorList.addAll(departList);
+        }
         return superiorList;
     }
 

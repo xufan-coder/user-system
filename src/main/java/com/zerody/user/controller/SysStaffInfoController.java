@@ -9,6 +9,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.oss.api.util.Uploader;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
@@ -608,6 +609,29 @@ public class SysStaffInfoController {
     public DataResult<Object> getSameDept(@RequestParam(name = "userId") String userId,@RequestParam(name = "chooseUserId") String chooseUserId){
         try {
             Map<String,Object> map =sysStaffInfoService.getSameDept(userId,chooseUserId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("判断部门错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根判断部门错误:{}", e, e);
+            return R.error("判断部门错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
+     * 原子服务获取部门领导 包含总经理
+     *
+     * @param null
+     * @return {@link null }
+     * @author DaBai
+     * @date 2022/11/30  10:36
+     */
+    @GetMapping("/get/dept-leader")
+    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId){
+        try {
+            List<String> map =sysStaffInfoService.getDeptLeader(userId);
             return R.success(map);
         } catch (DefaultException e){
             log.error("判断部门错误:{}", e.getMessage());

@@ -7,13 +7,13 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.domain.UserInductionRecord;
-import com.zerody.user.dto.TemplatePageDto;
-import com.zerody.user.dto.UseControlDto;
+import com.zerody.user.domain.UserInductionSplitRecord;
 import com.zerody.user.dto.UserInductionPage;
+import com.zerody.user.dto.UserInductionSplitDto;
 import com.zerody.user.dto.UserInductionVerificationDto;
 import com.zerody.user.service.UserInductionRecordService;
+import com.zerody.user.service.UserInductionSplitRecordService;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.UserBirthdayTemplateVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
 import com.zerody.user.vo.UserInductionRecordVo;
 import lombok.extern.slf4j.Slf4j;
@@ -25,58 +25,12 @@ import org.springframework.web.bind.annotation.*;
  * 入职申请记录
  */
 @RestController
-@RequestMapping("/induction")
+@RequestMapping("/induction/split")
 @Slf4j
-public class UserInductionRecordController {
+public class UserInductionSplitRecordController {
 
     @Autowired
-    private UserInductionRecordService inductionRecordService;
-
-    @Autowired
-    private CheckUtil checkUtil;
-
-    /**
-     * @author kuang
-     * @description 入职申请列表
-     * @date  2022-08-20
-     **/
-    @GetMapping("/page")
-    public DataResult<Page<UserInductionRecordVo>> getInductionPage(UserInductionPage queryDto){
-
-        try {
-            queryDto.setUserId(UserUtils.getUserId());
-            this.checkUtil.setFiltrateTime(queryDto);
-            Page<UserInductionRecordVo> page = this.inductionRecordService.getInductionPage(queryDto);
-            return R.success(page);
-        } catch (DefaultException e) {
-            log.error("查询入职申请列表错误：{}", e, e);
-            return R.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("查询入职申请列表错误：{}", e, e);
-            return R.error("查询入职申请列表错误" + e.getMessage());
-        }
-
-    }
-
-    /**
-     * @author kuang
-     * @description 入职申请信息
-     **/
-    @GetMapping("/info")
-    public DataResult<UserInductionRecordInfoVo> getInductionInfo(@RequestParam("id") String id){
-
-        try {
-            UserInductionRecordInfoVo infoVo = this.inductionRecordService.getInductionInfo(id);
-            return R.success(infoVo);
-        } catch (DefaultException e) {
-            log.error("查询入职申请信息错误：{}", e, e);
-            return R.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("查询入职申请信息错误：{}", e, e);
-            return R.error("查询入职申请信息错误" + e.getMessage());
-        }
-
-    }
+    private UserInductionSplitRecordService inductionSplitRecordService;
 
 
     /**************************************************************************************************
@@ -89,10 +43,10 @@ public class UserInductionRecordController {
      * @date 2022/12/1  11:41
      */
     @PostMapping("/add")
-    public DataResult<UserInductionRecord> addOrUpdate(@RequestBody UserInductionRecord param){
+    public DataResult<Object> addOrUpdate(@RequestBody UserInductionSplitDto param){
         try {
-            UserInductionRecord data= this.inductionRecordService.addOrUpdateRecord(param);
-            return R.success(data);
+            this.inductionSplitRecordService.addOrUpdateRecord(param);
+            return R.success();
         } catch (DefaultException e) {
             log.error("添加申请记录错误：{}", e.getMessage());
             return R.error(e.getMessage());
@@ -111,7 +65,7 @@ public class UserInductionRecordController {
         try {
             param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
-            JSONObject data= this.inductionRecordService.verification(param);
+            JSONObject data= this.inductionSplitRecordService.verification(param);
             return R.success(data);
         } catch (DefaultException e) {
             log.error("添加申请记录错误：{}", e.getMessage());

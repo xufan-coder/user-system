@@ -3,6 +3,7 @@ package com.zerody.user.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.Image;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class StaffHistoryVo {
     /**
      * 描述
      */
+    @CheckCompare(value = "idCardReverse", name = "描述")
     private String describe;
     /**
      * 员工ID
@@ -41,9 +43,11 @@ public class StaffHistoryVo {
      * 时间
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy年MM月")
+    @CheckCompare(value = "idCardReverse", name = "时间")
     private String time;
     /**
      * 图片
      */
+    @CheckCompare(value = "idCardReverse", name = "图片")
     private List<String> imageList;
 }
