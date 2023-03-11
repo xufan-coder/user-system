@@ -42,7 +42,7 @@ public class BlackOperationRecordVo {
 
     /** 操作人部门 */
     @Excel(name = "所属部门",width = 20,orderNum = "9")
-    private String CompanyDept;
+    private String companyDept;
 
     /** 操作时间 */
     @Excel(name = "操作时间",width = 20,orderNum = "10")
