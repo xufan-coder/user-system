@@ -3,9 +3,11 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.BlacklistOperationRecord;
+import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
-import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author : xufan
@@ -23,4 +25,6 @@ public interface BlacklistOperationRecordService extends IService<BlacklistOpera
     * @Date:                2023/3/10 8:52
     */
     IPage<BlacklistOperationRecordPageVo> getPageBlacklistOperationRecord(BlacklistOperationRecordPageDto param);
+
+    void doExportRecord(BlackOperationRecordDto param, HttpServletResponse response);
 }

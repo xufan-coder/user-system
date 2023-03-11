@@ -18,7 +18,7 @@ public class BlacklistOperationRecord {
     /** 操作人id */
     private String createBy;
 
-    /* 操作人姓名 */
+    /** 操作人姓名 */
     private String createName;
 
     /** 操作时间 */
