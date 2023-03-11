@@ -101,8 +101,6 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
     public JSONObject verification(UserInductionVerificationDto param) {
         JSONObject object = new JSONObject();
         String msg = "";
-        object.put("message",msg);
-        object.put("verificationState",0);
         //判断同公司的
         LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getCompanyId());
         if(leave != null){
@@ -132,6 +130,9 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             verificationVo.setVerificationState(2);
             return JSONObject.parseObject(JSONObject.toJSONString(verificationVo));
         }
+
+        object.put("message",msg);
+        object.put("verificationState",0);
         return object;
     }
 
