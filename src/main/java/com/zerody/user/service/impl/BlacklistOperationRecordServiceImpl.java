@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.user.domain.BlacklistOperationRecord;
+import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.mapper.BlacklistOperationRecordMapper;
 import com.zerody.user.service.BlacklistOperationRecordService;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +28,12 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
         IPage<BlacklistOperationRecordPageVo> iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.baseMapper.getPageBlacklistOperationRecord(param,iPage);
         return iPage;
+    }
+
+    @Override
+    public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param) {
+        BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
+        BeanUtils.copyProperties(param,blacklistOperationRecord);
+        this.save(blacklistOperationRecord);
     }
 }

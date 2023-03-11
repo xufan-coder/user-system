@@ -1,10 +1,13 @@
-package com.zerody.user.domain;
-
+package com.zerody.user.dto;
 
 import lombok.Data;
 
+/**
+ * @Author : xufan
+ * @create 2023/3/10 17:35
+ */
 @Data
-public class BlacklistOperationRecord {
+public class BlacklistOperationRecordAddDto {
 
     /** 内控操作记录id */
     private String id;
@@ -68,6 +71,4 @@ public class BlacklistOperationRecord {
 
     /** 加入内控的原因 */
     private String blackReason;
-
-
 }
