@@ -856,16 +856,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(StringUtils.isNotEmpty(diplomasStr)){
             contentList.add(diplomasStr);
         }
-        // 添加家庭关系
-        this.familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
-        //添加履历
-        this.userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
-        //合规承诺书
-        StaffInfoUtil.saveImage(setSysUserInfoDto.getComplianceCommitments(),staffInfoVo.getUserId(),ImageTypeInfo.COMPLIANCE_COMMITMENT);
-        //学历证书
-        StaffInfoUtil.saveImage(setSysUserInfoDto.getDiplomas(),staffInfoVo.getUserId(),ImageTypeInfo.DIPLOMA);
-        //合作申请表
-        StaffInfoUtil.saveFile(setSysUserInfoDto.getCooperationFiles(),staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+
+        // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
+        StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
         //删除
         StaffHistoryQueryDto staffHistoryQueryDto = new StaffHistoryQueryDto();

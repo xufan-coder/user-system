@@ -33,8 +33,10 @@ import com.zerody.user.feign.*;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.StaffInfoUtil;
 import com.zerody.user.vo.LeaveUserInfoVo;
+import com.zerody.user.vo.UserInductionVerificationVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -115,9 +117,20 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
-            object.put("message",msg);
-            object.put("verificationState",2);
-            return object;
+            UserInductionVerificationVo verificationVo = new UserInductionVerificationVo();
+            StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(leave.getUserId());
+            verificationVo.setLeaveUserId(staff.getUserId());
+            verificationVo.setLeaveUserName(staff.getUserName());
+            verificationVo.setMobile(staff.getMobile());
+            verificationVo.setMobileHide(CommonUtils.mobileEncrypt(staff.getMobile()));
+            verificationVo.setCertificateCard(staff.getIdentityCard());
+            verificationVo.setCertificateCardHide(CommonUtils.idEncrypt(staff.getIdentityCard()));
+            verificationVo.setOldCompanyName(staff.getCompanyName());
+            verificationVo.setOldDeptName(staff.getDepartmentName());
+            verificationVo.setOldRoleName(staff.getRoleName());
+            verificationVo.setMessage(msg);
+            verificationVo.setVerificationState(2);
+            return JSONObject.parseObject(JSONObject.toJSONString(verificationVo));
         }
         return object;
     }
