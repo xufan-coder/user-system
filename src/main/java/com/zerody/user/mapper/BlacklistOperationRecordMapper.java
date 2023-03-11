@@ -3,9 +3,13 @@ package com.zerody.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.domain.BlacklistOperationRecord;
+import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
+import com.zerody.user.vo.BlackOperationRecordVo;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Author : xufan
@@ -22,4 +26,6 @@ public interface BlacklistOperationRecordMapper extends BaseMapper<BlacklistOper
     * @Date:                2023/3/10 9:09
     */
     IPage<BlacklistOperationRecordPageVo> getPageBlacklistOperationRecord(@Param("param") BlacklistOperationRecordPageDto param, IPage<BlacklistOperationRecordPageVo> iPage);
+
+    List<BlackOperationRecordVo> doExportRecord(@Param("param")BlackOperationRecordDto param);
 }

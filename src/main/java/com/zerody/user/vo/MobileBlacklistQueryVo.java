@@ -1,6 +1,7 @@
 package com.zerody.user.vo;
 
-import com.zerody.common.utils.CollectionUtils;
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
 
 import java.util.List;
@@ -37,6 +38,13 @@ public class MobileBlacklistQueryVo {
 
     /** 部门名称 */
     private String departName;
+
+    public String getphoneNumber() {
+        if(StringUtils.isNotEmpty(phoneNumber)){
+            return CommonUtils.mobileEncrypt(phoneNumber);
+        }
+        return phoneNumber;
+    }
 
 
 }
