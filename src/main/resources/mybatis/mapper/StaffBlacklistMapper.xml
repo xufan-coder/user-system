@@ -136,19 +136,28 @@
 
     <select id="getBlacklistByMobile" resultType="com.zerody.user.vo.MobileBlacklistQueryVo">
         SELECT
-            sci.company_name,
-            sb.reason
+            DISTINCT sui.id AS id,
+            ssi.user_name AS userName,
+            ssi.comp_id as companyId,
+            sci.company_name AS companyName,
+            sui.phone_number,
+            sdi.depart_name AS departName,
+            ssi.status
         FROM
-            staff_blacklist AS sb
-        JOIN sys_company_info AS sci ON sci.id = sb.company_id
+        sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         <where>
-            sb.state = 'BLOCK'
-            AND
-            (
-            sb.mobile = #{param.mobile}
-            OR
-            sb.identity_card=#{param.IdentityCard}
-            )
+            ssi.deleted = 0 and sui.status != -1
+            <if test="param.mobile neq null and param.mobile neq ''">
+                AND sui.phone_number = #{param.mobile}
+            </if>
+            <if test="param.IdentityCard neq null and param.IdentityCard neq ''">
+                AND sui.certificate_card = #{param.IdentityCard}
+            </if>
             limit 0,1
         </where>
     </select>

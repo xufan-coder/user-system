@@ -683,15 +683,26 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto) {
-        MobileBlacklistQueryVo  result = new MobileBlacklistQueryVo();
-        List<MobileBlacklistQueryVo> companys = this.baseMapper.getBlacklistByMobile(dto);
-        result.setIsBlock(CollectionUtils.isNotEmpty(companys));
-        if(DataUtil.isNotEmpty(companys) && companys.size()!=0){
-            List<String> companyNames = companys.stream().map(MobileBlacklistQueryVo::getCompanyName).collect(Collectors.toList());
-            List<String> reason = companys.stream().map(MobileBlacklistQueryVo::getReason).collect(Collectors.toList());
-            result.setCompanyName(String.join(",",companyNames));
-            result.setReason(String.join(",",reason));
+        MobileBlacklistQueryVo companys = this.baseMapper.getBlacklistByMobile(dto);
+        if(DataUtil.isNotEmpty(companys)){
+            if(companys.getStatus()==1){
+                QueryWrapper<StaffBlacklist> wrapper = new QueryWrapper<>();
+                wrapper.lambda().and(bl ->
+                        bl.eq(StaffBlacklist::getMobile, dto.getMobile())
+                                .or()
+                                .eq(StringUtils.isNotEmpty( dto.getIdentityCard()), StaffBlacklist::getIdentityCard,
+                                        dto.getIdentityCard())
+                );
+                wrapper.lambda().eq(StaffBlacklist::getCompanyId, companys.getCompanyId());
+                wrapper.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+                StaffBlacklist blacklist = this.getOne(wrapper);
+                if(ObjectUtils.isNotEmpty(blacklist)){
+                    companys.setIsBlock(false);
+                    companys.setReason(blacklist.getReason());
+                    companys.setStatus(2);
+                }
+            }
         }
-        return result;
+        return companys;
     }
 }

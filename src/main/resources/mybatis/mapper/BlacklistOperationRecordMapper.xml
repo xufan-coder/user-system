@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.BlacklistOperationRecordMapper">
+
+
+
+
+    <select id="getPageBlacklistOperationRecord" resultType="com.zerody.user.vo.BlacklistOperationRecordPageVo">
+    select
+        id,
+        bor.blacklist_id as blacklistId,
+        bor.black_name as blackName,
+        bor.identity_card as idCard,
+        bor.mobile as  mobile ,
+        bor.black_dept_name as blackDeptName,
+        bor.black_company_name as blackCpyName,
+        bor.black_time as blackTime,
+        bor.black_reason as reason,
+        bor.type as type,
+        bor.operate_company_name as operateCpyName,
+        bor.operate_dept_name as operateDeptName,
+        bor.create_name as createName,
+        bor.create_time as createTime
+    from
+        blacklist_operation_record as bor
+    <where>
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND bor.black_company_id = #{param.companyId}
+        </if>
+        <if test="param.deptId neq null and param.deptId neq ''">
+            AND bor.black_dept_id = #{param.deptId}
+        </if>
+        <if test="param.blackName neq null and param.blackName neq ''">
+            AND bor.black_name LIKE CONCAT('%', #{param.blackName}, '%')
+        </if>
+        <if test="param.createName neq null and param.createName neq ''">
+            AND bor.create_name LIKE CONCAT('%', #{param.createName}, '%')
+        </if>
+        <if test="param.type neq null and param.type neq ''">
+            AND bor.type = #{param.type}
+        </if>
+        <if test="param.startTime != null">
+            AND bor.create_time &gt;= #{param.startTime}
+        </if>
+        <if test="param.endTime != null">
+            AND bor.create_time &lt;= #{param.endTime}
+        </if>
+    </where>
+</select>
+
+    <select id="doExportRecord" resultType="com.zerody.user.vo.BlackOperationRecordVo">
+        select
+            black_name,
+            identity_card,
+            mobile,
+            CONCAT(IF(black_company_name is not NULL,black_company_name,""),
+                IF(black_dept_name is not NULL,black_dept_name,"")) AS blackCompanyDept,
+            black_time,
+            black_reason,
+            if(type=1,'编辑','查询') AS `type`,
+            CONCAT(IF(operate_company_name is not NULL,operate_company_name,""),
+                IF(operate_dept_name is not NULL,operate_dept_name,"")) AS companyDept,
+            create_name,
+            create_time
+        from
+            blacklist_operation_record
+        <where>
+        1=1
+            <if test="param.id neq null and param.id.size() gt 0">
+                AND id
+                <foreach collection="param.id" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>
