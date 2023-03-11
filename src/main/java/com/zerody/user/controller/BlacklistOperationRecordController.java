@@ -83,7 +83,7 @@ public class BlacklistOperationRecordController {
             return R.error(e.getMessage());
         } catch (Exception e) {
             log.error("添加内控名单操作记录错误：{}", e, e);
-            return R.error("查询内控名单操作记录错误" + e.getMessage());
+            return R.error("添加内控名单操作记录错误" + e.getMessage());
         }
     }
 }
