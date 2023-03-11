@@ -2,6 +2,8 @@ package com.zerody.user.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * @author kuang
  * @description 伙伴二次入职校验参数

@@ -16,8 +16,10 @@ import com.zerody.user.service.UserInductionSplitRecordService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
 import com.zerody.user.vo.UserInductionRecordVo;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -63,6 +65,12 @@ public class UserInductionSplitRecordController {
     @PostMapping("/verification")
     public DataResult<Object> verification(@RequestBody UserInductionVerificationDto param){
         try {
+            if(StringUtils.isEmpty(param.getCertificateCard())) {
+                return R.error("身份证号不能为空");
+            }
+            if(StringUtils.isEmpty(param.getMobile())) {
+                return R.error("手机号不能为空");
+            }
             param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
             JSONObject data= this.inductionSplitRecordService.verification(param);
