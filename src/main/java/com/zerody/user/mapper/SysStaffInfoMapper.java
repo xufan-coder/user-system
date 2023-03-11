@@ -376,7 +376,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param                certificateCard
      * @return               com.zerody.user.api.vo.StaffInfoVo
      */
-    StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard,Integer status);
+    StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard,@Param("status") Integer status);
     /***
      * @description 修改入职时间
      * @author zhangpingping
