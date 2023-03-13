@@ -3167,7 +3167,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<String> getDeptLeader(String userId) {
+    public List<String> getDeptLeader(String userId,Integer leaderState) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
@@ -3205,7 +3205,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
-        if(result.size() == 0) {
+        if(result.size() == 0 && leaderState == 1) {
             throw new DefaultException("未找到管理层任何信息！");
         }
 

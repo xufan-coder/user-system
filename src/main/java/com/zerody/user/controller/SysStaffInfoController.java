@@ -623,15 +623,12 @@ public class SysStaffInfoController {
      **
      * 原子服务获取部门领导 包含总经理
      *
-     * @param null
-     * @return {@link null }
-     * @author DaBai
-     * @date 2022/11/30  10:36
+     * @author kuang
      */
     @GetMapping("/get/dept-leader")
-    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId){
+    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId,@RequestParam(name = "leaderState") Integer leaderState){
         try {
-            List<String> map =sysStaffInfoService.getDeptLeader(userId);
+            List<String> map =sysStaffInfoService.getDeptLeader(userId,leaderState);
             return R.success(map);
         } catch (DefaultException e){
             log.error("判断部门错误:{}", e.getMessage());
