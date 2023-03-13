@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  * 入职申请记录
  */
 @RestController
-@RequestMapping("/induction/split")
+@RequestMapping("/induction/group")
 @Slf4j
 public class UserInductionSplitRecordController {
 
@@ -47,6 +47,7 @@ public class UserInductionSplitRecordController {
     @PostMapping("/add")
     public DataResult<Object> addOrUpdate(@RequestBody UserInductionSplitDto param){
         try {
+            log.info("跨企业二次入职申请:{}",param);
             this.inductionSplitRecordService.addOrUpdateRecord(param);
             return R.success();
         } catch (DefaultException e) {
