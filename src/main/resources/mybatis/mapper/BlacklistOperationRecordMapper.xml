@@ -72,6 +72,27 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND bor.black_company_id = #{param.companyId}
+            </if>
+            <if test="param.deptId neq null and param.deptId neq ''">
+                AND bor.black_dept_id = #{param.deptId}
+            </if>
+            <if test="param.blackName neq null and param.blackName neq ''">
+                AND bor.black_name LIKE CONCAT('%', #{param.blackName}, '%')
+            </if>
+            <if test="param.createName neq null and param.createName neq ''">
+                AND bor.create_name LIKE CONCAT('%', #{param.createName}, '%')
+            </if>
+            <if test="param.type neq null and param.type neq ''">
+                AND bor.type = #{param.type}
+            </if>
+            <if test="param.startTime != null">
+                AND bor.create_time &gt;= #{param.startTime}
+            </if>
+            <if test="param.endTime != null">
+                AND bor.create_time &lt;= #{param.endTime}
+            </if>
         </where>
     </select>
 </mapper>

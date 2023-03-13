@@ -36,5 +36,5 @@ public interface BlacklistOperationRecordService extends IService<BlacklistOpera
     */
     void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param);
 
-    void doExportRecord(BlackOperationRecordDto param, HttpServletResponse response);
+    void doExportRecord(BlacklistOperationRecordPageDto param, HttpServletResponse response);
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.utils.CollectionUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
@@ -39,7 +40,7 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
     }
 
     @Override
-    public void doExportRecord(BlackOperationRecordDto param, HttpServletResponse response) {
+    public void doExportRecord(BlacklistOperationRecordPageDto param, HttpServletResponse response) {
         List<BlackOperationRecordVo> data = this.baseMapper.doExportRecord(param);
         if (CollectionUtils.isEmpty(data)) {
             data = new ArrayList<>();

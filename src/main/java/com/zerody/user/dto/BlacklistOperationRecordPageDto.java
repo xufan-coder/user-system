@@ -4,6 +4,7 @@ import com.zerody.common.api.bean.PageQueryDto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author : xufan
@@ -33,5 +34,8 @@ public class BlacklistOperationRecordPageDto extends PageQueryDto {
 
     /** 操作结束时间 */
     private String endTime;
+
+    /** 操作记录id*/
+    private List<String> id;
 }
 

@@ -59,7 +59,7 @@ public class BlacklistOperationRecordController {
      * @Description         导出内控名单操作记录
      */
     @PostMapping("/get/expert/user")
-    public void doExportRecord(@RequestBody BlackOperationRecordDto param, HttpServletResponse response) {
+    public void doExportRecord(@RequestBody BlacklistOperationRecordPageDto param, HttpServletResponse response) {
         try {
             this.service.doExportRecord(param, response);
         } catch (Exception e) {
