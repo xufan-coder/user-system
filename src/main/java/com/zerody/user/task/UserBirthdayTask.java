@@ -50,9 +50,6 @@ public class UserBirthdayTask {
     private SendMsgFeignService sendMsgFeignService;
 
     @Autowired
-    private JPushFeignService puthService;
-
-    @Autowired
     private BirthdayMsgConfig birthdayMsgConfig;
 
     @Value("${jpush.template.user-system.user-birthday:}")

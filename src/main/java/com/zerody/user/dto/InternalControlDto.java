@@ -15,4 +15,7 @@ public class InternalControlDto {
 
     /** 证件号码 **/
     private String certificateCard;
+
+    /** 公司id**/
+    private String companyId;
 }
