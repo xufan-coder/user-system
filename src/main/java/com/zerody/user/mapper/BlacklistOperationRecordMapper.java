@@ -31,7 +31,6 @@ public interface BlacklistOperationRecordMapper extends BaseMapper<BlacklistOper
     IPage<BlacklistOperationRecordPageVo> getPageBlacklistOperationRecord(@Param("param") BlacklistOperationRecordPageDto param, IPage<BlacklistOperationRecordPageVo> iPage);
 
     List<BlackOperationRecordVo> doExportRecord(@Param("param")BlacklistOperationRecordPageDto param);
-    List<BlackOperationRecordVo> doExportRecord(@Param("param")BlackOperationRecordDto param);
 
     MobileBlacklistOperationQueryVo getBlacklistByMobile(@Param("param") BlacklistOperationRecordAddDto param);
 

@@ -25,10 +25,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
-import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
-import com.zerody.user.dto.InternalControlDto;
-import com.zerody.user.dto.MobileAndIdentityCardDto;
-import com.zerody.user.dto.StaffBlacklistAddDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.handler.blacklist.BlacklistParamHandle;
@@ -102,6 +99,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private AppUserPushService appUserPushService;
+
+    @Autowired
+    private BlacklistOperationRecordService blacklistOperationRecordService;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -701,6 +701,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     companys.setReason(blacklist.getReason());
                     companys.setStatus(2);
                 }
+                BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+                operationRecord.setMobile(dto.getMobile());
+                operationRecord.setIdentityCard(dto.getIdentityCard());
+                operationRecord.setType(0);
+                operationRecord.setRemarks("校验手机号码或者身份证号码是否存在");
+                blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord);
             }
         }
         return companys;

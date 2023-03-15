@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,14 +8,18 @@ import com.zerody.common.util.DateUtil;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.export.util.ExcelHandlerUtils;
 import com.zerody.user.domain.BlacklistOperationRecord;
+import com.zerody.user.domain.Data;
+import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.mapper.BlacklistOperationRecordMapper;
 import com.zerody.user.service.BlacklistOperationRecordService;
 import com.zerody.user.util.DateUtils;
+import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.vo.BlackOperationRecordVo;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
 import com.zerody.user.vo.CreateInfoVo;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +43,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOperationRecordMapper, BlacklistOperationRecord> implements BlacklistOperationRecordService {
+
+    @Autowired
+    private StaffBlacklistService staffBlacklistService;
 
 
     @Override
@@ -63,7 +72,7 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
 
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
-        if(ObjectUtils.isNotEmpty(blacklistByMobile)){
+        if(ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() ==1){
             blacklistOperationRecord.setBlackUserId(blacklistByMobile.getBlackUserId());
             blacklistOperationRecord.setBlackName(blacklistByMobile.getBlackName());
             blacklistOperationRecord.setMobile(blacklistByMobile.getMobile());
@@ -74,29 +83,31 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
             blacklistOperationRecord.setBlackDeptId(blacklistByMobile.getBlackDeptId());
             blacklistOperationRecord.setBlackDeptName(blacklistByMobile.getBlackDeptName());
             blacklistOperationRecord.setBlackReason(blacklistByMobile.getBlackReason());
+
+            Integer type = param.getType();
+            String remarks = param.getRemarks();
+
+            //操作人id
+            String createBy = UserUtils.getUserId();
+            String createName = UserUtils.getUserName();
+
+            CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(createBy);
+
+            if (ObjectUtils.isNotEmpty(createInfo)){
+                blacklistOperationRecord.setType(type);
+                blacklistOperationRecord.setRemarks(remarks);
+                blacklistOperationRecord.setCreateTime(new Date());
+                blacklistOperationRecord.setCreateBy(createBy);
+                blacklistOperationRecord.setCreateName(createName);
+                blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
+                blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
+                blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
+                blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
+            }
+
+            this.save(blacklistOperationRecord);
+
         }
-        Integer type = param.getType();
-        String remarks = param.getRemarks();
-
-        //操作人id
-        String createBy = UserUtils.getUserId();
-        String createName = UserUtils.getUserName();
-
-        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(createBy);
-
-        if (ObjectUtils.isNotEmpty(createInfo)){
-            blacklistOperationRecord.setType(type);
-            blacklistOperationRecord.setRemarks(remarks);
-            blacklistOperationRecord.setCreateTime(DateUtil.getDate());
-            blacklistOperationRecord.setCreateBy(createBy);
-            blacklistOperationRecord.setCreateName(createName);
-            blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
-            blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
-            blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
-            blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
-        }
-
-        this.save(blacklistOperationRecord);
 
     }
 }

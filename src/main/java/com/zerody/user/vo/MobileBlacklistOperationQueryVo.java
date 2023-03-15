@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @Author : xufan
  * @create 2023/3/13 14:38
@@ -28,7 +30,7 @@ public class MobileBlacklistOperationQueryVo {
     private String identityCard;
 
     /** 加入内控日期 */
-    private String blackTime;
+    private Date blackTime;
 
     /** 内控公司id */
     private String blackCompanyId;
@@ -44,4 +46,7 @@ public class MobileBlacklistOperationQueryVo {
 
     /** 加入内控的原因 */
     private String blackReason;
+
+    /** 是否存在 0:否；1是**/
+    private Integer isBlack;
 }

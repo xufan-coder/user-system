@@ -2,7 +2,10 @@ package com.zerody.user.vo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 @Data
 public class BlackOperationRecordVo {
@@ -48,4 +51,22 @@ public class BlackOperationRecordVo {
     @Excel(name = "操作时间",width = 20,orderNum = "10")
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String createTime;
+
+    public String getIdentityCard() {
+        String idCard = this.identityCard;
+        if (DataUtil.isEmpty(idCard)) {
+            if (StringUtils.isEmpty(this.identityCard)) {
+                return  "";
+            }
+            idCard = identityCard;
+        }
+        return CommonUtils.idEncrypt(idCard, 2, 2);
+    }
+
+    public String getMobile() {
+        if (StringUtils.isEmpty(this.mobile)) {
+            return "";
+        }
+        return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
 }

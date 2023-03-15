@@ -236,6 +236,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private ConvertImageService convertImageService;
 
+    @Autowired
+    private BlacklistOperationRecordService blacklistOperationRecordService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -759,7 +762,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         logInfo.setUpdateId(UserUtils.getUserId());
         sysLoginInfoService.addOrUpdateLogin(logInfo);
         //保存员工信息
-
+        BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+        operationRecord.setMobile(setSysUserInfoDto.getPhoneNumber());
+        operationRecord.setIdentityCard(setSysUserInfoDto.getCertificateCard());
+        operationRecord.setType(1);
+        operationRecord.setRemarks("修改用户");
+        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord);
         //查询得到员工信息
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());

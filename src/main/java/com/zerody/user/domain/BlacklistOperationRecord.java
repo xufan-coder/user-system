@@ -3,6 +3,8 @@ package com.zerody.user.domain;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class BlacklistOperationRecord {
 
@@ -22,7 +24,7 @@ public class BlacklistOperationRecord {
     private String createName;
 
     /** 操作时间 */
-    private String createTime;
+    private Date createTime;
 
     /** 操作备注 */
     private String remarks;
@@ -52,7 +54,7 @@ public class BlacklistOperationRecord {
     private String identityCard;
 
     /** 加入内控日期 */
-    private String blackTime;
+    private Date blackTime;
 
     /** 内控公司id */
     private String blackCompanyId;

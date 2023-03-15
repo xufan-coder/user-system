@@ -1,7 +1,10 @@
 package com.zerody.user.vo;
 
-import io.micrometer.core.instrument.util.StringUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 
@@ -36,6 +39,7 @@ public class BlacklistOperationRecordPageVo {
     private String blackCpyName;
 
     /** 被加入内控名单日期*/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private String blackTime;
 
     /** 被加入内控原因*/
@@ -54,6 +58,25 @@ public class BlacklistOperationRecordPageVo {
     private String operateCpyName;
 
     /** 操作时间 */
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    public String getIdCard() {
+        String idCard = this.idCard;
+        if (DataUtil.isEmpty(idCard)) {
+            if (org.apache.commons.lang.StringUtils.isEmpty(this.idCard)) {
+                return  "";
+            }
+            idCard = idCard;
+        }
+        return CommonUtils.idEncrypt(idCard, 2, 2);
+    }
+
+    public String getMobile() {
+        if (StringUtils.isEmpty(this.mobile)) {
+            return "";
+        }
+        return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
 
 }
