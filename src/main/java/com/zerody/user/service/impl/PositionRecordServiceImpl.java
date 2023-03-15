@@ -3,7 +3,9 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.SysUserInfo;
@@ -34,6 +36,7 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
 
     @Override
     public List<PositionRecordListVo> queryPositionRecord(String certificateCard) {
+        UserVo userVo = UserUtils.getUser();
         QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(PositionRecord::getCertificateCard,certificateCard);
         List<PositionRecord> list = this.list(wrapper);
@@ -56,7 +59,7 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
         operationRecord.setIdentityCard(sysUserInfo.getCertificateCard());
         operationRecord.setType(0);
         operationRecord.setRemarks("查看客户档案");
-        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord);
+        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
         return vos;
     }
 

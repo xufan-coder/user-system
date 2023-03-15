@@ -66,45 +66,26 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
     }
 
     @Override
-    public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param) {
-
-
+    public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param,UserVo userVo) {
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
 
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
         if(ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() ==1){
-            blacklistOperationRecord.setBlackUserId(blacklistByMobile.getBlackUserId());
-            blacklistOperationRecord.setBlackName(blacklistByMobile.getBlackName());
-            blacklistOperationRecord.setMobile(blacklistByMobile.getMobile());
-            blacklistOperationRecord.setIdentityCard(blacklistByMobile.getIdentityCard());
-            blacklistOperationRecord.setBlackTime(blacklistByMobile.getBlackTime());
-            blacklistOperationRecord.setBlackCompanyId(blacklistByMobile.getBlackCompanyId());
-            blacklistOperationRecord.setBlackCompanyName(blacklistByMobile.getBlackCompanyName());
-            blacklistOperationRecord.setBlackDeptId(blacklistByMobile.getBlackDeptId());
-            blacklistOperationRecord.setBlackDeptName(blacklistByMobile.getBlackDeptName());
-            blacklistOperationRecord.setBlackReason(blacklistByMobile.getBlackReason());
-
-            Integer type = param.getType();
-            String remarks = param.getRemarks();
-
-            //操作人id
-            String createBy = UserUtils.getUserId();
-            String createName = UserUtils.getUserName();
-
-            CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(createBy);
-
-            if (ObjectUtils.isNotEmpty(createInfo)){
-                blacklistOperationRecord.setType(type);
-                blacklistOperationRecord.setRemarks(remarks);
-                blacklistOperationRecord.setCreateTime(new Date());
-                blacklistOperationRecord.setCreateBy(createBy);
-                blacklistOperationRecord.setCreateName(createName);
-                blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
-                blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
-                blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
-                blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
+            BeanUtils.copyProperties(blacklistByMobile,blacklistOperationRecord);
+            blacklistOperationRecord.setType(param.getType());
+            blacklistOperationRecord.setRemarks(param.getRemarks());
+            blacklistOperationRecord.setCreateTime(new Date());
+            if (DataUtil.isNotEmpty(userVo)){
+                CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo.getUserId());
+                if (ObjectUtils.isNotEmpty(createInfo)){
+                    blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
+                    blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
+                    blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
+                    blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
+                    blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
+                    blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
+                }
             }
-
             this.save(blacklistOperationRecord);
 
         }
