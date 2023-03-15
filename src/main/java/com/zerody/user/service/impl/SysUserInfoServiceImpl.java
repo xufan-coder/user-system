@@ -911,6 +911,33 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return list;
     }
 
+    @Override
+    public List<String> getUserIdsByUserType(Integer userType) {
+        if(userType == null) {
+            return null;
+        }
+        //总经理
+        if(UserTypeInfo.COMPANY_ADMIN == userType){
+            return  this.sysUserInfoMapper.getAllCompanyAdmin();
+        }
+        //副总
+        if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
+            List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+            return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //团队长
+        if(UserTypeInfo.LONG_TEAM == userType){
+            List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+            return departUser.stream().filter(s-> !StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //伙伴
+        if(UserTypeInfo.PARTNER == userType){
+            List<SubordinateUserQueryVo> managerList = this.companyAdminMapper.getAdminList(null);
+            return managerList.stream().map(SubordinateUserQueryVo::getUserId).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

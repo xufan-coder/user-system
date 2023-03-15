@@ -102,7 +102,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         JSONObject object = new JSONObject();
         String msg = "";
         //判断同公司的
-        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getCompanyId());
+        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                     "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
@@ -111,7 +111,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             return object;
         }
         // 判断跨公司的
-        leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),null);
+        leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
