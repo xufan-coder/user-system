@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.dto.BlackOperationRecordDto;
+import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.vo.BlackOperationRecordVo;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
+import com.zerody.user.vo.CreateInfoVo;
+import com.zerody.user.vo.MobileBlacklistOperationQueryVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -28,4 +31,9 @@ public interface BlacklistOperationRecordMapper extends BaseMapper<BlacklistOper
     IPage<BlacklistOperationRecordPageVo> getPageBlacklistOperationRecord(@Param("param") BlacklistOperationRecordPageDto param, IPage<BlacklistOperationRecordPageVo> iPage);
 
     List<BlackOperationRecordVo> doExportRecord(@Param("param")BlacklistOperationRecordPageDto param);
+    List<BlackOperationRecordVo> doExportRecord(@Param("param")BlackOperationRecordDto param);
+
+    MobileBlacklistOperationQueryVo getBlacklistByMobile(@Param("param") BlacklistOperationRecordAddDto param);
+
+    CreateInfoVo getCreateInfoByCreateId(String id);
 }

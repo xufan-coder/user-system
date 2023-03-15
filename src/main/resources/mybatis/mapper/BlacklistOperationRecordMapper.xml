@@ -95,4 +95,58 @@
             </if>
         </where>
     </select>
+
+    <select id="getBlacklistByMobile" resultType="com.zerody.user.vo.MobileBlacklistOperationQueryVo">
+        SELECT
+            sb.id AS blanklistId,
+            sb.iduser_name AS blackName,
+            sb.user_id AS blackUserId,
+            sb.mobile AS moblie,
+            sb.id is not null as isBlack,
+            sb.identity_card AS identityCard,
+            sb.create_time AS blackTime,
+            sb.company_id AS blackCompanyId,
+            sci.company_name AS blackCompanyName,
+            usd.department_id AS blackDeptId,
+            sdi.depart_name AS blackDeptName,
+            sb.reason AS blackReason
+        FROM
+            sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+        LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card) and sb.state = 'BLOCK'
+        <where>
+            ssi.deleted = 0 and sui.status != -1
+            <if test="param.mobile neq null and param.mobile neq ''">
+                AND sui.phone_number = #{param.mobile}
+            </if>
+            <if test="param.IdentityCard neq null and param.IdentityCard neq ''">
+                AND sui.certificate_card = #{param.IdentityCard}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCreateInfoByCreateId" resultType="com.zerody.user.vo.CreateInfoVo">
+        SELECT
+            ssi.comp_id AS operateCompanyId,
+            sci.company_name AS operateCompanyName,
+            usd.department_id AS operateDeptId,
+            sdi.depart_name AS operateDeptName
+        FROM
+            sys_staff_info AS ssi
+        LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+
+        <where>
+            <if test="id neq null and id neq ''">
+
+
+                AND ssi.user_id = #{id}
+            </if>
+        </where>
+    </select>
+
 </mapper>

@@ -6,7 +6,7 @@ import com.zerody.customer.api.service.CustomerRemoteService;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.StaffCustomerDetailsDto;
 import com.zerody.user.vo.InviteStateVo;
-import org.omg.CORBA.INTERNAL;
+//import org.omg.CORBA.INTERNAL;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
