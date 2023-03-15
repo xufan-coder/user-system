@@ -144,7 +144,7 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
             ssi.deleted = 0 and sui.status != -1
-            <if test="id neq null andid neq ''">
+            <if test="id neq null and id neq ''">
                 AND ssi.user_id = #{id}
             </if>
             limit 0,1

@@ -647,7 +647,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     @Transactional
-    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException {
+    public void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user,boolean isTraverse) throws ParseException, IllegalAccessException {
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
@@ -691,6 +691,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                             "不允许直接办理二次入职，请联系行政发起审批!");
                 }
             }
+        }
+        if(isTraverse){
+            BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+            operationRecord.setMobile(oldUserInfo.getPhoneNumber());
+            operationRecord.setIdentityCard(oldUserInfo.getCertificateCard());
+            operationRecord.setType(1);
+            operationRecord.setRemarks("修改伙伴信息");
+            blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
         }
         // 修改时添加身份证唯一校验 不包含离职账户
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard(),YesNo.NO);
@@ -1226,7 +1234,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public SysUserInfoVo selectStaffById(String id) {
+    public SysUserInfoVo selectStaffById(String id,boolean isTraverse,UserVo userVo) {
         if (StringUtils.isEmpty(id)) {
             throw new DefaultException("id不能为空");
         }
@@ -1241,6 +1249,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(imState)) {
                 userInfo.setImStateName(imState.getDictName());
             }
+        }
+        if(isTraverse){
+            BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+            operationRecord.setMobile(userInfo.getPhoneNumber());
+            operationRecord.setIdentityCard(userInfo.getCertificateCard());
+            operationRecord.setType(0);
+            operationRecord.setRemarks("查看伙伴档案");
+            blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
         }
         RecommendInfoVo recommendInfo = null;
         if (DataUtil.isNotEmpty(userInfo) && StringUtils.isNotEmpty(userInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
@@ -1767,7 +1783,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
             dto.setMobile(phone);
             dto.setIdentityCard(row[14]);
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto,null,false);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
@@ -2032,7 +2048,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             MobileAndIdentityCardDto dto = new MobileAndIdentityCardDto();
             dto.setMobile(phone);
             dto.setIdentityCard(row[13]);
-            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto);
+            MobileBlacklistQueryVo blacklistByMobile = staffBlacklistService.getBlacklistByMobile(dto,user,false);
             if (fild && DataUtil.isNotEmpty(blacklistByMobile)&&blacklistByMobile.getIsBlock()) {
                 errorStr.append("已被添加到内控名单，请到内控名单查看原因,");
             }
