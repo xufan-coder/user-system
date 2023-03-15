@@ -59,7 +59,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateStaffStatus(String userId, Integer status, String leaveReason, UserVo user);
 
 
-    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user,boolean isTraverse) throws ParseException, IllegalAccessException;
 
     /**
      * 获取伙伴详情
@@ -67,7 +67,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
      * @param id 员工id
      * @return
      */
-    SysUserInfoVo selectStaffById(String id);
+    SysUserInfoVo selectStaffById(String id,boolean isTraverse,UserVo userVo);
 
     void deleteStaffById(String staffId);
 

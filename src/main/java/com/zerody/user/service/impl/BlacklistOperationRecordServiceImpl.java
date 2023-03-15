@@ -70,14 +70,14 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
 
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
-        if(ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() ==1){
-            BeanUtils.copyProperties(blacklistByMobile,blacklistOperationRecord);
-            blacklistOperationRecord.setType(param.getType());
-            blacklistOperationRecord.setRemarks(param.getRemarks());
-            blacklistOperationRecord.setCreateTime(new Date());
-            if (DataUtil.isNotEmpty(userVo)){
+        if (DataUtil.isNotEmpty(userVo)) {
+            if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1 && userVo.isBack() == false) {
+                BeanUtils.copyProperties(blacklistByMobile, blacklistOperationRecord);
+                blacklistOperationRecord.setType(param.getType());
+                blacklistOperationRecord.setRemarks(param.getRemarks());
+                blacklistOperationRecord.setCreateTime(new Date());
                 CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo.getUserId());
-                if (ObjectUtils.isNotEmpty(createInfo)){
+                if (ObjectUtils.isNotEmpty(createInfo)) {
                     blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
                     blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
                     blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
@@ -85,9 +85,9 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
                     blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
                     blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
                 }
-            }
-            this.save(blacklistOperationRecord);
+                this.save(blacklistOperationRecord);
 
+            }
         }
 
     }
