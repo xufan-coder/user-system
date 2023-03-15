@@ -159,10 +159,13 @@ public class StaffInfoUtil {
         familyMemberService.addBatchFamilyMember(setSysUserInfoDto.getFamilyMembers(), staffInfoVo);
         //履历
         userResumeService.saveOrUpdateBatchResume(setSysUserInfoDto.getUserResumes(), staffInfoVo);
+        //学历证书
         saveImage(setSysUserInfoDto.getDiplomas(), userId, ImageTypeInfo.DIPLOMA);
+        //合规承诺书
         saveImage(setSysUserInfoDto.getComplianceCommitments(), userId, ImageTypeInfo.COMPLIANCE_COMMITMENT);
         //合作申请表
-        saveFile(setSysUserInfoDto.getCooperationFiles(), userId, FileTypeInfo.COOPERATION_FILE);
+        //saveFile(setSysUserInfoDto.getCooperationFiles(), userId, FileTypeInfo.COOPERATION_FILE);
+        saveImage(setSysUserInfoDto.getCooperationImages(), userId, ImageTypeInfo.COOPERATION_APPLY);
     }
 
     public static  void saveImage(List<String> images, String userId, String type){
