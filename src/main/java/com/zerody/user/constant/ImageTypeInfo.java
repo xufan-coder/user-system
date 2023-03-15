@@ -34,6 +34,12 @@ public class ImageTypeInfo {
      */
     public final  static  String DIPLOMA = "DIPLOMA";
 
+    /**
+     * 合作申请
+     */
+    public final static String COOPERATION_APPLY = "COOPERATION_APPLY";
+
+
     private static Map<String, String> toImageType = new HashMap<>();
 
     static {
