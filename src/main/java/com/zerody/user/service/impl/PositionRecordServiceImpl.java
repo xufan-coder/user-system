@@ -36,7 +36,6 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
 
     @Override
     public List<PositionRecordListVo> queryPositionRecord(String certificateCard) {
-        UserVo userVo = UserUtils.getUser();
         QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(PositionRecord::getCertificateCard,certificateCard);
         List<PositionRecord> list = this.list(wrapper);
@@ -48,18 +47,6 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
                 vos.add(vo);
             }
         }
-        QueryWrapper<SysUserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysUserInfo::getCertificateCard,certificateCard);
-        queryWrapper.lambda().eq(SysUserInfo::getIsDeleted, YesNo.NO);
-        queryWrapper.lambda().last("limit 0,1");
-        SysUserInfo sysUserInfo = this.sysUserInfoMapper.selectOne(queryWrapper);
-        //保存员工信息
-        BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
-        operationRecord.setMobile(sysUserInfo.getPhoneNumber());
-        operationRecord.setIdentityCard(sysUserInfo.getCertificateCard());
-        operationRecord.setType(0);
-        operationRecord.setRemarks("查看客户档案");
-        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
         return vos;
     }
 

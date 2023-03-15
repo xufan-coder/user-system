@@ -28,6 +28,7 @@ import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,7 +191,8 @@ public class SysStaffInfoController {
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
             UserVo user = UserUtils.getUser();
-            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            boolean isTraverse=true;
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user,isTraverse);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -249,7 +251,8 @@ public class SysStaffInfoController {
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
             UserVo user = UserUtils.getUser();
-            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            boolean isTraverse=false;
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user,isTraverse);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -267,7 +270,9 @@ public class SysStaffInfoController {
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         try {
-            return R.success(sysStaffInfoService.selectStaffById(staffId));
+            boolean isTraverse=true;
+            UserVo userVo = UserUtils.getUser();
+            return R.success(sysStaffInfoService.selectStaffById(staffId,isTraverse,userVo));
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
@@ -287,7 +292,8 @@ public class SysStaffInfoController {
     @GetMapping("/get-app/{id}")
     public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
         try {
-            return R.success(sysStaffInfoService.selectStaffById(id));
+            boolean isTraverse=false;
+            return R.success(sysStaffInfoService.selectStaffById(id,isTraverse,UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());
