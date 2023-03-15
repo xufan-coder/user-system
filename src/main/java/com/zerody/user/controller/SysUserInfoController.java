@@ -167,6 +167,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @author kuang
      * @description 根据角色类型获取用户列表
      **/
+    @Override
     @GetMapping("/get/user-ids/by-user-type/inner")
     public DataResult<List<String>> getUserIdsByUserType(@RequestParam("userType") Integer userType) {
         try {

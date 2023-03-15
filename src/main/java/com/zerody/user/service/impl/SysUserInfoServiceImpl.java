@@ -916,24 +916,31 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(userType == null) {
             return null;
         }
+
+        List<String> adminList = this.sysUserInfoMapper.getAllCompanyAdmin();
         //总经理
         if(UserTypeInfo.COMPANY_ADMIN == userType){
-            return  this.sysUserInfoMapper.getAllCompanyAdmin();
+            return adminList;
         }
+        List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
         //副总
         if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
-            List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
             return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
         }
         //团队长
         if(UserTypeInfo.LONG_TEAM == userType){
-            List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
             return departUser.stream().filter(s-> !StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
         }
         //伙伴
         if(UserTypeInfo.PARTNER == userType){
-            List<SubordinateUserQueryVo> managerList = this.companyAdminMapper.getAdminList(null);
-            return managerList.stream().map(SubordinateUserQueryVo::getUserId).collect(Collectors.toList());
+            adminList.addAll(departUser.stream().map(DepartInfoVo::getAdminUserId).collect(Collectors.toList()));
+
+            QueryWrapper<SysStaffInfo> qw = new QueryWrapper<>();
+            qw.lambda().eq(SysStaffInfo::getUserType,userType);
+            qw.lambda().in(SysStaffInfo::getStatus,0,3);
+            qw.lambda().notIn(SysStaffInfo::getId,adminList);
+            List<SysStaffInfo> list = this.sysStaffInfoService.list(qw);
+            return list.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
         }
         return null;
     }
