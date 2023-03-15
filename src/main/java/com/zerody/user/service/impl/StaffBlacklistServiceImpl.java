@@ -683,6 +683,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto) {
+        UserVo userVo =UserUtils.getUser();
         MobileBlacklistQueryVo companys = this.baseMapper.getBlacklistByMobile(dto);
         if(DataUtil.isNotEmpty(companys)){
             if(companys.getStatus()==1){
@@ -706,7 +707,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 operationRecord.setIdentityCard(dto.getIdentityCard());
                 operationRecord.setType(0);
                 operationRecord.setRemarks("校验手机号码或者身份证号码是否存在");
-                blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord);
+                blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
             }
         }
         return companys;

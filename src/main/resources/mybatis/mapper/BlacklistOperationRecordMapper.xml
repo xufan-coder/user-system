@@ -98,8 +98,8 @@
 
     <select id="getBlacklistByMobile" resultType="com.zerody.user.vo.MobileBlacklistOperationQueryVo">
         SELECT
-            sb.id AS blanklistId,
-            sb.iduser_name AS blackName,
+            sb.id AS blacklistId,
+            sb.user_name AS blackName,
             sb.user_id AS blackUserId,
             sb.mobile AS moblie,
             sb.id is not null as isBlack,
@@ -133,19 +133,21 @@
             ssi.comp_id AS operateCompanyId,
             sci.company_name AS operateCompanyName,
             usd.department_id AS operateDeptId,
-            sdi.depart_name AS operateDeptName
+            sdi.depart_name AS operateDeptName,
+            sui.id  AS operateUserId,
+            sui.user_name  AS operateUserName
         FROM
-            sys_staff_info AS ssi
+        sys_user_info AS sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
         LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
-
         <where>
-            <if test="id neq null and id neq ''">
-
-
+            ssi.deleted = 0 and sui.status != -1
+            <if test="id neq null andid neq ''">
                 AND ssi.user_id = #{id}
             </if>
+            limit 0,1
         </where>
     </select>
 

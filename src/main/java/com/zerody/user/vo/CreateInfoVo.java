@@ -22,4 +22,10 @@ public class CreateInfoVo {
     /** 操作人所属部门名称 */
     private String operateDeptName;
 
+    /** 操作人所属名称 */
+    private String operateUserName;
+
+    /** 操作人所属id */
+    private String operateUserId;
+
 }

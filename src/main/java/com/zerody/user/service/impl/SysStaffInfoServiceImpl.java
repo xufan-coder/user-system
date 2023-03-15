@@ -767,7 +767,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         operationRecord.setIdentityCard(setSysUserInfoDto.getCertificateCard());
         operationRecord.setType(1);
         operationRecord.setRemarks("修改用户");
-        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord);
+        blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
         //查询得到员工信息
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());

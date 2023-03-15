@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
@@ -33,7 +34,7 @@ public interface BlacklistOperationRecordService extends IService<BlacklistOpera
     * @Author:              xufan
     * @Date:                2023/3/11 9:37
     */
-    void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param);
+    void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param, UserVo userVo);
 
 
     void doExportRecord(BlacklistOperationRecordPageDto param, HttpServletResponse response);

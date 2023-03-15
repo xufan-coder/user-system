@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
@@ -76,7 +77,7 @@ public class BlacklistOperationRecordController {
     @PostMapping("/add")
     public DataResult<Object> addBlacklistOperationRecord(@RequestBody BlacklistOperationRecordAddDto param){
         try {
-            this.service.addBlacklistOperationRecord(param);
+            this.service.addBlacklistOperationRecord(param, UserUtils.getUser());
             return R.success();
         } catch (DefaultException e) {
             log.error("添加内控名单操作记录错误：{}", e, e);
