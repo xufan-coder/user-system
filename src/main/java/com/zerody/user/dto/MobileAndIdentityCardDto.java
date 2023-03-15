@@ -8,5 +8,7 @@ public class MobileAndIdentityCardDto {
     private String mobile;
 
     /** 证件号码 **/
-    private String IdentityCard;
+    private String identityCard;
+
+    private String userId;
 }
