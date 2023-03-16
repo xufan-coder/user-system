@@ -174,6 +174,8 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         record.setDeleted(YesNo.NO);
         record.setCreateBy(param.getUserId());
         record.setCertificateCard(staff.getIdentityCard());
+        record.setLeaveUserName(staff.getUserName());
+        record.setMobile(staff.getMobile());
         record.setId(UUIDutils.getUUID32());
         this.save(record);
 
