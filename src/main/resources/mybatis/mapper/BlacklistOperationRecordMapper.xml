@@ -101,7 +101,7 @@
             sb.id AS blacklistId,
             sb.user_name AS blackName,
             sb.user_id AS blackUserId,
-            sb.mobile AS moblie,
+            sb.mobile AS mobile,
             sb.id is not null as isBlack,
             sb.identity_card AS identityCard,
             sb.create_time AS blackTime,
