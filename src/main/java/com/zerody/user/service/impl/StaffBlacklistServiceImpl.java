@@ -695,6 +695,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 );
                 wrapper.lambda().eq(StaffBlacklist::getCompanyId, companys.getCompanyId());
                 wrapper.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+                wrapper.lambda().last("limit 1");
                 StaffBlacklist blacklist = this.getOne(wrapper);
                 if(ObjectUtils.isNotEmpty(blacklist)){
                     companys.setIsBlock(false);
