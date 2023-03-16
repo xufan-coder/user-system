@@ -101,24 +101,4 @@ public class UserInductionRecordController {
             return R.error("添加申请记录错误" + e.getMessage());
         }
     }
-
-    /**
-     * @author kuang
-     * @description 二次入职账号校验
-     **/
-    @PostMapping("/verification")
-    public DataResult<Object> verification(@RequestBody UserInductionVerificationDto param){
-        try {
-            param.setCompanyId(UserUtils.getUser().getCompanyId());
-            param.setUserId(UserUtils.getUser().getUserId());
-            JSONObject data= this.inductionRecordService.verification(param);
-            return R.success(data);
-        } catch (DefaultException e) {
-            log.error("添加申请记录错误：{}", e.getMessage());
-            return R.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("添加申请记录错误：{}", e, e);
-            return R.error("添加申请记录错误" + e.getMessage());
-        }
-    }
 }
