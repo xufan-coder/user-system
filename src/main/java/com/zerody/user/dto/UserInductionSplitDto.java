@@ -18,8 +18,12 @@ public class UserInductionSplitDto {
     /**签约部门id*/
     private String signDeptId;
 
+    private String signDept;
+
     /**签约角色*/
     private String signRoleId;
+
+    private String signRole;
 
     /**签约原因*/
     private String signReason;
@@ -27,9 +31,16 @@ public class UserInductionSplitDto {
     /**企业id*/
     private String signCompanyId;
 
+    private String signCompanyName;
+
     /**
      * 创建人
      */
     private String userId;
 
+    /**流程id*/
+    private String processId;
+
+    /**流程key*/
+    private String processKey;
 }
