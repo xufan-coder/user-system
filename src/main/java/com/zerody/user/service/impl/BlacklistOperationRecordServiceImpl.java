@@ -69,10 +69,8 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
     @Override
     public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param,UserVo userVo) {
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
-
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
-        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo.getStaffId());
-
+        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo);
         new Thread( () -> {
             if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
                     && ObjectUtils.isNotEmpty(createInfo) && !createInfo.getMobile().equals("13800138000")) {
@@ -80,12 +78,9 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
                 blacklistOperationRecord.setType(param.getType());
                 blacklistOperationRecord.setRemarks(param.getRemarks());
                 blacklistOperationRecord.setCreateTime(new Date());
-                    blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
-                    blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
-                    blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
-                    blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
-                    blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
-                    blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
+                blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
+                blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
+                BeanUtils.copyProperties(createInfo, blacklistOperationRecord);
                 this.save(blacklistOperationRecord);
             }
         }).start();

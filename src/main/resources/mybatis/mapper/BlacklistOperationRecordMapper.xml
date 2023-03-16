@@ -46,6 +46,7 @@
             AND bor.create_time &lt;= #{param.endTime}
         </if>
     </where>
+        ORDER BY bor.create_time DESC
 </select>
 
     <select id="doExportRecord" resultType="com.zerody.user.vo.BlackOperationRecordVo">
@@ -101,7 +102,7 @@
             sb.id AS blacklistId,
             sb.user_name AS blackName,
             sb.user_id AS blackUserId,
-            sb.mobile AS moblie,
+            sb.mobile AS mobile,
             sb.id is not null as isBlack,
             sb.identity_card AS identityCard,
             sb.create_time AS blackTime,
@@ -118,7 +119,7 @@
         LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
         LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card) and sb.state = 'BLOCK'
         <where>
-            ssi.deleted = 0 and sui.status != -1
+            ssi.deleted = 0 and sui.status != -1 and ssi.status = 1
             <if test="(param.mobile neq null and param.mobile neq '') or (param.IdentityCard neq null and param.IdentityCard neq '')">
                 AND (
                     FALSE
@@ -130,7 +131,7 @@
             </if>
                 )
             </if>
-
+        limit 0,1
         </where>
     </select>
 
@@ -151,8 +152,11 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
             ssi.deleted = 0 and sui.status != -1
-            <if test="id neq null and id neq ''">
-                AND ssi.id = #{id}
+            <if test="param.staffId neq null and param.staffId neq ''">
+                AND ssi.id = #{param.staffId}
+            </if>
+            <if test="param.userId neq null and param.userId neq ''">
+                AND sui.id = #{param.userId}
             </if>
             limit 0,1
         </where>

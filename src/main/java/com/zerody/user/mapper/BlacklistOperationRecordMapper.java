@@ -2,6 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
@@ -34,5 +35,5 @@ public interface BlacklistOperationRecordMapper extends BaseMapper<BlacklistOper
 
     MobileBlacklistOperationQueryVo getBlacklistByMobile(@Param("param") BlacklistOperationRecordAddDto param);
 
-    CreateInfoVo getCreateInfoByCreateId(String id);
+    CreateInfoVo getCreateInfoByCreateId(@Param("param") UserVo param);
 }
