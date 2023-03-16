@@ -291,8 +291,7 @@ public class SysStaffInfoController {
     @GetMapping("/get-app/{id}")
     public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
         try {
-            boolean isTraverse=false;
-            return R.success(sysStaffInfoService.selectStaffById(id,isTraverse,UserUtils.getUser()));
+            return R.success(sysStaffInfoService.selectStaffById(id,true,UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());
