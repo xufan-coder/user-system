@@ -106,7 +106,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         //判断同公司的
         LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
                     "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
             object.put("message",msg);
             object.put("verificationState",1);
@@ -115,7 +115,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         // 判断跨公司的
         leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+  (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
             UserInductionVerificationVo verificationVo = new UserInductionVerificationVo();
             StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(leave.getUserId());
