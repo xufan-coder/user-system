@@ -69,11 +69,8 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
     @Override
     public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param,UserVo userVo) {
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
-
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
-        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo.getStaffId());
-        log.info(userVo.getUserId()+"用户id");
-        log.info(userVo.getStaffId()+"员工id");
+        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo);
         new Thread( () -> {
             if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
                     && ObjectUtils.isNotEmpty(createInfo) && !createInfo.getMobile().equals("13800138000")) {
