@@ -270,9 +270,8 @@ public class SysStaffInfoController {
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         try {
-            boolean isTraverse=false;
             UserVo userVo = UserUtils.getUser();
-            return R.success(sysStaffInfoService.selectStaffById(staffId,isTraverse,userVo));
+            return R.success(sysStaffInfoService.selectStaffById(staffId,true,userVo));
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
