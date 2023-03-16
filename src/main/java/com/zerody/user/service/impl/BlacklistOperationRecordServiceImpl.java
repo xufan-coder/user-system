@@ -72,7 +72,8 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
 
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
         CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo.getStaffId());
-
+        log.info(userVo.getUserId()+"用户id");
+        log.info(userVo.getStaffId()+"员工id");
         new Thread( () -> {
             if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
                     && ObjectUtils.isNotEmpty(createInfo) && !createInfo.getMobile().equals("13800138000")) {
@@ -80,12 +81,9 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
                 blacklistOperationRecord.setType(param.getType());
                 blacklistOperationRecord.setRemarks(param.getRemarks());
                 blacklistOperationRecord.setCreateTime(new Date());
-                    blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
-                    blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
-                    blacklistOperationRecord.setOperateCompanyId(createInfo.getOperateCompanyId());
-                    blacklistOperationRecord.setOperateCompanyName(createInfo.getOperateCompanyName());
-                    blacklistOperationRecord.setOperateDeptId(createInfo.getOperateDeptId());
-                    blacklistOperationRecord.setOperateDeptName(createInfo.getOperateDeptName());
+                blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
+                blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
+                BeanUtils.copyProperties(createInfo, blacklistOperationRecord);
                 this.save(blacklistOperationRecord);
             }
         }).start();
