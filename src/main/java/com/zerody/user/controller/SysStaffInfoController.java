@@ -270,9 +270,8 @@ public class SysStaffInfoController {
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         try {
-            boolean isTraverse=true;
             UserVo userVo = UserUtils.getUser();
-            return R.success(sysStaffInfoService.selectStaffById(staffId,isTraverse,userVo));
+            return R.success(sysStaffInfoService.selectStaffById(staffId,true,userVo));
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
@@ -292,8 +291,7 @@ public class SysStaffInfoController {
     @GetMapping("/get-app/{id}")
     public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
         try {
-            boolean isTraverse=false;
-            return R.success(sysStaffInfoService.selectStaffById(id,isTraverse,UserUtils.getUser()));
+            return R.success(sysStaffInfoService.selectStaffById(id,true,UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());

@@ -1256,7 +1256,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 userInfo.setImStateName(imState.getDictName());
             }
         }
-        if(isTraverse){
+        if(isTraverse==true){
             BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
             operationRecord.setMobile(userInfo.getPhoneNumber());
             operationRecord.setIdentityCard(userInfo.getCertificateCard());

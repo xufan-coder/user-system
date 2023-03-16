@@ -28,4 +28,7 @@ public class CreateInfoVo {
     /** 操作人所属id */
     private String operateUserId;
 
+    /** 操作人手机号 */
+    private String mobile;
+
 }

@@ -170,10 +170,7 @@ public class StaffInfoUtil {
 
     public static  void saveImage(List<String> images, String userId, String type){
         List<Image> imageAdds = new ArrayList<>();
-        //图片转换
-        List<ConvertImage> convertImages = new ArrayList<>(images.size());
         Image image;
-        Date now = new Date();
         if(DataUtil.isNotEmpty(images)) {
 
             for (String s : images) {

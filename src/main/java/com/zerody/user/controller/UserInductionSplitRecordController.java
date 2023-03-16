@@ -66,12 +66,7 @@ public class UserInductionSplitRecordController {
     @PostMapping("/verification")
     public DataResult<Object> verification(@RequestBody UserInductionVerificationDto param){
         try {
-            if(StringUtils.isEmpty(param.getCertificateCard())) {
-                return R.error("身份证号不能为空");
-            }
-            if(StringUtils.isEmpty(param.getMobile())) {
-                return R.error("手机号不能为空");
-            }
+
             param.setCompanyId(UserUtils.getUser().getCompanyId());
             param.setUserId(UserUtils.getUser().getUserId());
             JSONObject data= this.inductionSplitRecordService.verification(param);

@@ -250,8 +250,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if(DataUtil.isEmpty(checkLoginVo)){
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
-            boolean isTraverse=false;
-            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId(),isTraverse,UserUtils.getUser()).getCompanyId();
+            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId(),false,UserUtils.getUser()).getCompanyId();
             SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
             if(DataUtil.isEmpty(company)){
                 return R.error("数据异常！");

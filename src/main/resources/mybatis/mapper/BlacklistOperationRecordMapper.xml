@@ -119,12 +119,18 @@
         LEFT JOIN staff_blacklist AS sb ON (sb.mobile = sui.phone_number or sb.identity_card = sui.certificate_card) and sb.state = 'BLOCK'
         <where>
             ssi.deleted = 0 and sui.status != -1
+            <if test="(param.mobile neq null and param.mobile neq '') or (param.IdentityCard neq null and param.IdentityCard neq '')">
+                AND (
+                    FALSE
             <if test="param.mobile neq null and param.mobile neq ''">
-                AND sui.phone_number = #{param.mobile}
+                or sui.phone_number = #{param.mobile}
             </if>
             <if test="param.IdentityCard neq null and param.IdentityCard neq ''">
-                AND sui.certificate_card = #{param.IdentityCard}
+                or sui.certificate_card = #{param.IdentityCard}
             </if>
+                )
+            </if>
+
         </where>
     </select>
 
@@ -135,7 +141,8 @@
             usd.department_id AS operateDeptId,
             sdi.depart_name AS operateDeptName,
             sui.id  AS operateUserId,
-            sui.user_name  AS operateUserName
+            sui.user_name  AS operateUserName,
+            sui.phone_number as mobile
         FROM
         sys_user_info AS sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -145,7 +152,7 @@
         <where>
             ssi.deleted = 0 and sui.status != -1
             <if test="id neq null and id neq ''">
-                AND ssi.user_id = #{id}
+                AND ssi.id = #{id}
             </if>
             limit 0,1
         </where>
