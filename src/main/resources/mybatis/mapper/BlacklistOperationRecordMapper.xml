@@ -45,8 +45,8 @@
         <if test="param.endTime != null">
             AND bor.create_time &lt;= #{param.endTime}
         </if>
-        order by create_time desc
     </where>
+        ORDER BY bor.create_time DESC
 </select>
 
     <select id="doExportRecord" resultType="com.zerody.user.vo.BlackOperationRecordVo">
@@ -152,8 +152,11 @@
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
             ssi.deleted = 0 and sui.status != -1
-            <if test="id neq null and id neq ''">
-                AND ssi.id = #{id}
+            <if test="param.staffId neq null and param.staffId neq ''">
+                AND ssi.id = #{param.staffId}
+            </if>
+            <if test="param.userId neq null and param.userId neq ''">
+                AND sui.id = #{param.userId}
             </if>
             limit 0,1
         </where>
