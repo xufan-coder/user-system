@@ -10,6 +10,7 @@ import com.zerody.user.vo.UserCompar;
 import io.micrometer.core.instrument.util.StringUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,10 +66,16 @@ public class StaffHistoryUtil {
 
     public static String getDiplomas(List<String> oldDiplomas,List<String> diplomas,String name){
         StringBuilder honor = new StringBuilder();
+        if(oldDiplomas ==null) {
+            oldDiplomas =new ArrayList<>();
+        }
         for(String old : oldDiplomas) {
             if(!diplomas.contains(old)){
                 honor.append("删除了").append(name).append(":[").append(old).append("]   ");
             }
+        }
+        if(diplomas ==null) {
+            diplomas =new ArrayList<>();
         }
         for(String d : diplomas) {
             if(!oldDiplomas.contains(d)){
