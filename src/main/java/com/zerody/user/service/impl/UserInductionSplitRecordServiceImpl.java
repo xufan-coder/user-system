@@ -219,7 +219,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
-        this.sysStaffInfoService.saveOrUpdate(staff);
+        this.sysStaffInfoService.save(staff);
 
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
