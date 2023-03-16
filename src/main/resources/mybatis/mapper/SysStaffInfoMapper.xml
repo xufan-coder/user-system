@@ -1221,7 +1221,11 @@
         left join sys_company_info sc on si.comp_id = sc.id
         left join union_staff_depart sd on sd.staff_id = si.id
         left join sys_department_info di on sd.department_id = di.id
-        where si.`status` = 1 and sui.certificate_card = #{card}
+        where si.`status` = 1 and ( sui.phone_number = #{mobile}
+            <if test="card neq null and card neq ''">
+                or sui.certificate_card = #{card}
+            </if>
+        )
         <if test="compId neq null and compId neq ''">
             and si.comp_id=#{compId}
         </if>

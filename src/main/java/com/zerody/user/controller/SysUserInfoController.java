@@ -164,6 +164,21 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     /**
+     * @author kuang
+     * @description 根据角色类型获取用户列表
+     **/
+    @Override
+    @GetMapping("/get/user-ids/by-user-type/inner")
+    public DataResult<List<String>> getUserIdsByUserType(@RequestParam("userType") Integer userType) {
+        try {
+            return R.success(this.sysUserInfoService.getUserIdsByUserType(userType));
+        } catch (Exception e) {
+            log.error("通过角色名称查询用户失败：{}",e ,e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
      *
      *
      * @author               PengQiang

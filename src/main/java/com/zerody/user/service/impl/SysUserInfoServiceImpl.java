@@ -911,6 +911,40 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return list;
     }
 
+    @Override
+    public List<String> getUserIdsByUserType(Integer userType) {
+        if(userType == null) {
+            return null;
+        }
+
+        List<String> adminList = this.sysUserInfoMapper.getAllCompanyAdmin();
+        //总经理
+        if(UserTypeInfo.COMPANY_ADMIN == userType){
+            return adminList;
+        }
+        List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+        //副总
+        if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
+            return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //团队长
+        if(UserTypeInfo.LONG_TEAM == userType){
+            return departUser.stream().filter(s-> !StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //伙伴
+        if(UserTypeInfo.PARTNER == userType){
+            adminList.addAll(departUser.stream().map(DepartInfoVo::getAdminUserId).collect(Collectors.toList()));
+
+            QueryWrapper<SysStaffInfo> qw = new QueryWrapper<>();
+            qw.lambda().eq(SysStaffInfo::getUserType,userType);
+            qw.lambda().in(SysStaffInfo::getStatus,0,3);
+            qw.lambda().notIn(SysStaffInfo::getId,adminList);
+            List<SysStaffInfo> list = this.sysStaffInfoService.list(qw);
+            return list.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     //递归获取上级 不包含企业管理员
     private StaffInfoVo getDepartAdminInfo(String departId) {
         if (StringUtils.isEmpty(departId)) {

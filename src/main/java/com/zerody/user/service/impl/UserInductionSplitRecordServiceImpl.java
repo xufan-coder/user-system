@@ -48,6 +48,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author kuang
@@ -102,7 +103,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         JSONObject object = new JSONObject();
         String msg = "";
         //判断同公司的
-        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getCompanyId());
+        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                     "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
@@ -111,7 +112,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             return object;
         }
         // 判断跨公司的
-        leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),null);
+        leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
@@ -287,15 +288,23 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         resumeQw.lambda().eq(UserResume::getUserId, param.getLeaveUserId());
         List<UserResume> resumes = this.userResumeService.list(resumeQw);
         userInfoDto.setUserResumes(resumes);
+
         //合规承诺书
         userInfoDto.setComplianceCommitments(imageService.getListImages(param.getLeaveUserId(), ImageTypeInfo.COMPLIANCE_COMMITMENT));
         //学历证书
         userInfoDto.setDiplomas(imageService.getListImages(param.getLeaveUserId(), ImageTypeInfo.DIPLOMA));
-
-        QueryWrapper<CommonFile> commonFileQw = new QueryWrapper<>();
-        commonFileQw.lambda().eq(CommonFile::getConnectId, param.getLeaveUserId());
-        commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
-        userInfoDto.setCooperationFiles(this.commonFileService.list(commonFileQw));
+        //合作申请
+        List<String> listImages = imageService.getListImages(param.getLeaveUserId(), ImageTypeInfo.COOPERATION_APPLY);
+        if (DataUtil.isNotEmpty(listImages)) {
+            userInfoDto.setCooperationImages(listImages);
+        } else {
+            QueryWrapper<CommonFile> commonFileQw = new QueryWrapper<>();
+            commonFileQw.lambda().eq(CommonFile::getConnectId, param.getLeaveUserId());
+            commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+            List<CommonFile> list = this.commonFileService.list(commonFileQw);
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            userInfoDto.setCooperationImages(images);
+        }
 
         QueryWrapper<SysStaffRelation> relationQw = new QueryWrapper<>();
         relationQw.lambda().eq(SysStaffRelation::getRelationUserId, param.getLeaveUserId());

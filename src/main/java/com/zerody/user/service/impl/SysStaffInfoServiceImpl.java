@@ -273,13 +273,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                 SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
             //判断同公司的
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),setSysUserInfoDto.getCompanyId());
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),
+                    setSysUserInfoDto.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
             if(leave != null){
                 throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                         "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
             }
             // 判断跨公司的
-            leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),null);
+            leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),setSysUserInfoDto.getPhoneNumber(),null);
             if(leave != null){
                 throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
@@ -679,13 +680,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if(StringUtils.isNotEmpty(setSysUserInfoDto.getTerminals()) &&
                     SystemCodeType.SYSTEM_CRM_PC.equals(setSysUserInfoDto.getTerminals())){
                 //判断同公司的
-                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),setSysUserInfoDto.getCompanyId());
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
                 if(leave != null){
                     throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                             "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
-                leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),null);
+                leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),null);
                 if(leave != null){
                     throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
@@ -861,14 +862,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             contentList.add(diplomasStr);
         }
 
-        // 处理合规承若书新旧对比
-        diplomas =  this.commonFileService.getListFiles(staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
+        // 合作申请表新旧对比
+        /*diplomas =  this.commonFileService.getListFiles(staffInfoVo.getUserId(),FileTypeInfo.COOPERATION_FILE);
         List<String> newFiles = new ArrayList<>();
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getCooperationFiles())) {
             newFiles = setSysUserInfoDto.getCooperationFiles().stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
         }
 
         diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,newFiles,"合作申请表");
+        if(StringUtils.isNotEmpty(diplomasStr)){
+            contentList.add(diplomasStr);
+        }*/
+        diplomas =  this.imageService.getListImages(staffInfoVo.getUserId(),ImageTypeInfo.COOPERATION_APPLY);
+        diplomasStr = StaffHistoryUtil.getDiplomas(diplomas,setSysUserInfoDto.getCooperationImages(),"合作申请表");
         if(StringUtils.isNotEmpty(diplomasStr)){
             contentList.add(diplomasStr);
         }
@@ -1300,12 +1306,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageQw.lambda().orderByDesc(Image::getCreateTime);
         userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
 
-        //合作申请表
-        QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
-        fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
-        fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
-        fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
-        userInfo.setCooperationFiles(this.commonFileService.list(fileQw));
+        //合作申请表 (先查询图片表(image)，如果没有数据查询文件表(commonFile))
+        imageQw.clear();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        List<String> imgList = this.imageService.list(imageQw).stream().map(s -> s.getImageUrl()).collect(Collectors.toList());
+        if (DataUtil.isNotEmpty(imgList)) {
+            userInfo.setCooperationImages(imgList);
+        } else {
+            QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
+            fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
+            fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+            fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
+            List<CommonFile> list = this.commonFileService.list(fileQw);
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            userInfo.setCooperationImages(images);
+        }
 
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
@@ -1836,14 +1853,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     }
                 }
                 // 判断同公司的
-                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,companyId);
+                LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,companyId);
                 if(leave != null){
                     errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
                             append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
                             append("（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
-                leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,null);
+                leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
                 if(leave != null){
                     throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
@@ -2074,14 +2091,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
 
             // 判断同公司的
-            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,companyId);
+            LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,companyId);
             if(leave != null){
                 errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
                         append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
                         append("（暂不支持行政办理二次签约）");
             }
             // 判断跨公司的
-            leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,null);
+            leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
             if(leave != null){
                 throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
@@ -3304,6 +3321,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         });
     }
 
+
     /**
      * 添加合规承诺书、学历证书
      *
@@ -3325,11 +3343,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
 
         //合作申请表
-        QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
-        fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
-        fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
-        fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
-        userInfo.setCooperationFiles(this.commonFileService.list(fileQw));
+        imageQw.clear();
+        imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
+        imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
+        imageQw.lambda().orderByDesc(Image::getCreateTime);
+        List<String> cooperationImages = this.imageService.list(imageQw).stream().map(Image::getImageUrl).collect(Collectors.toList());
+        if (DataUtil.isNotEmpty(cooperationImages)) {
+            userInfo.setCooperationImages(cooperationImages);
+        } else {
+            QueryWrapper<CommonFile> fileQw = new QueryWrapper<>();
+            fileQw.lambda().eq(CommonFile::getConnectId, userInfo.getId());
+            fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+            fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
+            List<CommonFile> list = this.commonFileService.list(fileQw);
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            userInfo.setCooperationImages(images);
+        }
     }
 
     /**
@@ -3760,10 +3789,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //学历证书
         userInfoDto.setDiplomas(imageService.getListImages(param.getOldUserId(), ImageTypeInfo.DIPLOMA));
 
-        QueryWrapper<CommonFile> commonFileQw = new QueryWrapper<>();
-        commonFileQw.lambda().eq(CommonFile::getConnectId, param.getOldUserId());
-        commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
-        userInfoDto.setCooperationFiles(this.commonFileService.list(commonFileQw));
+        //合作申请
+        List<String> listImages = imageService.getListImages(param.getOldUserId(), ImageTypeInfo.COOPERATION_APPLY);
+        if (DataUtil.isNotEmpty(listImages)) {
+            userInfoDto.setCooperationImages(listImages);
+        } else {
+            QueryWrapper<CommonFile> commonFileQw = new QueryWrapper<>();
+            commonFileQw.lambda().eq(CommonFile::getConnectId, param.getOldUserId());
+            commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
+            List<CommonFile> list = this.commonFileService.list(commonFileQw);
+            List<String> images = list.stream().map(CommonFile::getFileUrl).distinct().collect(Collectors.toList());
+            userInfoDto.setCooperationImages(images);
+        }
 
         QueryWrapper<SysStaffRelation> relationQw = new QueryWrapper<>();
         relationQw.lambda().eq(SysStaffRelation::getRelationUserId, param.getOldUserId());
