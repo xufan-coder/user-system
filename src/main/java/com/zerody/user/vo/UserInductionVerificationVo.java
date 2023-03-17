@@ -27,8 +27,8 @@ public class UserInductionVerificationVo {
     private String leaveReason;
 
     /**离职时间*/
-    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
-    private Date leaveTime;
+
+    private String leaveTime;
 
     /**手机号*/
     private String mobile;

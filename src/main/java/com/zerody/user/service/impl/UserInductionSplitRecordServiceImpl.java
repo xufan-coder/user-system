@@ -16,6 +16,7 @@ import com.zerody.common.mq.RabbitMqService;
 import com.zerody.common.util.MD5Utils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.utils.DateUtil;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -133,7 +134,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             verificationVo.setMobileHide(CommonUtils.mobileEncrypt(staff.getMobile()));
             verificationVo.setCertificateCard(staff.getIdentityCard());
             verificationVo.setCertificateCardHide(CommonUtils.idEncrypt(staff.getIdentityCard()));
-            verificationVo.setLeaveTime(info.getDateLeft());
+            verificationVo.setLeaveTime(DateUtil.formatyyyyMMddtoString(info.getDateLeft()));
             verificationVo.setLeaveReason(info.getLeaveReason());
             verificationVo.setOldCompanyName(staff.getCompanyName());
             verificationVo.setOldDeptName(staff.getDepartmentName());
