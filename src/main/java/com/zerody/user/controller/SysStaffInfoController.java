@@ -249,6 +249,7 @@ public class SysStaffInfoController {
     */
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        log.info("app编辑伙伴入参: {}", JSON.toJSONString(setSysUserInfoDto));
         try {
             UserVo user = UserUtils.getUser();
             boolean isTraverse=false;

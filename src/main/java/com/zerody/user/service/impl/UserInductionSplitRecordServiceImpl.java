@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itcoon.transform.starter.Transformer;
 import com.zerody.common.api.bean.DataResult;
@@ -35,8 +36,7 @@ import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.CommonUtils;
 import com.zerody.user.util.StaffInfoUtil;
-import com.zerody.user.vo.LeaveUserInfoVo;
-import com.zerody.user.vo.UserInductionVerificationVo;
+import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +45,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -105,7 +106,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         //判断同公司的
         LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
                     "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
             object.put("message",msg);
             object.put("verificationState",1);
@@ -114,7 +115,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         // 判断跨公司的
         leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+  (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
             UserInductionVerificationVo verificationVo = new UserInductionVerificationVo();
             StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(leave.getUserId());
@@ -218,7 +219,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
-        this.sysStaffInfoService.saveOrUpdate(staff);
+        this.sysStaffInfoService.save(staff);
 
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
@@ -252,6 +253,40 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         //推送app账户
         appUserPushService.doPushAppUser(sysUserInfo.getId(), setSysUserInfoDto.getCompanyId());
 
+    }
+
+    @Override
+    public List<UserInductionGroupRecordVo> getInductionPage(String userId) {
+        QueryWrapper<UserInductionSplitRecord> qw = new QueryWrapper<>();
+        qw.lambda().eq(UserInductionSplitRecord::getUserId,userId);
+        qw.lambda().orderByDesc(UserInductionSplitRecord::getCreateTime);
+        List<UserInductionSplitRecord> list = this.list(qw);
+        return list.stream().map(u -> {
+            UserInductionGroupRecordVo vo = new UserInductionGroupRecordVo();
+            BeanUtils.copyProperties(u,vo);
+            vo.setApproveName(u.getLeaveUserName());
+            vo.setApproveTime(u.getCreateTime());
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserInductionGroupRecordInfoVo getInductionInfo(String id) {
+        UserInductionSplitRecord info = this.getById(id);
+        if(info == null) {
+            throw  new DefaultException("未找到相关入职申请");
+        }
+        UserInductionGroupRecordInfoVo infoVo = new UserInductionGroupRecordInfoVo();
+        BeanUtils.copyProperties(info,infoVo);
+        infoVo.setCompanyId(info.getSignCompanyId());
+        infoVo.setDepartId(info.getSignDeptId());
+        infoVo.setDepartName(info.getSignDept());
+        infoVo.setRoleId(info.getSignRoleId());
+        infoVo.setRoleName(info.getSignRole());
+        infoVo.setSignReason(info.getSignReason());
+        LeaveUserInfoVo leaveInfo = sysStaffInfoMapper.getLeaveUserInfo(infoVo.getLeaveUserId());
+        infoVo.setLeaveInfo(leaveInfo);
+        return infoVo;
     }
 
     private SetSysUserInfoDto doOldUserInfo(UserInductionSplitRecord param) {
