@@ -126,12 +126,15 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
                     "不允许直接办理二次入职，请联系行政发起审批!";
             UserInductionVerificationVo verificationVo = new UserInductionVerificationVo();
             StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(leave.getUserId());
+            SysStaffInfo info = this.sysStaffInfoService.getById(staff.getStaffId());
             verificationVo.setLeaveUserId(staff.getUserId());
             verificationVo.setLeaveUserName(staff.getUserName());
             verificationVo.setMobile(staff.getMobile());
             verificationVo.setMobileHide(CommonUtils.mobileEncrypt(staff.getMobile()));
             verificationVo.setCertificateCard(staff.getIdentityCard());
             verificationVo.setCertificateCardHide(CommonUtils.idEncrypt(staff.getIdentityCard()));
+            verificationVo.setLeaveTime(info.getDateLeft());
+            verificationVo.setLeaveReason(info.getLeaveReason());
             verificationVo.setOldCompanyName(staff.getCompanyName());
             verificationVo.setOldDeptName(staff.getDepartmentName());
             verificationVo.setOldRoleName(staff.getRoleName());

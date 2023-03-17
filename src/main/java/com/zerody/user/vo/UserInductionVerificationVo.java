@@ -1,6 +1,9 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author kuang
@@ -19,6 +22,13 @@ public class UserInductionVerificationVo {
 
     /**脱敏身份证号*/
     private String certificateCardHide;
+
+    /**离职原因*/
+    private String leaveReason;
+
+    /**离职时间*/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date leaveTime;
 
     /**手机号*/
     private String mobile;
