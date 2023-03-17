@@ -10,6 +10,7 @@
         id,
         bor.blacklist_id as blacklistId,
         bor.black_name as blackName,
+        bor.black_user_id as blackUserId,
         bor.identity_card as idCard,
         bor.mobile as  mobile ,
         bor.black_dept_name as blackDeptName,
@@ -76,42 +77,35 @@
             blacklist_operation_record
         <where>
         1=1
-            <if test="param.id neq null and param.id.size() gt 0">
-                AND id
-                <foreach collection="param.id" item="id" open="IN (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
-            TRUE
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND company_id = #{param.companyId}
+                AND black_company_id = #{param.companyId}
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND company_id
+                AND black_company_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
             <if test="param.departId neq null and param.departId neq ''">
-                AND (depart_id Like CONCAT('', #{param.departId}, '\_%') or depart_id=#{param.departId})
+                AND (black_dept_id Like CONCAT('', #{param.departId}, '\_%') or black_dept_id=#{param.departId})
             </if>
             <if test="param.userId neq null and param.userId neq ''">
-                AND user_id = #{param.userId}
+                AND black_user_id = #{param.userId}
             </if>
             <if test="param.blackName neq null and param.blackName neq ''">
                 AND black_name LIKE CONCAT('%', #{param.blackName}, '%')
             </if>
             <if test="param.createName neq null and param.createName neq ''">
-                AND bor.create_name LIKE CONCAT('%', #{param.createName}, '%')
+                AND create_name LIKE CONCAT('%', #{param.createName}, '%')
             </if>
-            <if test="param.type neq null and param.type neq ''">
-                AND bor.type = #{param.type}
+            <if test="param.type neq null">
+                AND type = #{param.type}
             </if>
             <if test="param.startTime != null">
-                AND bor.create_time &gt;= #{param.startTime}
+                AND create_time &gt;= #{param.startTime}
             </if>
             <if test="param.endTime != null">
-                AND bor.create_time &lt;= #{param.endTime}
+                AND create_time &lt;= #{param.endTime}
             </if>
         </where>
     </select>

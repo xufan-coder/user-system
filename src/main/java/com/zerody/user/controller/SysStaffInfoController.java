@@ -338,7 +338,7 @@ public class SysStaffInfoController {
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
         log.info("根据用户id查询员工信息入参 {}", userId);
         try {
-            return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),true));
         } catch (DefaultException e) {
             log.error("查询员工信息出错:{}", e.getMessage());
             return R.error("查询员工信息信息");

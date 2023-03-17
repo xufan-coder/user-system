@@ -53,14 +53,14 @@ public class BlackOperationRecordVo {
     private String createTime;
 
     public String getIdentityCard() {
-        String idCard = this.identityCard;
-        if (DataUtil.isEmpty(idCard)) {
+        String identityCard = this.identityCard;
+        if (DataUtil.isEmpty(identityCard)) {
             if (StringUtils.isEmpty(this.identityCard)) {
                 return  "";
             }
-            idCard = identityCard;
+            identityCard = identityCard;
         }
-        return CommonUtils.idEncrypt(idCard, 2, 2);
+        return CommonUtils.idEncrypt(identityCard, 2, 2);
     }
 
     public String getMobile() {
@@ -68,5 +68,12 @@ public class BlackOperationRecordVo {
             return "";
         }
         return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
+
+    private String getBlackName(){
+        if(StringUtils.isEmpty(this.blackName)){
+            return "";
+        }
+        return CommonUtils.protectedName(blackName);
     }
 }
