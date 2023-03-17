@@ -6,10 +6,13 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.service.BlacklistOperationRecordService;
+import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.DateUtils;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * @Author : xufan
@@ -32,6 +37,9 @@ public class BlacklistOperationRecordController {
     @Autowired
     private BlacklistOperationRecordService service;
 
+    @Autowired
+    private CheckUtil checkUtil;
+
 
     /**
     * @Description:         分页查询内控名单操作记录
@@ -43,6 +51,11 @@ public class BlacklistOperationRecordController {
     @GetMapping("/all/page")
     public DataResult<IPage<BlacklistOperationRecordPageVo>> getBlacklistOperationRecord(BlacklistOperationRecordPageDto param){
         try {
+            // 设置组织架构条件值
+            param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            if (DataUtil.isNotEmpty(param.getEndTime())) {
+                param.setEndTime(new Date(param.getEndTime().getTime() + DateUtils.DAYS));
+            }
             IPage<BlacklistOperationRecordPageVo> result = service.getPageBlacklistOperationRecord(param);
             return R.success(result);
         } catch (DefaultException e) {
