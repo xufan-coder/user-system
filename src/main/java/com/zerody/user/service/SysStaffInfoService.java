@@ -239,5 +239,5 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId);
 
-    List<String> getDeptLeader(String userId,Integer leaderState);
+    List<String> getDeptLeader(String userId,String signDeptId);
 }

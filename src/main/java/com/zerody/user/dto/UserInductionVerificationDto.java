@@ -22,5 +22,7 @@ public class UserInductionVerificationDto {
     /**手机号码*/
     private String mobile;
 
+    private String filterUserId;
+
 
 }
