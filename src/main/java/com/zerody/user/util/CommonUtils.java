@@ -1,5 +1,6 @@
 package com.zerody.user.util;
 
+import com.zerody.common.constant.YesNo;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -8,6 +9,12 @@ import org.apache.commons.lang.StringUtils;
  */
  
 public class CommonUtils {
+
+    /**
+     * 姓名长度
+     */
+    private static Integer RESULT_NAME_LENGTH =2;
+
 
     public static final String[] CHINESE_LIST = {"零","一","二","三","四","五","六","七","八","九","十"};
 
@@ -42,5 +49,26 @@ public class CommonUtils {
             return id;
         }
         return id.substring(0, 2) + new String(new char[id.length() - 5]).replace("\0", "*") + id.substring(id.length() - 3);
+    }
+
+    //姓名脱敏
+    public  static String protectedName(String userName){
+        if(userName.length()== YesNo.YES){
+            userName=userName+"*";
+        }
+        userName = userName.trim();
+        char[] r = userName.toCharArray();
+        String resultName = "";
+        if(r.length == RESULT_NAME_LENGTH){
+            resultName =  r[0]+"*";
+        }
+        if (r.length > RESULT_NAME_LENGTH) {
+            String star = "";
+            for (int i = 0; i < r.length-RESULT_NAME_LENGTH; i++) {
+                star=star+"*";
+            }
+            resultName = r[0]+star+r[r.length-1];
+        }
+        return resultName;
     }
 }

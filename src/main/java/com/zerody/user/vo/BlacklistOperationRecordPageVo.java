@@ -31,6 +31,8 @@ public class BlacklistOperationRecordPageVo {
     /** 手机号*/
     private String mobile;
 
+    /** 加入内控的用户id */
+    private String blackUserId;
 
     /** 内控伙伴所属部门名称*/
     private String blackDeptName;

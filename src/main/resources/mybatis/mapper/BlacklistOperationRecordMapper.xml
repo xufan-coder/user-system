@@ -10,6 +10,7 @@
         id,
         bor.blacklist_id as blacklistId,
         bor.black_name as blackName,
+        bor.black_user_id as blackUserId,
         bor.identity_card as idCard,
         bor.mobile as  mobile ,
         bor.black_dept_name as blackDeptName,

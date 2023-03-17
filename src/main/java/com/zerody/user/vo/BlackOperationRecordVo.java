@@ -69,4 +69,11 @@ public class BlackOperationRecordVo {
         }
         return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
     }
+
+    private String getBlackName(){
+        if(StringUtils.isEmpty(this.blackName)){
+            return "";
+        }
+        return CommonUtils.protectedName(blackName);
+    }
 }
