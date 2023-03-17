@@ -2480,7 +2480,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public SysUserInfoVo selectStaffByUserId(String userId) {
+    public SysUserInfoVo selectStaffByUserId(String userId,UserVo userVo,boolean isTraverse) {
         SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
         if (DataUtil.isNotEmpty(ceoInfo)) {
             ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
@@ -2517,6 +2517,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
             userInfo.setRecommendSecond(recommendInfo);
+        }
+        if(isTraverse==true){
+            BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+            operationRecord.setMobile(userInfo.getPhoneNumber());
+            operationRecord.setIdentityCard(userInfo.getCertificateCard());
+            operationRecord.setType(0);
+            operationRecord.setRemarks("app伙伴详情");
+            blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
         }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
@@ -3208,11 +3216,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public List<String> getDeptLeader(String userId,Integer leaderState) {
+    public List<String> getDeptLeader(String userId,String signDeptId) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
-        qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
+        // 优先获取部门id的团队长
+        if(StringUtils.isNotEmpty(signDeptId)){
+            qw.lambda().eq(BaseModel::getId,signDeptId);
+        }else {
+            qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
+        }
+
         //团队长
         SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
         if(DataUtil.isNotEmpty(leader)) {
@@ -3225,7 +3239,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //副总
         if(staffInfo.getDepartId() != null) {
             qw.clear();
-            qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+            // 优先获取部门id的副总
+            if(StringUtils.isNotEmpty(signDeptId)){
+                qw.lambda().eq(BaseModel::getId,signDeptId.split("_")[0]);
+            }else {
+                qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+            }
+
             SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
             if(DataUtil.isNotEmpty(leader1)){
                 SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
@@ -3246,7 +3266,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
             }
         }
-        if(result.size() == 0 && leaderState == 1) {
+        if(result.size() == 0 && StringUtils.isEmpty(signDeptId)) {
             throw new DefaultException("未找到管理层任何信息！");
         }
 

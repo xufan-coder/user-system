@@ -338,7 +338,7 @@ public class SysStaffInfoController {
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
         log.info("根据用户id查询员工信息入参 {}", userId);
         try {
-            return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),true));
         } catch (DefaultException e) {
             log.error("查询员工信息出错:{}", e.getMessage());
             return R.error("查询员工信息信息");
@@ -631,9 +631,9 @@ public class SysStaffInfoController {
      * @author kuang
      */
     @GetMapping("/get/dept-leader")
-    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId,@RequestParam(name = "leaderState") Integer leaderState){
+    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId,@RequestParam(name = "signDeptId",required = false) String signDeptId){
         try {
-            List<String> map =sysStaffInfoService.getDeptLeader(userId,leaderState);
+            List<String> map =sysStaffInfoService.getDeptLeader(userId,signDeptId);
             return R.success(map);
         } catch (DefaultException e){
             log.error("判断部门错误:{}", e.getMessage());

@@ -75,6 +75,11 @@ public class BlacklistOperationRecordController {
     @PostMapping("/get/expert/user")
     public void doExportRecord(@RequestBody BlacklistOperationRecordPageDto param, HttpServletResponse response) {
         try {
+            // 设置组织架构条件值
+            param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            if (DataUtil.isNotEmpty(param.getEndTime())) {
+                param.setEndTime(new Date(param.getEndTime().getTime() + DateUtils.DAYS));
+            }
             this.service.doExportRecord(param, response);
         } catch (Exception e) {
             log.error("导出内控名单操作记录：{}", e, e);

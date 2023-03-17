@@ -119,7 +119,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 根据用户id查询员工信息
     * @Date: 2022/12/9 9:55
     */
-    SysUserInfoVo selectStaffByUserId(String userId);
+    SysUserInfoVo selectStaffByUserId(String userId,UserVo userVo,boolean isTraverse);
 
     IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto);
 
@@ -239,5 +239,5 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId);
 
-    List<String> getDeptLeader(String userId,Integer leaderState);
+    List<String> getDeptLeader(String userId,String signDeptId);
 }
