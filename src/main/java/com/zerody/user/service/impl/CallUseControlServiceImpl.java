@@ -54,7 +54,7 @@ public class CallUseControlServiceImpl extends ServiceImpl<CallUseControlMapper,
             if(DataUtil.isNotEmpty(one)){
                 throw new DefaultException("伙伴"+one.getUserName()+"已在名单中！");
             }else {
-                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId);
+                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId,null,false);
                 CallUseControl callUseControl=new CallUseControl();
                 callUseControl.setDeptId(sysUserInfoVo.getDepartId());
                 callUseControl.setDeptName(sysUserInfoVo.getDepartName());

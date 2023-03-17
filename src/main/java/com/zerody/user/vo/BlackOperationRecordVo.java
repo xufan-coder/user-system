@@ -53,14 +53,14 @@ public class BlackOperationRecordVo {
     private String createTime;
 
     public String getIdentityCard() {
-        String idCard = this.identityCard;
-        if (DataUtil.isEmpty(idCard)) {
+        String identityCard = this.identityCard;
+        if (DataUtil.isEmpty(identityCard)) {
             if (StringUtils.isEmpty(this.identityCard)) {
                 return  "";
             }
-            idCard = identityCard;
+            identityCard = identityCard;
         }
-        return CommonUtils.idEncrypt(idCard, 2, 2);
+        return CommonUtils.idEncrypt(identityCard, 2, 2);
     }
 
     public String getMobile() {

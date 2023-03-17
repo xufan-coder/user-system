@@ -16,11 +16,8 @@ import com.zerody.user.dto.BlackOperationRecordDto;
 import com.zerody.user.dto.BlacklistOperationRecordPageDto;
 import com.zerody.user.feign.OauthFeignService;
 import com.zerody.user.mapper.BlacklistOperationRecordMapper;
-import com.zerody.user.service.BlacklistOperationRecordService;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.SysUserInfoService;
+import com.zerody.user.service.*;
 import com.zerody.user.util.DateUtils;
-import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.vo.BlackOperationRecordVo;
 import com.zerody.user.vo.BlacklistOperationRecordPageVo;
 import com.zerody.user.vo.CreateInfoVo;
@@ -46,7 +43,11 @@ import java.util.List;
 public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOperationRecordMapper, BlacklistOperationRecord> implements BlacklistOperationRecordService {
 
     @Autowired
-    private SysStaffInfoService sysStaffInfoService;
+    private AdminUserService adminUserService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
+
 
 
     @Override
@@ -70,17 +71,37 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
     public void addBlacklistOperationRecord(BlacklistOperationRecordAddDto param,UserVo userVo) {
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
-        CreateInfoVo createInfo = this.baseMapper.getCreateInfoByCreateId(userVo);
+        CreateInfoVo  createInfoVo = new CreateInfoVo();
+        if (userVo.isBack()) {
+            AdminUserInfo byId = this.adminUserService.getById(userVo.getUserId());
+            if(DataUtil.isNotEmpty(byId)){
+                createInfoVo.setOperateUserId(byId.getId());
+                createInfoVo.setOperateUserName(byId.getUserName());
+                createInfoVo.setMobile(byId.getPhoneNumber());
+            }
+        }
+        if (userVo.isCEO()) {
+            CeoUserInfo byId = this.ceoUserInfoService.getById(userVo.getUserId());
+            if(DataUtil.isNotEmpty(byId)){
+                createInfoVo.setOperateUserId(userVo.getUserId());
+                createInfoVo.setOperateUserName(byId.getUserName());
+                createInfoVo.setMobile(byId.getPhoneNumber());
+            }
+        }
+        if (!userVo.isCEO() && !userVo.isBack()) {
+            createInfoVo = this.baseMapper.getCreateInfoByCreateId(userVo);
+        }
+        final CreateInfoVo infoVo = createInfoVo;
         new Thread( () -> {
             if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
-                    && ObjectUtils.isNotEmpty(createInfo) && !createInfo.getMobile().equals("13800138000")) {
+                    && ObjectUtils.isNotEmpty(infoVo) && !infoVo.getMobile().equals("13800138000")) {
                 BeanUtils.copyProperties(blacklistByMobile, blacklistOperationRecord);
                 blacklistOperationRecord.setType(param.getType());
                 blacklistOperationRecord.setRemarks(param.getRemarks());
                 blacklistOperationRecord.setCreateTime(new Date());
-                blacklistOperationRecord.setCreateBy(createInfo.getOperateUserId());
-                blacklistOperationRecord.setCreateName(createInfo.getOperateUserName());
-                BeanUtils.copyProperties(createInfo, blacklistOperationRecord);
+                blacklistOperationRecord.setCreateBy(infoVo.getOperateUserId());
+                blacklistOperationRecord.setCreateName(infoVo.getOperateUserName());
+                BeanUtils.copyProperties(infoVo, blacklistOperationRecord);
                 this.save(blacklistOperationRecord);
             }
         }).start();

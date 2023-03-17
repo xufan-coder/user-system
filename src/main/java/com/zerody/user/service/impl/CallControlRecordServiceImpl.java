@@ -96,7 +96,7 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
                 one.setState(YesNo.NO);
                 this.save(one);
             }else {
-                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId);
+                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId,null,false);
                 CallControlRecord callControlRecord=new CallControlRecord();
                 callControlRecord.setDeptId(sysUserInfoVo.getDepartId());
                 callControlRecord.setDeptName(sysUserInfoVo.getDepartName());

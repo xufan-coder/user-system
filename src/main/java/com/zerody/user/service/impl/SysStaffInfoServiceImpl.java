@@ -2480,7 +2480,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public SysUserInfoVo selectStaffByUserId(String userId) {
+    public SysUserInfoVo selectStaffByUserId(String userId,UserVo userVo,boolean isTraverse) {
         SysUserInfoVo ceoInfo = this.ceoUserInfoService.getCeoInfoByUserId(userId);
         if (DataUtil.isNotEmpty(ceoInfo)) {
             ceoInfo.setSensitivePhone(ceoInfo.getPhoneNumber());
@@ -2517,6 +2517,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (DataUtil.isNotEmpty(recommendInfo) && StringUtils.isNotEmpty(recommendInfo.getRecommendId()) && userInfo.getRecommendType().intValue() == 1) {
             recommendInfo = this.sysStaffInfoMapper.getRecommendInfo(recommendInfo.getRecommendId());
             userInfo.setRecommendSecond(recommendInfo);
+        }
+        if(isTraverse==true){
+            BlacklistOperationRecordAddDto operationRecord = new BlacklistOperationRecordAddDto();
+            operationRecord.setMobile(userInfo.getPhoneNumber());
+            operationRecord.setIdentityCard(userInfo.getCertificateCard());
+            operationRecord.setType(0);
+            operationRecord.setRemarks("app伙伴详情");
+            blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
         }
         UserVo user = new UserVo();
         user.setUserId(userInfo.getId());
