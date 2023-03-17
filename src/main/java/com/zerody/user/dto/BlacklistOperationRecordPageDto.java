@@ -1,6 +1,7 @@
 package com.zerody.user.dto;
 
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.user.dto.bean.UserPositionPageParam;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,13 +13,7 @@ import java.util.List;
  */
 
 @Data
-public class BlacklistOperationRecordPageDto extends PageQueryDto {
-
-    /**公司id*/
-    private String companyId;
-
-    /** 部门id */
-    private String deptId;
+public class BlacklistOperationRecordPageDto extends UserPositionPageParam {
 
     /** 内控伙伴名称 */
     private String blackName;
@@ -30,10 +25,10 @@ public class BlacklistOperationRecordPageDto extends PageQueryDto {
     private Integer type;
 
     /** 操作开始时间 */
-    private String startTime;
+    private Date startTime;
 
     /** 操作结束时间 */
-    private String endTime;
+    private Date endTime;
 
     /** 操作记录id*/
     private List<String> id;
