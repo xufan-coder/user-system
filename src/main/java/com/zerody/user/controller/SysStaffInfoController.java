@@ -348,6 +348,25 @@ public class SysStaffInfoController {
         }
     }
 
+    /**
+     * 根据用户id查询员工信息(内控操作记录)
+     *
+     * @param userId 用户id
+     * @return
+     */
+    @GetMapping("/get-by-user/operate")
+    public DataResult<SysUserInfoVo> getOperateInfoByUserId(@RequestParam(value = "userId")String userId){
+        log.info("根据用户id查询员工信息入参 {}", userId);
+        try {
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),false));
+        } catch (DefaultException e) {
+            log.error("查询员工信息出错(内控操作记录):{}", e.getMessage());
+            return R.error("查询员工信息信息(内控操作记录)");
+        } catch (Exception e) {
+            log.error("查询员工信息出错(内控操作记录):{}", e, e);
+            return R.error("查询员工信息信息(内控操作记录)");
+        }
+    }
 
     /**
     *  删除员工
