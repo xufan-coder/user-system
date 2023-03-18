@@ -3227,9 +3227,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
         }
 
-        //团队长
+
+        String dept = StringUtils.isNotEmpty(signDeptId) ? signDeptId: staffInfo.getDepartId();
+        //团队长  并且是分配在团队的而不是在部门
         SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isNotEmpty(leader)) {
+        if(DataUtil.isNotEmpty(leader) && !dept.split("_")[0].equals(dept)) {
             SysStaffInfo byId = this.getById(leader.getAdminAccount());
             if (DataUtil.isNotEmpty(byId)) {
                 result.add(byId.getUserId());
@@ -3237,7 +3239,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         //副总
-        if(staffInfo.getDepartId() != null) {
+        if(staffInfo.getDepartId() != null || StringUtils.isNotEmpty(signDeptId)) {
             qw.clear();
             // 优先获取部门id的副总
             if(StringUtils.isNotEmpty(signDeptId)){
