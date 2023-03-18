@@ -26,6 +26,12 @@ public class InternalControlVo {
     /** 公司名称 **/
     private String companyName;
 
+    /** 公司id**/
+    private String companyId;
+
+    /** 是否在同一公司 0:否；1是**/
+    private Integer isSameCompany;
+
     /** 部门名称 **/
     private String departName;
 

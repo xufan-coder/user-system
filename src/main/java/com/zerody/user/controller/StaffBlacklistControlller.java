@@ -7,6 +7,7 @@ import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
@@ -21,6 +22,7 @@ import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -316,7 +318,7 @@ public class StaffBlacklistControlller {
     public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(MobileAndIdentityCardDto dto){
         try {
 
-            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto);
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto, UserUtils.getUser(),true);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
@@ -400,6 +402,8 @@ public class StaffBlacklistControlller {
     @GetMapping("/internal/control")
     public DataResult<InternalControlVo> updateInternalControl(InternalControlDto internalControlDto) {
         try {
+            UserVo userVo = UserUtils.getUser();
+            internalControlDto.setCompanyId(userVo.getCompanyId());
             InternalControlVo internalControlVo = this.service.updateInternalControl(internalControlDto);
             return R.success(internalControlVo);
         } catch (DefaultException e) {

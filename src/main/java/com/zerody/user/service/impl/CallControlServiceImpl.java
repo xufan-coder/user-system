@@ -228,7 +228,7 @@ public class CallControlServiceImpl extends ServiceImpl<CallControlMapper, CallC
 
 
     public void sendIm(List<CompanyAdminVo> leaders,UserVo userVo){
-        SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userVo.getUserId());
+        SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userVo.getUserId(),null,false);
         if(DataUtil.isNotEmpty(sysUserInfoVo)) {
             String message = String.format(leader_tip,sysUserInfoVo.getUserName(),sysUserInfoVo.getDepartName());
             for (CompanyAdminVo leader : leaders) {

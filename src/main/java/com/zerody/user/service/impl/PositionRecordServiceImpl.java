@@ -2,12 +2,19 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zerody.common.constant.YesNo;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
+import com.zerody.user.domain.BlacklistOperationRecord;
 import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.mapper.PositionRecordMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
+import com.zerody.user.service.BlacklistOperationRecordService;
 import com.zerody.user.service.PositionRecordService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.PositionRecordListVo;
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,6 +31,9 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
     @Autowired
     private SysUserInfoMapper sysUserInfoMapper;
 
+    @Autowired
+    private BlacklistOperationRecordService blacklistOperationRecordService;
+
     @Override
     public List<PositionRecordListVo> queryPositionRecord(String certificateCard) {
         QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
@@ -37,7 +47,6 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
                 vos.add(vo);
             }
         }
-
         return vos;
     }
 

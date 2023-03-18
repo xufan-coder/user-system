@@ -44,9 +44,19 @@ public class  BosStaffInfoVo {
     private String companyName;
 
     /**
+     * 员工id
+     */
+    private String userId;
+
+    /**
      * 员工姓名
      */
     private String userName;
+
+    /**
+     * 黑名单id
+     */
+    private String blackId;
 
     /**
      * 手机号

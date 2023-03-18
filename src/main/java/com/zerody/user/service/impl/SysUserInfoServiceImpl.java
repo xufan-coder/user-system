@@ -772,18 +772,21 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
 
     @Override
     public List<SubordinateUserQueryVo> getInnerSuperiorList(UserVo user) {
-        List<SubordinateUserQueryVo> superiorList;
-
-        // 查询ceo账户
-        superiorList = this.ceoUserInfoService.getListCompany(user.getCompanyId());
+        List<SubordinateUserQueryVo> superiorList = this.ceoUserInfoService.getListCompany(user.getCompanyId());
+        if(DataUtil.isEmpty(superiorList)){
+            superiorList = new ArrayList<>();
+        }
         // 团队长
         // 获取总经理账户信息
-        List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(user.getCompanyId());
-        superiorList.addAll(managerList);
+        List<SubordinateUserQueryVo> managerList = this.companyAdminMapper.getAdminList(user.getCompanyId());
+        if(DataUtil.isNotEmpty(managerList) && managerList.size()!=0){
+            superiorList.addAll(managerList);
+        }
         //  副总 伙伴
         List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
-        // 移除自己
-        superiorList.addAll(departList);
+        if(DataUtil.isNotEmpty(departList) && departList.size()!=0){
+            superiorList.addAll(departList);
+        }
         return superiorList;
     }
 
@@ -906,6 +909,40 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public List<String> getUserAllTrainNo(String companyId) {
         List<String> list= this.sysUserInfoMapper.getUserAllTrainNo(companyId);
         return list;
+    }
+
+    @Override
+    public List<String> getUserIdsByUserType(Integer userType) {
+        if(userType == null) {
+            return null;
+        }
+
+        List<String> adminList = this.sysUserInfoMapper.getAllCompanyAdmin();
+        //总经理
+        if(UserTypeInfo.COMPANY_ADMIN == userType){
+            return adminList;
+        }
+        List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+        //副总
+        if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
+            return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //团队长
+        if(UserTypeInfo.LONG_TEAM == userType){
+            return departUser.stream().filter(s-> !StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //伙伴
+        if(UserTypeInfo.PARTNER == userType){
+            adminList.addAll(departUser.stream().map(DepartInfoVo::getAdminUserId).collect(Collectors.toList()));
+
+            QueryWrapper<SysStaffInfo> qw = new QueryWrapper<>();
+            qw.lambda().eq(SysStaffInfo::getUserType,userType);
+            qw.lambda().in(SysStaffInfo::getStatus,0,3);
+            qw.lambda().notIn(SysStaffInfo::getId,adminList);
+            List<SysStaffInfo> list = this.sysStaffInfoService.list(qw);
+            return list.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+        }
+        return null;
     }
 
     //递归获取上级 不包含企业管理员

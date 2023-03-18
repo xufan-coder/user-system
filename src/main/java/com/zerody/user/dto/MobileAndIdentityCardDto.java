@@ -9,4 +9,6 @@ public class MobileAndIdentityCardDto {
 
     /** 证件号码 **/
     private String IdentityCard;
+
+    private String userId;
 }
