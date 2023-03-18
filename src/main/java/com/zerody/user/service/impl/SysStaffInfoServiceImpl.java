@@ -3271,7 +3271,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(result.size() == 0 && StringUtils.isEmpty(signDeptId)) {
             throw new DefaultException("未找到管理层任何信息！");
         }
-
+        if(result.size() > 0) {
+            result = result.stream().distinct().collect(Collectors.toList());
+        }
         return result;
     }
 
