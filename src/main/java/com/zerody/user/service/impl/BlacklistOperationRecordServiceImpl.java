@@ -72,39 +72,41 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
         BlacklistOperationRecord blacklistOperationRecord = new BlacklistOperationRecord();
         MobileBlacklistOperationQueryVo blacklistByMobile = this.baseMapper.getBlacklistByMobile(param);
         CreateInfoVo  createInfoVo = new CreateInfoVo();
-        if (userVo.isBack()) {
-            AdminUserInfo byId = this.adminUserService.getById(userVo.getUserId());
-            if(DataUtil.isNotEmpty(byId)){
-                createInfoVo.setOperateUserId(byId.getId());
-                createInfoVo.setOperateUserName(byId.getUserName());
-                createInfoVo.setMobile(byId.getPhoneNumber());
+        if(ObjectUtils.isNotEmpty(userVo)) {
+            if (userVo.isBack()) {
+                AdminUserInfo byId = this.adminUserService.getById(userVo.getUserId());
+                if (DataUtil.isNotEmpty(byId)) {
+                    createInfoVo.setOperateUserId(byId.getId());
+                    createInfoVo.setOperateUserName(byId.getUserName());
+                    createInfoVo.setMobile(byId.getPhoneNumber());
+                }
             }
-        }
-        if (userVo.isCEO()) {
-            CeoUserInfo byId = this.ceoUserInfoService.getById(userVo.getUserId());
-            if(DataUtil.isNotEmpty(byId)){
-                createInfoVo.setOperateUserId(userVo.getUserId());
-                createInfoVo.setOperateUserName(byId.getUserName());
-                createInfoVo.setMobile(byId.getPhoneNumber());
+            if (userVo.isCEO()) {
+                CeoUserInfo byId = this.ceoUserInfoService.getById(userVo.getUserId());
+                if (DataUtil.isNotEmpty(byId)) {
+                    createInfoVo.setOperateUserId(userVo.getUserId());
+                    createInfoVo.setOperateUserName(byId.getUserName());
+                    createInfoVo.setMobile(byId.getPhoneNumber());
+                }
             }
-        }
-        if (!userVo.isCEO() && !userVo.isBack()) {
-            createInfoVo = this.baseMapper.getCreateInfoByCreateId(userVo);
-        }
-        final CreateInfoVo infoVo = createInfoVo;
-        new Thread( () -> {
-            if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
-                    && ObjectUtils.isNotEmpty(infoVo) && !infoVo.getMobile().equals("13800138000")) {
-                BeanUtils.copyProperties(blacklistByMobile, blacklistOperationRecord);
-                blacklistOperationRecord.setType(param.getType());
-                blacklistOperationRecord.setRemarks(param.getRemarks());
-                blacklistOperationRecord.setCreateTime(new Date());
-                blacklistOperationRecord.setCreateBy(infoVo.getOperateUserId());
-                blacklistOperationRecord.setCreateName(infoVo.getOperateUserName());
-                BeanUtils.copyProperties(infoVo, blacklistOperationRecord);
-                this.save(blacklistOperationRecord);
+            if (!userVo.isCEO() && !userVo.isBack()) {
+                createInfoVo = this.baseMapper.getCreateInfoByCreateId(userVo);
             }
-        }).start();
+            final CreateInfoVo infoVo = createInfoVo;
+            new Thread(() -> {
+                if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
+                        && ObjectUtils.isNotEmpty(infoVo) && !infoVo.getMobile().equals("13800138000")) {
+                    BeanUtils.copyProperties(blacklistByMobile, blacklistOperationRecord);
+                    blacklistOperationRecord.setType(param.getType());
+                    blacklistOperationRecord.setRemarks(param.getRemarks());
+                    blacklistOperationRecord.setCreateTime(new Date());
+                    blacklistOperationRecord.setCreateBy(infoVo.getOperateUserId());
+                    blacklistOperationRecord.setCreateName(infoVo.getOperateUserName());
+                    BeanUtils.copyProperties(infoVo, blacklistOperationRecord);
+                    this.save(blacklistOperationRecord);
+                }
+            }).start();
+        }
 
     }
 }
