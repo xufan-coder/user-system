@@ -12,6 +12,9 @@ public class UserInductionSplitDto {
 
     private String leaveUserId;
 
+    /**身份证号*/
+    private String certificateCard;
+
     /**签约时间*/
     private Date signTime;
 

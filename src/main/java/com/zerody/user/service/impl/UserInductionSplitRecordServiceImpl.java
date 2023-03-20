@@ -183,6 +183,10 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         record.setDeleted(YesNo.NO);
         record.setCreateBy(param.getUserId());
         record.setCertificateCard(staff.getIdentityCard());
+        // 身份证号为空时  则使用传入进来的身份证号
+        if(StringUtils.isEmpty(record.getCertificateCard())) {
+            record.setCertificateCard(param.getCertificateCard());
+        }
         record.setLeaveUserName(staff.getUserName());
         record.setMobile(staff.getMobile());
         record.setId(UUIDutils.getUUID32());
