@@ -29,6 +29,6 @@ public class CreateInfoVo {
     private String operateUserId;
 
     /** 操作人手机号 */
-    private String mobile;
+    private String phoneNumber;
 
 }
