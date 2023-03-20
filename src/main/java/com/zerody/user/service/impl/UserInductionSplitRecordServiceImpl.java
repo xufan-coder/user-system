@@ -303,6 +303,10 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         userInfoDto.setDepartId(param.getSignDeptId());
         userInfoDto.setRoleId(param.getSignRoleId());
         userInfoDto.setCompanyId(param.getSignCompanyId());
+        // 当身份证号为空时 则使用传递进来的身份证号
+        if(StringUtils.isEmpty(userInfoDto.getCertificateCard())){
+            userInfoDto.setCertificateCard(param.getCertificateCard());
+        }
 
         //查询家庭成员
         QueryWrapper<FamilyMember> familyQw = new QueryWrapper<>();
