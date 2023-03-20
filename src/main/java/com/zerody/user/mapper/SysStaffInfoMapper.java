@@ -376,7 +376,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @param                certificateCard
      * @return               com.zerody.user.api.vo.StaffInfoVo
      */
-    StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard);
+    StaffInfoVo getUserByCertificateCard(@Param("idCard") String certificateCard,@Param("status") Integer status);
     /***
      * @description 修改入职时间
      * @author zhangpingping
@@ -431,7 +431,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     LeaveUserInfoVo getLeaveUserInfo(@Param("userId") String userId);
 
 
-    LeaveUserInfoVo getLeaveUserByCard(@Param("card") String card,@Param("compId")  String compId);
+    LeaveUserInfoVo getLeaveUserByCard(@Param("card") String card,@Param("mobile") String mobile, @Param("compId")  String compId);
 
     @Select({ "<script> update sys_staff_info set date_join = #{signTime}, leave_reason = '',date_left = null, status = 0 where id=#{staffId} </script>" })
     void updateLeaveInfo(@Param("staffId") String staffId,@Param("signTime") Date signTime);

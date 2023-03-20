@@ -49,7 +49,7 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
             if(DataUtil.isNotEmpty(one)){
                 throw new DefaultException("伙伴"+one.getUserName()+"已在名单中！");
             }else {
-                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId);
+                SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(userId,null,false);
                 UsersUseControl usersUseControl=new UsersUseControl();
                 BeanUtils.copyProperties(param,usersUseControl);
                 usersUseControl.setDeptId(sysUserInfoVo.getDepartId());

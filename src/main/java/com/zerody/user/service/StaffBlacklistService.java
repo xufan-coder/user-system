@@ -69,7 +69,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @param
      * @return               com.zerody.user.vo.MobileBlacklistQueryVo
      */
-    MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto);
+    MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto, UserVo userVo,boolean isTraverse);
 
     /**
      * 【行政角色添加黑名单】

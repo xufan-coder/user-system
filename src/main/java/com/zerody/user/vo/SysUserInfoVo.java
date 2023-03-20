@@ -374,6 +374,11 @@ public class SysUserInfoVo {
     private List<CommonFile> cooperationFiles;
 
     /**
+     * 合作申请图
+     */
+    private List<String> cooperationImages;
+
+    /**
      *    培训班次
      */
     private String trainNo;

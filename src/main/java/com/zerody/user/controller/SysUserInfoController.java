@@ -164,6 +164,21 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     /**
+     * @author kuang
+     * @description 根据角色类型获取用户列表
+     **/
+    @Override
+    @GetMapping("/get/user-ids/by-user-type/inner")
+    public DataResult<List<String>> getUserIdsByUserType(@RequestParam("userType") Integer userType) {
+        try {
+            return R.success(this.sysUserInfoService.getUserIdsByUserType(userType));
+        } catch (Exception e) {
+            log.error("通过角色名称查询用户失败：{}",e ,e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
      *
      *
      * @author               PengQiang
@@ -235,7 +250,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             if(DataUtil.isEmpty(checkLoginVo)){
                 return R.error("当前账号未开通，请联系管理员开通！");
             }
-            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId()).getCompanyId();
+            String companyId = this.sysStaffInfoService.selectStaffById(checkLoginVo.getStaffId(),false,UserUtils.getUser()).getCompanyId();
             SysComapnyInfoVo company = this.sysCompanyInfoService.getCompanyInfoById(companyId);
             if(DataUtil.isEmpty(company)){
                 return R.error("数据异常！");

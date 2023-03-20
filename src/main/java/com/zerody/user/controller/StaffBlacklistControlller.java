@@ -22,6 +22,7 @@ import com.zerody.user.vo.InternalControlVo;
 import com.zerody.user.vo.MobileBlacklistQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -317,7 +318,7 @@ public class StaffBlacklistControlller {
     public DataResult<MobileBlacklistQueryVo> getBlacklistByMobile(MobileAndIdentityCardDto dto){
         try {
 
-            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto);
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto, UserUtils.getUser(),true);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("根据手机号码查询是否被拉黑出错：{}", e, e);

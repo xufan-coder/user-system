@@ -59,7 +59,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void updateStaffStatus(String userId, Integer status, String leaveReason, UserVo user);
 
 
-    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user) throws ParseException, IllegalAccessException;
+    void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user,boolean isTraverse) throws ParseException, IllegalAccessException;
 
     /**
      * 获取伙伴详情
@@ -67,7 +67,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
      * @param id 员工id
      * @return
      */
-    SysUserInfoVo selectStaffById(String id);
+    SysUserInfoVo selectStaffById(String id,boolean isTraverse,UserVo userVo);
 
     void deleteStaffById(String staffId);
 
@@ -119,7 +119,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 根据用户id查询员工信息
     * @Date: 2022/12/9 9:55
     */
-    SysUserInfoVo selectStaffByUserId(String userId);
+    SysUserInfoVo selectStaffByUserId(String userId,UserVo userVo,boolean isTraverse);
 
     IPage<BosStaffInfoVo> getWxPageAllStaff(SysStaffInfoPageDto dto);
 
@@ -238,4 +238,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     Map<String, Object> getChargeLevel(String chargeId);
 
     StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId);
+
+    List<String> getDeptLeader(String userId,String signDeptId);
 }

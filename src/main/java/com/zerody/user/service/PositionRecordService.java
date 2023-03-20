@@ -1,6 +1,7 @@
 package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.vo.PositionRecordListVo;
