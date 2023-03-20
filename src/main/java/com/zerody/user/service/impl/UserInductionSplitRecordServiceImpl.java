@@ -122,6 +122,10 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         }
         // 判断跨公司的
         leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
+        // 编辑校验时不校验当前编辑账户
+        if(StringUtils.isNotEmpty(param.getFilterUserId()) && leave != null && leave.getUserId().equals(param.getFilterUserId())) {
+            return object;
+        }
         if(leave != null){
             msg = "该伙伴原签约["+leave.getCompanyName() +" + "+  (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
