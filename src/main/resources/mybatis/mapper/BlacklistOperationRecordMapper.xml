@@ -156,7 +156,7 @@
             sdi.depart_name AS operateDeptName,
             sui.id  AS operateUserId,
             sui.user_name  AS operateUserName,
-            sui.phone_number as mobile
+            sui.phone_number as phoneNumber
         FROM
         sys_user_info AS sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id

@@ -78,7 +78,7 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
                 if (DataUtil.isNotEmpty(byId)) {
                     createInfoVo.setOperateUserId(byId.getId());
                     createInfoVo.setOperateUserName(byId.getUserName());
-                    createInfoVo.setMobile(byId.getPhoneNumber());
+                    createInfoVo.setPhoneNumber(byId.getPhoneNumber());
                 }
             }
             if (userVo.isCEO()) {
@@ -86,7 +86,7 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
                 if (DataUtil.isNotEmpty(byId)) {
                     createInfoVo.setOperateUserId(userVo.getUserId());
                     createInfoVo.setOperateUserName(byId.getUserName());
-                    createInfoVo.setMobile(byId.getPhoneNumber());
+                    createInfoVo.setPhoneNumber(byId.getPhoneNumber());
                 }
             }
             if (!userVo.isCEO() && !userVo.isBack()) {
@@ -95,7 +95,7 @@ public class BlacklistOperationRecordServiceImpl extends ServiceImpl<BlacklistOp
             final CreateInfoVo infoVo = createInfoVo;
             new Thread(() -> {
                 if (ObjectUtils.isNotEmpty(blacklistByMobile) && blacklistByMobile.getIsBlack() == 1
-                        && ObjectUtils.isNotEmpty(infoVo) && !infoVo.getMobile().equals("13800138000")) {
+                        && ObjectUtils.isNotEmpty(infoVo) && !infoVo.getPhoneNumber().equals("13800138000")) {
                     BeanUtils.copyProperties(blacklistByMobile, blacklistOperationRecord);
                     blacklistOperationRecord.setType(param.getType());
                     blacklistOperationRecord.setRemarks(param.getRemarks());
