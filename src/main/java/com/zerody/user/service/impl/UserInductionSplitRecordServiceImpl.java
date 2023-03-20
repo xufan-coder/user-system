@@ -110,11 +110,16 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         //判断同公司的
         LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
         // 编辑校验时不校验当前编辑账户
-        if(StringUtils.isNotEmpty(param.getFilterUserId()) && leave != null && leave.getUserId().equals(param.getFilterUserId())) {
-            return object;
+        if(StringUtils.isNotEmpty(param.getFilterUserId()) ) {
+            StaffInfoVo staffInfoVo = sysStaffInfoMapper.getOneStaffInfo(param.getMobile(),param.getCertificateCard(),param.getCompanyId());
+            if(staffInfoVo != null && staffInfoVo.getUserId().equals(param.getFilterUserId()) ){
+                return object;
+            }
         }
+
+
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() + (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                     "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
             object.put("message",msg);
             object.put("verificationState",1);
@@ -127,7 +132,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
             return object;
         }
         if(leave != null){
-            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+  (leave.getDepartName() ==null ? "" : leave.getDepartName() )+"]，" +
+            msg = "该伙伴原签约["+leave.getCompanyName() + (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                     "不允许直接办理二次入职，请联系行政发起审批!";
             UserInductionVerificationVo verificationVo = new UserInductionVerificationVo();
             StaffInfoVo staff  =  this.sysStaffInfoService.getStaffInfo(leave.getUserId());
