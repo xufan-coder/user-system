@@ -16,6 +16,7 @@ import com.zerody.user.dto.StaffBlacklistAddDto;
 import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.service.StaffBlacklistService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.DateUtils;
 import com.zerody.user.vo.BlackListCount;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
 import com.zerody.user.vo.InternalControlVo;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -200,6 +202,9 @@ public class StaffBlacklistControlller {
 //                if(DataUtil.isEmpty(param.getCompanyId())) {
 //                    param.setCompanyId(UserUtils.getUser().getCompanyId());
 //                }
+//            }else {
+//                // 设置组织架构条件值
+//                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
 //            }
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
