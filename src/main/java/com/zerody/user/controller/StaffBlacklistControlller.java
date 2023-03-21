@@ -202,9 +202,10 @@ public class StaffBlacklistControlller {
 //                if(DataUtil.isEmpty(param.getCompanyId())) {
 //                    param.setCompanyId(UserUtils.getUser().getCompanyId());
 //                }
+//            }else {
+//                // 设置组织架构条件值
+//                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
 //            }
-            // 设置组织架构条件值
-            param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
