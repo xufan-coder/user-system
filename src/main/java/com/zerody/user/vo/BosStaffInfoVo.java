@@ -135,6 +135,10 @@ public class  BosStaffInfoVo {
      */
     private String trainNo;
 
+
+    /** 是否预备高管 0表示否 1表示是 2表示退学*/
+    private Integer isPrepareExecutive;
+
     /**
      * 企业id 集合
      */
