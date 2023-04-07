@@ -49,17 +49,22 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
             PrepareExecutiveRecord prepareExecutiveRecord = new PrepareExecutiveRecord();
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
-            BeanUtils.copyProperties(sysUserInfoVo,prepareExecutiveRecord);
-            prepareExecutiveRecord.setUserId(param.getUserId());
+            prepareExecutiveRecord.setCompanyId(sysUserInfoVo.getCompanyId());
+            prepareExecutiveRecord.setCompanyName(sysUserInfoVo.getCompanyName());
+            prepareExecutiveRecord.setRoleId(sysUserInfoVo.getRoleId());
+            prepareExecutiveRecord.setRoleName(sysUserInfoVo.getRoleName());
+            prepareExecutiveRecord.setUserId(sysUserInfoVo.getId());
+            prepareExecutiveRecord.setUserName(sysUserInfoVo.getUserName());
             prepareExecutiveRecord.setIsPrepareExecutive(param.getIsPrepareExecutive());
 
 
             if (param.getIsPrepareExecutive() == 1) {
+                // 查询表中是否存在记录
                 QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
                 qw.lambda().eq(PrepareExecutiveRecord::getIsPrepareExecutive,1);
                 qw.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
-                qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
-                qw.lambda().last("limit 0,1");
+                /*qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+                qw.lambda().last("limit 0,1");*/
                 PrepareExecutiveRecord record = this.getOne(qw);
 
                 //获取签约日期
@@ -76,6 +81,24 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 }else {
                     //添加入学日期
                     if (DataUtil.isNotEmpty(param.getEnterDate())){
+
+                        //获取上一次退学日期
+                        QueryWrapper<PrepareExecutiveRecord> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.lambda().eq(PrepareExecutiveRecord::getIsPrepareExecutive,2);
+                        queryWrapper.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
+                        queryWrapper.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
+                        queryWrapper.lambda().last("limit 0,1");
+                        PrepareExecutiveRecord one = this.getOne(queryWrapper);
+
+                        if (DataUtil.isNotEmpty(one)){
+                            //判断入学日期是否大于上次退学日期,入学日期必须大于上次退学日期
+                            if (param.getEnterDate().after(one.getOutDate())){
+                                prepareExecutiveRecord.setEnterDate(param.getEnterDate());
+                            }else {
+                                throw new DefaultException("入学日期输入错误,入学日期必须大于上次退学日期");
+                            }
+                        }
+
                         prepareExecutiveRecord.setEnterDate(param.getEnterDate());
                     }
                 }
@@ -83,7 +106,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
                 QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
                 qw.lambda().eq(PrepareExecutiveRecord::getUserId, param.getUserId());
-                qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+                qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
                 qw.lambda().last("limit 0,1");
                 PrepareExecutiveRecord record = this.getOne(qw);
                 if (DataUtil.isNotEmpty(record)) {

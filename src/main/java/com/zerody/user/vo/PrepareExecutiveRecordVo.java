@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,9 +34,11 @@ public class PrepareExecutiveRecordVo {
     private String roleName;
 
     /** 入学日期 */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date enterDate;
 
     /** 退学日期 */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date outDate;
 
     /** 退学原因 */
