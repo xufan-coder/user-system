@@ -137,10 +137,10 @@
                 AND (
                     FALSE
             <if test="param.mobile neq null and param.mobile neq ''">
-                or sui.phone_number = #{param.mobile}
+                or sb.mobile = #{param.mobile}
             </if>
             <if test="param.IdentityCard neq null and param.IdentityCard neq ''">
-                or sui.certificate_card = #{param.IdentityCard}
+                or sb.identity_card = #{param.IdentityCard}
             </if>
                 )
             </if>

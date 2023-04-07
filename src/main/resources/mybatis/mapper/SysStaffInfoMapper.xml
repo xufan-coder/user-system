@@ -125,6 +125,9 @@
               <if test="staff.useState neq null">
                 AND sui.use_state = #{staff.useState}
             </if>
+            <if test="staff.isPrepareExecutive neq null">
+                AND sui.is_prepare_executive = #{staff.isPrepareExecutive}
+            </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
     </select>

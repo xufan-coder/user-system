@@ -456,7 +456,13 @@
 
 
     <select id="getUserInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
-        select id AS user_id from sys_user_info where phone_number=#{mobile} AND( `status`=0 or `status`=3) limit 0,1
+        select
+        sui.id AS user_id,
+        ssi.comp_id AS `company_id`
+        from sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        where
+        sui.phone_number=#{mobile} AND ( sui.`status`=0 or sui.`status`=3) limit 0,1
     </select>
 
     <select id="getNotPushAppUser" resultType="com.zerody.user.vo.AppUserNotPushVo">

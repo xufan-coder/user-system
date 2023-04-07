@@ -3751,11 +3751,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, param.getOldUserId());
         SysStaffInfo  staff1 = this.getOne(staffQw);
-        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
-        userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
-        userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
-        this.sysUserInfoService.update(userUw);
+
+        //如果已经是离职的则不处理
+        Boolean leaveFlag=false;
+        if(StatusEnum.stop.getValue().equals(staff1.getStatus())){
+            leaveFlag=true;
+        }
+        if(!leaveFlag) {
+            UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+            userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+            userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
+            userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
+            this.sysUserInfoService.update(userUw);
+        }
 
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
@@ -3776,9 +3784,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
         positionRecordService.save(positionRecord);
 
-        // 修改员工档案为离职
-        this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.stop.getValue(), "调离新公司");
-        this.checkUtil.removeUserToken(staff1.getUserId());
+        if(!leaveFlag) {
+            // 修改员工档案为离职
+            this.sysStaffInfoMapper.updateStatus(staff1.getId(), StatusEnum.stop.getValue(), "调离新公司");
+            this.checkUtil.removeUserToken(staff1.getUserId());
+        }
         //查询家庭成员
         QueryWrapper<FamilyMember> familyQw = new QueryWrapper<>();
         familyQw.lambda().eq(FamilyMember::getUserId, param.getOldUserId());

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.PrepareExecutiveRecordMapper" >
+
+
+  <select id="getCreateInfoByCreateId" resultType="com.zerody.user.vo.CreateInfoVo">
+    SELECT
+    ssi.comp_id AS operateCompanyId,
+    sci.company_name AS operateCompanyName,
+    usd.department_id AS operateDeptId,
+    sdi.depart_name AS operateDeptName,
+    sui.id  AS operateUserId,
+    sui.user_name  AS operateUserName,
+    sui.phone_number as phoneNumber
+    FROM
+    sys_user_info AS sui
+    JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+    LEFT JOIN sys_company_info AS sci ON ssi.comp_id = sci.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
+    <where>
+      ssi.deleted = 0 and sui.status != -1
+      <if test="param.staffId neq null and param.staffId neq ''">
+        AND ssi.id = #{param.staffId}
+      </if>
+      <if test="param.userId neq null and param.userId neq ''">
+        AND sui.id = #{param.userId}
+      </if>
+      limit 0,1
+    </where>
+  </select>
+
+</mapper>
