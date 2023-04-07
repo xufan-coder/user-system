@@ -49,12 +49,8 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
             PrepareExecutiveRecord prepareExecutiveRecord = new PrepareExecutiveRecord();
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
-            prepareExecutiveRecord.setCompanyId(sysUserInfoVo.getCompanyId());
-            prepareExecutiveRecord.setCompanyName(sysUserInfoVo.getCompanyName());
-            prepareExecutiveRecord.setRoleId(sysUserInfoVo.getRoleId());
-            prepareExecutiveRecord.setRoleName(sysUserInfoVo.getRoleName());
-            prepareExecutiveRecord.setUserId(sysUserInfoVo.getId());
-            prepareExecutiveRecord.setUserName(sysUserInfoVo.getUserName());
+            BeanUtils.copyProperties(sysUserInfoVo,prepareExecutiveRecord);
+            prepareExecutiveRecord.setUserId(param.getUserId());
             prepareExecutiveRecord.setIsPrepareExecutive(param.getIsPrepareExecutive());
 
 
@@ -67,8 +63,8 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 //获取签约日期
                 Date registerTime = sysUserInfoVo.getRegisterTime();
 
-                //添加入学时间
                 if(DataUtil.isNotEmpty(record)){
+                    //修改入学日期
                     if (param.getEnterDate().after(registerTime) || param.getEnterDate().equals(registerTime)) {
                         record.setEnterDate(param.getEnterDate());
                         record.setUserId(param.getUserId());
@@ -76,6 +72,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                         return;
                     }
                 }else {
+                    //添加入学日期
                     if (DataUtil.isNotEmpty(param.getEnterDate())){
                         prepareExecutiveRecord.setEnterDate(param.getEnterDate());
                     }
@@ -89,6 +86,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 PrepareExecutiveRecord record = this.getOne(qw);
                 if (DataUtil.isNotEmpty(record)) {
 
+                    // 编辑退学日期和退学原因
                     if (DataUtil.isNotEmpty(record.getIsPrepareExecutive())) {
                         record.setOutReason(param.getOutReason());
                         /*FrameworkBlacListQueryPageVo infoById = staffBlacklistService.getInfoById(param.getUserId());
