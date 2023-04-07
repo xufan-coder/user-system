@@ -14,31 +14,31 @@ public class PrepareExecutiveRecord {
 
     private String id;
 
-    /* 用户id */
+    /** 用户id */
     private String userId;
 
-    /* 用户名称 */
+    /** 用户名称 */
     private String userName;
 
-    /* 所属公司id */
+    /** 所属公司id */
     private String companyId;
 
-    /* 所属公司 */
+    /** 所属公司 */
     private String companyName;
 
-    /* 所属角色id */
+    /** 所属角色id */
     private String roleId;
 
-    /* 所属角色 */
+    /** 所属角色 */
     private String roleName;
 
-    /* 入学日期 */
+    /** 入学日期 */
     private Date enterDate;
 
-    /* 退学日期 */
+    /** 退学日期 */
     private Date outDate;
 
-    /* 退学原因 */
+    /** 退学原因 */
     private String outReason;
 
     /** 创建人id*/

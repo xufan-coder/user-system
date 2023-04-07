@@ -58,6 +58,8 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
                 qw.lambda().eq(PrepareExecutiveRecord::getIsPrepareExecutive,1);
                 qw.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
+                qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+                qw.lambda().last("limit 0,1");
                 PrepareExecutiveRecord record = this.getOne(qw);
 
                 //获取签约日期
@@ -81,7 +83,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
                 QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
                 qw.lambda().eq(PrepareExecutiveRecord::getUserId, param.getUserId());
-                qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
+                qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
                 qw.lambda().last("limit 0,1");
                 PrepareExecutiveRecord record = this.getOne(qw);
                 if (DataUtil.isNotEmpty(record)) {
@@ -130,7 +132,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 if (!userVo.isCEO() && !userVo.isBack()) {
                     createInfoVo = this.baseMapper.getCreateInfoByCreateId(userVo);
                 }
-                final CreateInfoVo infoVo = createInfoVo;
+                CreateInfoVo infoVo = createInfoVo;
 
                 prepareExecutiveRecord.setCreateId(infoVo.getOperateUserId());
                 prepareExecutiveRecord.setCreateName(infoVo.getOperateUserName());
