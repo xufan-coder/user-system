@@ -239,6 +239,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private BlacklistOperationRecordService blacklistOperationRecordService;
 
+    @Autowired
+    private PrepareExecutiveRecordService prepareExecutiveRecordService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -700,6 +703,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             operationRecord.setType(1);
             operationRecord.setRemarks("修改伙伴信息");
             blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
+        }
+        //判断离职用户 是否是预备高管 如果是 则退学
+        if(setSysUserInfoDto.getStatus()==1){
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(setSysUserInfoDto.getId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+                if(prepareExecutiveRecord.getEnterDate().before(setSysUserInfoDto.getDateLeft()) &&
+                        DataUtil.isNotEmpty(setSysUserInfoDto.getDateLeft())){
+                    prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
+                    prepareExecutiveRecord.setOutReason(setSysUserInfoDto.getLeaveReason());
+                    PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                    BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                    this.prepareExecutiveRecordService.updateById(record);
+                }
+                sysUserInfo.setIsPrepareExecutive(2);
+            }
         }
         // 修改时添加身份证唯一校验 不包含离职账户
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard(),YesNo.NO);
