@@ -240,4 +240,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     StaffInfoVo getOneStaffInfo(String phone, String idCard, String companyId);
 
     List<String> getDeptLeader(String userId,String signDeptId);
+    /**
+    *
+    *  @description   通过公司id获取公司在职用户
+    *  @author        YeChangWei
+    *  @date          2023/4/7 19:56
+    *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+    */
+    List<StaffInfoVo> getCompanyIdInner(String companyId);
 }
