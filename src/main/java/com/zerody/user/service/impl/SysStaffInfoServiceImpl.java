@@ -3277,6 +3277,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return result;
     }
 
+    @Override
+    public List<StaffInfoVo> getCompanyIdInner(String companyId) {
+        return this.sysUserInfoMapper.getCompanyIdInner(companyId);
+}
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
