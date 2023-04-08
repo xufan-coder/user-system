@@ -19,14 +19,14 @@ public class PrepareExecutiveRecordDto {
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
 
-    /* 入学日期 */
+    /** 入学日期 */
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date enterDate;
 
-    /* 退学日期 */
+    /** 退学日期 */
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date outDate;
 
-    /* 退学原因 */
+    /** 退学原因 */
     private String outReason;
 }
