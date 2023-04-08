@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
-import com.zerody.user.domain.AdminUserInfo;
-import com.zerody.user.domain.CeoUserInfo;
-import com.zerody.user.domain.Data;
-import com.zerody.user.domain.PrepareExecutiveRecord;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.PrepareExecutiveRecordDto;
 import com.zerody.user.mapper.PrepareExecutiveRecordMapper;
 import com.zerody.user.service.*;
@@ -40,6 +37,9 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
     private CeoUserInfoService ceoUserInfoService;
 
     @Autowired
+    private SysUserInfoService sysUserInfoService;
+
+    @Autowired
     private StaffBlacklistService staffBlacklistService;
 
     @Override
@@ -49,6 +49,12 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
             PrepareExecutiveRecord prepareExecutiveRecord = new PrepareExecutiveRecord();
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
+
+            //同步预备高管状态字段到用户表
+            SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+            sysUserInfo.setIsPrepareExecutive(param.getIsPrepareExecutive());
+            sysUserInfoService.updateById(sysUserInfo);
+
             prepareExecutiveRecord.setCompanyId(sysUserInfoVo.getCompanyId());
             prepareExecutiveRecord.setCompanyName(sysUserInfoVo.getCompanyName());
             prepareExecutiveRecord.setRoleId(sysUserInfoVo.getRoleId());
@@ -56,7 +62,6 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             prepareExecutiveRecord.setUserId(sysUserInfoVo.getId());
             prepareExecutiveRecord.setUserName(sysUserInfoVo.getUserName());
             prepareExecutiveRecord.setIsPrepareExecutive(param.getIsPrepareExecutive());
-
 
             if (param.getIsPrepareExecutive() == 1) {
                 // 查询表中是否存在记录
