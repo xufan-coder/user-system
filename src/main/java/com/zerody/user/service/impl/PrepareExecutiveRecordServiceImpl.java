@@ -39,9 +39,6 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
     @Autowired
     private SysUserInfoService sysUserInfoService;
 
-    @Autowired
-    private StaffBlacklistService staffBlacklistService;
-
     @Override
     public void addPrepareExecutiveRecord(PrepareExecutiveRecordDto param, UserVo userVo) {
 
@@ -177,7 +174,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
         qw.lambda().eq(PrepareExecutiveRecord::getIsPrepareExecutive,2);
         qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
-        qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         List<PrepareExecutiveRecord> list = this.list(qw);
         List<PrepareExecutiveRecordVo> voList = new ArrayList<>();
         for (PrepareExecutiveRecord prepareExecutiveRecord:list) {
@@ -192,7 +189,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
     public PrepareExecutiveRecordVo getPrepareExecutiveRecord(String userId) {
         QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
         qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
-        qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
         PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
