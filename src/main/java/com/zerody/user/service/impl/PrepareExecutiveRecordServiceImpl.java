@@ -205,12 +205,28 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
-        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
-        if(DataUtil.isNotEmpty(one)){
-            BeanUtils.copyProperties(one,recordVo);
+        if(DataUtil.isEmpty(one)){
+            return null;
         }
-
+        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
+        BeanUtils.copyProperties(one,recordVo);
         return recordVo;
     }
+
+    @Override
+    public PrepareExecutiveRecordVo getPrepareExecutiveRecordInner(String userId) {
+        QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
+        qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+        qw.lambda().last("limit 0,1");
+        PrepareExecutiveRecord one = this.getOne(qw);
+        if(DataUtil.isNotEmpty(one) && one.getIsPrepareExecutive()!=1){
+            return null;
+        }
+        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
+        BeanUtils.copyProperties(one,recordVo);
+        return recordVo;
+    }
+
 
 }
