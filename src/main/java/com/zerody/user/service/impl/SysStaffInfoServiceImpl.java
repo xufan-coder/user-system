@@ -710,7 +710,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft()) ||
                         DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())){
-                    throw new DefaultException("入学时间要小于等于拉黑时间");
+                    throw new DefaultException("入学时间要小于等于离职时间");
                 }
                 prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
                 prepareExecutiveRecord.setOutReason(setSysUserInfoDto.getLeaveReason());
