@@ -313,6 +313,17 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
     }
 
     @Override
+    public List<String> getCeoByCompanyId(String companyId) {
+        List<String> list =new ArrayList<>();
+        //获取企业关联ceo信息
+        List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getCompanyIdBackRefById(companyId);
+     if(DataUtil.isNotEmpty(ceoCompanyList)){
+         List<String> ceoId = ceoCompanyList.stream().map(CeoCompanyRef::getCeoId).distinct().collect(Collectors.toList());
+         list.addAll(ceoId);
+     }
+        return list;
+    }
+    @Override
     public List<SubordinateUserQueryVo> getList() {
         QueryWrapper<CeoUserInfo> qw=new QueryWrapper<>();
         qw.lambda().eq(CeoUserInfo::getDeleted, YesNo.NO)

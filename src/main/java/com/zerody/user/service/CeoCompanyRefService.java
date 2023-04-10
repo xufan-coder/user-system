@@ -38,4 +38,12 @@ public interface CeoCompanyRefService extends IService<CeoCompanyRef> {
 	* @Date: 2022/10/20 15:22
 	*/
 	public List<CeoCompanyRef> getBackRefById(String ceoId);
+	/**
+	*
+	*  @description   获取企业关联ceo信息
+	*  @author        YeChangWei
+	*  @date          2023/4/10 9:41
+	*  @return        java.util.List<com.zerody.user.domain.CeoCompanyRef>
+	*/
+	List<CeoCompanyRef> getCompanyIdBackRefById(String companyId);
 }
