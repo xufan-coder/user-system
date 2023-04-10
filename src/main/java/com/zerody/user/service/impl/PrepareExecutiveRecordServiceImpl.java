@@ -177,10 +177,12 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         List<PrepareExecutiveRecord> list = this.list(qw);
         List<PrepareExecutiveRecordVo> voList = new ArrayList<>();
-        for (PrepareExecutiveRecord prepareExecutiveRecord:list) {
-            PrepareExecutiveRecordVo vo = new PrepareExecutiveRecordVo();
-            BeanUtils.copyProperties(prepareExecutiveRecord,vo);
-            voList.add(vo);
+        if(DataUtil.isNotEmpty(list) && list.size() > 0){
+            for (PrepareExecutiveRecord prepareExecutiveRecord:list) {
+                PrepareExecutiveRecordVo vo = new PrepareExecutiveRecordVo();
+                BeanUtils.copyProperties(prepareExecutiveRecord,vo);
+                voList.add(vo);
+            }
         }
         return voList;
     }
@@ -193,7 +195,10 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
         PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
-        BeanUtils.copyProperties(one,recordVo);
+        if(DataUtil.isNotEmpty(one)){
+            BeanUtils.copyProperties(one,recordVo);
+        }
+
         return recordVo;
     }
 
