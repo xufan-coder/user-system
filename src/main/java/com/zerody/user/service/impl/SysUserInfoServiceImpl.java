@@ -916,6 +916,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(userType == null) {
             return null;
         }
+        List<String> ceoList =  this.ceoUserInfoService.getAllCeo();
+        //总裁
+        if (UserTypeInfo.CRM_CEO == userType) {
+            return ceoList;
+        }
 
         List<String> adminList = this.sysUserInfoMapper.getAllCompanyAdmin();
         //总经理
@@ -949,6 +954,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
     public List<String> getUserIdsByCompanyIdUserType(Integer userType, String companyId) {
         if(userType == null) {
             return null;
+        }
+        List<String> ceoList = this.ceoUserInfoService.getCeoByCompanyId(companyId);
+        //总裁
+        if(UserTypeInfo.CRM_CEO == userType){
+            return ceoList;
         }
 
         List<String> adminList = this.sysUserInfoMapper.getCompanyAdmin(companyId);

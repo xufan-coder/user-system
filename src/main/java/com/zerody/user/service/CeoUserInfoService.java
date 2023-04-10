@@ -67,5 +67,12 @@ public interface CeoUserInfoService extends IService<CeoUserInfo> {
      * @Date: 2023/1/4 9:54
      */
     List<CeoUserVo> queryCeoList();
-
+    /**
+    *
+    *  @description   通过公司id查询关联CEO
+    *  @author        YeChangWei
+    *  @date          2023/4/10 9:37
+    *  @return        java.util.List<java.lang.String>
+    */
+    List<String> getCeoByCompanyId(String companyId);
 }
