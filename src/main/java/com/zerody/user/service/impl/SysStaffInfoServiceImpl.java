@@ -447,6 +447,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             user.setStatus(YesNo.NO);
             user.setIsEdit(YesNo.YES);
             this.sysUserInfoService.updateById(user);
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(user.getId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)) {
+                user.setIsPrepareExecutive(YesNo.YES);
+            }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
@@ -708,8 +712,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(setSysUserInfoDto.getStatus()==1){
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(setSysUserInfoDto.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                if(prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft()) ||
-                        DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())){
+                if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
+                        prepareExecutiveRecord.getEnterDate().before(setSysUserInfoDto.getDateLeft())){
                     throw new DefaultException("入学时间要小于等于离职时间");
                 }
                 prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
@@ -3789,7 +3793,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
             this.sysUserInfoService.update(userUw);
         }
-
+        //查询旧用户是否 加入预备高管 如果加入则退学
+        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getOldUserId());
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            if(prepareExecutiveRecordVo.getEnterDate().before(new Date())){
+                throw new DefaultException("入学时间要小于等于调离时间");
+            }
+            prepareExecutiveRecordVo.setOutDate(new Date());
+            prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+            PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+            BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
+            this.prepareExecutiveRecordService.updateById(record);
+            byId.setIsPrepareExecutive(2);
+            this.sysUserInfoService.updateById(byId);
+            userInfoDto.setIsPrepareExecutive(YesNo.YES);
+        }
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
         PositionRecord positionRecord = new PositionRecord();
