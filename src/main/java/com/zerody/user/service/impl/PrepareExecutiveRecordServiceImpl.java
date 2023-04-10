@@ -220,7 +220,10 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
-        if(DataUtil.isNotEmpty(one) && one.getIsPrepareExecutive()!=1){
+        if(DataUtil.isEmpty(one)){
+            return null;
+        }
+        if(one.getIsPrepareExecutive()!=1){
             return null;
         }
         PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
