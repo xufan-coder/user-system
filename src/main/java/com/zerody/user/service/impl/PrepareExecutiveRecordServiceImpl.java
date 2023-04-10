@@ -16,9 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author : xufan
@@ -126,7 +124,9 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                         }*/
 
                         if (DataUtil.isEmpty(param.getOutDate())) {
-                            record.setOutDate(new Date());
+                            if (record.getEnterDate().before(new Date()))
+                                record.setOutDate(new Date());
+                            throw new DefaultException("当前默认退学日期必须大于入学日期");
                         } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
                             record.setOutDate(param.getOutDate());
                         } else {
