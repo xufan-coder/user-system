@@ -130,8 +130,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                if(prepareExecutiveRecord.getEnterDate().after(param.getBlacklist().getApprovalTime()) ||
-                        DataUtil.isEmpty(param.getBlacklist().getApprovalTime())){
+                if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
+                        prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
                     throw new DefaultException("入学时间要小于等于拉黑时间");
                 }
                 prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
@@ -575,8 +575,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
                 PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
                 if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                    if(prepareExecutiveRecord.getEnterDate().after(param.getBlacklist().getApprovalTime()) ||
-                            DataUtil.isEmpty(param.getBlacklist().getApprovalTime())){
+                    if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
+                            prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
                         throw new DefaultException("入学时间要小于等于拉黑时间");
 
                     }
