@@ -167,6 +167,15 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             }
 
             this.save(prepareExecutiveRecord);
+        } else if (param.getIsPrepareExecutive() == 0){
+            //伙伴是预备高管时，之后预备高管操作不能选择：否，只能选退学
+            QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
+            qw.lambda().eq(PrepareExecutiveRecord::getIsPrepareExecutive,1);
+            qw.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
+            PrepareExecutiveRecord record = this.getOne(qw);
+            if (DataUtil.isNotEmpty(record)){
+                throw new DefaultException("操作失败，伙伴已经是预备高管，预备高管操作不能选择否，只能选退学");
+            }
         }
 
     }
