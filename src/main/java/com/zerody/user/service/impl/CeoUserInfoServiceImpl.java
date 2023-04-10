@@ -319,7 +319,15 @@ public class CeoUserInfoServiceImpl extends BaseService<CeoUserInfoMapper, CeoUs
         List<CeoCompanyRef> ceoCompanyList = ceoCompanyRefService.getCompanyIdBackRefById(companyId);
      if(DataUtil.isNotEmpty(ceoCompanyList)){
          List<String> ceoId = ceoCompanyList.stream().map(CeoCompanyRef::getCeoId).distinct().collect(Collectors.toList());
-         list.addAll(ceoId);
+         LambdaQueryWrapper<CeoUserInfo> wrapper = new LambdaQueryWrapper<>();
+         wrapper.eq(CeoUserInfo::getStatus, YesNo.NO);
+         wrapper.eq(CeoUserInfo::getDeleted, YesNo.NO);
+         wrapper.in(CeoUserInfo::getId,ceoId);
+         List<CeoUserInfo> ceoUserInfos = this.baseMapper.selectList(wrapper);
+         if(DataUtil.isNotEmpty(ceoUserInfos)) {
+             List<String> ids = ceoUserInfos.stream().map(CeoUserInfo::getId).distinct().collect(Collectors.toList());
+             list.addAll(ids);
+         }
      }
         return list;
     }
