@@ -128,7 +128,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         }
         //判断加入被拉黑用户 是否是预备高管 如果是 则退学
         if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
                         prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
@@ -136,6 +136,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 }
                 prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
                 prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
                 PrepareExecutiveRecord record = new PrepareExecutiveRecord();
                 BeanUtils.copyProperties(prepareExecutiveRecord,record);
                 this.prepareExecutiveRecordService.updateById(record);
@@ -573,7 +574,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
             //判断加入被拉黑用户 是否是预备高管 如果是 则退学
             if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
-                PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
+                PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
                 if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                     if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
                             prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
@@ -582,6 +583,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     }
                     prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
                     prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
+                    prepareExecutiveRecord.setIsPrepareExecutive(2);
                     PrepareExecutiveRecord record = new PrepareExecutiveRecord();
                     BeanUtils.copyProperties(prepareExecutiveRecord,record);
                     this.prepareExecutiveRecordService.updateById(record);

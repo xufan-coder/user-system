@@ -447,8 +447,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             user.setStatus(YesNo.NO);
             user.setIsEdit(YesNo.YES);
             this.sysUserInfoService.updateById(user);
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(user.getId());
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(user.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)) {
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                this.prepareExecutiveRecordService.updateById(record);
                 user.setIsPrepareExecutive(YesNo.YES);
             }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
@@ -710,7 +714,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         //判断离职用户 是否是预备高管 如果是 则退学
         if(setSysUserInfoDto.getStatus()==1){
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(setSysUserInfoDto.getId());
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(setSysUserInfoDto.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
                         prepareExecutiveRecord.getEnterDate().before(setSysUserInfoDto.getDateLeft())){
@@ -3794,13 +3798,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.sysUserInfoService.update(userUw);
         }
         //查询旧用户是否 加入预备高管 如果加入则退学
-        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getOldUserId());
+        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             if(prepareExecutiveRecordVo.getEnterDate().before(new Date())){
                 throw new DefaultException("入学时间要小于等于调离时间");
             }
             prepareExecutiveRecordVo.setOutDate(new Date());
             prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+            prepareExecutiveRecord.setIsPrepareExecutive(2);
             PrepareExecutiveRecord record = new PrepareExecutiveRecord();
             BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
             this.prepareExecutiveRecordService.updateById(record);
