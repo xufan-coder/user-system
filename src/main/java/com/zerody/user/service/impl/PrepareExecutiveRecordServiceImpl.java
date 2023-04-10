@@ -129,6 +129,8 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                             record.setOutDate(new Date());
                         } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
                             record.setOutDate(param.getOutDate());
+                        } else {
+                            throw new DefaultException("退学日期输入错误,退学日期必须大于入学日期");
                         }
                         record.setIsPrepareExecutive(param.getIsPrepareExecutive());
                         record.setUserId(param.getUserId());
