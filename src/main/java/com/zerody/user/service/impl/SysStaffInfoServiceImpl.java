@@ -3805,7 +3805,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             prepareExecutiveRecordVo.setOutDate(new Date());
             prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
-            prepareExecutiveRecord.setIsPrepareExecutive(2);
+            prepareExecutiveRecordVo.setIsPrepareExecutive(2);
             PrepareExecutiveRecord record = new PrepareExecutiveRecord();
             BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
             this.prepareExecutiveRecordService.updateById(record);
