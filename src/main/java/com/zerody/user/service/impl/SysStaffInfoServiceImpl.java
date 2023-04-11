@@ -475,10 +475,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
-        PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
-        if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecord.getIsPrepareExecutive());
-        }
 
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
@@ -486,7 +482,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
+        PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
+        log.info("记录————：{}"+prepareExecutiveRecord);
+        if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecord.getIsPrepareExecutive());
+        }
         // 新增用户信息
+        log.info("用户-----：{}"+sysUserInfo);
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
 
 //        SmsDto smsDto = new SmsDto();
