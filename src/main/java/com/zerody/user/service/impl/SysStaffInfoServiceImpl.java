@@ -3816,9 +3816,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 PrepareExecutiveRecord record = new PrepareExecutiveRecord();
                 BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
                 this.prepareExecutiveRecordService.updateById(record);
-                byId.setIsPrepareExecutive(2);
-                this.sysUserInfoService.updateById(byId);
-                userInfoDto.setIsPrepareExecutive(YesNo.YES);
+                SysUserInfo info = sysUserInfoService.getById(param.getOldUserId());
+                info.setIsPrepareExecutive(2);
+                this.sysUserInfoService.updateById(info);
             }
         }
         //添加一条任职记录
