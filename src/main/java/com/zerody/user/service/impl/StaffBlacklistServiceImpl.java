@@ -143,7 +143,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(blac.getUserId());
         log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
         if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-            if(prepareExecutiveRecord.getEnterDate().before(new Date())){
+            if(prepareExecutiveRecord.getEnterDate().after(new Date())){
                 throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
             }
             prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
@@ -610,7 +610,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
             log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                if(prepareExecutiveRecord.getEnterDate().before(new Date())){
+                if(prepareExecutiveRecord.getEnterDate().after(new Date())){
                     throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
                 }
                 prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
