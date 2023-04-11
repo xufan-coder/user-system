@@ -3797,21 +3797,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
             this.sysUserInfoService.update(userUw);
         }
-        //查询旧用户是否 加入预备高管 如果加入则退学
-        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
-        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
-            if(prepareExecutiveRecordVo.getEnterDate().before(new Date())){
-                throw new DefaultException("当前调离时间小于预备高管入学时间，不允许调离");
+        if (leaveFlag==true) {
+            //查询旧用户是否 加入预备高管 如果加入则退学
+            PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+                if(prepareExecutiveRecordVo.getEnterDate().before(new Date())){
+                    throw new DefaultException("当前调离时间小于预备高管入学时间，不允许调离");
+                }
+                prepareExecutiveRecordVo.setOutDate(new Date());
+                prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+                prepareExecutiveRecordVo.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                byId.setIsPrepareExecutive(2);
+                this.sysUserInfoService.updateById(byId);
+                userInfoDto.setIsPrepareExecutive(YesNo.YES);
             }
-            prepareExecutiveRecordVo.setOutDate(new Date());
-            prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
-            prepareExecutiveRecordVo.setIsPrepareExecutive(2);
-            PrepareExecutiveRecord record = new PrepareExecutiveRecord();
-            BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
-            this.prepareExecutiveRecordService.updateById(record);
-            byId.setIsPrepareExecutive(2);
-            this.sysUserInfoService.updateById(byId);
-            userInfoDto.setIsPrepareExecutive(YesNo.YES);
         }
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
