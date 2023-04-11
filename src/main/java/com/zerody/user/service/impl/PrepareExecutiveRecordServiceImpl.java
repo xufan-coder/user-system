@@ -178,6 +178,14 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             if (DataUtil.isNotEmpty(record)){
                 throw new DefaultException("操作失败，伙伴已经是预备高管，预备高管操作不能选择否，只能选退学");
             }
+
+            //伙伴退学之后，重新选择否，修改用户表状态
+            PrepareExecutiveRecordVo record1 = this.getPrepareExecutiveRecord(param.getUserId());
+            if (record1.getIsPrepareExecutive() == 2){
+                SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+                sysUserInfo.setIsPrepareExecutive(0);
+                sysUserInfoService.updateById(sysUserInfo);
+            }
         }
 
     }
