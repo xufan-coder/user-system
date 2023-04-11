@@ -717,7 +717,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(setSysUserInfoDto.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
-                        prepareExecutiveRecord.getEnterDate().before(setSysUserInfoDto.getDateLeft())){
+                        prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft())){
                     throw new DefaultException("当前离职时间小于预备高管入学时间，不允许离职");
                 }
                 prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
@@ -3801,7 +3801,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //查询旧用户是否 加入预备高管 如果加入则退学
             PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
-                if(prepareExecutiveRecordVo.getEnterDate().before(new Date())){
+                if(prepareExecutiveRecordVo.getEnterDate().after(new Date())){
                     throw new DefaultException("当前调离时间小于预备高管入学时间，不允许调离");
                 }
                 prepareExecutiveRecordVo.setOutDate(new Date());
