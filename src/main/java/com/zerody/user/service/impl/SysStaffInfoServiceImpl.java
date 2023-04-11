@@ -475,6 +475,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
+        PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
+        if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecord.getIsPrepareExecutive());
+        }
+
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
@@ -713,7 +718,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
         }
         //判断离职用户 是否是预备高管 如果是 则退学
-        if(setSysUserInfoDto.getStatus()==1){
+        if(StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())){
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(setSysUserInfoDto.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
@@ -722,6 +727,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 }
                 prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
                 prepareExecutiveRecord.setOutReason(setSysUserInfoDto.getLeaveReason());
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
                 PrepareExecutiveRecord record = new PrepareExecutiveRecord();
                 BeanUtils.copyProperties(prepareExecutiveRecord,record);
                 this.prepareExecutiveRecordService.updateById(record);
@@ -3797,7 +3803,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
             this.sysUserInfoService.update(userUw);
         }
-        if (leaveFlag==true) {
+        if (leaveFlag==false) {
             //查询旧用户是否 加入预备高管 如果加入则退学
             PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){

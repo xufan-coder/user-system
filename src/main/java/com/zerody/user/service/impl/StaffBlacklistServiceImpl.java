@@ -141,17 +141,15 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         SysUserInfo byId = this.userInfoService.getById(blac.getUserId());
         //判断加入被拉黑用户 是否是预备高管 如果是 则退学
         PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(blac.getUserId());
-        log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
         if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
             if(prepareExecutiveRecord.getEnterDate().after(new Date())){
                 throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
             }
-            prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
+            prepareExecutiveRecord.setOutDate(new Date());
             prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
             prepareExecutiveRecord.setIsPrepareExecutive(2);
             PrepareExecutiveRecord record = new PrepareExecutiveRecord();
             BeanUtils.copyProperties(prepareExecutiveRecord,record);
-            log.info("预备高管记录(复制后)------------"+record);
             this.prepareExecutiveRecordService.updateById(record);
             if(DataUtil.isNotEmpty(byId)){
                 byId.setIsPrepareExecutive(2);
@@ -608,12 +606,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
             //判断加入被拉黑用户 是否是预备高管 如果是 则退学
             PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
-            log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(prepareExecutiveRecord.getEnterDate().after(new Date())){
                     throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
                 }
-                prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
+                prepareExecutiveRecord.setOutDate(new Date());
                 prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
                 prepareExecutiveRecord.setIsPrepareExecutive(2);
                 PrepareExecutiveRecord record = new PrepareExecutiveRecord();
