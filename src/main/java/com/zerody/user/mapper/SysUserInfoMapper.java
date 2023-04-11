@@ -218,7 +218,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     */
     List<StaffInfoByAddressBookVo> getAllUser(@Param("queryDto") ComUserQueryDto queryDto);
 
-    @Select({ "<script> update sys_user_info set status = 0 where id=#{userId} </script>" })
+    @Select({ "<script> update sys_user_info set status = 0 ,is_edit = 1 where id=#{userId} </script>" })
     void updateLeaveState(@Param("userId")  String userId);
 
     List<SubordinateUserQueryVo> getLeaveUser(@Param("param") SubordinateUserQueryDto param);
@@ -226,4 +226,14 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     Boolean getByMobileOrCard(@Param("mobile") String mobile, @Param("certificateCard") String certificateCard);
 
     List<String> getUserAllTrainNo(@Param("companyId")String companyId);
+    /**
+     *
+     *  @description   通过公司id获取公司在职用户
+     *  @author        YeChangWei
+     *  @date          2023/4/7 19:56
+     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    List<StaffInfoVo> getCompanyIdInner(@Param("companyId")String companyId);
+
+    List<String> getCompanyAdmin(@Param("companyId")String companyId);
 }

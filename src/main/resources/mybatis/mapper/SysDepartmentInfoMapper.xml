@@ -458,4 +458,17 @@
             sdi.status = 0 and sdi.comp_id = #{companyId}
         </where>
     </select>
+    <select id="getDepList" resultType="com.zerody.user.api.vo.DepartInfoVo">
+        SELECT
+            sdi.id,
+            sdi.depart_name,
+            ssi.id AS admin_staff_id,
+            ssi.user_id AS admin_user_id,
+            ssi.user_name AS admin_user_name,
+            sdi.parent_id AS parent_depart_id
+        FROM
+            sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
+         where sdi.status = 0 and ssi.user_id is not null and ssi.comp_id = #{companyId}
+    </select>
 </mapper>

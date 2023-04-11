@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,6 +11,7 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserInductionPage;
+import com.zerody.user.dto.UserInductionVerificationDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.UserInductionRecordService;
@@ -118,6 +120,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         }else {
             dep = new UnionStaffDepart();
             dep.setId(UUIDutils.getUUID32());
+            dep.setStaffId(staffId);
             dep.setDepartmentId(induction.getSignDeptId());
             this.staffDepartMapper.insert(dep);
         }
@@ -144,6 +147,33 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         this.sysUserInfoMapper.updateLeaveState(induction.getLeaveUserId());
 
 
+    }
+
+    @Override
+    public JSONObject verification(UserInductionVerificationDto param) {
+        JSONObject object = new JSONObject();
+        String msg = "";
+        object.put("message",msg);
+        object.put("verificationState",0);
+        //判断同公司的
+        LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),param.getCompanyId());
+        if(leave != null){
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）";
+            object.put("message",msg);
+            object.put("verificationState",1);
+            return object;
+        }
+        // 判断跨公司的
+        leave = sysStaffInfoMapper.getLeaveUserByCard(param.getCertificateCard(),param.getMobile(),null);
+        if(leave != null){
+            msg = "该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    "不允许直接办理二次入职，请联系行政发起审批!";
+            object.put("message",msg);
+            object.put("verificationState",2);
+            return object;
+        }
+        return object;
     }
 
 }

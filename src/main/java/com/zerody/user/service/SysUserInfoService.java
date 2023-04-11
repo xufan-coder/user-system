@@ -285,4 +285,14 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     List<SubordinateUserQueryVo> getLeaveUser(SubordinateUserQueryDto param);
 
     List<String> getUserAllTrainNo(String companyId);
+
+    List<String> getUserIdsByUserType(Integer userType);
+    /**
+    *
+    *  @description   根据角色类型获取用户列表
+    *  @author        YeChangWei
+    *  @date          2023/4/8 9:11
+    *  @return        java.lang.Object
+    */
+    List<String> getUserIdsByCompanyIdUserType(Integer userType, String companyId);
 }

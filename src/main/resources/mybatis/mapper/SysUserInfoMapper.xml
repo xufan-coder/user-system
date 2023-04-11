@@ -456,7 +456,13 @@
 
 
     <select id="getUserInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
-        select id AS user_id from sys_user_info where phone_number=#{mobile} AND( `status`=0 or `status`=3) limit 0,1
+        select
+        sui.id AS user_id,
+        ssi.comp_id AS `company_id`
+        from sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        where
+        sui.phone_number=#{mobile} AND ( sui.`status`=0 or sui.`status`=3) limit 0,1
     </select>
 
     <select id="getNotPushAppUser" resultType="com.zerody.user.vo.AppUserNotPushVo">
@@ -685,5 +691,36 @@
         and sui.status !=-1
         group by sui.train_no
         order by sui.train_no desc
+    </select>
+    <select id="getCompanyIdInner" resultType="com.zerody.user.api.vo.StaffInfoVo">
+            SELECT sui.id            AS user_id,
+               ssi.comp_id       AS company_id,
+               ssi.user_name     AS user_name,
+               sci.company_name  AS company_name,
+               sui.phone_number  AS phone,
+               sdi.depart_name   AS depart_name,
+               ssi.id            AS staff_id,
+               sui.status,
+               sdi.id            AS `depart_id`,
+               ssi.evaluate,
+               ssi.user_type,
+               ssi.resume_url,
+               sui.create_time
+        FROM sys_user_info sui
+                 JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+                 LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+                 LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+                 LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+        where sui.status IN (0, 3) and ssi.comp_id = #{companyId}
+    </select>
+
+    <select id="getCompanyAdmin" resultType="java.lang.String">
+        SELECT
+            sui.id
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
+        JOIN company_admin AS ca ON ca.company_id = sci.id and ca.staff_id = ssi.id
+        WHERE sui.status IN (0, 3) AND sci.status = 0 and ssi.comp_id = #{companyId}
     </select>
 </mapper>

@@ -51,6 +51,7 @@
         SELECT
         DISTINCT sui.id AS id,
         ssi.comp_id AS compId,
+        ssi.user_id AS userId,
         ssi.user_name AS userName,
         sci.company_name AS companyName,
         sui.phone_number AS phone,
@@ -63,13 +64,14 @@
         sui.status = 3 AS teamwork,
         sui.status = 1 AS stops,
         ssi.id = #{staff.staffId} AS isAdmin,
-        sb.id is not null AS is_block,
+        sb.id is not null as is_block,
         sui.avatar as avatar,
         ssi.evaluate,
         ssi.resume_url,
         sui.use_state,
         sui.train_no,
-        ssi.is_diamond_member
+        ssi.is_diamond_member,
+        sui.is_prepare_executive
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -123,6 +125,9 @@
             </if>
               <if test="staff.useState neq null">
                 AND sui.use_state = #{staff.useState}
+            </if>
+            <if test="staff.isPrepareExecutive neq null">
+                AND sui.is_prepare_executive = #{staff.isPrepareExecutive}
             </if>
         </where>
         order by isAdmin DESC, stops, teamwork, activity, ssi.create_time desc
@@ -215,7 +220,8 @@
         sui.id_card_reverse,
         sui.id_card_front,
         sui.use_state,
-        sui.train_no
+        sui.train_no,
+        sui.is_prepare_executive
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -286,7 +292,8 @@
         sui.im_state,
         sui.use_state,
         sui.train_no,
-        sui.avatar AS user_avatar
+        sui.avatar AS user_avatar,
+        sui.is_prepare_executive
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -354,7 +361,8 @@
         urs.role_name AS roleName,
         sdi.depart_name AS departName,
         sci.company_name AS companyName,
-        ssi.id AS staffId
+        ssi.id AS staffId,
+        sui.is_prepare_executive
         FROM
         sys_staff_info ssi
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
@@ -961,7 +969,10 @@
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info AS sdi ON sdi.id = usd.department_id
         <where>
-            sui.status IN (0, 3)
+            <choose>
+                <when test="status == 1">sui.status IN (0, 1, 3)</when>
+                <otherwise>sui.status IN (0, 3)</otherwise>
+            </choose>
             <if test="idCard neq null and idCard neq ''">
                AND sui.certificate_card = #{idCard}
             </if>
@@ -1211,13 +1222,40 @@
 
 
     <select id="getLeaveUserByCard" resultType="com.zerody.user.vo.LeaveUserInfoVo">
-        select si.user_id,sc.company_name,di.depart_name
+        select si.user_id,si.comp_id as 'companyId',sc.company_name,di.depart_name
         from sys_staff_info si
         join sys_user_info sui on si.user_id = sui.id
         left join sys_company_info sc on si.comp_id = sc.id
         left join union_staff_depart sd on sd.staff_id = si.id
         left join sys_department_info di on sd.department_id = di.id
-        where si.`status` = 1 and sui.certificate_card = #{card} and si.comp_id=#{compId}
+        where si.`status` = 1 and ( sui.phone_number = #{mobile}
+            <if test="card neq null and card neq ''">
+                or sui.certificate_card = #{card}
+            </if>
+        )
+        <if test="compId neq null and compId neq ''">
+            and si.comp_id=#{compId}
+        </if>
         order by sui.create_time desc limit 1
+    </select>
+    <select id="getOneStaffInfo" resultType="com.zerody.user.api.vo.StaffInfoVo">
+        SELECT
+            si.user_id,
+            sc.company_name,
+            di.depart_name AS `department_name`
+        FROM
+        sys_staff_info AS si
+        JOIN sys_user_info AS sui ON si.user_id = sui.id
+        LEFT JOIN sys_company_info AS sc ON si.comp_id = sc.id
+        LEFT JOIN union_staff_depart AS sd ON sd.staff_id = si.id
+        LEFT JOIN sys_department_info AS di ON sd.department_id = di.id
+        WHERE
+
+        (sui.phone_number = #{phone} or sui.certificate_card = #{idCard})
+        <if test="companyId neq null and companyId neq ''">
+            and si.comp_id = #{companyId}
+        </if>
+        ORDER BY sui.create_time DESC
+        LIMIT 0,1
     </select>
 </mapper>

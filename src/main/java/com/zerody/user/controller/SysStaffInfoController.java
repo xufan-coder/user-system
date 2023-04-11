@@ -28,6 +28,7 @@ import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,7 +191,8 @@ public class SysStaffInfoController {
     public DataResult<Object> updateStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
         try {
             UserVo user = UserUtils.getUser();
-            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            boolean isTraverse=true;
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user,isTraverse);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -247,9 +249,11 @@ public class SysStaffInfoController {
     */
     @PutMapping("/app-update")
     public DataResult<Object> updateAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto){
+        log.info("app编辑伙伴入参: {}", JSON.toJSONString(setSysUserInfoDto));
         try {
             UserVo user = UserUtils.getUser();
-            sysStaffInfoService.updateStaff(setSysUserInfoDto,user);
+            boolean isTraverse=false;
+            sysStaffInfoService.updateStaff(setSysUserInfoDto,user,isTraverse);
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工信息错误:{}", JSON.toJSONString(setSysUserInfoDto), e);
@@ -267,7 +271,8 @@ public class SysStaffInfoController {
     @GetMapping("/get/{id}")
     public DataResult<SysUserInfoVo> selectStaffById(@PathVariable(name = "id") String staffId){
         try {
-            return R.success(sysStaffInfoService.selectStaffById(staffId));
+            UserVo userVo = UserUtils.getUser();
+            return R.success(sysStaffInfoService.selectStaffById(staffId,true,userVo));
         } catch (DefaultException e){
             log.error("根据员工id查询员工信息:{}", e.getMessage());
             return R.error(e.getMessage());
@@ -287,7 +292,7 @@ public class SysStaffInfoController {
     @GetMapping("/get-app/{id}")
     public DataResult<SysUserInfoVo> queryStaffById(@PathVariable String id){
         try {
-            return R.success(sysStaffInfoService.selectStaffById(id));
+            return R.success(sysStaffInfoService.selectStaffById(id,true,UserUtils.getUser()));
         } catch (DefaultException e){
             log.error("获取app伙伴详情错误:{}", e.getMessage());
             return R.error(e.getMessage());
@@ -333,7 +338,7 @@ public class SysStaffInfoController {
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
         log.info("根据用户id查询员工信息入参 {}", userId);
         try {
-            return R.success(sysStaffInfoService.selectStaffByUserId(userId));
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),true));
         } catch (DefaultException e) {
             log.error("查询员工信息出错:{}", e.getMessage());
             return R.error("查询员工信息信息");
@@ -343,6 +348,25 @@ public class SysStaffInfoController {
         }
     }
 
+    /**
+     * 根据用户id查询员工信息(内控操作记录)
+     *
+     * @param userId 用户id
+     * @return
+     */
+    @GetMapping("/get-by-user/operate")
+    public DataResult<SysUserInfoVo> getOperateInfoByUserId(@RequestParam(value = "userId")String userId){
+        log.info("根据用户id查询员工信息入参 {}", userId);
+        try {
+            return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),false));
+        } catch (DefaultException e) {
+            log.error("查询员工信息出错(内控操作记录):{}", e.getMessage());
+            return R.error("查询员工信息信息(内控操作记录)");
+        } catch (Exception e) {
+            log.error("查询员工信息出错(内控操作记录):{}", e, e);
+            return R.error("查询员工信息信息(内控操作记录)");
+        }
+    }
 
     /**
     *  删除员工
@@ -609,6 +633,26 @@ public class SysStaffInfoController {
     public DataResult<Object> getSameDept(@RequestParam(name = "userId") String userId,@RequestParam(name = "chooseUserId") String chooseUserId){
         try {
             Map<String,Object> map =sysStaffInfoService.getSameDept(userId,chooseUserId);
+            return R.success(map);
+        } catch (DefaultException e){
+            log.error("判断部门错误:{}", e.getMessage());
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根判断部门错误:{}", e, e);
+            return R.error("判断部门错误");
+        }
+    }
+
+    /**************************************************************************************************
+     **
+     * 原子服务获取部门领导 包含总经理
+     *
+     * @author kuang
+     */
+    @GetMapping("/get/dept-leader")
+    public DataResult<List<String>> getDeptLeader(@RequestParam(name = "userId") String userId,@RequestParam(name = "signDeptId",required = false) String signDeptId){
+        try {
+            List<String> map =sysStaffInfoService.getDeptLeader(userId,signDeptId);
             return R.success(map);
         } catch (DefaultException e){
             log.error("判断部门错误:{}", e.getMessage());

@@ -172,6 +172,11 @@ public class SetSysUserInfoDto extends SysUserInfo {
     private List<CommonFile> cooperationFiles;
 
     /**
+     * 合作申请图片
+     */
+    private List<String> cooperationImages;
+
+    /**
      * 终端
      */
     private String terminals;

@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
@@ -9,6 +10,7 @@ import com.zerody.user.domain.UserInductionRecord;
 import com.zerody.user.dto.TemplatePageDto;
 import com.zerody.user.dto.UseControlDto;
 import com.zerody.user.dto.UserInductionPage;
+import com.zerody.user.dto.UserInductionVerificationDto;
 import com.zerody.user.service.UserInductionRecordService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.UserBirthdayTemplateVo;

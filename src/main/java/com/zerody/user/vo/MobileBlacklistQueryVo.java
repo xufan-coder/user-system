@@ -1,6 +1,7 @@
 package com.zerody.user.vo;
 
-import com.zerody.common.utils.CollectionUtils;
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
 
 import java.util.List;
@@ -17,13 +18,33 @@ public class MobileBlacklistQueryVo {
     /** 是否被拉黑 */
     private Boolean isBlock;
 
-    /** 拉黑的企业名称 */
-    private List<String> companyNames;
+    /** 企业名称 */
+    private String companyName;
 
-    public String getCompanyName(){
-        if (CollectionUtils.isEmpty(this.companyNames)) {
-            return null;
+    /** 企业id */
+    private String companyId;
+
+    /** 拉黑的原因 */
+    private String reason;
+
+    /** 状态：0.在职、1.离职、2.黑名单、3.合作中*/
+    private Integer status;
+
+    /** 用户姓名 */
+    private String userName;
+
+    /** 手机号 */
+    private String phoneNumber;
+
+    /** 部门名称 */
+    private String departName;
+
+    public String getphoneNumber() {
+        if(StringUtils.isNotEmpty(phoneNumber)){
+            return CommonUtils.mobileEncrypt(phoneNumber);
         }
-        return String.join(",", this.companyNames);
+        return phoneNumber;
     }
+
+
 }

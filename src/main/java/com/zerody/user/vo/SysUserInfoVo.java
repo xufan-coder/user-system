@@ -374,6 +374,11 @@ public class SysUserInfoVo {
     private List<CommonFile> cooperationFiles;
 
     /**
+     * 合作申请图
+     */
+    private List<String> cooperationImages;
+
+    /**
      *    培训班次
      */
     private String trainNo;
@@ -381,4 +386,9 @@ public class SysUserInfoVo {
      *    账号状态
      */
     private Integer useState;
+
+    /**
+     *    是否加入预备高管  0代表否 1代表是 2代表退学
+     */
+    private Integer isPrepareExecutive;
 }

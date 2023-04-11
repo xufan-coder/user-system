@@ -44,9 +44,19 @@ public class  BosStaffInfoVo {
     private String companyName;
 
     /**
+     * 员工id
+     */
+    private String userId;
+
+    /**
      * 员工姓名
      */
     private String userName;
+
+    /**
+     * 黑名单id
+     */
+    private String blackId;
 
     /**
      * 手机号
@@ -124,6 +134,10 @@ public class  BosStaffInfoVo {
      * 培训班次
      */
     private String trainNo;
+
+
+    /** 是否预备高管 0表示否 1表示是 2表示退学*/
+    private Integer isPrepareExecutive;
 
     /**
      * 企业id 集合

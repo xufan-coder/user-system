@@ -10,6 +10,7 @@ import com.zerody.user.vo.UserCompar;
 import io.micrometer.core.instrument.util.StringUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,12 @@ public class StaffHistoryUtil {
 
 
     public static String updateHistory(List<StaffHistoryVo> historyVos,List<StaffHistoryDto> newHistoryList, String name) throws ParseException, IllegalAccessException {
-
+        if(historyVos ==null) {
+            historyVos =new ArrayList<>();
+        }
+        if(newHistoryList ==null) {
+            newHistoryList =new ArrayList<>();
+        }
         StringBuilder honor = new StringBuilder();
         for (StaffHistoryDto history : newHistoryList) {
             if (StringUtils.isEmpty(history.getId())) {
@@ -34,7 +40,12 @@ public class StaffHistoryUtil {
     }
 
     public static String updateRelation(List<SysStaffRelationVo> relationVos, List<SysStaffRelationDto> newRelationVos) throws ParseException, IllegalAccessException {
-
+        if(relationVos ==null) {
+            relationVos =new ArrayList<>();
+        }
+        if(newRelationVos ==null) {
+            newRelationVos =new ArrayList<>();
+        }
         StringBuilder honor = new StringBuilder();
         for(int i=0;i<newRelationVos.size();i++){
             SysStaffRelationDto history = newRelationVos.get(i);
@@ -65,11 +76,18 @@ public class StaffHistoryUtil {
 
     public static String getDiplomas(List<String> oldDiplomas,List<String> diplomas,String name){
         StringBuilder honor = new StringBuilder();
+        if(oldDiplomas ==null) {
+            oldDiplomas =new ArrayList<>();
+        }
+        if(diplomas ==null) {
+            diplomas =new ArrayList<>();
+        }
         for(String old : oldDiplomas) {
             if(!diplomas.contains(old)){
                 honor.append("删除了").append(name).append(":[").append(old).append("]   ");
             }
         }
+
         for(String d : diplomas) {
             if(!oldDiplomas.contains(d)){
                 honor.append("新增了").append(name).append(":[").append(d).append("]   ");
@@ -82,7 +100,12 @@ public class StaffHistoryUtil {
     public static String updateResume(List<UserResume> oldResumeList, List<UserResume> userResumes) throws ParseException, IllegalAccessException {
         StringBuilder honor = new StringBuilder();
         UserResume resume = new UserResume();
-
+        if(oldResumeList ==null) {
+            oldResumeList =new ArrayList<>();
+        }
+        if(userResumes ==null) {
+            userResumes =new ArrayList<>();
+        }
         // 比对个人履历的修改项
         for(int i=0;i<userResumes.size();i++){
             UserResume history = userResumes.get(i);
@@ -115,6 +138,13 @@ public class StaffHistoryUtil {
     public static String updateFamily(List<FamilyMember> oldFamilyList, List<FamilyMember> familyMembers) throws ParseException, IllegalAccessException {
         StringBuilder honor = new StringBuilder();
         FamilyMember family = new FamilyMember();
+        if(oldFamilyList ==null) {
+            oldFamilyList =new ArrayList<>();
+        }
+        if(familyMembers ==null) {
+            familyMembers =new ArrayList<>();
+        }
+
 
         for(int i=0;i<familyMembers.size();i++){
             FamilyMember history = familyMembers.get(i);
