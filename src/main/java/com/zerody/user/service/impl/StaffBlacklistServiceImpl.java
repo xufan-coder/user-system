@@ -161,8 +161,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
         }
         //添加一条任职记录
+        StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
-        SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(sysUserInfoDto.getCompanyId());
         PositionRecord positionRecord = new PositionRecord();
         QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysUserInfoDto.getStaffId());
@@ -170,8 +170,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         positionRecord.setRoleName(unionRoleStaff.getRoleName());
         positionRecord.setId(UUIDutils.getUUID32());
         positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
-        positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
-        positionRecord.setCompanyName(companyInfo.getCompanyName());
+        SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staff.getCompanyId());
+        if(DataUtil.isNotEmpty(companyInfo)){
+            positionRecord.setCompanyId(staff.getCompanyId());
+            positionRecord.setCompanyName(companyInfo.getCompanyName());
+        }
         positionRecord.setUserId(blac.getUserId());
         positionRecord.setUserName(sysUserInfoDto.getUserName());
         positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
@@ -628,7 +631,6 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             }
             //添加一条任职记录
             SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
-            SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(sysUserInfoDto.getCompanyId());
             PositionRecord positionRecord = new PositionRecord();
             QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysUserInfoDto.getStaffId());
@@ -636,8 +638,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             positionRecord.setRoleName(unionRoleStaff.getRoleName());
             positionRecord.setId(UUIDutils.getUUID32());
             positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
-            positionRecord.setCompanyId(sysUserInfoDto.getCompanyId());
-            positionRecord.setCompanyName(companyInfo.getCompanyName());
+            positionRecord.setCompanyId(staff.getCompanyId());
+            SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staff.getCompanyId());
+            if(DataUtil.isNotEmpty(companyInfo)){
+                positionRecord.setCompanyName(companyInfo.getCompanyName());
+            }
             positionRecord.setUserId(blac.getUserId());
             positionRecord.setUserName(sysUserInfoDto.getUserName());
             positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
