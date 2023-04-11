@@ -144,7 +144,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
         if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
             if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
-                    prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
+                    prepareExecutiveRecord.getEnterDate().before(new Date())){
                 throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
             }
             prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
@@ -179,7 +179,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         positionRecord.setUserName(sysUserInfoDto.getUserName());
         positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
         positionRecord.setCreateTime(new Date());
-        positionRecord.setQuitTime(blac.getApprovalTime());
+        positionRecord.setQuitTime(new Date());
         positionRecord.setQuitReason(blac.getReason());
         positionRecordService.save(positionRecord);
         blac.setCreateTime(new Date());
@@ -612,7 +612,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
-                        prepareExecutiveRecord.getEnterDate().before(param.getBlacklist().getApprovalTime())){
+                        prepareExecutiveRecord.getEnterDate().before(new Date())){
                     throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
 
                 }
@@ -647,7 +647,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             positionRecord.setUserName(sysUserInfoDto.getUserName());
             positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
             positionRecord.setCreateTime(new Date());
-            positionRecord.setQuitTime(blac.getApprovalTime());
+            positionRecord.setQuitTime(new Date());
             positionRecord.setQuitReason(blac.getReason());
             positionRecordService.save(positionRecord);
 //            this.remove(blacQw);
