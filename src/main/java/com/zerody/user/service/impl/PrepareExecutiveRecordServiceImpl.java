@@ -124,9 +124,11 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                         }*/
 
                         if (DataUtil.isEmpty(param.getOutDate())) {
-                            if (record.getEnterDate().before(new Date()))
+                            if (record.getEnterDate().before(new Date())) {
                                 record.setOutDate(new Date());
-                            throw new DefaultException("当前默认退学日期必须大于入学日期");
+                            }else {
+                                throw new DefaultException("当前默认退学日期必须大于入学日期");
+                            }
                         } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
                             record.setOutDate(param.getOutDate());
                         } else {
@@ -230,6 +232,4 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         BeanUtils.copyProperties(one,recordVo);
         return recordVo;
     }
-
-
 }
