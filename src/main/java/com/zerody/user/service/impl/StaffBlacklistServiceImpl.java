@@ -120,6 +120,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
+        log.info("拉黑:{}",blac);
         QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
         blacQw.lambda().and(bl ->
                 bl.eq(StaffBlacklist::getMobile, blac.getMobile())
@@ -139,8 +140,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         }
         SysUserInfo byId = this.userInfoService.getById(blac.getUserId());
         //判断加入被拉黑用户 是否是预备高管 如果是 则退学
-        if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
+        log.info("拉黑状态:{}",blac.getState());
+        if(StaffBlacklistApproveState.BLOCK.name().equals(blac.getState())){
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(blac.getUserId());
             log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                 if(DataUtil.isEmpty(param.getBlacklist().getApprovalTime()) ||
@@ -579,6 +581,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
+        log.info("拉黑:{}",blac);
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
@@ -605,6 +608,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             }
 
             //判断加入被拉黑用户 是否是预备高管 如果是 则退学
+            log.info("拉黑状态:{}",blac.getState());
             if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
                 PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
                 log.info("预备高管记录(复制前)------------"+prepareExecutiveRecord);
