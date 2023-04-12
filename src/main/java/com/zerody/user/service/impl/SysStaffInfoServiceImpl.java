@@ -476,7 +476,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
-
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
@@ -485,19 +484,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         //获取旧账号之前的状态
         // 新增用户信息
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
+        }
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
         //新用户 预备高管状态变更
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
-                sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
-                this.sysUserInfoService.updateById(sysUserInfo);
-                PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
-                recordDto.setUserId(sysUserInfo.getId());
-                recordDto.setIsPrepareExecutive(1);
-                recordDto.setEnterDate(new Date());
-                UserVo vo = new UserVo();
-                this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto, vo);
-                log.info("记录-----：{}" + JSON.toJSONString(recordDto));
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                record.setUserId(sysUserInfo.getId());
+                record.setUserName(sysUserInfo.getUserName());
+                record.setCompanyId(setSysUserInfoDto.getCompanyId());
+                record.setRoleName(sysUserInfo.getRoleName());
+                record.setRoleId(setSysUserInfoDto.getRoleId());
+                record.setUserId(sysUserInfo.getId());
+                record.setIsPrepareExecutive(1);
+                record.setEnterDate(new Date());
+                this.prepareExecutiveRecordService.save(record);
             }
         }
 //        SmsDto smsDto = new SmsDto();
