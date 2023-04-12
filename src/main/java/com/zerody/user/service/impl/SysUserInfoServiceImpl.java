@@ -983,6 +983,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             qw.lambda().eq(SysStaffInfo::getUserType,userType);
             qw.lambda().in(SysStaffInfo::getStatus,0,3);
             qw.lambda().notIn(SysStaffInfo::getId,adminList);
+            qw.lambda().eq(SysStaffInfo::getCompId,companyId);
             List<SysStaffInfo> list = this.sysStaffInfoService.list(qw);
             return list.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
         }
