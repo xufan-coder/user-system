@@ -483,6 +483,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
         //获取旧账号之前的状态
+        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
         // 新增用户信息
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
@@ -519,7 +520,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
         log.info("用户id"+sysUserInfo.getId());
-        log.info("员工id"+staff.getId());
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
