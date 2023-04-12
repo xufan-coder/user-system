@@ -567,8 +567,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 .ne(BaseModel::getStatus, StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
-
-        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
         //新用户 预备高管状态变更
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
