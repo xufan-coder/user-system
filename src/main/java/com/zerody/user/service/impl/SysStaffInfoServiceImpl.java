@@ -484,14 +484,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
         //获取旧账号之前的状态
-        log.info("记录-----：{}"+prepareExecutiveRecordVo);
-        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
-            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
-        }
         // 新增用户信息
         log.info("用户-----：{}"+sysUserInfo);
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
-
+        log.info("记录-----：{}"+prepareExecutiveRecordVo);
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
+            this.sysUserInfoService.updateById(sysUserInfo);
+            PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
+            recordDto.setUserId(sysUserInfo.getId());
+            recordDto.setEnterDate(new Date());
+            this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto,null);
+        }
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
 //        Map<String, Object> content = new HashMap<>();
