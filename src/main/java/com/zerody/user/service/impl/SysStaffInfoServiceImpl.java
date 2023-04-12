@@ -485,16 +485,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         //获取旧账号之前的状态
         // 新增用户信息
-        log.info("用户-----：{}"+sysUserInfo);
+
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
-        log.info("记录-----：{}"+prepareExecutiveRecordVo);
-        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
-            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
-            this.sysUserInfoService.updateById(sysUserInfo);
-            PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
-            recordDto.setUserId(sysUserInfo.getId());
-            recordDto.setEnterDate(new Date());
-            this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto,null);
+        log.info("用户-----：{}"+sysUserInfo);
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==2){
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+                sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
+                this.sysUserInfoService.updateById(sysUserInfo);
+                PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
+                recordDto.setUserId(sysUserInfo.getId());
+                recordDto.setIsPrepareExecutive(1);
+                recordDto.setEnterDate(new Date());
+                UserVo vo = new UserVo();
+                this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto,vo);
+                log.info("记录-----：{}"+recordDto);
+            }
         }
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
