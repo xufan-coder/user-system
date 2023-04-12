@@ -485,11 +485,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String initPwd = SysStaffInfoService.getInitPwd();
         //获取旧账号之前的状态
         // 新增用户信息
-
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
-        log.info("用户-----：{}"+sysUserInfo);
-        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==2){
-            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+        //新用户 预备高管状态变更
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
                 sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
                 this.sysUserInfoService.updateById(sysUserInfo);
                 PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
@@ -497,8 +496,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 recordDto.setIsPrepareExecutive(1);
                 recordDto.setEnterDate(new Date());
                 UserVo vo = new UserVo();
-                this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto,vo);
-                log.info("记录-----：{}"+recordDto);
+                this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto, vo);
+                log.info("记录-----：{}" + JSON.toJSONString(recordDto));
             }
         }
 //        SmsDto smsDto = new SmsDto();
