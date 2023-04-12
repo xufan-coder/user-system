@@ -521,7 +521,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
-        string roleName=null;
+        String roleName=null;
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -534,7 +534,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
             rs.setRoleName(obj.get("roleName").toString());
-            roleName=obj.get("roleName").toString()
+            roleName=obj.get("roleName").toString();
             unionRoleStaffMapper.insert(rs);
         }
         //岗位
