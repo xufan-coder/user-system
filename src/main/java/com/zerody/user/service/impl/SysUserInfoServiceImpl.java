@@ -916,6 +916,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(userType == null) {
             return null;
         }
+        List<String> ceoList =  this.ceoUserInfoService.getAllCeo();
+        //总裁
+        if (UserTypeInfo.CRM_CEO == userType) {
+            return ceoList;
+        }
 
         List<String> adminList = this.sysUserInfoMapper.getAllCompanyAdmin();
         //总经理
@@ -923,6 +928,45 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return adminList;
         }
         List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getAllDepList();
+        //副总
+        if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
+            return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //团队长
+        if(UserTypeInfo.LONG_TEAM == userType){
+            return departUser.stream().filter(s-> !StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());
+        }
+        //伙伴
+        if(UserTypeInfo.PARTNER == userType){
+            adminList.addAll(departUser.stream().map(DepartInfoVo::getAdminUserId).collect(Collectors.toList()));
+
+            QueryWrapper<SysStaffInfo> qw = new QueryWrapper<>();
+            qw.lambda().eq(SysStaffInfo::getUserType,userType);
+            qw.lambda().in(SysStaffInfo::getStatus,0,3);
+            qw.lambda().notIn(SysStaffInfo::getId,adminList);
+            List<SysStaffInfo> list = this.sysStaffInfoService.list(qw);
+            return list.stream().map(SysStaffInfo::getUserId).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getUserIdsByCompanyIdUserType(Integer userType, String companyId) {
+        if(userType == null) {
+            return null;
+        }
+        List<String> ceoList = this.ceoUserInfoService.getCeoByCompanyId(companyId);
+        //总裁
+        if(UserTypeInfo.CRM_CEO == userType){
+            return ceoList;
+        }
+
+        List<String> adminList = this.sysUserInfoMapper.getCompanyAdmin(companyId);
+        //总经理
+        if(UserTypeInfo.COMPANY_ADMIN == userType){
+            return adminList;
+        }
+        List<DepartInfoVo>  departUser = this.sysDepartmentInfoMapper.getDepList(companyId);
         //副总
         if(UserTypeInfo.DEPUTY_GENERAL_MANAGERv == userType){
             return departUser.stream().filter(s-> StringUtils.isEmpty(s.getParentDepartId())).map(DepartInfoVo::getAdminUserId).collect(Collectors.toList());

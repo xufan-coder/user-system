@@ -226,4 +226,14 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     Boolean getByMobileOrCard(@Param("mobile") String mobile, @Param("certificateCard") String certificateCard);
 
     List<String> getUserAllTrainNo(@Param("companyId")String companyId);
+    /**
+     *
+     *  @description   通过公司id获取公司在职用户
+     *  @author        YeChangWei
+     *  @date          2023/4/7 19:56
+     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
+     */
+    List<StaffInfoVo> getCompanyIdInner(@Param("companyId")String companyId);
+
+    List<String> getCompanyAdmin(@Param("companyId")String companyId);
 }

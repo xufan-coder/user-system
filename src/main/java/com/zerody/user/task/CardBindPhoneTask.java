@@ -7,6 +7,14 @@ import com.zerody.user.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+/**************************************************************************************************
+ **
+ *  代码作废，删除job定时任务
+ *
+ * @author DaBai
+ * @date 2023/4/11  9:34
+ */
+
 
 /**
  * 修改名片用户手机号绑定

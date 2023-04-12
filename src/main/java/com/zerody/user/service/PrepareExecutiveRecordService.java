@@ -19,4 +19,7 @@ public interface PrepareExecutiveRecordService extends IService<PrepareExecutive
     List<PrepareExecutiveRecordVo> getPrepareExecutiveRecordList(String userId);
 
     PrepareExecutiveRecordVo getPrepareExecutiveRecord(String userId);
+
+    PrepareExecutiveRecordVo getPrepareExecutiveRecordInner(String userId);
+
 }
