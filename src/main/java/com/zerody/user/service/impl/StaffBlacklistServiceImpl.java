@@ -32,6 +32,8 @@ import com.zerody.user.handler.blacklist.BlacklistParamHandle;
 import com.zerody.user.handler.user.SysUserDimissionHandle;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
 import com.zerody.user.mapper.StaffBlacklistMapper;
+import com.zerody.user.mapper.SysStaffInfoMapper;
+import com.zerody.user.mapper.UnionRoleStaffMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.DistinctByProperty;
@@ -106,9 +108,19 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private PrepareExecutiveRecordService prepareExecutiveRecordService;
 
+    @Autowired
+    private SysStaffInfoMapper sysStaffInfoMapper;
+
+    @Autowired
+    private UnionRoleStaffMapper unionRoleStaffMapper;
+
+    @Autowired
+    private PositionRecordService positionRecordService;
+
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
+        log.info("拉黑:{}",blac);
         QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
         blacQw.lambda().and(bl ->
                 bl.eq(StaffBlacklist::getMobile, blac.getMobile())
@@ -126,27 +138,47 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (DataUtil.isNotEmpty(oldBlac)) {
             throw new DefaultException("该员工已被拉黑！无法重复发起");
         }
+        SysUserInfo byId = this.userInfoService.getById(blac.getUserId());
         //判断加入被拉黑用户 是否是预备高管 如果是 则退学
-        if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
-            if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                if(prepareExecutiveRecord.getEnterDate().after(param.getBlacklist().getApprovalTime()) ||
-                        DataUtil.isEmpty(param.getBlacklist().getApprovalTime())){
-                    throw new DefaultException("入学时间要小于等于拉黑时间");
-                }
-                prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
-                prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
-                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
-                BeanUtils.copyProperties(prepareExecutiveRecord,record);
-                this.prepareExecutiveRecordService.updateById(record);
-                SysUserInfo byId = this.userInfoService.getById(param.getBlacklist().getUserId());
-                if(DataUtil.isNotEmpty(byId)){
-                    byId.setIsPrepareExecutive(2);
-                    this.userInfoService.updateById(byId);
-                }
-
+        PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(blac.getUserId());
+        if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+            if(prepareExecutiveRecord.getEnterDate().after(new Date())){
+                throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
             }
+            prepareExecutiveRecord.setOutDate(new Date());
+            prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
+            prepareExecutiveRecord.setIsPrepareExecutive(2);
+            PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+            BeanUtils.copyProperties(prepareExecutiveRecord,record);
+            this.prepareExecutiveRecordService.updateById(record);
+            if(DataUtil.isNotEmpty(byId)){
+                byId.setIsPrepareExecutive(2);
+                this.userInfoService.updateById(byId);
+            }
+
         }
+        //添加一条任职记录
+        StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
+        SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
+        PositionRecord positionRecord = new PositionRecord();
+        QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysUserInfoDto.getStaffId());
+        UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
+        positionRecord.setRoleName(unionRoleStaff.getRoleName());
+        positionRecord.setId(UUIDutils.getUUID32());
+        positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
+        SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staff.getCompanyId());
+        if(DataUtil.isNotEmpty(companyInfo)){
+            positionRecord.setCompanyId(staff.getCompanyId());
+            positionRecord.setCompanyName(companyInfo.getCompanyName());
+        }
+        positionRecord.setUserId(blac.getUserId());
+        positionRecord.setUserName(sysUserInfoDto.getUserName());
+        positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
+        positionRecord.setCreateTime(new Date());
+        positionRecord.setQuitTime(new Date());
+        positionRecord.setQuitReason(blac.getReason());
+        positionRecordService.save(positionRecord);
         blac.setCreateTime(new Date());
         blac.setApprovalTime(new Date());
         blac.setState(StaffBlacklistApproveState.BLOCK.name());
@@ -546,6 +578,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Override
     public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
+        log.info("拉黑:{}",blac);
         if (StringUtils.isEmpty(blac.getId())) {
             QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
@@ -572,27 +605,45 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             }
 
             //判断加入被拉黑用户 是否是预备高管 如果是 则退学
-            if(StaffBlacklistApproveState.BLOCK.name().equals(param.getBlacklist().getState())){
-                PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getBlacklist().getUserId());
-                if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                    if(prepareExecutiveRecord.getEnterDate().after(param.getBlacklist().getApprovalTime()) ||
-                            DataUtil.isEmpty(param.getBlacklist().getApprovalTime())){
-                        throw new DefaultException("入学时间要小于等于拉黑时间");
-
-                    }
-                    prepareExecutiveRecord.setOutDate(param.getBlacklist().getApprovalTime());
-                    prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
-                    PrepareExecutiveRecord record = new PrepareExecutiveRecord();
-                    BeanUtils.copyProperties(prepareExecutiveRecord,record);
-                    this.prepareExecutiveRecordService.updateById(record);
-                    SysUserInfo byId = this.userInfoService.getById(param.getBlacklist().getUserId());
-                    if(DataUtil.isNotEmpty(byId)){
-                        byId.setIsPrepareExecutive(2);
-                        this.userInfoService.updateById(byId);
-                    }
-
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getBlacklist().getUserId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+                if(prepareExecutiveRecord.getEnterDate().after(new Date())){
+                    throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
+                }
+                prepareExecutiveRecord.setOutDate(new Date());
+                prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                log.info("预备高管记录(复制后)------------"+record);
+                this.prepareExecutiveRecordService.updateById(record);
+                SysUserInfo byId = this.userInfoService.getById(param.getBlacklist().getUserId());
+                if(DataUtil.isNotEmpty(byId)){
+                    byId.setIsPrepareExecutive(2);
+                    this.userInfoService.updateById(byId);
                 }
             }
+            //添加一条任职记录
+            SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
+            PositionRecord positionRecord = new PositionRecord();
+            QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysUserInfoDto.getStaffId());
+            UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
+            positionRecord.setRoleName(unionRoleStaff.getRoleName());
+            positionRecord.setId(UUIDutils.getUUID32());
+            positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
+            positionRecord.setCompanyId(staff.getCompanyId());
+            SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staff.getCompanyId());
+            if(DataUtil.isNotEmpty(companyInfo)){
+                positionRecord.setCompanyName(companyInfo.getCompanyName());
+            }
+            positionRecord.setUserId(blac.getUserId());
+            positionRecord.setUserName(sysUserInfoDto.getUserName());
+            positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
+            positionRecord.setCreateTime(new Date());
+            positionRecord.setQuitTime(new Date());
+            positionRecord.setQuitReason(blac.getReason());
+            positionRecordService.save(positionRecord);
 //            this.remove(blacQw);
             blac.setUserName(staff.getUserName());
             blac.setCompanyId(staff.getCompanyId());

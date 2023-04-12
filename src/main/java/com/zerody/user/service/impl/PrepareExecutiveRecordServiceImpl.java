@@ -16,9 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author : xufan
@@ -126,7 +124,11 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                         }*/
 
                         if (DataUtil.isEmpty(param.getOutDate())) {
-                            record.setOutDate(new Date());
+                            if (record.getEnterDate().before(new Date())) {
+                                record.setOutDate(new Date());
+                            }else {
+                                throw new DefaultException("当前默认退学日期必须大于入学日期");
+                            }
                         } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
                             record.setOutDate(param.getOutDate());
                         } else {
@@ -176,6 +178,14 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             if (DataUtil.isNotEmpty(record)){
                 throw new DefaultException("操作失败，伙伴已经是预备高管，预备高管操作不能选择否，只能选退学");
             }
+
+            //伙伴退学之后，重新选择否，修改用户表状态
+            PrepareExecutiveRecordVo record1 = this.getPrepareExecutiveRecord(param.getUserId());
+            if (record1.getIsPrepareExecutive() == 2){
+                SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+                sysUserInfo.setIsPrepareExecutive(0);
+                sysUserInfoService.updateById(sysUserInfo);
+            }
         }
 
     }
@@ -205,12 +215,29 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
-        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
-        if(DataUtil.isNotEmpty(one)){
-            BeanUtils.copyProperties(one,recordVo);
+        if(DataUtil.isEmpty(one)){
+            return null;
         }
-
+        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
+        BeanUtils.copyProperties(one,recordVo);
         return recordVo;
     }
 
+    @Override
+    public PrepareExecutiveRecordVo getPrepareExecutiveRecordInner(String userId) {
+        QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
+        qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+        qw.lambda().last("limit 0,1");
+        PrepareExecutiveRecord one = this.getOne(qw);
+        if(DataUtil.isEmpty(one)){
+            return null;
+        }
+        if(one.getIsPrepareExecutive()!=1){
+            return null;
+        }
+        PrepareExecutiveRecordVo recordVo = new PrepareExecutiveRecordVo();
+        BeanUtils.copyProperties(one,recordVo);
+        return recordVo;
+    }
 }

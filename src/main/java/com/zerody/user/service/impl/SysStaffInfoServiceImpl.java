@@ -440,6 +440,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
+        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getOldUserId());
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
         if (DataUtil.isNotEmpty(param.getReinstateId())) {
             SysUserInfo user = new SysUserInfo();
@@ -447,6 +448,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             user.setStatus(YesNo.NO);
             user.setIsEdit(YesNo.YES);
             this.sysUserInfoService.updateById(user);
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(user.getId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)) {
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                user.setIsPrepareExecutive(YesNo.YES);
+            }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
@@ -467,15 +476,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         SysUserInfo sysUserInfo = new SysUserInfo();
         DataUtil.getKeyAndValue(sysUserInfo, setSysUserInfoDto);
+
         log.info("添加员工入参---{}", JSON.toJSONString(sysUserInfo));
         //参数校验
         CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
 
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
+        //获取旧账号之前的状态
         // 新增用户信息
         StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
-
+        //新用户 预备高管状态变更
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
+                sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
+                this.sysUserInfoService.updateById(sysUserInfo);
+                PrepareExecutiveRecordDto recordDto = new PrepareExecutiveRecordDto();
+                recordDto.setUserId(sysUserInfo.getId());
+                recordDto.setIsPrepareExecutive(1);
+                recordDto.setEnterDate(new Date());
+                UserVo vo = new UserVo();
+                this.prepareExecutiveRecordService.addPrepareExecutiveRecord(recordDto, vo);
+                log.info("记录-----：{}" + JSON.toJSONString(recordDto));
+            }
+        }
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
 //        Map<String, Object> content = new HashMap<>();
@@ -705,15 +729,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
         }
         //判断离职用户 是否是预备高管 如果是 则退学
-        if(setSysUserInfoDto.getStatus()==1){
-            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(setSysUserInfoDto.getId());
+        if(StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())){
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(setSysUserInfoDto.getId());
             if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-                if(prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft()) ||
-                        DataUtil.isEmpty(setSysUserInfoDto.getDateLeft())){
-                    throw new DefaultException("入学时间要小于等于离职时间");
+                if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
+                        prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft())){
+                    throw new DefaultException("当前离职时间小于预备高管入学时间，不允许离职");
                 }
                 prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
                 prepareExecutiveRecord.setOutReason(setSysUserInfoDto.getLeaveReason());
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
                 PrepareExecutiveRecord record = new PrepareExecutiveRecord();
                 BeanUtils.copyProperties(prepareExecutiveRecord,record);
                 this.prepareExecutiveRecordService.updateById(record);
@@ -3789,7 +3814,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
             this.sysUserInfoService.update(userUw);
         }
-
+        if (leaveFlag==false) {
+            //查询旧用户是否 加入预备高管 如果加入则退学
+            PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+                if(prepareExecutiveRecordVo.getEnterDate().after(new Date())){
+                    throw new DefaultException("当前调离时间小于预备高管入学时间，不允许调离");
+                }
+                prepareExecutiveRecordVo.setOutDate(new Date());
+                prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+                prepareExecutiveRecordVo.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                SysUserInfo info = sysUserInfoService.getById(param.getOldUserId());
+                info.setIsPrepareExecutive(2);
+                this.sysUserInfoService.updateById(info);
+            }
+        }
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
         PositionRecord positionRecord = new PositionRecord();

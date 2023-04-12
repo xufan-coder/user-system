@@ -57,6 +57,5 @@ public class SubordinateUserQueryVo {
 
     private Integer status;
 
-    /** 是否预备高管 0表示否 1表示是 2表示退学*/
-    private Integer isPrepareExecutive;
+
 }
