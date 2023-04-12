@@ -518,6 +518,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
+        log.info("用户id"+sysUserInfo.getId());
+        log.info("员工id"+staff.getId());
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
