@@ -2,6 +2,7 @@ package com.zerody.user.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.customer.EducationBackgroundEnum;
+import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.FamilyMember;
 import com.zerody.user.domain.UserResume;

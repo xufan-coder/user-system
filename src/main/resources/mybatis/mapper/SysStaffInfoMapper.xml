@@ -293,7 +293,8 @@
         sui.use_state,
         sui.train_no,
         sui.avatar AS user_avatar,
-        sui.is_prepare_executive
+        sui.is_prepare_executive,
+        ssi.is_diamond_member
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id

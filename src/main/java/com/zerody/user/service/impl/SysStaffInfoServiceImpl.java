@@ -487,22 +487,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
         }
-        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
-        //新用户 预备高管状态变更
-        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
-            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
-                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
-                record.setUserId(sysUserInfo.getId());
-                record.setUserName(sysUserInfo.getUserName());
-                record.setCompanyId(setSysUserInfoDto.getCompanyId());
-                record.setRoleName(sysUserInfo.getRoleName());
-                record.setRoleId(setSysUserInfoDto.getRoleId());
-                record.setUserId(sysUserInfo.getId());
-                record.setIsPrepareExecutive(1);
-                record.setEnterDate(new Date());
-                this.prepareExecutiveRecordService.save(record);
-            }
-        }
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
 //        Map<String, Object> content = new HashMap<>();
@@ -537,6 +521,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
+        string roleName=null;
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -549,6 +534,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
             rs.setRoleName(obj.get("roleName").toString());
+            roleName=obj.get("roleName").toString()
             unionRoleStaffMapper.insert(rs);
         }
         //岗位
@@ -580,6 +566,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
 
+        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
+        //新用户 预备高管状态变更
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                record.setUserId(sysUserInfo.getId());
+                record.setUserName(sysUserInfo.getUserName());
+                record.setCompanyId(setSysUserInfoDto.getCompanyId());
+                record.setCompanyName(sysCompanyInfo.getCompanyName());
+                record.setRoleName(roleName);
+                record.setRoleId(setSysUserInfoDto.getRoleId());
+                record.setUserId(sysUserInfo.getId());
+                record.setIsPrepareExecutive(1);
+                record.setEnterDate(new Date());
+                this.prepareExecutiveRecordService.save(record);
+            }
+        }
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
 //        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
