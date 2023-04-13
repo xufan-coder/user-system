@@ -181,10 +181,12 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 
             //伙伴退学之后，重新选择否，修改用户表状态
             PrepareExecutiveRecordVo record1 = this.getPrepareExecutiveRecord(param.getUserId());
-            if (record1.getIsPrepareExecutive() == 2){
-                SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
-                sysUserInfo.setIsPrepareExecutive(0);
-                sysUserInfoService.updateById(sysUserInfo);
+            if(DataUtil.isNotEmpty(record1)){
+                if (record1.getIsPrepareExecutive() == 2){
+                    SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+                    sysUserInfo.setIsPrepareExecutive(0);
+                    sysUserInfoService.updateById(sysUserInfo);
+                }
             }
         }
 
