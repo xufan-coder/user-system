@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.*;
@@ -69,14 +70,20 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     data.setPositionName(sysUserInfoVo.getPositionName());
 
                     //预备高管
-                    PrepareExecutiveRecordVo prepareExecutiveRecord = prepareExecutiveRecordService.getPrepareExecutiveRecord(data.getUserId());
+                    PrepareExecutiveRecordVo prepareExecutiveRecord = prepareExecutiveRecordService.getPrepareExecutiveRecordInner(data.getUserId());
                     if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                         SysUserInfo byId = this.sysUserInfoService.getById(data.getUserId());
                         if(DataUtil.isNotEmpty(byId)){
-                            byId.setIsPrepareExecutive(prepareExecutiveRecord.getIsPrepareExecutive());
+                            if(prepareExecutiveRecord.getEnterDate().after(data.getResignationTime())){
+                                throw new DefaultException("当前离职时间小于预备高管入学时间，不允许离职");
+                            }
+                            byId.setIsPrepareExecutive(2);
                             PrepareExecutiveRecord record= new PrepareExecutiveRecord();
                             BeanUtils.copyProperties(prepareExecutiveRecord,record);
                             record.setIsPrepareExecutive(2);
+                            record.setOutDate(data.getResignationTime());
+                            record.setOutReason(data.getReason());
+                            log.info("记录-----------"+record);
                             this.prepareExecutiveRecordService.updateById(record);
                             this.sysUserInfoService.updateById(byId);
                         }
