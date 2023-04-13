@@ -77,7 +77,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                             PrepareExecutiveRecord record= new PrepareExecutiveRecord();
                             BeanUtils.copyProperties(prepareExecutiveRecord,record);
                             record.setIsPrepareExecutive(2);
-                            record.setOutDate(data.getApprovalTime());
+                            record.setOutDate(data.getResignationTime());
                             record.setOutReason(data.getReason());
                             log.info("记录-----------"+record);
                             this.prepareExecutiveRecordService.updateById(record);
