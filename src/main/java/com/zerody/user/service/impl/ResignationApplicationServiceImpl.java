@@ -69,7 +69,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     data.setPositionName(sysUserInfoVo.getPositionName());
 
                     //预备高管
-                    PrepareExecutiveRecordVo prepareExecutiveRecord = prepareExecutiveRecordService.getPrepareExecutiveRecord(data.getUserId());
+                    PrepareExecutiveRecordVo prepareExecutiveRecord = prepareExecutiveRecordService.getPrepareExecutiveRecordInner(data.getUserId());
+                    log.info("用户id-------"+data.getUserId());
                     if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
                         SysUserInfo byId = this.sysUserInfoService.getById(data.getUserId());
                         if(DataUtil.isNotEmpty(byId)){
@@ -77,6 +78,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                             PrepareExecutiveRecord record= new PrepareExecutiveRecord();
                             BeanUtils.copyProperties(prepareExecutiveRecord,record);
                             record.setIsPrepareExecutive(2);
+                            record.setOutReason(data.getReason());
+                            log.info("记录-----------"+record);
                             this.prepareExecutiveRecordService.updateById(record);
                             this.sysUserInfoService.updateById(byId);
                         }
