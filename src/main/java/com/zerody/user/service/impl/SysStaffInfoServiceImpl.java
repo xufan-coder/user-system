@@ -482,11 +482,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
-        //获取旧账号之前的状态
+
         // 新增用户信息
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
         }
+        //获取旧账号之前的状态
+        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
 //        Map<String, Object> content = new HashMap<>();
@@ -519,7 +521,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
         log.info("用户id"+sysUserInfo.getId());
-        log.info("员工id"+staff.getId());
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
@@ -567,8 +568,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 .ne(BaseModel::getStatus, StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
-
-        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
         //新用户 预备高管状态变更
         if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
             if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
