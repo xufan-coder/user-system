@@ -239,6 +239,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private BlacklistOperationRecordService blacklistOperationRecordService;
 
+    @Autowired
+    private PrepareExecutiveRecordService prepareExecutiveRecordService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -437,6 +440,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
+        PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecord(param.getOldUserId());
         SetSysUserInfoDto setSysUserInfoDto = this.doOldUserInfo(param);
         if (DataUtil.isNotEmpty(param.getReinstateId())) {
             SysUserInfo user = new SysUserInfo();
@@ -444,6 +448,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             user.setStatus(YesNo.NO);
             user.setIsEdit(YesNo.YES);
             this.sysUserInfoService.updateById(user);
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(user.getId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)) {
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                user.setIsPrepareExecutive(YesNo.YES);
+            }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
@@ -470,9 +482,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //初始化密码加密
         String initPwd = SysStaffInfoService.getInitPwd();
-        // 新增用户信息
-        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
 
+        // 新增用户信息
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            sysUserInfo.setIsPrepareExecutive(prepareExecutiveRecordVo.getIsPrepareExecutive());
+        }
+        //获取旧账号之前的状态
+        StaffInfoUtil.saveSysUserInfo(sysUserInfo,initPwd);
 //        SmsDto smsDto = new SmsDto();
 //        smsDto.setMobile(sysUserInfo.getPhoneNumber());
 //        Map<String, Object> content = new HashMap<>();
@@ -504,9 +520,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
+        log.info("用户id"+sysUserInfo.getId());
         // 用户扩展信息新增 家庭成员 履历 学历证书 合规承诺书 合作申请表
         StaffInfoUtil.saveExpandInfo(setSysUserInfoDto,sysUserInfo.getId(),staff.getId());
 
+        String roleName=null;
         if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
             //角色
             UnionRoleStaff rs = new UnionRoleStaff();
@@ -519,6 +537,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
             rs.setRoleName(obj.get("roleName").toString());
+            roleName=obj.get("roleName").toString();
             unionRoleStaffMapper.insert(rs);
         }
         //岗位
@@ -549,7 +568,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 .ne(BaseModel::getStatus, StatusEnum.deleted.getValue());
         SysCompanyInfo sysCompanyInfo = sysCompanyInfoMapper.selectOne(qw);
 
-
+        //新用户 预备高管状态变更
+        if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo.getIsPrepareExecutive()) && prepareExecutiveRecordVo.getIsPrepareExecutive()==1) {
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                record.setUserId(sysUserInfo.getId());
+                record.setUserName(sysUserInfo.getUserName());
+                record.setCompanyId(setSysUserInfoDto.getCompanyId());
+                record.setCompanyName(sysCompanyInfo.getCompanyName());
+                record.setRoleName(roleName);
+                record.setRoleId(setSysUserInfoDto.getRoleId());
+                record.setUserId(sysUserInfo.getId());
+                record.setIsPrepareExecutive(1);
+                record.setEnterDate(new Date());
+                this.prepareExecutiveRecordService.save(record);
+            }
+        }
         //添加员工即为内部员工需要生成名片小程序用户账号
         //生成基础名片信息
 //        saveCardUser(sysUserInfo, logInfo, sysCompanyInfo, positionName);
@@ -700,6 +734,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             operationRecord.setType(1);
             operationRecord.setRemarks("修改伙伴信息");
             blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,user);
+        }
+        //判断离职用户 是否是预备高管 如果是 则退学
+        if(StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())){
+            PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(setSysUserInfoDto.getId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+                if(DataUtil.isEmpty(setSysUserInfoDto.getDateLeft()) ||
+                        prepareExecutiveRecord.getEnterDate().after(setSysUserInfoDto.getDateLeft())){
+                    throw new DefaultException("当前离职时间小于预备高管入学时间，不允许离职");
+                }
+                prepareExecutiveRecord.setOutDate(setSysUserInfoDto.getDateLeft());
+                prepareExecutiveRecord.setOutReason(setSysUserInfoDto.getLeaveReason());
+                prepareExecutiveRecord.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                sysUserInfo.setIsPrepareExecutive(2);
+
+            }
         }
         // 修改时添加身份证唯一校验 不包含离职账户
         StaffInfoVo staffInfoIdCard = this.sysStaffInfoMapper.getUserByCertificateCard(sysUserInfo.getCertificateCard(),YesNo.NO);
@@ -3277,6 +3329,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return result;
     }
 
+    @Override
+    public List<StaffInfoVo> getCompanyIdInner(String companyId) {
+        return this.sysUserInfoMapper.getCompanyIdInner(companyId);
+}
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
@@ -3751,12 +3808,37 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, param.getOldUserId());
         SysStaffInfo  staff1 = this.getOne(staffQw);
-        UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
-        userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
-        userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
-        userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
-        this.sysUserInfoService.update(userUw);
 
+        //如果已经是离职的则不处理
+        Boolean leaveFlag=false;
+        if(StatusEnum.stop.getValue().equals(staff1.getStatus())){
+            leaveFlag=true;
+        }
+        if(!leaveFlag) {
+            UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
+            userUw.lambda().set(SysUserInfo::getIsEdit, YesNo.YES);
+            userUw.lambda().set(SysUserInfo::getStatus, StatusEnum.stop.getValue());
+            userUw.lambda().eq(true, SysUserInfo::getId, param.getOldUserId());
+            this.sysUserInfoService.update(userUw);
+        }
+        if (leaveFlag==false) {
+            //查询旧用户是否 加入预备高管 如果加入则退学
+            PrepareExecutiveRecordVo prepareExecutiveRecordVo = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(param.getOldUserId());
+            if(DataUtil.isNotEmpty(prepareExecutiveRecordVo)){
+                if(prepareExecutiveRecordVo.getEnterDate().after(new Date())){
+                    throw new DefaultException("当前调离时间小于预备高管入学时间，不允许调离");
+                }
+                prepareExecutiveRecordVo.setOutDate(new Date());
+                prepareExecutiveRecordVo.setOutReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
+                prepareExecutiveRecordVo.setIsPrepareExecutive(2);
+                PrepareExecutiveRecord record = new PrepareExecutiveRecord();
+                BeanUtils.copyProperties(prepareExecutiveRecordVo,record);
+                this.prepareExecutiveRecordService.updateById(record);
+                SysUserInfo info = sysUserInfoService.getById(param.getOldUserId());
+                info.setIsPrepareExecutive(2);
+                this.sysUserInfoService.updateById(info);
+            }
+        }
         //添加一条任职记录
         SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(param.getOldUserId());
         PositionRecord positionRecord = new PositionRecord();
@@ -3776,9 +3858,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
         positionRecordService.save(positionRecord);
 
-        // 修改员工档案为离职
-        this.sysStaffInfoMapper.updateStatus(staff1.getId(),StatusEnum.stop.getValue(), "调离新公司");
-        this.checkUtil.removeUserToken(staff1.getUserId());
+        if(!leaveFlag) {
+            // 修改员工档案为离职
+            this.sysStaffInfoMapper.updateStatus(staff1.getId(), StatusEnum.stop.getValue(), "调离新公司");
+            this.checkUtil.removeUserToken(staff1.getUserId());
+        }
         //查询家庭成员
         QueryWrapper<FamilyMember> familyQw = new QueryWrapper<>();
         familyQw.lambda().eq(FamilyMember::getUserId, param.getOldUserId());

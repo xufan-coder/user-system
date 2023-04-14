@@ -179,6 +179,24 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
     }
 
     /**
+    *
+    *  @description   根据角色类型获取用户列表(公司层面)
+    *  @author        YeChangWei
+    *  @date          2023/4/8 9:09
+    *  @return        com.zerody.common.api.bean.DataResult<java.util.List<java.lang.String>>
+    */
+    @Override
+    @GetMapping("/get/company_id/by-user-type/inner")
+    public DataResult<List<String>> getUserIdsByCompanyIdUserType(@RequestParam("userType") Integer userType,@RequestParam("companyId") String companyId) {
+        try {
+            return R.success(this.sysUserInfoService.getUserIdsByCompanyIdUserType(userType,companyId));
+        } catch (Exception e) {
+            log.error("通过角色名称查询用户失败：{}",e ,e);
+            return R.error(e.getMessage());
+        }
+    }
+
+    /**
      *
      *
      * @author               PengQiang
@@ -1724,6 +1742,27 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }  catch (Exception e) {
             log.error("获取所有培训班次出错:{}",e,e);
             return R.error("获取所有培训班次出错"+ e);
+        }
+    }
+    /**
+    *
+    *  @description   通过公司id获取公司在职用户(内部接口)
+    *  @author        YeChangWei
+    *  @date          2023/4/7 19:53
+    *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.api.vo.StaffInfoVo>>
+    */
+    @Override
+    @GetMapping("/get/company-id/user/inner")
+    public DataResult<List<StaffInfoVo>> getCompanyIdInner(@RequestParam("companyId")String companyId) {
+        try {
+            List<StaffInfoVo> staffInfoVos = sysStaffInfoService.getCompanyIdInner(companyId);
+            return R.success(staffInfoVos);
+        } catch (DefaultException e) {
+            log.error("通过公司id获取公司在职用户错误:{}", e.getMessage());
+            return R.error("通过公司id获取公司在职用户错误");
+        } catch (Exception e) {
+            log.error("通过公司id获取公司在职用户错误:{} ", e, e);
+            return R.error("通过公司id获取公司在职用户错误");
         }
     }
 }

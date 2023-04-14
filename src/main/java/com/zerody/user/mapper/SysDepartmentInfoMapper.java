@@ -186,4 +186,6 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
      * @return               java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
      */
     List<String> getAllDepByCompany(String companyId);
+
+    List<DepartInfoVo> getDepList(@Param("companyId")String companyId);
 }

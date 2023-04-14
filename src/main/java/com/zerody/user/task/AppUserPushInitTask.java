@@ -28,6 +28,15 @@ public class AppUserPushInitTask {
     @Autowired
     private SysUserInfoService sysUserInfoService;
 
+    /**
+     *
+     *  2023-04-11 已废除
+     * @author PengQiang
+     * @description 彭强
+     * @date 2023/4/11 9:36
+     * @param param
+     * @return com.xxl.job.core.biz.model.ReturnT<java.lang.String>
+     */
     @XxlJob("app_user_push_init")
     public ReturnT<String> execute(String param){
         ReturnT r=ReturnT.SUCCESS;

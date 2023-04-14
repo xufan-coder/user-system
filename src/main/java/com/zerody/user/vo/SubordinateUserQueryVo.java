@@ -56,4 +56,6 @@ public class SubordinateUserQueryVo {
     private String avatar;
 
     private Integer status;
+
+
 }
