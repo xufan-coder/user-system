@@ -24,6 +24,15 @@ public class ConvertImageTask {
     private ConvertImageService convertImageService;
 
 
+    /**
+     *
+     *  2023-04-11 已废除
+     * @author PengQiang
+     * @description 彭强
+     * @date 2023/4/11 9:36
+     * @param param
+     * @return com.xxl.job.core.biz.model.ReturnT<java.lang.String>
+     */
     @XxlJob("convert-image-task")
     public ReturnT<String> execute(String param) {
         ReturnT<String> returnT = ReturnT.SUCCESS;

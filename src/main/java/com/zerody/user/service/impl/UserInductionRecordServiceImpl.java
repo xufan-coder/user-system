@@ -120,6 +120,7 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
         }else {
             dep = new UnionStaffDepart();
             dep.setId(UUIDutils.getUUID32());
+            dep.setStaffId(staffId);
             dep.setDepartmentId(induction.getSignDeptId());
             this.staffDepartMapper.insert(dep);
         }

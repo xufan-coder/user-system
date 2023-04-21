@@ -6,11 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.enums.StatusEnum;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.user.domain.Msg;
-import com.zerody.user.domain.PositionRecord;
-import com.zerody.user.domain.ResignationApplication;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.ResignationPageDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
@@ -18,9 +17,12 @@ import com.zerody.user.mapper.ResignationApplicationMapper;
 import com.zerody.user.service.PositionRecordService;
 import com.zerody.user.service.ResignationApplicationService;
 import com.zerody.user.service.SysStaffInfoService;
+import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.PrepareExecutiveRecordVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +43,10 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     private SysStaffInfoService sysStaffInfoService;
     @Autowired
     private PositionRecordService positionRecordService;
-
+    @Autowired
+    private PrepareExecutiveRecordServiceImpl prepareExecutiveRecordService;
+    @Autowired
+    private SysUserInfoService sysUserInfoService;
 
     @Override
     public ResignationApplication addOrUpdateResignationApplication(ResignationApplication data) {
@@ -63,6 +68,27 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     data.setDepartName(sysUserInfoVo.getDepartName());
                     data.setPositionId(sysUserInfoVo.getPositionId());
                     data.setPositionName(sysUserInfoVo.getPositionName());
+
+                    //预备高管
+                    PrepareExecutiveRecordVo prepareExecutiveRecord = prepareExecutiveRecordService.getPrepareExecutiveRecordInner(data.getUserId());
+                    if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
+                        SysUserInfo byId = this.sysUserInfoService.getById(data.getUserId());
+                        if(DataUtil.isNotEmpty(byId)){
+                            if(prepareExecutiveRecord.getEnterDate().after(data.getResignationTime())){
+                                throw new DefaultException("当前离职时间小于预备高管入学时间，不允许离职");
+                            }
+                            byId.setIsPrepareExecutive(2);
+                            PrepareExecutiveRecord record= new PrepareExecutiveRecord();
+                            BeanUtils.copyProperties(prepareExecutiveRecord,record);
+                            record.setIsPrepareExecutive(2);
+                            record.setOutDate(data.getResignationTime());
+                            record.setOutReason(data.getReason());
+                            log.info("记录-----------"+record);
+                            this.prepareExecutiveRecordService.updateById(record);
+                            this.sysUserInfoService.updateById(byId);
+                        }
+
+                    }
                 }
             }
             data.setCreateTime(new Date());

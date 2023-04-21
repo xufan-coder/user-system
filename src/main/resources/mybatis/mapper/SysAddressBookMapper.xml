@@ -121,7 +121,8 @@
         sdi.depart_name AS departName,
         sci.company_name AS companyName,
         ssi.id AS staffId,
-        ssi.status
+        ssi.status,
+        sui.is_prepare_executive
         FROM
         sys_staff_info ssi
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
