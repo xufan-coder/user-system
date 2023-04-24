@@ -29,14 +29,6 @@ public class AppVersionInfoAddDto {
      */
     private Integer deleted;
     /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-    /**
      * 排序
      */
     private Integer orderNum;

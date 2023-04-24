@@ -128,7 +128,7 @@ public class StaffInfoUtil {
                 item.setRelationStaffName(sysUserInfo.getUserName());
                 item.setRelationUserId(sysUserInfo.getId());
                 item.setStaffUserId(sysUserInfo.getId());
-                item.setDesc(item.getDescribe());
+                item.setDesc(item.getDesc());
                 sysStaffRelationService.addRelation(item);
             });
         }
