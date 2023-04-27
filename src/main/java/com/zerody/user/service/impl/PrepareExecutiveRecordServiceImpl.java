@@ -109,11 +109,12 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                 qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
                 qw.lambda().last("limit 0,1");
                 PrepareExecutiveRecord record = this.getOne(qw);
-                if (DataUtil.isNotEmpty(record)) {
-
-                    // 编辑退学日期和退学原因
-                    if (DataUtil.isNotEmpty(record.getIsPrepareExecutive())) {
-                        record.setOutReason(param.getOutReason());
+                if(DataUtil.isEmpty(record)){
+                    throw new DefaultException("请先入学才可以退学");
+                }
+                // 编辑退学日期和退学原因
+                if (DataUtil.isNotEmpty(record.getIsPrepareExecutive())) {
+                    record.setOutReason(param.getOutReason());
                         /*FrameworkBlacListQueryPageVo infoById = staffBlacklistService.getInfoById(param.getUserId());
                         if (DataUtil.isNotEmpty(infoById)) {
                             record.setOutReason(infoById.getReason());
@@ -123,22 +124,21 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                             record.setOutReason(quitUserInfo.getLeaveRemark());
                         }*/
 
-                        if (DataUtil.isEmpty(param.getOutDate())) {
-                            if (record.getEnterDate().before(new Date())) {
-                                record.setOutDate(new Date());
-                            }else {
-                                throw new DefaultException("当前默认退学日期必须大于入学日期");
-                            }
-                        } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
-                            record.setOutDate(param.getOutDate());
-                        } else {
-                            throw new DefaultException("退学日期输入错误,退学日期必须大于入学日期");
+                    if (DataUtil.isEmpty(param.getOutDate())) {
+                        if (record.getEnterDate().before(new Date())) {
+                            record.setOutDate(new Date());
+                        }else {
+                            throw new DefaultException("当前默认退学日期必须大于入学日期");
                         }
-                        record.setIsPrepareExecutive(param.getIsPrepareExecutive());
-                        record.setUserId(param.getUserId());
-                        this.updateById(record);
-                        return;
+                    } else if (param.getOutDate().after(record.getEnterDate()) || param.getOutDate().equals(record.getEnterDate())) {
+                        record.setOutDate(param.getOutDate());
+                    } else {
+                        throw new DefaultException("退学日期输入错误,退学日期必须大于入学日期");
                     }
+                    record.setIsPrepareExecutive(param.getIsPrepareExecutive());
+                    record.setUserId(param.getUserId());
+                    this.updateById(record);
+                    return;
                 }
             }
             //创建人信息
