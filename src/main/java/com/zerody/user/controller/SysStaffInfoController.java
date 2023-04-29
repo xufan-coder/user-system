@@ -9,11 +9,8 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
-import com.zerody.oss.api.util.Uploader;
-import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.IdCardUpdateDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -24,13 +21,10 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
-import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +40,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -606,7 +599,7 @@ public class SysStaffInfoController {
     /**
     * @Author: chenKeFeng
     * @param
-    * @Description: 伙伴数据统计
+    * @Description: 伙伴数据统计(工作台)
     * @Date: 2022/11/11 9:51
     */
     @GetMapping("/statistics-users")
@@ -619,6 +612,105 @@ public class SysStaffInfoController {
         }
     }
 
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 查询伙伴概况
+    * @Date: 2023/4/28 17:17
+    */
+    @GetMapping("/get/user/overview")
+    public DataResult<UserStatistics> getUserOverview() {
+        try {
+            return R.success(this.sysStaffInfoService.getUserOverview());
+        } catch (DefaultException e) {
+            log.error("查询伙伴概况出错:{}", e.getMessage());
+            return R.error("查询伙伴概况出错");
+        } catch (Exception e) {
+            log.error("查询伙伴概况出错:{}", e, e);
+            return R.error("查询伙伴概况出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约与解约
+    * @Date: 2023/4/28 19:55
+    */
+    @GetMapping("/statistics/partner")
+    public DataResult<UserStatistics> statisticsContractAndRescind() {
+        try {
+            return R.success(this.sysStaffInfoService.statisticsContractAndRescind());
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约与解约出错:{}", e.getMessage());
+            return R.error("统计伙伴签约与解约出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约与解约出错:{}", e, e);
+            return R.error("统计伙伴签约与解约出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约详情
+    * @Date: 2023/4/28 20:36
+    */
+    @GetMapping("/statistics/partner/details")
+    public DataResult<StatisticsDataDetailsVo> statisticsDetails() {
+        try {
+            return R.success(this.sysStaffInfoService.statisticsDetails());
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约详情出错:{}", e.getMessage());
+            return R.error("统计伙伴签约详情出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约详情出错:{}", e, e);
+            return R.error("统计伙伴签约详情出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取解约原因分析
+    * @Date: 2023/4/29 10:59
+    */
+    @GetMapping("/termination/analysis")
+    public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysis() {
+        try {
+            return R.success(this.sysStaffInfoService.getTerminationAnalysis());
+        } catch (DefaultException e) {
+            log.error("获取解约原因分析出错:{}", e.getMessage());
+            return R.error("获取解约原因分析出错");
+        } catch (Exception e) {
+            log.error("获取解约原因分析出错:{}", e, e);
+            return R.error("获取解约原因分析出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取学历分析
+    * @Date: 2023/4/29 11:29
+    */
+    @GetMapping("/degree/analysis")
+    public DataResult<DegreeAnalysisVo> getDegreeAnalysis() {
+        try {
+            return R.success(this.sysStaffInfoService.getDegreeAnalysis());
+        } catch (DefaultException e) {
+            log.error("获取学历分析出错:{}", e.getMessage());
+            return R.error("获取学历分析出错");
+        } catch (Exception e) {
+            log.error("获取学历分析出错:{}", e, e);
+            return R.error("获取学历分析出错");
+        }
+    }
 
     /**************************************************************************************************
      **

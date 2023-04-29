@@ -1143,13 +1143,16 @@
     <!--伙伴数据统计-->
     <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatistics" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
+        count(sui.id) as allNum,
         count(IF(ssi.user_type =0 and ssi.status !=1, 1 ,NULL)) as managerNum,
         count(IF(ssi.user_type =3 and ssi.status !=1, 1 ,NULL)) as vicePresidentNum,
         count(IF(ssi.user_type =2 and ssi.status !=1, 1 ,NULL)) as teamLeaderNum,
         count(IF(ssi.user_type =1 and ssi.status !=1, 1 ,NULL)) as partnerNum,
         count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
         count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        count(IF(ssi.is_diamond_member =1,  1 ,NULL)) as masonryMemberNum,
+        count(IF(sui.is_prepare_executive =1,  1 ,NULL)) as prospectiveExecutiveNum
         from sys_staff_info as ssi
         left join union_staff_depart as usd on usd.staff_id = ssi.id
         left join sys_company_info as sci  on sci.id = ssi.comp_id and sci.status=0
@@ -1169,6 +1172,56 @@
                 and (usd.department_id like concat('', #{param.departId}, '\_%') or usd.department_id=#{param.departId} )
             </if>
         </where>
+    </select>
+
+    <!--获取伙伴当日签约与解约-->
+    <select id="getPartnerTodaySignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
+        select
+        count(IF(ssi.status =0, 1 ,NULL)) as todaySignNum,
+        count(IF(ssi.status =1,  1 ,NULL)) as todayRescindNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        from sys_staff_info as ssi
+        left join sys_user_info as sui on sui.id = ssi.user_id
+		where to_days(ssi.create_time) = to_days(now());
+    </select>
+
+    <!--获取伙伴本月签约与解约-->
+    <select id="getPartnerThisMonthSignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
+        select
+        count(IF(ssi.status =0, 1 ,NULL)) as monthSignNum,
+        count(IF(ssi.status =1,  1 ,NULL)) as monthRescindNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        from sys_staff_info as ssi
+        left join sys_user_info as sui on sui.id = ssi.user_id
+		where DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+    </select>
+
+    <!--根据离职类型获取离职原因数量-->
+    <select id="getDepartureCauseCount" resultType="java.lang.Integer">
+        select count(1) from sys_staff_info as ssi
+        left join sys_user_info as sui on sui.id = ssi.user_id
+        where ssi.leave_type=#{type} and ssi.deleted =0 and sui.status !=-1
+    </select>
+
+    <!--获取离职伙伴数-->
+    <select id="getDepartureCount" resultType="java.lang.Integer">
+        select count(1) from sys_staff_info as ssi
+        left join sys_user_info as sui on sui.id = ssi.user_id
+        where ssi.status = 1
+    </select>
+
+    <!--获取解约原因分析-->
+    <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
+        select
+		count(sui.id) as allNum,
+        count(IF(sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_HIGH' or sui.highest_education ='TECHNICAL_SECONDARY' or sui.highest_education ='SENIOR_HIGH' , 1 ,NULL)) as highHereinafterNum,
+        count(IF(sui.highest_education ='JUNIOR_COLLEGE', 1 ,NULL)) as collegeNum,
+        count(IF(sui.highest_education ='REGULAR_COLLEGE', 1 ,NULL)) as undergraduateNum,
+        count(IF(sui.highest_education ='MASTER', 1 ,NULL)) as masterNum,
+        count(IF(sui.highest_education ='DOCTOR', 1 ,NULL)) as doctorNum
+        from sys_staff_info as ssi
+        join sys_user_info as sui on sui.id = ssi.user_id
+		where ssi.deleted =0 and sui.status !=-1
     </select>
 
 
@@ -1259,4 +1312,12 @@
         ORDER BY sui.create_time DESC
         LIMIT 0,1
     </select>
+
+    <!--统计内控数伙伴数量(内部和外部)-->
+    <select id="getInternalControlNum" resultType="java.lang.Integer"
+            parameterType="com.zerody.user.dto.SetSysUserInfoDto">
+        select
+		count(sb.id) from staff_blacklist as sb
+    </select>
+
 </mapper>
