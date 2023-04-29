@@ -606,7 +606,7 @@ public class SysStaffInfoController {
     /**
     * @Author: chenKeFeng
     * @param
-    * @Description: 伙伴数据统计
+    * @Description: 伙伴数据统计(工作台)
     * @Date: 2022/11/11 9:51
     */
     @GetMapping("/statistics-users")
@@ -616,6 +616,66 @@ public class SysStaffInfoController {
         } catch (Exception e) {
             log.error("伙伴数据统计出错:{}", e.getMessage());
             return R.error("伙伴数据统计出错" + e.getMessage());
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 查询伙伴概况
+    * @Date: 2023/4/28 17:17
+    */
+    @GetMapping("/get/user/overview")
+    public DataResult<UserStatistics> getUserOverview() {
+        try {
+            return R.success(this.sysStaffInfoService.getUserOverview());
+        } catch (DefaultException e) {
+            log.error("查询伙伴概况出错:{}", e.getMessage());
+            return R.error("查询伙伴概况出错");
+        } catch (Exception e) {
+            log.error("查询伙伴概况出错:{}", e, e);
+            return R.error("查询伙伴概况出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约与解约
+    * @Date: 2023/4/28 19:55
+    */
+    @GetMapping("/statistics/partner")
+    public DataResult<UserStatistics> statisticsContractAndRescind() {
+        try {
+            return R.success(this.sysStaffInfoService.statisticsContractAndRescind());
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约与解约出错:{}", e.getMessage());
+            return R.error("统计伙伴签约与解约出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约与解约出错:{}", e, e);
+            return R.error("统计伙伴签约与解约出错");
+        }
+    }
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约详情
+    * @Date: 2023/4/28 20:36
+    */
+    @GetMapping("/statistics/partner/details")
+    public DataResult<StatisticsDataDetailsVo> statisticsDetails() {
+        try {
+            return R.success(this.sysStaffInfoService.statisticsDetails());
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约详情出错:{}", e.getMessage());
+            return R.error("统计伙伴签约详情出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约详情出错:{}", e, e);
+            return R.error("统计伙伴签约详情出错");
         }
     }
 

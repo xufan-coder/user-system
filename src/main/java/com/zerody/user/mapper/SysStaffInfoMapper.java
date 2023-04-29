@@ -414,6 +414,30 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     /**
      * @Author: chenKeFeng
      * @param
+     * @Description: 获取伙伴当日签约与解约
+     * @Date: 2022/11/11 10:12
+     */
+    UserStatistics getPartnerTodaySignAndrescind();
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取伙伴本月签约与解约
+     * @Date: 2022/11/11 10:12
+     */
+    UserStatistics getPartnerThisMonthSignAndRescind();
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计内控数伙伴数量
+    * @Date: 2023/4/28 18:42
+    */
+    Integer getInternalControlNum();
+
+    /**
+     * @Author: chenKeFeng
+     * @param
      * @Description: 获取员工信息
      * @Date: 2022/11/28 9:30
      */

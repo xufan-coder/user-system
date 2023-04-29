@@ -95,6 +95,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -3094,6 +3095,48 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
+    }
+
+    @Override
+    public UserStatistics getUserOverview() {
+        DecimalFormat df = new DecimalFormat("0.00");
+        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(null);
+
+        //内控伙伴数量
+        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum();
+        userStatistics.setInternalControlUserNum(internalControlNum);
+        //二次签约
+        userStatistics.setSecondContractNum(0);
+
+        //总签约数量
+        Integer num = userStatistics.getHistoricalContractNum();
+        userStatistics.setManagerRate(df.format(new Double(userStatistics.getManagerNum()) / num) + "%");
+        userStatistics.setVicePresidentRate(df.format(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
+        userStatistics.setTeamLeaderRate(df.format(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
+
+        userStatistics.setPartnerRate(df.format(new Double(userStatistics.getPartnerNum()) / num) + "%");
+        userStatistics.setMasonryMemberRate(df.format(new Double(userStatistics.getMasonryMemberNum()) / num) + "%");
+        userStatistics.setProspectiveExecutiveRate(df.format(new Double(userStatistics.getProspectiveExecutiveNum()) / num) + "%");
+        userStatistics.setSecondContractRate(df.format(new Double(userStatistics.getSecondContractNum()) / num) + "%");
+        return userStatistics;
+    }
+
+    @Override
+    public UserStatistics statisticsContractAndRescind() {
+        //签约包含签约中和合作中
+        //今日
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndrescind();
+        userStatistics.setTodaySignNum(userStatistics.getTodaySignNum() + userStatistics.getInCooperationNum());
+        //本月
+        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind();
+        userStatistics.setMonthSignNum(statistics.getMonthSignNum() + statistics.getInCooperationNum());
+        userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
+        return userStatistics;
+    }
+
+    @Override
+    public StatisticsDataDetailsVo statisticsDetails() {
+        return null;
     }
 
     @Override
