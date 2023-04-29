@@ -139,3 +139,7 @@ msg:
     title: '入职周年祝贺'
     content: ''
     content2: ''
+leave:
+  type:
+    transfer: b52154f9-e5ad-11ed-ac65-0800274877ca
+    block: b51a67c2-e5ad-11ed-ac65-0800274877ca

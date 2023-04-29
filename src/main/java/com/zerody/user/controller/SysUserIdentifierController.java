@@ -139,6 +139,20 @@ public class SysUserIdentifierController {
         }
     }
 
+    /**
+     * @author luolujin
+     * @description  解除绑定-app
+     **/
+    @GetMapping("/remove/app/{id}")
+    public DataResult<Object> unBoundApp(@PathVariable String id){
+
+        try {
+            this.service.addUnbound(id,UserUtils.getUserId());
+            return R.success();
+        } catch (Exception e) {
+            return R.error("解除绑定出错:"+e.getMessage());
+        }
+    }
 
     /**
      * @author kuang

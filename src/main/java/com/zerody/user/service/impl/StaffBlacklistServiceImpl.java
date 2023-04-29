@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -116,6 +117,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Autowired
     private PositionRecordService positionRecordService;
+
+    @Value("${leave.type.block:}")
+    private String block;
 
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
@@ -601,6 +605,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
             positionRecord.setCreateTime(new Date());
             positionRecord.setQuitTime(new Date());
+            positionRecord.setLeaveType(this.block);
             positionRecord.setQuitReason(blac.getReason());
             positionRecordService.save(positionRecord);
 //            this.remove(blacQw);
