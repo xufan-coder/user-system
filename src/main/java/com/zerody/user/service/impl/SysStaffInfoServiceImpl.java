@@ -3097,9 +3097,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
+    //保留两位小数
+    private String reserveTwo(Double d){
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(d);
+    }
+
     @Override
     public UserStatistics getUserOverview() {
-        DecimalFormat df = new DecimalFormat("0.00");
         UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(null);
 
         //内控伙伴数量
@@ -3110,14 +3115,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //总签约数量
         Integer num = userStatistics.getHistoricalContractNum();
-        userStatistics.setManagerRate(df.format(new Double(userStatistics.getManagerNum()) / num) + "%");
-        userStatistics.setVicePresidentRate(df.format(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
-        userStatistics.setTeamLeaderRate(df.format(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
+        userStatistics.setManagerRate(reserveTwo(new Double(userStatistics.getManagerNum()) / num) + "%");
+        userStatistics.setVicePresidentRate(reserveTwo(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
+        userStatistics.setTeamLeaderRate(reserveTwo(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
 
-        userStatistics.setPartnerRate(df.format(new Double(userStatistics.getPartnerNum()) / num) + "%");
-        userStatistics.setMasonryMemberRate(df.format(new Double(userStatistics.getMasonryMemberNum()) / num) + "%");
-        userStatistics.setProspectiveExecutiveRate(df.format(new Double(userStatistics.getProspectiveExecutiveNum()) / num) + "%");
-        userStatistics.setSecondContractRate(df.format(new Double(userStatistics.getSecondContractNum()) / num) + "%");
+        userStatistics.setPartnerRate(reserveTwo(new Double(userStatistics.getPartnerNum()) / num) + "%");
+        userStatistics.setMasonryMemberRate(reserveTwo(new Double(userStatistics.getMasonryMemberNum()) / num) + "%");
+        userStatistics.setProspectiveExecutiveRate(reserveTwo(new Double(userStatistics.getProspectiveExecutiveNum()) / num) + "%");
+        userStatistics.setSecondContractRate(reserveTwo(new Double(userStatistics.getSecondContractNum()) / num) + "%");
         return userStatistics;
     }
 
@@ -3125,7 +3130,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public UserStatistics statisticsContractAndRescind() {
         //签约包含签约中和合作中
         //今日
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndrescind();
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind();
         userStatistics.setTodaySignNum(userStatistics.getTodaySignNum() + userStatistics.getInCooperationNum());
         //本月
         UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind();
@@ -3137,6 +3142,30 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public StatisticsDataDetailsVo statisticsDetails() {
         return null;
+    }
+
+    @Override
+    public List<TerminationAnalysisVo> getTerminationAnalysis() {
+        List<TerminationAnalysisVo> arrList = new ArrayList<>();
+        //总离职人数
+        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount();
+
+        //离职原因类型
+        List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
+        for (DictQuseryVo dict : listByType) {
+            TerminationAnalysisVo vo = new TerminationAnalysisVo();
+            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getDictName());
+            vo.setName(dict.getDictName());
+            vo.setPeopleNum(departureCauseCount);
+            vo.setPeopleRate(reserveTwo(new Double(departureCauseCount) / departureCount));
+            arrList.add(vo);
+        }
+        return arrList;
+    }
+
+    @Override
+    public DegreeAnalysisVo getDegreeAnalysis() {
+        return this.sysStaffInfoMapper.getDegreeAnalysis();
     }
 
     @Override

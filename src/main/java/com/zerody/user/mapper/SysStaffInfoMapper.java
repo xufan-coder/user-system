@@ -417,7 +417,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 获取伙伴当日签约与解约
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics getPartnerTodaySignAndrescind();
+    UserStatistics getPartnerTodaySignAndRescind();
 
     /**
      * @Author: chenKeFeng
@@ -426,6 +426,30 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Date: 2022/11/11 10:12
      */
     UserStatistics getPartnerThisMonthSignAndRescind();
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 根据离职类型获取离职原因数量
+     * @Date: 2022/11/11 10:12
+     */
+    Integer getDepartureCauseCount(String type);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取离职伙伴数
+    * @Date: 2023/4/29 12:39
+    */
+    Integer getDepartureCount();
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 获取解约原因分析
+    * @Date: 2023/4/29 14:35
+    */
+    DegreeAnalysisVo getDegreeAnalysis();
 
     /**
     * @Author: chenKeFeng
