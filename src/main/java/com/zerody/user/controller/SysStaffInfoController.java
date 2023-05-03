@@ -11,11 +11,11 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.IdCardUpdateDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
+import com.zerody.user.service.SysAddressBookService;
+import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
@@ -61,6 +61,13 @@ public class SysStaffInfoController {
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private SysAddressBookService sysAddressBookService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
+
 
     /**
     *   分页查询员工信息
@@ -613,105 +620,6 @@ public class SysStaffInfoController {
     }
 
 
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 查询伙伴概况
-    * @Date: 2023/4/28 17:17
-    */
-    @GetMapping("/get/user/overview")
-    public DataResult<UserStatistics> getUserOverview() {
-        try {
-            return R.success(this.sysStaffInfoService.getUserOverview());
-        } catch (DefaultException e) {
-            log.error("查询伙伴概况出错:{}", e.getMessage());
-            return R.error("查询伙伴概况出错");
-        } catch (Exception e) {
-            log.error("查询伙伴概况出错:{}", e, e);
-            return R.error("查询伙伴概况出错");
-        }
-    }
-
-
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 统计伙伴签约与解约
-    * @Date: 2023/4/28 19:55
-    */
-    @GetMapping("/statistics/partner")
-    public DataResult<UserStatistics> statisticsContractAndRescind() {
-        try {
-            return R.success(this.sysStaffInfoService.statisticsContractAndRescind());
-        } catch (DefaultException e) {
-            log.error("统计伙伴签约与解约出错:{}", e.getMessage());
-            return R.error("统计伙伴签约与解约出错");
-        } catch (Exception e) {
-            log.error("统计伙伴签约与解约出错:{}", e, e);
-            return R.error("统计伙伴签约与解约出错");
-        }
-    }
-
-
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 统计伙伴签约详情
-    * @Date: 2023/4/28 20:36
-    */
-    @GetMapping("/statistics/partner/details")
-    public DataResult<StatisticsDataDetailsVo> statisticsDetails() {
-        try {
-            return R.success(this.sysStaffInfoService.statisticsDetails());
-        } catch (DefaultException e) {
-            log.error("统计伙伴签约详情出错:{}", e.getMessage());
-            return R.error("统计伙伴签约详情出错");
-        } catch (Exception e) {
-            log.error("统计伙伴签约详情出错:{}", e, e);
-            return R.error("统计伙伴签约详情出错");
-        }
-    }
-
-
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 获取解约原因分析
-    * @Date: 2023/4/29 10:59
-    */
-    @GetMapping("/termination/analysis")
-    public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysis() {
-        try {
-            return R.success(this.sysStaffInfoService.getTerminationAnalysis());
-        } catch (DefaultException e) {
-            log.error("获取解约原因分析出错:{}", e.getMessage());
-            return R.error("获取解约原因分析出错");
-        } catch (Exception e) {
-            log.error("获取解约原因分析出错:{}", e, e);
-            return R.error("获取解约原因分析出错");
-        }
-    }
-
-
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 获取学历分析
-    * @Date: 2023/4/29 11:29
-    */
-    @GetMapping("/degree/analysis")
-    public DataResult<DegreeAnalysisVo> getDegreeAnalysis() {
-        try {
-            return R.success(this.sysStaffInfoService.getDegreeAnalysis());
-        } catch (DefaultException e) {
-            log.error("获取学历分析出错:{}", e.getMessage());
-            return R.error("获取学历分析出错");
-        } catch (Exception e) {
-            log.error("获取学历分析出错:{}", e, e);
-            return R.error("获取学历分析出错");
-        }
-    }
-
     /**************************************************************************************************
      **
      * 原子服务判断是否其他部门，是否相同副总
@@ -851,4 +759,41 @@ public class SysStaffInfoController {
             return R.error("查询负责人级别错误");
         }
     }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取离职伙伴列表明细
+     * @Date: 2023/5/3 14:08
+     */
+    @GetMapping("/get/departure/user")
+    public DataResult<List<DepartureDetailsVo>> getDepartureUserList(StaffByCompanyDto staffByCompanyDto) {
+        try {
+            if (UserUtils.getUser().isBack()){
+                staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            } else if (UserUtils.getUser().isCEO()){
+                staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            } else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                if(DataUtil.isEmpty(companyId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                SysCompanyInfo byId = sysCompanyInfoService.getById(companyId);
+                if(DataUtil.isEmpty(byId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                staffByCompanyDto.setIsProData(byId.getIsProData());
+            }
+
+            return R.success(sysAddressBookService.getDepartureUserList(staffByCompanyDto));
+        } catch (DefaultException e) {
+            log.error("获取离职伙伴列表明细错误:{}", e.getMessage());
+            return R.error("获取离职伙伴列表明细错误");
+        } catch (Exception e) {
+            log.error("获取离职伙伴列表明细错误:{}", e, e);
+            return R.error("获取离职伙伴列表明细错误");
+        }
+    }
+
 }

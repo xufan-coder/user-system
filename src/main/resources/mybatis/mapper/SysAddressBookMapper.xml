@@ -162,4 +162,49 @@
         </where>
     </select>
 
+    <!--获取离职伙伴列表明细-->
+    <select id="getDepartureUserList" resultType="com.zerody.user.vo.DepartureDetailsVo" parameterType="com.zerody.user.dto.StaffByCompanyDto">
+        select sui.id AS id, ssi.user_type, ssi.user_name AS userName, sui.phone_number AS phone, sdi.depart_name AS departName,
+        sci.company_name AS companyName, ssi.id AS staffId, ssi.leave_reason, ssi.date_join, ssi.date_left
+        from sys_staff_info ssi
+        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.status = 1
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.userType neq null">
+                and ssi.user_type = #{param.userType}
+            </if>
+            <if test="param.status neq null">
+                and ssi.status = #{param.status}
+            </if>
+            <if test="param.leaveType != null and param.leaveType != ''">
+                and ssi.leave_type = #{param.leaveType}
+            </if>
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.isProData neq null">
+                AND sci.is_pro_data=#{param.isProData}
+            </if>
+        </where>
+        <if test="param.sort neq null and param.sort eq 'asc'">
+            order by ssi.date_left asc
+        </if>
+        <if test="param.sort neq null and param.sort eq 'desc'">
+            order by ssi.date_left desc
+        </if>
+    </select>
+
 </mapper>

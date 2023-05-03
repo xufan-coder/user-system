@@ -46,10 +46,10 @@
             AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
         </if>
         <if test="param.begin neq null">
-            AND ssi.date_join &gt;= #{param.begin}
+            AND ssi.date_left &gt;= #{param.begin}
         </if>
         <if test="param.end neq null ">
-            AND ssi.date_join &lt; #{param.end}
+            AND ssi.date_left &lt; #{param.end}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
             <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">

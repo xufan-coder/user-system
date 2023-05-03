@@ -5,6 +5,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
+import com.zerody.user.vo.StatisticsDataDetailsVo;
 import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
 import com.zerody.user.vo.statis.UserSexStatisQueryVo;
 import com.zerody.user.vo.statis.UserTrendQueryVo;
@@ -51,4 +52,13 @@ public interface UserStatisService {
      * @return java.util.List<com.zerody.user.vo.statis.UserSexStatisQueryVo>
      */
     List<UserSexStatisQueryVo> getSexStatis(UserSexStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 统计伙伴签约详情
+     * @Date: 2023/4/29 10:30
+     */
+    List<StatisticsDataDetailsVo> statisticsDetails(UserStatisQueryDto param);
+
 }

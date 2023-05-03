@@ -1181,8 +1181,29 @@
         count(IF(ssi.status =1,  1 ,NULL)) as todayRescindNum,
         count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
         from sys_staff_info as ssi
-        left join sys_user_info as sui on sui.id = ssi.user_id
-		where to_days(ssi.create_time) = to_days(now());
+        join sys_user_info as sui on sui.id = ssi.user_id
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+		<where>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_join &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null ">
+                AND ssi.date_join &lt; #{param.end}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+		to_days(ssi.create_time) = to_days(now());
     </select>
 
     <!--获取伙伴本月签约与解约-->
@@ -1192,8 +1213,29 @@
         count(IF(ssi.status =1,  1 ,NULL)) as monthRescindNum,
         count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
         from sys_staff_info as ssi
-        left join sys_user_info as sui on sui.id = ssi.user_id
-		where DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        join sys_user_info as sui on sui.id = ssi.user_id
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+		<where>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_join &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null ">
+                AND ssi.date_join &lt; #{param.end}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+		DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
     </select>
 
     <!--根据离职类型获取离职原因数量-->
@@ -1207,10 +1249,31 @@
     <select id="getDepartureCount" resultType="java.lang.Integer">
         select count(1) from sys_staff_info as ssi
         left join sys_user_info as sui on sui.id = ssi.user_id
-        where ssi.status = 1
+        <where>
+            ssi.status = 1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_join &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null ">
+                AND ssi.date_join &lt; #{param.end}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
     </select>
 
-    <!--获取解约原因分析-->
+
+    <!--获取学历分析-->
     <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
         select
 		count(sui.id) as allNum,
@@ -1221,7 +1284,28 @@
         count(IF(sui.highest_education ='DOCTOR', 1 ,NULL)) as doctorNum
         from sys_staff_info as ssi
         join sys_user_info as sui on sui.id = ssi.user_id
-		where ssi.deleted =0 and sui.status !=-1
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+		<where>
+            ssi.deleted =0 and sui.status !=-1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_join &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null ">
+                AND ssi.date_join &lt; #{param.end}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 
@@ -1318,6 +1402,29 @@
             parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
 		count(sb.id) from staff_blacklist as sb
+		join sys_user_info as sui on sui.certificate_card = sb.identity_card
+		join sys_staff_info as ssi on ssi.user_id = sui.id
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_join &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null ">
+                AND ssi.date_join &lt; #{param.end}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 </mapper>
