@@ -3117,7 +3117,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DecimalFormat df = new DecimalFormat("0.00");
         return df.format(d);
     }
-
     @Override
     public UserStatistics getUserOverview(UserStatisQueryDto param) {
         SetSysUserInfoDto dto = new SetSysUserInfoDto();

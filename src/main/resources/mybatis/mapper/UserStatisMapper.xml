@@ -76,6 +76,14 @@
         <if test="param.departId neq null and param.departId neq ''">
             AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
         </if>
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
         <if test="param.begin neq null">
             AND sui.birthday_time &lt; #{param.begin}
         </if>
@@ -101,6 +109,14 @@
         </if>
         <if test="param.departId neq null and param.departId neq ''">
             AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+        </if>
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
         </if>
         <if test="param.sex neq null">
             AND sui.id_card_sex = #{param.sex}
