@@ -79,9 +79,9 @@ public class UserStatisController {
      * @Date: 2023/4/28 17:17
      */
     @GetMapping("/get/user/overview")
-    public DataResult<UserStatistics> getUserOverview() {
+    public DataResult<UserStatistics> getUserOverview(UserStatisQueryDto param) {
         try {
-            return R.success(this.sysStaffInfoService.getUserOverview());
+            return R.success(this.sysStaffInfoService.getUserOverview(param));
         } catch (DefaultException e) {
             log.error("查询伙伴概况出错:{}", e.getMessage());
             return R.error("查询伙伴概况出错");
@@ -99,9 +99,9 @@ public class UserStatisController {
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/statistics/partner")
-    public DataResult<UserStatistics> statisticsContractAndRescind() {
+    public DataResult<UserStatistics> statisticsContractAndRescind(UserStatisQueryDto param) {
         try {
-            return R.success(this.sysStaffInfoService.statisticsContractAndRescind());
+            return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
         } catch (DefaultException e) {
             log.error("统计伙伴签约与解约出错:{}", e.getMessage());
             return R.error("统计伙伴签约与解约出错");
@@ -139,9 +139,9 @@ public class UserStatisController {
      * @Date: 2023/4/29 10:59
      */
     @GetMapping("/termination/analysis")
-    public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysis() {
+    public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysis(UserStatisQueryDto param) {
         try {
-            return R.success(this.sysStaffInfoService.getTerminationAnalysis());
+            return R.success(this.sysStaffInfoService.getTerminationAnalysis(param));
         } catch (DefaultException e) {
             log.error("获取解约原因分析出错:{}", e.getMessage());
             return R.error("获取解约原因分析出错");
@@ -159,9 +159,9 @@ public class UserStatisController {
      * @Date: 2023/4/29 11:29
      */
     @GetMapping("/degree/analysis")
-    public DataResult<DegreeAnalysisVo> getDegreeAnalysis() {
+    public DataResult<DegreeAnalysisVo> getDegreeAnalysis(UserStatisQueryDto param) {
         try {
-            return R.success(this.sysStaffInfoService.getDegreeAnalysis());
+            return R.success(this.sysStaffInfoService.getDegreeAnalysis(param));
         } catch (DefaultException e) {
             log.error("获取学历分析出错:{}", e.getMessage());
             return R.error("获取学历分析出错");
