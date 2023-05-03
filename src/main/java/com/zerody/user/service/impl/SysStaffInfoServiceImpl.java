@@ -55,6 +55,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.enums.*;
 import com.zerody.user.feign.*;
 import com.zerody.user.handler.user.SysUserDimissionHandle;
@@ -3113,11 +3114,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics getUserOverview() {
-        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(null);
+    public UserStatistics getUserOverview(UserStatisQueryDto param) {
+        SetSysUserInfoDto dto = new SetSysUserInfoDto();
+        dto.setCompanyId(param.getCompanyId());
+        dto.setCompanyIds(param.getCompanyIds());
+        dto.setDepartId(param.getDepartId());
+        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(dto);
 
         //内控伙伴数量
-        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum();
+        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum(param);
         userStatistics.setInternalControlUserNum(internalControlNum);
         //二次签约
         userStatistics.setSecondContractNum(0);
@@ -3136,13 +3141,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics statisticsContractAndRescind() {
+    public UserStatistics statisticsContractAndRescind(UserStatisQueryDto param) {
         //签约包含签约中和合作中
         //今日
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind();
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind(param);
         userStatistics.setTodaySignNum(userStatistics.getTodaySignNum() + userStatistics.getInCooperationNum());
         //本月
-        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind();
+        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
         userStatistics.setMonthSignNum(statistics.getMonthSignNum() + statistics.getInCooperationNum());
         userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
         return userStatistics;
@@ -3150,10 +3155,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     @Override
-    public List<TerminationAnalysisVo> getTerminationAnalysis() {
+    public List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param) {
         List<TerminationAnalysisVo> arrList = new ArrayList<>();
         //总离职人数
-        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount();
+        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
 
         //离职原因类型
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
@@ -3169,8 +3174,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DegreeAnalysisVo getDegreeAnalysis() {
-        return this.sysStaffInfoMapper.getDegreeAnalysis();
+    public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
+        return this.sysStaffInfoMapper.getDegreeAnalysis(param);
     }
 
     @Override

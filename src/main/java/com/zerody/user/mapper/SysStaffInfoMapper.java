@@ -7,6 +7,7 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -417,7 +418,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 获取伙伴当日签约与解约
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics getPartnerTodaySignAndRescind();
+    UserStatistics getPartnerTodaySignAndRescind(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng
@@ -425,7 +426,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 获取伙伴本月签约与解约
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics getPartnerThisMonthSignAndRescind();
+    UserStatistics getPartnerThisMonthSignAndRescind(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng
@@ -441,15 +442,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 获取离职伙伴数
     * @Date: 2023/4/29 12:39
     */
-    Integer getDepartureCount();
-
-    /**
-    * @Author: chenKeFeng
-    * @param
-    * @Description: 统计伙伴签约详情
-    * @Date: 2023/4/29 15:23
-    */
-    StatisticsDataDetailsVo statisticsDetails();
+    Integer getDepartureCount(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -457,7 +450,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 获取学历分析
     * @Date: 2023/4/29 14:35
     */
-    DegreeAnalysisVo getDegreeAnalysis();
+    DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -465,7 +458,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 统计内控数伙伴数量
     * @Date: 2023/4/28 18:42
     */
-    Integer getInternalControlNum();
+    Integer getInternalControlNum(UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng
