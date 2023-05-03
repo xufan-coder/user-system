@@ -1210,7 +1210,12 @@
         where ssi.status = 1
     </select>
 
-    <!--获取解约原因分析-->
+    <!--统计伙伴签约详情-->
+    <select id="statisticsDetails" resultType="com.zerody.user.vo.StatisticsDataDetailsVo">
+
+    </select>
+
+    <!--获取学历分析-->
     <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
         select
 		count(sui.id) as allNum,

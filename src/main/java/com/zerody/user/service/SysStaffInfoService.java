@@ -225,7 +225,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     /**
      * @Author: chenKeFeng
      * @param
-     * @Description: 获取解约原因分析
+     * @Description: 获取学历分析
      * @Date: 2023/4/29 10:30
      */
     DegreeAnalysisVo getDegreeAnalysis();

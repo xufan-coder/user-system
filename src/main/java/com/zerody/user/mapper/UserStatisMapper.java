@@ -21,7 +21,9 @@ public interface UserStatisMapper  {
      * @return int
      */
 
-    int getStatisSigning(@Param("param") UserStatisQueryDto param);    /**
+    int getStatisSigning(@Param("param") UserStatisQueryDto param);
+
+    /**
      *
      * 查询解约用户
      * @author PengQiang

@@ -3150,6 +3150,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public StatisticsDataDetailsVo statisticsDetails() {
+        //日
+        this.sysStaffInfoMapper.statisticsDetails();
+        //月
         return null;
     }
 
