@@ -205,14 +205,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Date: 2023/4/28 20:19
     */
     UserStatistics statisticsContractAndRescind();
-    
-    /**
-    * @Author: chenKeFeng
-    * @param  
-    * @Description: 统计伙伴签约详情
-    * @Date: 2023/4/29 10:30
-    */
-    StatisticsDataDetailsVo statisticsDetails();
 
     /**
      * @Author: chenKeFeng

@@ -59,7 +59,7 @@ public class UserStatisController {
             if (DataUtil.isEmpty(param.getTimePeriod())) {
                 param.setTimePeriod(TimeOperate.DAY.name());
             }
-            //this.checkUtil.SetUserPositionInfo(param);
+            this.checkUtil.SetUserPositionInfo(param);
             List<UserTrendQueryVo> list = this.service.getUserTrendS(param);
             return R.success(list);
         } catch (DefaultException e) {
@@ -119,9 +119,9 @@ public class UserStatisController {
      * @Date: 2023/4/28 20:36
      */
     @GetMapping("/statistics/partner/details")
-    public DataResult<StatisticsDataDetailsVo> statisticsDetails() {
+    public DataResult<List<StatisticsDataDetailsVo>> statisticsDetails(UserStatisQueryDto param) {
         try {
-            return R.success(this.sysStaffInfoService.statisticsDetails());
+            return R.success(this.service.statisticsDetails(param));
         } catch (DefaultException e) {
             log.error("统计伙伴签约详情出错:{}", e.getMessage());
             return R.error("统计伙伴签约详情出错");

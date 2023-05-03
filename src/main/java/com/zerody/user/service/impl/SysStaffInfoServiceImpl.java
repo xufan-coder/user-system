@@ -3148,13 +3148,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return userStatistics;
     }
 
-    @Override
-    public StatisticsDataDetailsVo statisticsDetails() {
-        //日
-        this.sysStaffInfoMapper.statisticsDetails();
-        //月
-        return null;
-    }
 
     @Override
     public List<TerminationAnalysisVo> getTerminationAnalysis() {

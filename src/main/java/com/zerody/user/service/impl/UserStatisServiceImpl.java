@@ -8,6 +8,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.mapper.UserStatisMapper;
 import com.zerody.user.service.UserStatisService;
+import com.zerody.user.vo.StatisticsDataDetailsVo;
 import com.zerody.user.vo.statis.UserTrendQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,10 @@ public class UserStatisServiceImpl  implements UserStatisService {
     @Autowired
     private UserStatisMapper baseMapper;
 
+    private final int num = 7;
+
     @Override
     public List<UserTrendQueryVo> getUserTrendS(UserStatisQueryDto param) {
-        final int num = 7;
         List<UserTrendQueryVo> result = new ArrayList<>();
         TimeOperate timeOperate = TimeOperate.getTimeType(param.getTimePeriod());
         if (DataUtil.isEmpty(timeOperate)) {
@@ -47,6 +49,41 @@ public class UserStatisServiceImpl  implements UserStatisService {
             result.add(statis);
             statis.setSignNum(signingNum);
             statis.setUnSignNum(unSigningNum);
+            startTime = param.getBegin();
+        }
+        return result;
+    }
+
+    @Override
+    public List<StatisticsDataDetailsVo> statisticsDetails(UserStatisQueryDto param) {
+        List<StatisticsDataDetailsVo> result = new ArrayList<>();
+        TimeOperate timeOperate = TimeOperate.getTimeType(param.getTimePeriod());
+        if (DataUtil.isEmpty(timeOperate)) {
+            throw new DefaultException("日期类型错误");
+        }
+        Date startTime = timeOperate.getNext();
+        int lastAgencyNum = 0;
+        for (int i = 0; i < num; i++) {
+            StatisticsDataDetailsVo vo = new StatisticsDataDetailsVo();
+            //结束时间
+            param.setEnd(startTime);
+            //开始时间
+            param.setBegin(timeOperate.getPrev(startTime));
+            //新签约
+            int newAgencyNum = this.baseMapper.getStatisSigning(param);
+            //解约
+            int terminationNum = this.baseMapper.getStatisUnSigning(param);
+            //净增
+            int netIncreaseNum = newAgencyNum - terminationNum;
+            //签约中(累计每日每约的新签约)
+            lastAgencyNum = newAgencyNum + lastAgencyNum;
+
+            vo.setDateStr(timeOperate.getFormat(param.getBegin()));
+            vo.setNewAgencyNum(newAgencyNum);
+            vo.setTerminationNum(terminationNum);
+            vo.setNetIncreaseNum(netIncreaseNum);
+            vo.setAgencyNum(lastAgencyNum);
+            result.add(vo);
             startTime = param.getBegin();
         }
         return result;
