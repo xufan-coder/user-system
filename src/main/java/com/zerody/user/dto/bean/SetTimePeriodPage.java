@@ -12,7 +12,10 @@ import java.util.Date;
  */
 @Data
 public class SetTimePeriodPage extends UserPositionPageParam {
-    /** 今日/昨日/本周/本月/自定义 */
+    /**
+     * 今日/昨日/本周/本月/自定义
+     * 日期维度( day、week、month、year 默认:day)
+     */
     private String timePeriod;
 
     /** 起始时间 */

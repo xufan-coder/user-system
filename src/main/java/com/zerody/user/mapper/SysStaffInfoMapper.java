@@ -445,8 +445,16 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约详情
+    * @Date: 2023/4/29 15:23
+    */
+    StatisticsDataDetailsVo statisticsDetails();
+
+    /**
+    * @Author: chenKeFeng
     * @param  
-    * @Description: 获取解约原因分析
+    * @Description: 获取学历分析
     * @Date: 2023/4/29 14:35
     */
     DegreeAnalysisVo getDegreeAnalysis();

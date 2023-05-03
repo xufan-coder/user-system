@@ -252,6 +252,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Value("${sms.sign.tsz:唐叁藏}")
     String smsSign;
 
+    @Value("${leave.type.transfer:}")
+    private String transfer;
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SysStaffInfo addStaff(SetSysUserInfoDto setSysUserInfoDto) {
@@ -688,6 +692,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
+            throw new DefaultException("离职详情不能为空");
+        }
+        if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveType())) {
             throw new DefaultException("离职原因不能为空");
         }
         log.info("修改用户信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
@@ -857,6 +864,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setUserName(setSysUserInfoDto.getUserName());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
+        staff.setLeaveType(setSysUserInfoDto.getLeaveType());
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
@@ -1199,6 +1207,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setRoleName(unionRoleStaff.getRoleName());
             positionRecord.setPositionTime(staff.getDateJoin());
             positionRecord.setQuitTime(staff.getDateLeft());
+            positionRecord.setLeaveType(staff.getLeaveType());
             positionRecord.setQuitReason(staff.getLeaveReason());
             positionRecord.setCreateBy(user.getUserId());
             positionRecord.setCreateName(user.getUserName());
@@ -3141,6 +3150,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public StatisticsDataDetailsVo statisticsDetails() {
+        //日
+        this.sysStaffInfoMapper.statisticsDetails();
+        //月
         return null;
     }
 
@@ -3928,6 +3940,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
         positionRecord.setCreateTime(new Date());
         positionRecord.setQuitTime(new Date());
+        positionRecord.setLeaveType(this.transfer);
         positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
         positionRecordService.save(positionRecord);
 

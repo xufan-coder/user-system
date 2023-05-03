@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.UserStatisMapper" >
+
+<select id="getStatisSigning" resultType="int">
+    SELECT
+        count(1)
+    FROM sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+        sui.status in (0, 3)
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.departId neq null and param.departId">
+            AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+        </if>
+        <if test="param.begin neq null">
+            AND ssi.date_join &gt;= #{param.begin}
+        </if>
+        <if test="param.end neq null ">
+            AND ssi.date_join &lt; #{param.end}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+    </where>
+
+</select>
+
+<select id="getStatisUnSigning" resultType="int">
+    SELECT
+        count(1)
+    FROM sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+        sui.status = 1
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.departId neq null and param.departId">
+            AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+        </if>
+        <if test="param.begin neq null">
+            AND ssi.date_left &gt;= #{param.begin}
+        </if>
+        <if test="param.end neq null ">
+            AND ssi.date_left &lt; #{param.end}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+    </where>
+</select>
+</mapper>
