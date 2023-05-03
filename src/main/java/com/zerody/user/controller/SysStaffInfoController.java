@@ -9,11 +9,8 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
-import com.zerody.oss.api.util.Uploader;
-import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.dto.AdminsPageDto;
 import com.zerody.user.dto.IdCardUpdateDto;
 import com.zerody.user.dto.SetSysUserInfoDto;
@@ -24,13 +21,10 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
-import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +40,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -606,7 +599,7 @@ public class SysStaffInfoController {
     /**
     * @Author: chenKeFeng
     * @param
-    * @Description: 伙伴数据统计
+    * @Description: 伙伴数据统计(工作台)
     * @Date: 2022/11/11 9:51
     */
     @GetMapping("/statistics-users")

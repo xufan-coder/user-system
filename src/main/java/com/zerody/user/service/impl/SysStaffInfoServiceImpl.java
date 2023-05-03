@@ -95,6 +95,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -250,6 +251,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Value("${sms.sign.tsz:唐叁藏}")
     String smsSign;
+
+    @Value("${leave.type.transfer:}")
+    private String transfer;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -687,6 +692,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         // 注* 涉及到离职的修改时 查看 doCopyStaffInner 方法是否也需要修改
         boolean removeToken = true;
         if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveReason())) {
+            throw new DefaultException("离职详情不能为空");
+        }
+        if (setSysUserInfoDto.getStatus().intValue() == StatusEnum.stop.getValue() && StringUtils.isEmpty(setSysUserInfoDto.getLeaveType())) {
             throw new DefaultException("离职原因不能为空");
         }
         log.info("修改用户信息  ——> 入参：{}, 操作者信息：{}", JSON.toJSONString(setSysUserInfoDto), JSON.toJSONString(UserUtils.getUser()));
@@ -856,6 +864,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setUserName(setSysUserInfoDto.getUserName());
         staff.setResumeUrl(setSysUserInfoDto.getResumeUrl());
         staff.setEvaluate(setSysUserInfoDto.getEvaluate());
+        staff.setLeaveType(setSysUserInfoDto.getLeaveType());
         staff.setLeaveReason(setSysUserInfoDto.getLeaveReason());
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());//入职时间
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());//在职年限
@@ -1198,6 +1207,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setRoleName(unionRoleStaff.getRoleName());
             positionRecord.setPositionTime(staff.getDateJoin());
             positionRecord.setQuitTime(staff.getDateLeft());
+            positionRecord.setLeaveType(staff.getLeaveType());
             positionRecord.setQuitReason(staff.getLeaveReason());
             positionRecord.setCreateBy(user.getUserId());
             positionRecord.setCreateName(user.getUserName());
@@ -3096,6 +3106,73 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
+    //保留两位小数
+    private String reserveTwo(Double d){
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(d);
+    }
+
+    @Override
+    public UserStatistics getUserOverview() {
+        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(null);
+
+        //内控伙伴数量
+        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum();
+        userStatistics.setInternalControlUserNum(internalControlNum);
+        //二次签约
+        userStatistics.setSecondContractNum(0);
+
+        //总签约数量
+        Integer num = userStatistics.getHistoricalContractNum();
+        userStatistics.setManagerRate(reserveTwo(new Double(userStatistics.getManagerNum()) / num) + "%");
+        userStatistics.setVicePresidentRate(reserveTwo(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
+        userStatistics.setTeamLeaderRate(reserveTwo(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
+
+        userStatistics.setPartnerRate(reserveTwo(new Double(userStatistics.getPartnerNum()) / num) + "%");
+        userStatistics.setMasonryMemberRate(reserveTwo(new Double(userStatistics.getMasonryMemberNum()) / num) + "%");
+        userStatistics.setProspectiveExecutiveRate(reserveTwo(new Double(userStatistics.getProspectiveExecutiveNum()) / num) + "%");
+        userStatistics.setSecondContractRate(reserveTwo(new Double(userStatistics.getSecondContractNum()) / num) + "%");
+        return userStatistics;
+    }
+
+    @Override
+    public UserStatistics statisticsContractAndRescind() {
+        //签约包含签约中和合作中
+        //今日
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind();
+        userStatistics.setTodaySignNum(userStatistics.getTodaySignNum() + userStatistics.getInCooperationNum());
+        //本月
+        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind();
+        userStatistics.setMonthSignNum(statistics.getMonthSignNum() + statistics.getInCooperationNum());
+        userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
+        return userStatistics;
+    }
+
+
+    @Override
+    public List<TerminationAnalysisVo> getTerminationAnalysis() {
+        List<TerminationAnalysisVo> arrList = new ArrayList<>();
+        //总离职人数
+        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount();
+
+        //离职原因类型
+        List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
+        for (DictQuseryVo dict : listByType) {
+            TerminationAnalysisVo vo = new TerminationAnalysisVo();
+            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getDictName());
+            vo.setName(dict.getDictName());
+            vo.setPeopleNum(departureCauseCount);
+            vo.setPeopleRate(reserveTwo(new Double(departureCauseCount) / departureCount));
+            arrList.add(vo);
+        }
+        return arrList;
+    }
+
+    @Override
+    public DegreeAnalysisVo getDegreeAnalysis() {
+        return this.sysStaffInfoMapper.getDegreeAnalysis();
+    }
+
     @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId, Integer isShowLeave) {
         return sysStaffInfoMapper.getStaffByCompany(companyId, isShowLeave);
@@ -3856,6 +3933,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
         positionRecord.setCreateTime(new Date());
         positionRecord.setQuitTime(new Date());
+        positionRecord.setLeaveType(this.transfer);
         positionRecord.setQuitReason("从"+companyInfo.getCompanyName()+"调离至"+sysCompany.getCompanyName());
         positionRecordService.save(positionRecord);
 
