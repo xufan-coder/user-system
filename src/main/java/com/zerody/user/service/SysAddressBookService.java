@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
+import com.zerody.user.vo.DepartureDetailsVo;
 import com.zerody.user.vo.StaffInfoByAddressBookVo;
 import com.zerody.user.vo.SysAddressBookVo;
 
@@ -49,4 +50,13 @@ public interface SysAddressBookService {
      * @return
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto);
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 获取离职伙伴列表明细
+    * @Date: 2023/5/3 14:40
+    */
+    List<DepartureDetailsVo> getDepartureUserList(StaffByCompanyDto staffByCompanyDto);
+    
 }
