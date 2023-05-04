@@ -171,18 +171,18 @@
     </select>
 
     <!--获取离职伙伴列表明细-->
-    <select id="getDepartureUserList" resultType="java.util.List" parameterType="com.zerody.user.dto.DepartureDetailsDto">
+    <select id="getDepartureUserList" resultType="com.zerody.user.vo.DepartureDetailsVo" parameterType="com.zerody.user.dto.DepartureDetailsDto">
         select sui.id AS id, ssi.user_type, ssi.user_name AS userName, sui.phone_number AS phone, sdi.depart_name AS departName,
         sci.company_name AS companyName, ssi.id AS staffId, ssi.leave_reason, ssi.date_join, ssi.date_left
         from sys_staff_info ssi
-        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
-        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN sys_user_info sui ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
             ssi.status = 1
-            <if test="param.companyId != null and param.companyId != ''">
+            <if test="param.searchName != null and param.searchName != ''">
                 and (ssi.user_name  like CONCAT('%', #{param.searchName} ,'%')
                 or sui.phone_number like CONCAT('%', #{param.searchName}, '%'))
             </if>
@@ -206,9 +206,6 @@
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
-            </if>
-            <if test="param.isProData neq null">
-                AND sci.is_pro_data=#{param.isProData}
             </if>
         </where>
         <if test="param.sort neq null and param.sort eq 'asc'">

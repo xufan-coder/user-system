@@ -768,7 +768,7 @@ public class SysStaffInfoController {
      * @Date: 2023/5/3 14:08
      */
     @GetMapping("/get/departure/user")
-    public DataResult<IPage<List<DepartureDetailsVo>>> getDepartureUserList(DepartureDetailsDto dto) {
+    public DataResult<IPage<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto dto) {
         try {
             //判断是否为企业管理员
             if (UserUtils.getUser().isBack()){

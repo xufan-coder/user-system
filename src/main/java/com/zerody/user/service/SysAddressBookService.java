@@ -59,6 +59,6 @@ public interface SysAddressBookService {
     * @Description: 获取离职伙伴列表明细
     * @Date: 2023/5/3 14:40
     */
-    IPage<List<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto param);
+    IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param);
     
 }
