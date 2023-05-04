@@ -14,7 +14,7 @@ public class DegreeAnalysisVo {
     /**
      * 高中以下人数
      */
-    private String highHereinafterNum;
+    private Integer highHereinafterNum;
 
     /**
      * 高中以下人数占比
@@ -24,7 +24,7 @@ public class DegreeAnalysisVo {
     /**
      * 大专人数
      */
-    private String collegeNum;
+    private Integer collegeNum;
 
     /**
      * 大专占比
@@ -34,7 +34,7 @@ public class DegreeAnalysisVo {
     /**
      * 本科人数
      */
-    private String undergraduateNum;
+    private Integer undergraduateNum;
 
     /**
      * 本科占比
@@ -44,7 +44,7 @@ public class DegreeAnalysisVo {
     /**
      * 硕士人数
      */
-    private String masterNum;
+    private Integer masterNum;
 
     /**
      * 硕士占比
@@ -54,7 +54,7 @@ public class DegreeAnalysisVo {
     /**
      * 博士人数
      */
-    private String doctorNum;
+    private Integer doctorNum;
 
     /**
      * 博士占比

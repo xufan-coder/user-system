@@ -1,6 +1,9 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
+import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.SysAddressBookService;
@@ -43,8 +46,9 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
-    public List<DepartureDetailsVo> getDepartureUserList(StaffByCompanyDto staffByCompanyDto) {
-        return sysMailListMapper.getDepartureUserList(staffByCompanyDto);
+    public IPage<List<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto param) {
+        IPage<DepartureDetailsVo> userPage = new Page<>(param.getCurrent(), param.getPageSize());
+        return this.sysMailListMapper.getDepartureUserList(param, userPage);
     }
 
 }

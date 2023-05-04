@@ -71,7 +71,7 @@ public class UserStatistics {
     //-------------------------------------------------
 
     /**
-     * 历史签约
+     * 历史签约 = 签约中 + 已解约 + 合作中
      */
     private Integer historicalContractNum =0;
 
@@ -131,5 +131,15 @@ public class UserStatistics {
      * 本月解约
      */
     private Integer monthRescindNum;
+
+    /**
+     * 昨日签约
+     */
+    private Integer yesterdaySignNum;
+
+    /**
+     * 昨日解约
+     */
+    private Integer yesterdayRescindNum;
 
 }

@@ -431,6 +431,14 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     /**
      * @Author: chenKeFeng
      * @param
+     * @Description: 获取昨日签约与解约数量
+     * @Date: 2022/11/11 10:12
+     */
+    UserStatistics getYesterdaySignAndRescind(@Param("param") UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
      * @Description: 根据离职类型获取离职原因数量
      * @Date: 2022/11/11 10:12
      */

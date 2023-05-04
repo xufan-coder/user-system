@@ -47,14 +47,4 @@ public class StaffByCompanyDto {
     /**是否查询离职伙伴   0-否 1-是*/
     private Integer isQuit;
 
-    /**
-     * 离职类型
-     */
-    private String leaveType;
-
-    /**
-     * 排序(升序asc 正序desc)
-     */
-    private String sort;
-
 }
