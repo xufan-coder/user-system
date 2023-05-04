@@ -46,8 +46,8 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
-    public IPage<List<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto param) {
-        IPage<DepartureDetailsVo> userPage = new Page<>(param.getCurrent(), param.getPageSize());
+    public IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param) {
+        Page<DepartureDetailsVo> userPage = new Page<>(param.getCurrent(), param.getPageSize());
         return this.sysMailListMapper.getDepartureUserList(param, userPage);
     }
 

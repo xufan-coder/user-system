@@ -1,6 +1,7 @@
 package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
@@ -66,6 +67,6 @@ public interface SysAddressBookMapper {
      * @Description: 获取离职伙伴列表明细
      * @Date: 2023/5/3 14:29
      */
-    IPage<List<DepartureDetailsVo>> getDepartureUserList(@Param("param") DepartureDetailsDto staffByCompanyDto, IPage<DepartureDetailsVo> iPage);
+    IPage<DepartureDetailsVo> getDepartureUserList(@Param("param") DepartureDetailsDto staffByCompanyDto, Page<DepartureDetailsVo> iPage);
 
 }
