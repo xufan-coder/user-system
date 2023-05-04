@@ -55,6 +55,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.enums.*;
 import com.zerody.user.feign.*;
 import com.zerody.user.handler.user.SysUserDimissionHandle;
@@ -98,6 +99,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -243,6 +246,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private PrepareExecutiveRecordService prepareExecutiveRecordService;
 
+    @Autowired
+    private SysAddressBookService sysAddressBookService;
+
+    @Autowired
+    private SysAddressBookMapper sysUserAddressBookMapper;
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -317,8 +329,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         IdCardDate date = DateUtil.getIdCardDate(sysUserInfo.getCertificateCard());
         //月
         sysUserInfo.setBirthdayMonth(date.getMonth());
+        sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
+        sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         String avatar = sysUserInfo.getAvatar();
         sysUserInfo.setAvatar(null);
         sysUserInfo.setIsEdit(YesNo.YES);
@@ -799,8 +813,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setBirthdayMonth(date.getMonth());
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
+        sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
         sysUserInfoMapper.updateById(sysUserInfo);
-
+        sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
                 !oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
@@ -3111,13 +3126,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         DecimalFormat df = new DecimalFormat("0.00");
         return df.format(d);
     }
-
     @Override
-    public UserStatistics getUserOverview() {
-        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(null);
+    public UserStatistics getUserOverview(UserStatisQueryDto param) {
+        SetSysUserInfoDto dto = new SetSysUserInfoDto();
+        dto.setCompanyId(param.getCompanyId());
+        dto.setCompanyIds(param.getCompanyIds());
+        dto.setDepartId(param.getDepartId());
+        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(dto);
 
         //内控伙伴数量
-        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum();
+        Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum(param);
         userStatistics.setInternalControlUserNum(internalControlNum);
         //二次签约
         userStatistics.setSecondContractNum(0);
@@ -3136,28 +3154,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics statisticsContractAndRescind() {
+    public UserStatistics statisticsContractAndRescind(UserStatisQueryDto param) {
         //签约包含签约中和合作中
         //今日
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind();
-        userStatistics.setTodaySignNum(userStatistics.getTodaySignNum() + userStatistics.getInCooperationNum());
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind(param);
+        userStatistics.setTodaySignNum(userStatistics.getTodaySignNum());
         //本月
-        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind();
-        userStatistics.setMonthSignNum(statistics.getMonthSignNum() + statistics.getInCooperationNum());
+        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
+        userStatistics.setMonthSignNum(statistics.getMonthSignNum());
         userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
         return userStatistics;
     }
 
-    @Override
-    public StatisticsDataDetailsVo statisticsDetails() {
-        return null;
-    }
 
     @Override
-    public List<TerminationAnalysisVo> getTerminationAnalysis() {
+    public List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param) {
         List<TerminationAnalysisVo> arrList = new ArrayList<>();
         //总离职人数
-        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount();
+        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
 
         //离职原因类型
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
@@ -3173,9 +3187,60 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public DegreeAnalysisVo getDegreeAnalysis() {
-        return this.sysStaffInfoMapper.getDegreeAnalysis();
+    public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
+        return this.sysStaffInfoMapper.getDegreeAnalysis(param);
     }
+
+    @Override
+    public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {
+        List<SignSummaryVo> arrList = new ArrayList<>();
+        if (DataUtil.isNotEmpty(param.getCompanyId())) {
+            //查询企业下的部门
+            DepartInfoDto departInfoDto = new DepartInfoDto();
+            departInfoDto.setCompId(param.getCompanyId());
+            List<DepartInfoVo> departList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
+            for (DepartInfoVo dept : departList) {
+                SignSummaryVo vo = getSummary(dept.getDepartName(), param);
+                arrList.add(vo);
+            }
+        } else {
+            //查询所有企业
+            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList();
+            for (SysAddressBookVo com : companyList) {
+                SignSummaryVo vo = getSummary(com.getCompanyName(), param);
+                arrList.add(vo);
+            }
+        }
+
+        return arrList;
+    }
+
+    private SignSummaryVo getSummary(String name, UserStatisQueryDto param){
+        SignSummaryVo vo = new SignSummaryVo();
+        vo.setName(name);
+        //查询伙伴概况
+        UserStatistics userOverview = this.sysStaffInfoService.getUserOverview(param);
+        BeanUtils.copyProperties(userOverview, vo);
+        //统计伙伴签约与解约(今日、本月)
+        UserStatistics userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
+        vo.setTodaySignNum(userStatistics.getTodaySignNum());
+        vo.setTodayRescindNum(userStatistics.getTodayRescindNum());
+        vo.setMonthSignNum(userStatistics.getMonthSignNum());
+        vo.setMonthRescindNum(userStatistics.getMonthRescindNum());
+        //统计伙伴签约与解约(昨日)
+        UserStatistics yesterdaySign = sysStaffInfoMapper.getYesterdaySignAndRescind(param);
+        vo.setYesterdaySignNum(yesterdaySign.getYesterdaySignNum());
+        vo.setYesterdayRescindNum(yesterdaySign.getYesterdayRescindNum());
+        //获取学历分析
+        DegreeAnalysisVo degreeAnalysis = this.sysStaffInfoService.getDegreeAnalysis(param);
+        vo.setHighHereinafterNum(degreeAnalysis.getHighHereinafterNum());
+        vo.setCollegeNum(degreeAnalysis.getCollegeNum());
+        vo.setUndergraduateNum(degreeAnalysis.getUndergraduateNum());
+        vo.setMasterNum(degreeAnalysis.getMasterNum());
+        vo.setDoctorNum(degreeAnalysis.getDoctorNum());
+        return vo;
+    }
+
 
     @Override
     public List<StaffInfoByCompanyVo> getStaffByCompany(String companyId, Integer isShowLeave) {

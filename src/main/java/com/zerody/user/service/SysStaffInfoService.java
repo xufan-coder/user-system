@@ -12,6 +12,7 @@ import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -196,39 +197,39 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 查询伙伴概况
     * @Date: 2023/4/28 17:28
     */
-    UserStatistics getUserOverview();
+    UserStatistics getUserOverview(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
     * @param  
-    * @Description: 统计伙伴签约与解约
+    * @Description: 统计伙伴签约与解约(今日、本月)
     * @Date: 2023/4/28 20:19
     */
-    UserStatistics statisticsContractAndRescind();
-    
+    UserStatistics statisticsContractAndRescind(UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取解约原因分析
+     * @Date: 2023/4/29 10:30
+     */
+    List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取学历分析
+     * @Date: 2023/4/29 10:30
+     */
+    DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
+
     /**
     * @Author: chenKeFeng
-    * @param  
-    * @Description: 统计伙伴签约详情
-    * @Date: 2023/4/29 10:30
+    * @param
+    * @Description: 签约数据汇总报表
+    * @Date: 2023/5/3 15:47
     */
-    StatisticsDataDetailsVo statisticsDetails();
-
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取解约原因分析
-     * @Date: 2023/4/29 10:30
-     */
-    List<TerminationAnalysisVo> getTerminationAnalysis();
-
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取解约原因分析
-     * @Date: 2023/4/29 10:30
-     */
-    DegreeAnalysisVo getDegreeAnalysis();
+    List<SignSummaryVo> getSignSummary(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
