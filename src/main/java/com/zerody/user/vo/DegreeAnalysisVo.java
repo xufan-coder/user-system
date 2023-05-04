@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 学历分析数据
  *
@@ -12,6 +14,11 @@ import lombok.Data;
 public class DegreeAnalysisVo {
 
     /**
+     * 总人数
+     */
+    private Integer allNum;
+
+    /**
      * 高中以下人数
      */
     private Integer highHereinafterNum;
@@ -19,7 +26,7 @@ public class DegreeAnalysisVo {
     /**
      * 高中以下人数占比
      */
-    private String highHereinafterRate;
+    private BigDecimal highHereinafterRate;
 
     /**
      * 大专人数
@@ -29,7 +36,7 @@ public class DegreeAnalysisVo {
     /**
      * 大专占比
      */
-    private String collegeRate;
+    private BigDecimal collegeRate;
 
     /**
      * 本科人数
@@ -39,7 +46,7 @@ public class DegreeAnalysisVo {
     /**
      * 本科占比
      */
-    private String undergraduateRate;
+    private BigDecimal undergraduateRate;
 
     /**
      * 硕士人数
@@ -49,7 +56,7 @@ public class DegreeAnalysisVo {
     /**
      * 硕士占比
      */
-    private String masterRate;
+    private BigDecimal masterRate;
 
     /**
      * 博士人数
@@ -59,6 +66,6 @@ public class DegreeAnalysisVo {
     /**
      * 博士占比
      */
-    private String doctorRate;
+    private BigDecimal doctorRate;
 
 }
