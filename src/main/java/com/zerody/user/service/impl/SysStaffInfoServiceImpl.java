@@ -55,6 +55,7 @@ import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.enums.*;
 import com.zerody.user.feign.*;
@@ -66,6 +67,7 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
+import com.zerody.user.vo.statis.UserSexStatisQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -84,6 +86,7 @@ import com.zerody.user.enums.StaffStatusEnum;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -242,6 +245,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private UserStatisMapper userStatisMapper;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -3175,7 +3181,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
-        return this.sysStaffInfoMapper.getDegreeAnalysis(param);
+        DegreeAnalysisVo degreeAnalysis = this.sysStaffInfoMapper.getDegreeAnalysis(param);
+        degreeAnalysis.setHighHereinafterRate(new BigDecimal(degreeAnalysis.getHighHereinafterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        degreeAnalysis.setCollegeRate(new BigDecimal(degreeAnalysis.getCollegeNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        degreeAnalysis.setUndergraduateRate(new BigDecimal(degreeAnalysis.getUndergraduateNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        degreeAnalysis.setMasterRate(new BigDecimal(degreeAnalysis.getMasterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        degreeAnalysis.setDoctorRate(new BigDecimal(degreeAnalysis.getDoctorNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        return degreeAnalysis;
     }
 
     @Override
@@ -3230,6 +3242,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         vo.setUndergraduateNum(degreeAnalysis.getUndergraduateNum());
         vo.setMasterNum(degreeAnalysis.getMasterNum());
         vo.setDoctorNum(degreeAnalysis.getDoctorNum());
+
+        //性别
+        UserSexStatisQueryDto uDto = new UserSexStatisQueryDto();
+        BeanUtils.copyProperties(param, uDto);
+        uDto.setSex(1);
+        Integer maleNum = this.userStatisMapper.getSexStatis(uDto);
+        vo.setMaleNum(maleNum);
+        UserSexStatisQueryDto uDto1 = new UserSexStatisQueryDto();
+        BeanUtils.copyProperties(param, uDto1);
+        uDto1.setSex(0);
+        Integer femaleNum = this.userStatisMapper.getSexStatis(uDto1);
+        vo.setFemaleNum(femaleNum);
         return vo;
     }
 
