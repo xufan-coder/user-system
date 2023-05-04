@@ -67,7 +67,6 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
-import com.zerody.user.vo.statis.UserSexStatisQueryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -86,7 +85,6 @@ import com.zerody.user.enums.StaffStatusEnum;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -3182,11 +3180,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
         DegreeAnalysisVo degreeAnalysis = this.sysStaffInfoMapper.getDegreeAnalysis(param);
-        degreeAnalysis.setHighHereinafterRate(new BigDecimal(degreeAnalysis.getHighHereinafterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setCollegeRate(new BigDecimal(degreeAnalysis.getCollegeNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setUndergraduateRate(new BigDecimal(degreeAnalysis.getUndergraduateNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setMasterRate(new BigDecimal(degreeAnalysis.getMasterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setDoctorRate(new BigDecimal(degreeAnalysis.getDoctorNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        Integer allNum = degreeAnalysis.getAllNum();
+        degreeAnalysis.setHighHereinafterRate(reserveTwo(new Double(degreeAnalysis.getHighHereinafterNum()) / allNum) + "%");
+        degreeAnalysis.setCollegeRate(reserveTwo(new Double(degreeAnalysis.getCollegeNum()) / allNum) + "%");
+        degreeAnalysis.setUndergraduateRate(reserveTwo(new Double(degreeAnalysis.getUndergraduateNum()) / allNum) + "%");
+        degreeAnalysis.setMasterRate(reserveTwo(new Double(degreeAnalysis.getMasterNum()) / allNum) + "%");
+        degreeAnalysis.setDoctorRate(reserveTwo(new Double(degreeAnalysis.getDoctorNum()) / allNum) + "%");
         return degreeAnalysis;
     }
 
@@ -3209,7 +3208,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             arrList.add(vo);
         } else {
             //查询所有企业
-            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList();
+            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
             for (SysAddressBookVo com : companyList) {
                 SignSummaryVo vo = getSummary(com.getCompanyName(), param);
                 arrList.add(vo);
@@ -3217,6 +3216,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         return arrList;
+    }
+
+
+    @Override
+    public IPage<SignSummaryVo> getFileSummary(UserStatisQueryDto param) {
+        Page<SignSummaryVo> page = new Page<>(param.getCurrent(), param.getPageSize());
+        IPage<SignSummaryVo> pageCompanyList = this.sysUserAddressBookMapper.pageCompanyList(param, page);
+        List<SignSummaryVo> records = pageCompanyList.getRecords();
+        for (SignSummaryVo c : records) {
+            SignSummaryVo summary = getSummary(c.getName(), param);
+            BeanUtils.copyProperties(summary, c);
+            c.setName(c.getName());
+        }
+        return pageCompanyList;
     }
 
     private SignSummaryVo getSummary(String name, UserStatisQueryDto param){

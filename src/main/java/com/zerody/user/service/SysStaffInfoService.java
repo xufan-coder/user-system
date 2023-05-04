@@ -234,6 +234,14 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     /**
     * @Author: chenKeFeng
     * @param
+    * @Description: 伙伴档案分析(pc)
+    * @Date: 2023/5/4 18:25
+    */
+    IPage<SignSummaryVo> getFileSummary(UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
     * @Description: 获取员工信息
     * @Date: 2022/11/28 9:31
     */
