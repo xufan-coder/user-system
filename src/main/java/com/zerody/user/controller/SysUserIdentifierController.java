@@ -6,6 +6,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.SysUserIdentifier;
@@ -216,8 +217,12 @@ public class SysUserIdentifierController {
         try {
             SysUserIdentifierVo identifierVo = this.service.getUserIdentifierInfo(id);
             return R.success(identifierVo);
+        } catch (DefaultException e){
+            log.error("设备绑定详情信息出错-app:{}", e.getMessage());
+            return R.error(e.getMessage());
         } catch (Exception e) {
-            return R.error("设备绑定详情信息出错-app:"+e.getMessage());
+            log.error("设备绑定详情信息出错-app:{}", e, e);
+            return R.error("设备绑定详情信息出错-app,请求异常");
         }
     }
 }
