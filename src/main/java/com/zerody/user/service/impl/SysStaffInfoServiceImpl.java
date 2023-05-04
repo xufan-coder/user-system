@@ -3116,7 +3116,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return new BigDecimal(format).multiply(BigDecimal.valueOf(100));
     }
 
-
     @Override
     public UserStatistics getUserOverview(UserStatisQueryDto param) {
         UserStatistics userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
