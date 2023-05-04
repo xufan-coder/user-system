@@ -144,11 +144,31 @@ public class UserStatisController {
     /**
      * @Author: chenKeFeng
      * @param
-     * @Description: 统计伙伴签约与解约
+     * @Description: 统计伙伴签约与解约(今日、本月)
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/statistics/partner")
     public DataResult<UserStatistics> statisticsContractAndRescind(UserStatisQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约与解约出错:{}", e.getMessage());
+            return R.error("统计伙伴签约与解约出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约与解约出错:{}", e, e);
+            return R.error("统计伙伴签约与解约出错");
+        }
+    }
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 统计伙伴签约与解约(今日、本月) pc
+     * @Date: 2023/4/28 19:55
+     */
+    @GetMapping("/pc/statistics/partner")
+    public DataResult<UserStatistics> statisticsContractAndRescindPc(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
@@ -186,6 +206,27 @@ public class UserStatisController {
     /**
      * @Author: chenKeFeng
      * @param
+     * @Description: 统计伙伴签约详情 pc
+     * @Date: 2023/4/28 20:36
+     */
+    @GetMapping("/pc/statistics/partner/details")
+    public DataResult<List<StatisticsDataDetailsVo>> statisticsDetailsPc(UserStatisQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            return R.success(this.service.statisticsDetails(param));
+        } catch (DefaultException e) {
+            log.error("统计伙伴签约详情出错:{}", e.getMessage());
+            return R.error("统计伙伴签约详情出错");
+        } catch (Exception e) {
+            log.error("统计伙伴签约详情出错:{}", e, e);
+            return R.error("统计伙伴签约详情出错");
+        }
+    }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
      * @Description: 获取解约原因分析
      * @Date: 2023/4/29 10:59
      */
@@ -205,6 +246,27 @@ public class UserStatisController {
 
 
     /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取离职原因分析(pc端)
+    * @Date: 2023/5/4 15:50
+    */
+    @GetMapping("/pc/termination/analysis")
+    public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysisPc(UserStatisQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            return R.success(this.sysStaffInfoService.getTerminationAnalysis(param));
+        } catch (DefaultException e) {
+            log.error("获取离职原因分析(pc端)出错:{}", e.getMessage());
+            return R.error("获取离职原因分析(pc端)出错");
+        } catch (Exception e) {
+            log.error("获取离职原因分析(pc端)出错:{}", e, e);
+            return R.error("获取离职原因分析(pc端)出错");
+        }
+    }
+
+
+    /**
      * @Author: chenKeFeng
      * @param
      * @Description: 获取学历分析
@@ -212,6 +274,27 @@ public class UserStatisController {
      */
     @GetMapping("/degree/analysis")
     public DataResult<DegreeAnalysisVo> getDegreeAnalysis(UserStatisQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            return R.success(this.sysStaffInfoService.getDegreeAnalysis(param));
+        } catch (DefaultException e) {
+            log.error("获取学历分析出错:{}", e.getMessage());
+            return R.error("获取学历分析出错");
+        } catch (Exception e) {
+            log.error("获取学历分析出错:{}", e, e);
+            return R.error("获取学历分析出错");
+        }
+    }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取学历分析(pc)
+     * @Date: 2023/4/29 11:29
+     */
+    @GetMapping("/pc/degree/analysis")
+    public DataResult<DegreeAnalysisVo> getDegreeAnalysisPc(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getDegreeAnalysis(param));

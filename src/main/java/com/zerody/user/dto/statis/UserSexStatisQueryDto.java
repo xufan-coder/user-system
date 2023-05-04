@@ -18,7 +18,7 @@ public class UserSexStatisQueryDto extends SetTimePeriodPage {
     private Boolean isSign;
 
     /**
-     * 性别
+     * 性别(1男 0女)
      */
     private Integer sex;
 }
