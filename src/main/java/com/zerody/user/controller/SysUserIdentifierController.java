@@ -207,4 +207,17 @@ public class SysUserIdentifierController {
         }
     }
 
+    /**
+     * @author luolujin
+     * @description 查询伙伴绑定的设备详情--app
+     **/
+    @GetMapping("/get/app/user-identifier-info/{id}")
+    public DataResult<SysUserIdentifierVo> getAppUserIdentifierInfo(@PathVariable String id){
+        try {
+            SysUserIdentifierVo identifierVo = this.service.getUserIdentifierInfo(id);
+            return R.success(identifierVo);
+        } catch (Exception e) {
+            return R.error("设备绑定详情信息出错-app:"+e.getMessage());
+        }
+    }
 }
