@@ -234,6 +234,7 @@ public class UserStatisController {
     @GetMapping("/get/sign/summary")
     public DataResult<List<SignSummaryVo>> getSignSummary(UserStatisQueryDto param) {
         try {
+            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getSignSummary(param));
         } catch (DefaultException e) {
             log.error("获取签约数据汇总报表出错:{}", e.getMessage());

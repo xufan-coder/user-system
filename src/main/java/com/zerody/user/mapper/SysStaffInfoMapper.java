@@ -413,6 +413,14 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
 
     /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴概况
+    * @Date: 2023/5/4 11:14
+    */
+    UserStatistics getUserOverview(@Param("param") UserStatisQueryDto dto);
+    
+    /**
      * @Author: chenKeFeng
      * @param
      * @Description: 获取伙伴当日签约与解约
@@ -450,7 +458,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 获取离职伙伴数
     * @Date: 2023/4/29 12:39
     */
-    Integer getDepartureCount(UserStatisQueryDto param);
+    Integer getDepartureCount(@Param("param") UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -458,7 +466,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 获取学历分析
     * @Date: 2023/4/29 14:35
     */
-    DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
+    DegreeAnalysisVo getDegreeAnalysis(@Param("param") UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -466,7 +474,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 统计内控数伙伴数量
     * @Date: 2023/4/28 18:42
     */
-    Integer getInternalControlNum(UserStatisQueryDto param);
+    Integer getInternalControlNum(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng

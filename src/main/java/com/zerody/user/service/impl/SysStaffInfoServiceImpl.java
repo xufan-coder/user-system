@@ -79,23 +79,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zerody.common.exception.DefaultException;
-import com.zerody.common.utils.DataUtil;
-import com.zerody.common.utils.FileUtil;
-import com.zerody.user.api.vo.UserDeptVo;
-import com.zerody.user.check.CheckUser;
 import com.zerody.user.enums.StaffStatusEnum;
-import com.zerody.user.service.base.BaseService;
-import io.micrometer.core.instrument.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -3122,17 +3110,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     //保留两位小数
-    private String reserveTwo(Double d){
+    private static BigDecimal reserveTwo(Double d){
         DecimalFormat df = new DecimalFormat("0.00");
-        return df.format(d);
+        String format = df.format(d);
+        return new BigDecimal(format).multiply(BigDecimal.valueOf(100));
     }
+
     @Override
     public UserStatistics getUserOverview(UserStatisQueryDto param) {
-        SetSysUserInfoDto dto = new SetSysUserInfoDto();
-        dto.setCompanyId(param.getCompanyId());
-        dto.setCompanyIds(param.getCompanyIds());
-        dto.setDepartId(param.getDepartId());
-        UserStatistics userStatistics = this.sysStaffInfoMapper.statisticsUsers(dto);
+        UserStatistics userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
 
         //内控伙伴数量
         Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum(param);
@@ -3180,10 +3166,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getDictName());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
-            vo.setPeopleRate(reserveTwo(new Double(departureCauseCount) / departureCount));
+            vo.setPeopleRate(reserveTwo(new Double(departureCauseCount) / departureCount) + "%");
             arrList.add(vo);
         }
-        return arrList;
+        //根据占比降序
+        return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(Collectors.toList());
     }
 
     @Override
@@ -3203,6 +3190,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
                 arrList.add(vo);
             }
+        } else if (DataUtil.isNotEmpty(param.getDepartId())) {
+            //获取部门详情
+            SysDepartmentInfo sysDepartmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
+            SignSummaryVo vo = getSummary(sysDepartmentInfo.getDepartName(), param);
+            arrList.add(vo);
         } else {
             //查询所有企业
             List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList();
