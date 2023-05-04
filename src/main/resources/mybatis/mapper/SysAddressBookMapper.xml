@@ -167,6 +167,12 @@
             <if test="param.isProData neq null">
                 AND sci.is_pro_data=#{param.isProData}
             </if>
+            <if test="param.isDiamondMember neq null">
+                AND ssi.is_diamond_member=#{param.isDiamondMember}
+            </if>
+            <if test="param.isPrepareExecutive neq null">
+                AND sui.is_prepare_executive=#{param.isPrepareExecutive}
+            </if>
         </where>
     </select>
 
