@@ -30,7 +30,7 @@
         SELECT sci.company_name, sci.id as compId FROM sys_company_info AS sci
         LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
         LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
-        where sci.status =0 and AND sci.is_pro_data =1
+        where sci.status =0 and sci.is_pro_data =1
     </select>
 
     <!--根据企业id查询部门信息-->

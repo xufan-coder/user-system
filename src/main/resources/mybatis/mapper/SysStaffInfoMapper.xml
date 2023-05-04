@@ -1150,9 +1150,7 @@
         count(IF(ssi.user_type =1 and ssi.status !=1, 1 ,NULL)) as partnerNum,
         count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
         count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
-        count(IF(ssi.is_diamond_member =1,  1 ,NULL)) as masonryMemberNum,
-        count(IF(sui.is_prepare_executive =1,  1 ,NULL)) as prospectiveExecutiveNum
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
         left join union_staff_depart as usd on usd.staff_id = ssi.id
         left join sys_company_info as sci  on sci.id = ssi.comp_id and sci.status=0
@@ -1174,27 +1172,55 @@
         </where>
     </select>
 
+    <!--查询伙伴概况-->
+    <select id="getUserOverview" resultType="com.zerody.user.vo.UserStatistics">
+        select
+        count(sui.id) as historicalContractNum,
+        count(IF(ssi.user_type =0 and ssi.status !=1, 1 ,NULL)) as managerNum,
+        count(IF(ssi.user_type =3 and ssi.status !=1, 1 ,NULL)) as vicePresidentNum,
+        count(IF(ssi.user_type =2 and ssi.status !=1, 1 ,NULL)) as teamLeaderNum,
+        count(IF(ssi.user_type =1 and ssi.status !=1, 1 ,NULL)) as partnerNum,
+        count(IF(ssi.status =0, 1 ,NULL)) as contractNum,
+        count(IF(ssi.status =1,  1 ,NULL)) as cancelledNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        count(IF(ssi.is_diamond_member =1,  1 ,NULL)) as masonryMemberNum,
+        count(IF(sui.is_prepare_executive =1,  1 ,NULL)) as prospectiveExecutiveNum
+        from sys_staff_info as ssi
+        left join union_staff_depart as usd on usd.staff_id = ssi.id
+        left join sys_company_info as sci  on sci.id = ssi.comp_id and sci.status=0
+        left join sys_user_info as sui on sui.id = ssi.user_id
+        <where>
+            ssi.deleted = 0 and sui.status != -1 and sci.is_pro_data =1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                and ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.departId != null and param.departId != ''">
+                and usd.department_id = #{param.departId}
+            </if>
+        </where>
+    </select>
+
     <!--获取伙伴当日签约与解约-->
     <select id="getPartnerTodaySignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
         select
         count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as todaySignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as todayRescindNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
         join sys_user_info as sui on sui.id = ssi.user_id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
 		<where>
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+                ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
@@ -1202,8 +1228,9 @@
                     #{id}
                 </foreach>
             </if>
+            and to_days(ssi.create_time) = to_days(now())
         </where>
-		to_days(ssi.create_time) = to_days(now());
+
     </select>
 
     <!--获取伙伴本月签约与解约-->
@@ -1211,22 +1238,16 @@
         select
         count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as monthSignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as monthRescindNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum,
+        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
         from sys_staff_info as ssi
         join sys_user_info as sui on sui.id = ssi.user_id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
 		<where>
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+                ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
@@ -1234,8 +1255,9 @@
                     #{id}
                 </foreach>
             </if>
+            and DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
         </where>
-		DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+
     </select>
 
     <!--获取昨日签约与解约数量-->
@@ -1251,13 +1273,7 @@
                 AND ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
@@ -1265,8 +1281,8 @@
                     #{id}
                 </foreach>
             </if>
+            and TO_DAYS( NOW( ) ) - TO_DAYS(ssi.create_time) &lt;= 1
         </where>
-        TO_DAYS( NOW( ) ) - TO_DAYS(ssi.create_time) &lt;= 1
     </select>
 
     <!--根据离职类型获取离职原因数量-->
@@ -1280,19 +1296,14 @@
     <select id="getDepartureCount" resultType="java.lang.Integer">
         select count(1) from sys_staff_info as ssi
         left join sys_user_info as sui on sui.id = ssi.user_id
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
             ssi.status = 1
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
@@ -1302,7 +1313,6 @@
             </if>
         </where>
     </select>
-
 
     <!--获取学历分析-->
     <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
@@ -1322,13 +1332,7 @@
                 AND ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
@@ -1429,8 +1433,7 @@
     </select>
 
     <!--统计内控数伙伴数量(内部和外部)-->
-    <select id="getInternalControlNum" resultType="java.lang.Integer"
-            parameterType="com.zerody.user.dto.SetSysUserInfoDto">
+    <select id="getInternalControlNum" resultType="java.lang.Integer" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
 		count(sb.id) from staff_blacklist as sb
 		join sys_user_info as sui on sui.certificate_card = sb.identity_card
@@ -1441,7 +1444,7 @@
                 AND ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.begin neq null">
                 AND ssi.date_join &gt;= #{param.begin}
