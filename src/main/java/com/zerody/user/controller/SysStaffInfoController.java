@@ -11,11 +11,11 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.IdCardUpdateDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
+import com.zerody.user.service.SysAddressBookService;
+import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
@@ -61,6 +61,13 @@ public class SysStaffInfoController {
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private SysAddressBookService sysAddressBookService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
+
 
     /**
     *   分页查询员工信息
@@ -752,4 +759,35 @@ public class SysStaffInfoController {
             return R.error("查询负责人级别错误");
         }
     }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取离职伙伴列表明细
+     * @Date: 2023/5/3 14:08
+     */
+    @GetMapping("/get/departure/user")
+    public DataResult<IPage<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto dto) {
+        try {
+            //判断是否为企业管理员
+            if (UserUtils.getUser().isBack()){
+                dto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+                //判断是否为ceo
+            } else if (UserUtils.getUser().isCEO()){
+                dto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            } else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                dto.setCompanyId(companyId);
+            }
+            return R.success(sysAddressBookService.getDepartureUserList(dto));
+        } catch (DefaultException e) {
+            log.error("获取离职伙伴列表明细错误:{}", e.getMessage());
+            return R.error("获取离职伙伴列表明细错误");
+        } catch (Exception e) {
+            log.error("获取离职伙伴列表明细错误:{}", e, e);
+            return R.error("获取离职伙伴列表明细错误");
+        }
+    }
+
 }

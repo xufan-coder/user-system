@@ -202,7 +202,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     /**
     * @Author: chenKeFeng
     * @param  
-    * @Description: 统计伙伴签约与解约
+    * @Description: 统计伙伴签约与解约(今日、本月)
     * @Date: 2023/4/28 20:19
     */
     UserStatistics statisticsContractAndRescind(UserStatisQueryDto param);
@@ -222,6 +222,14 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
      * @Date: 2023/4/29 10:30
      */
     DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 签约数据汇总报表
+    * @Date: 2023/5/3 15:47
+    */
+    List<SignSummaryVo> getSignSummary(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng

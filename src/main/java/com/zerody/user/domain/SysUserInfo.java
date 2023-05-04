@@ -311,4 +311,14 @@ public class SysUserInfo extends BaseModel {
 
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
+
+    /**
+     * 生日时间
+     */
+    private Date BirthdayTime;
+
+    /**
+     * 身份证性别  (0.女、1.男)
+     */
+    private Integer idCardSex;
 }

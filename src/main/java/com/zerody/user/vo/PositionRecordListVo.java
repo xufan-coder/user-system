@@ -34,9 +34,13 @@ public class PositionRecordListVo {
      */
     private String roleName;
     /**
-     * 离职类型
+     * 离职类型id
      */
     private String leaveType;
+    /**
+     * 离职类型
+     */
+    private String leaveTypeText;
     /**
      * 离职原因
      */
