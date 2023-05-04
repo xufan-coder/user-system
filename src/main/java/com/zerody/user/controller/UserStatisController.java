@@ -14,10 +14,7 @@ import com.zerody.user.service.UserStatisService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
 import com.zerody.user.vo.statis.UserSexStatisQueryVo;
-import com.zerody.user.vo.DegreeAnalysisVo;
-import com.zerody.user.vo.StatisticsDataDetailsVo;
-import com.zerody.user.vo.TerminationAnalysisVo;
-import com.zerody.user.vo.UserStatistics;
+import com.zerody.user.vo.*;
 import com.zerody.user.vo.statis.UserTrendQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,5 +224,24 @@ public class UserStatisController {
         }
     }
 
+    
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 签约数据汇总报表
+    * @Date: 2023/5/3 15:42
+    */
+    @GetMapping("/get/sign/summary")
+    public DataResult<List<SignSummaryVo>> getSignSummary(UserStatisQueryDto param) {
+        try {
+            return R.success(this.sysStaffInfoService.getSignSummary(param));
+        } catch (DefaultException e) {
+            log.error("获取签约数据汇总报表出错:{}", e.getMessage());
+            return R.error("获取签约数据汇总报表出错");
+        } catch (Exception e) {
+            log.error("获取签约数据汇总报表出错:{}", e, e);
+            return R.error("获取签约数据汇总报表出错");
+        }
+    }
 
 }

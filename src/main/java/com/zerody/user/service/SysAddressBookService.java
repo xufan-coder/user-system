@@ -1,6 +1,8 @@
 package com.zerody.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.DepartInfoDto;
+import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.DepartureDetailsVo;
@@ -57,6 +59,6 @@ public interface SysAddressBookService {
     * @Description: 获取离职伙伴列表明细
     * @Date: 2023/5/3 14:40
     */
-    List<DepartureDetailsVo> getDepartureUserList(StaffByCompanyDto staffByCompanyDto);
+    IPage<List<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto param);
     
 }

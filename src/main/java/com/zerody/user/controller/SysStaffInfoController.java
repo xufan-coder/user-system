@@ -768,25 +768,19 @@ public class SysStaffInfoController {
      * @Date: 2023/5/3 14:08
      */
     @GetMapping("/get/departure/user")
-    public DataResult<List<DepartureDetailsVo>> getDepartureUserList(StaffByCompanyDto staffByCompanyDto) {
+    public DataResult<IPage<List<DepartureDetailsVo>>> getDepartureUserList(DepartureDetailsDto dto) {
         try {
+            //判断是否为企业管理员
             if (UserUtils.getUser().isBack()){
-                staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+                dto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+                //判断是否为ceo
             } else if (UserUtils.getUser().isCEO()){
-                staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+                dto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
             } else {
                 String companyId = UserUtils.getUser().getCompanyId();
-                if(DataUtil.isEmpty(companyId)){
-                    return R.error("获取公司失败,请求企业错误！");
-                }
-                SysCompanyInfo byId = sysCompanyInfoService.getById(companyId);
-                if(DataUtil.isEmpty(byId)){
-                    return R.error("获取公司失败,请求企业错误！");
-                }
-                staffByCompanyDto.setIsProData(byId.getIsProData());
+                dto.setCompanyId(companyId);
             }
-
-            return R.success(sysAddressBookService.getDepartureUserList(staffByCompanyDto));
+            return R.success(sysAddressBookService.getDepartureUserList(dto));
         } catch (DefaultException e) {
             log.error("获取离职伙伴列表明细错误:{}", e.getMessage());
             return R.error("获取离职伙伴列表明细错误");
