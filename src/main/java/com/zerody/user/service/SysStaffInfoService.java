@@ -189,7 +189,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 伙伴数据统计
     * @Date: 2022/11/11 10:13
     */
-    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+    UserStatisticsVo statisticsUsers(SetSysUserInfoDto userInfoDto);
 
     /**
     * @Author: chenKeFeng
@@ -197,7 +197,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 查询伙伴概况
     * @Date: 2023/4/28 17:28
     */
-    UserStatistics getUserOverview(UserStatisQueryDto param);
+    UserStatisticsVo getUserOverview(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -205,7 +205,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 统计伙伴签约与解约(今日、本月)
     * @Date: 2023/4/28 20:19
     */
-    UserStatistics statisticsContractAndRescind(UserStatisQueryDto param);
+    UserStatisticsVo statisticsContractAndRescind(UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng

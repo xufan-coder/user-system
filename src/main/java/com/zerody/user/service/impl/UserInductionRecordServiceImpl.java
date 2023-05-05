@@ -12,10 +12,12 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserInductionPage;
 import com.zerody.user.dto.UserInductionVerificationDto;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.UserInductionRecordService;
 import com.zerody.user.vo.LeaveUserInfoVo;
+import com.zerody.user.vo.SysStaffRelationVo;
 import com.zerody.user.vo.UserInductionRecordInfoVo;
 import com.zerody.user.vo.UserInductionRecordVo;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author kuang
@@ -174,6 +177,11 @@ public class UserInductionRecordServiceImpl extends ServiceImpl<UserInductionRec
             return object;
         }
         return object;
+    }
+
+    @Override
+    public List<SysStaffRelationVo> statistics(UserStatisQueryDto param) {
+        return this.baseMapper.statistics(param);
     }
 
 }

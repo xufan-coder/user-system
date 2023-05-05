@@ -11,7 +11,8 @@ import lombok.Data;
  * @date : 2022/11/11 9:51
  */
 @Data
-public class UserStatistics {
+public class UserStatisticsVo {
+
 
     /**
      * 总经理

@@ -1141,7 +1141,7 @@
     </select>
 
     <!--伙伴数据统计-->
-    <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatistics" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
+    <select id="statisticsUsers" resultType="com.zerody.user.vo.UserStatisticsVo" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
         count(sui.id) as historicalContractNum,
         count(IF(ssi.user_type =0 and ssi.status !=1, 1 ,NULL)) as managerNum,
@@ -1173,7 +1173,7 @@
     </select>
 
     <!--查询伙伴概况-->
-    <select id="getUserOverview" resultType="com.zerody.user.vo.UserStatistics">
+    <select id="getUserOverview" resultType="com.zerody.user.vo.UserStatisticsVo">
         select
         count(sui.id) as historicalContractNum,
         count(IF(ssi.user_type =0 and ssi.status !=1, 1 ,NULL)) as managerNum,
@@ -1207,7 +1207,7 @@
     </select>
 
     <!--获取伙伴当日签约与解约-->
-    <select id="getPartnerTodaySignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
+    <select id="getPartnerTodaySignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
         select
         count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as todaySignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as todayRescindNum,
@@ -1234,7 +1234,7 @@
     </select>
 
     <!--获取伙伴本月签约与解约-->
-    <select id="getPartnerThisMonthSignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
+    <select id="getPartnerThisMonthSignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
         select
         count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as monthSignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as monthRescindNum,
@@ -1261,7 +1261,7 @@
     </select>
 
     <!--获取昨日签约与解约数量-->
-    <select id="getYesterdaySignAndRescind" resultType="com.zerody.user.vo.UserStatistics">
+    <select id="getYesterdaySignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
         select
         count(IF(ssi.status =0 or ssi.status =0, 1 ,NULL)) as yesterdaySignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as yesterdayRescindNum

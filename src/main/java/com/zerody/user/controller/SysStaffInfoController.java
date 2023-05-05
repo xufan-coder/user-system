@@ -11,7 +11,6 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysAddressBookService;
@@ -610,7 +609,7 @@ public class SysStaffInfoController {
     * @Date: 2022/11/11 9:51
     */
     @GetMapping("/statistics-users")
-    public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
+    public DataResult<UserStatisticsVo> statisticsUsers(SetSysUserInfoDto userInfoDto) {
         try {
             return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
         } catch (Exception e) {
