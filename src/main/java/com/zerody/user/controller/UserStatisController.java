@@ -336,7 +336,7 @@ public class UserStatisController {
     * @Description: 分页获取伙伴档案分析(pc)
     * @Date: 2023/5/4 18:22
     */
-    @GetMapping("/file/summary")
+    @GetMapping("/pc/file/summary")
     public DataResult<IPage<SignSummaryVo>> getFileSummary(UserStatisQueryDto param) {
         try {
             return R.success(this.sysStaffInfoService.getFileSummary(param));
