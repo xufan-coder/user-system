@@ -12,6 +12,7 @@ import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.vo.statis.SignAndRescindVo;
 import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
 import com.zerody.user.vo.statis.UserSexStatisQueryVo;
 import com.zerody.user.vo.*;
@@ -148,7 +149,7 @@ public class UserStatisController {
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/statistics/partner")
-    public DataResult<UserStatisticsVo> statisticsContractAndRescind(UserStatisQueryDto param) {
+    public DataResult<SignAndRescindVo> statisticsContractAndRescind(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
@@ -168,7 +169,7 @@ public class UserStatisController {
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/pc/statistics/partner")
-    public DataResult<UserStatisticsVo> statisticsContractAndRescindPc(UserStatisQueryDto param) {
+    public DataResult<SignAndRescindVo> statisticsContractAndRescindPc(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));

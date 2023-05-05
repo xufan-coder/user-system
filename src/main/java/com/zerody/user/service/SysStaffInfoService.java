@@ -14,6 +14,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.statis.SignAndRescindVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -201,11 +202,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 统计伙伴签约与解约(今日、本月)
     * @Date: 2023/4/28 20:19
+     * @return
     */
-    UserStatisticsVo statisticsContractAndRescind(UserStatisQueryDto param);
+    SignAndRescindVo statisticsContractAndRescind(UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng

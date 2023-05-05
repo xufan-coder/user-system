@@ -1206,39 +1206,13 @@
         </where>
     </select>
 
-    <!--获取伙伴当日签约与解约-->
-    <select id="getPartnerTodaySignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
-        select
-        count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as todaySignNum,
-        count(IF(ssi.status =1,  1 ,NULL)) as todayRescindNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
-        from sys_staff_info as ssi
-        join sys_user_info as sui on sui.id = ssi.user_id
-        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
-		<where>
-            <if test="param.companyId neq null and param.companyId neq ''">
-                ssi.comp_id = #{param.companyId}
-            </if>
-            <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
-            </if>
-            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND ssi.comp_id
-                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
-            and to_days(ssi.create_time) = to_days(now())
-        </where>
-
-    </select>
-
-    <!--获取伙伴本月签约与解约-->
-    <select id="getPartnerThisMonthSignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
+    <!--获取伙伴今日、本月签约与解约-->
+    <select id="getPartnerThisMonthSignAndRescind" resultType="com.zerody.user.vo.statis.SignAndRescindVo">
         select
         count(IF(ssi.status =0 or ssi.status =3 , 1 ,NULL)) as monthSignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as monthRescindNum,
-        count(IF(ssi.status =3,  1 ,NULL)) as inCooperationNum
+        count(IF((ssi.status =0 or ssi.status =3) and to_days(ssi.create_time) = to_days(now()) , 1 ,NULL)) as todaySignNum,
+        count(IF(ssi.status =1 and to_days(ssi.create_time) = to_days(now()),  1 ,NULL)) as todayRescindNum
         from sys_staff_info as ssi
         join sys_user_info as sui on sui.id = ssi.user_id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
@@ -1257,11 +1231,10 @@
             </if>
             and DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
         </where>
-
     </select>
 
     <!--获取昨日签约与解约数量-->
-    <select id="getYesterdaySignAndRescind" resultType="com.zerody.user.vo.UserStatisticsVo">
+    <select id="getYesterdaySignAndRescind" resultType="com.zerody.user.vo.statis.SignAndRescindVo">
         select
         count(IF(ssi.status =0 or ssi.status =0, 1 ,NULL)) as yesterdaySignNum,
         count(IF(ssi.status =1,  1 ,NULL)) as yesterdayRescindNum
