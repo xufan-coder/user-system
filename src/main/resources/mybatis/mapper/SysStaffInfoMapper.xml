@@ -1437,7 +1437,7 @@
     <!--统计内控数伙伴数量(内部和外部)-->
     <select id="getInternalControlNum" resultType="java.lang.Integer" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
         select
-		count(sb.id) from staff_blacklist as sb
+		count(distinct sb.id) from staff_blacklist as sb
 		join sys_user_info as sui on sui.certificate_card = sb.identity_card
 		join sys_staff_info as ssi on ssi.user_id = sui.id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id

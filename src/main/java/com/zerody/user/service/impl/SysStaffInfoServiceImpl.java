@@ -3129,6 +3129,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userStatistics.setInternalControlUserNum(internalControlNum);
         //二次签约
         userStatistics.setSecondContractNum(0);
+        userStatistics.setSecondContractRate(null);
 
         //总签约数量
         Integer num = userStatistics.getHistoricalContractNum();
