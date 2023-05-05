@@ -95,6 +95,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * @author PengQiang
  * @ClassName SysStaffInfoServiceImpl
@@ -246,6 +248,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private UserStatisMapper userStatisMapper;
+
+    @Autowired
+    private UserInductionRecordService userInductionRecordService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1367,21 +1372,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //学历证书
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //合作申请表 (先查询图片表(image)，如果没有数据查询文件表(commonFile))
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        List<String> imgList = this.imageService.list(imageQw).stream().map(s -> s.getImageUrl()).collect(Collectors.toList());
+        List<String> imgList = this.imageService.list(imageQw).stream().map(s -> s.getImageUrl()).collect(toList());
         if (DataUtil.isNotEmpty(imgList)) {
             userInfo.setCooperationImages(imgList);
         } else {
@@ -1390,7 +1395,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
             List<CommonFile> list = this.commonFileService.list(fileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(toList());
             userInfo.setCooperationImages(images);
         }
 
@@ -2376,7 +2381,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 BackUserRefVo backRef = ceoCompanyRefService.getBackRef(item.getId());
                 if(DataUtil.isNotEmpty(backRef) && DataUtil.isNotEmpty(backRef.getCompanys())){
                     //企业名称
-                    List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(Collectors.toList());
+                    List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(toList());
                     item.setCompanys(collect);
                 }
             });
@@ -2530,7 +2535,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (CollectionUtils.isEmpty(iPage.getRecords())) {
             iPage.setRecords(new ArrayList<>());
         }
-        userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
+        userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(toList());
         clews = this.clewFeignService.getClews(userIds).getData();
         if (CollectionUtils.isEmpty(clews)) {
             return iPage;
@@ -2721,7 +2726,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //企业管理员不需要获取下级部门
             users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
         }
-        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
+        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(toList()));
         DataResult<Object> reslut = this.clewFeignService.doEmpatySubordinateUserClew(userIds);
         if (!reslut.isSuccess()) {
             throw new DefaultException(reslut.getMessage());
@@ -3109,7 +3114,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
+    public UserStatisticsVo statisticsUsers(SetSysUserInfoDto userInfoDto) {
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
@@ -3121,18 +3126,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics getUserOverview(UserStatisQueryDto param) {
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
+    public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
+        UserStatisticsVo userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
 
         //内控伙伴数量
         Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum(param);
         userStatistics.setInternalControlUserNum(internalControlNum);
+        //总签约数量(签约中)
+        Integer num = userStatistics.getContractNum();
         //二次签约
-        userStatistics.setSecondContractNum(0);
-        userStatistics.setSecondContractRate(null);
+        List<SysStaffRelationVo> list = userInductionRecordService.statistics(param);
+        List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+        userStatistics.setSecondContractNum(filterList.size());
+        userStatistics.setSecondContractRate(reserveTwo(new Double(userStatistics.getManagerNum()) / num) + "%");
 
-        //总签约数量
-        Integer num = userStatistics.getHistoricalContractNum();
         userStatistics.setManagerRate(reserveTwo(new Double(userStatistics.getManagerNum()) / num) + "%");
         userStatistics.setVicePresidentRate(reserveTwo(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
         userStatistics.setTeamLeaderRate(reserveTwo(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
@@ -3145,13 +3152,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics statisticsContractAndRescind(UserStatisQueryDto param) {
+    public UserStatisticsVo statisticsContractAndRescind(UserStatisQueryDto param) {
         //签约包含签约中和合作中
         //今日
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind(param);
+        UserStatisticsVo userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind(param);
         userStatistics.setTodaySignNum(userStatistics.getTodaySignNum());
         //本月
-        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
+        UserStatisticsVo statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
         userStatistics.setMonthSignNum(statistics.getMonthSignNum());
         userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
         return userStatistics;
@@ -3175,7 +3182,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             arrList.add(vo);
         }
         //根据占比降序
-        return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(Collectors.toList());
+        return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(toList());
     }
 
     @Override
@@ -3237,16 +3244,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SignSummaryVo vo = new SignSummaryVo();
         vo.setName(name);
         //查询伙伴概况
-        UserStatistics userOverview = this.sysStaffInfoService.getUserOverview(param);
+        UserStatisticsVo userOverview = this.sysStaffInfoService.getUserOverview(param);
         BeanUtils.copyProperties(userOverview, vo);
         //统计伙伴签约与解约(今日、本月)
-        UserStatistics userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
+        UserStatisticsVo userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
         vo.setTodaySignNum(userStatistics.getTodaySignNum());
         vo.setTodayRescindNum(userStatistics.getTodayRescindNum());
         vo.setMonthSignNum(userStatistics.getMonthSignNum());
         vo.setMonthRescindNum(userStatistics.getMonthRescindNum());
         //统计伙伴签约与解约(昨日)
-        UserStatistics yesterdaySign = sysStaffInfoMapper.getYesterdaySignAndRescind(param);
+        UserStatisticsVo yesterdaySign = sysStaffInfoMapper.getYesterdaySignAndRescind(param);
         vo.setYesterdaySignNum(yesterdaySign.getYesterdaySignNum());
         vo.setYesterdayRescindNum(yesterdaySign.getYesterdayRescindNum());
         //获取学历分析
@@ -3399,7 +3406,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         //if(sameDept != null && sameDept == YesNo.YES){
-        result = result.stream().distinct().collect(Collectors.toList());
+        result = result.stream().distinct().collect(toList());
         if (!result.contains(userId)) {
             return result;
         }
@@ -3501,7 +3508,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("未找到管理层任何信息！");
         }
         if(result.size() > 0) {
-            result = result.stream().distinct().collect(Collectors.toList());
+            result = result.stream().distinct().collect(toList());
         }
         return result;
     }
@@ -3528,7 +3535,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
      */
     private void getChilden(List<String> depIds, List<SysDepartmentInfoVo> deps, String parentId) {
         //获取子级部门集合
-        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(toList());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
@@ -3541,9 +3548,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     private List<String> getSuperiorStaff(String parent, List<UnionStaffDepart> usds) {
-        List<UnionStaffDepart> us = usds.stream().filter(a -> parent.equals(a.getDepartmentId())).collect(Collectors.toList());
+        List<UnionStaffDepart> us = usds.stream().filter(a -> parent.equals(a.getDepartmentId())).collect(toList());
         if (CollectionUtils.isNotEmpty(us)) {
-            List<String> staffIds = us.stream().map(UnionStaffDepart::getStaffId).collect(Collectors.toList());
+            List<String> staffIds = us.stream().map(UnionStaffDepart::getStaffId).collect(toList());
             return staffIds;
         }
         if (parent.lastIndexOf("_") == -1) {
@@ -3560,7 +3567,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())) {
             param.setTime(sdf.format(new Date()));
         }
-        List<String> userId = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
+        List<String> userId = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(toList());
         DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getName(), param.getTime());
         if (!prResult.isSuccess()) {
             throw new DefaultException("获取业绩总结报表出错");
@@ -3591,21 +3598,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //学历证书
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //合作申请表
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        List<String> cooperationImages = this.imageService.list(imageQw).stream().map(Image::getImageUrl).collect(Collectors.toList());
+        List<String> cooperationImages = this.imageService.list(imageQw).stream().map(Image::getImageUrl).collect(toList());
         if (DataUtil.isNotEmpty(cooperationImages)) {
             userInfo.setCooperationImages(cooperationImages);
         } else {
@@ -3614,7 +3621,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
             List<CommonFile> list = this.commonFileService.list(fileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(toList());
             userInfo.setCooperationImages(images);
         }
     }
@@ -4084,7 +4091,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             commonFileQw.lambda().eq(CommonFile::getConnectId, param.getOldUserId());
             commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             List<CommonFile> list = this.commonFileService.list(commonFileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).distinct().collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).distinct().collect(toList());
             userInfoDto.setCooperationImages(images);
         }
 

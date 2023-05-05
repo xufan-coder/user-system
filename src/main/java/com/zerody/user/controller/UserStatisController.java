@@ -6,7 +6,6 @@ import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.TimeOperate;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.user.check.CheckUser;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
@@ -128,7 +127,7 @@ public class UserStatisController {
      * @Date: 2023/4/28 17:17
      */
     @GetMapping("/get/user/overview")
-    public DataResult<UserStatistics> getUserOverview(UserStatisQueryDto param) {
+    public DataResult<UserStatisticsVo> getUserOverview(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getUserOverview(param));
@@ -149,7 +148,7 @@ public class UserStatisController {
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/statistics/partner")
-    public DataResult<UserStatistics> statisticsContractAndRescind(UserStatisQueryDto param) {
+    public DataResult<UserStatisticsVo> statisticsContractAndRescind(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
@@ -169,7 +168,7 @@ public class UserStatisController {
      * @Date: 2023/4/28 19:55
      */
     @GetMapping("/pc/statistics/partner")
-    public DataResult<UserStatistics> statisticsContractAndRescindPc(UserStatisQueryDto param) {
+    public DataResult<UserStatisticsVo> statisticsContractAndRescindPc(UserStatisQueryDto param) {
         try {
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
