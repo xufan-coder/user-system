@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.TimeOperate;
@@ -206,7 +207,7 @@ public class UserStatisController {
     /**
      * @Author: chenKeFeng
      * @param
-     * @Description: 统计伙伴签约详情 pc
+     * @Description: 统计伙伴签约详情(pc)
      * @Date: 2023/4/28 20:36
      */
     @GetMapping("/pc/statistics/partner/details")
@@ -325,6 +326,26 @@ public class UserStatisController {
         } catch (Exception e) {
             log.error("获取签约数据汇总报表出错:{}", e, e);
             return R.error("获取签约数据汇总报表出错");
+        }
+    }
+    
+    
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 分页获取伙伴档案分析(pc)
+    * @Date: 2023/5/4 18:22
+    */
+    @GetMapping("/pc/file/summary")
+    public DataResult<IPage<SignSummaryVo>> getFileSummary(UserStatisQueryDto param) {
+        try {
+            return R.success(this.sysStaffInfoService.getFileSummary(param));
+        } catch (DefaultException e) {
+            log.error("伙伴档案分析(pc)出错:{}", e.getMessage());
+            return R.error("伙伴档案分析(pc)出错");
+        } catch (Exception e) {
+            log.error("伙伴档案分析(pc)出错:{}", e, e);
+            return R.error("伙伴档案分析(pc)出错");
         }
     }
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,7 +33,15 @@ public interface SysAddressBookMapper {
     * @Description: 获取企业列表
     * @Date: 2023/5/3 17:00
     */
-    List<SysAddressBookVo> queryCompanyList();
+    List<SysAddressBookVo> queryCompanyList(@Param("param") UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 分页获取企业列表
+    * @Date: 2023/5/4 18:28
+    */
+    IPage<SignSummaryVo> pageCompanyList(@Param("param") UserStatisQueryDto param, Page<SignSummaryVo> iPage);
 
     /***
      * @description 部门

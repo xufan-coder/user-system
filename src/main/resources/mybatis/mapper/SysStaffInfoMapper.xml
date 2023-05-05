@@ -1201,7 +1201,7 @@
                 </foreach>
             </if>
             <if test="param.departId != null and param.departId != ''">
-                and usd.department_id = #{param.departId}
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
         </where>
     </select>
@@ -1317,7 +1317,9 @@
     <!--获取学历分析-->
     <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
         select
-		count(sui.id) as allNum,
+		count(IF(sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_HIGH' or sui.highest_education ='TECHNICAL_SECONDARY'
+		or sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_COLLEGE' or sui.highest_education ='REGULAR_COLLEGE'
+		or sui.highest_education ='MASTER' or sui.highest_education ='DOCTOR' , 1 ,NULL)) as allNum,
         count(IF(sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_HIGH' or sui.highest_education ='TECHNICAL_SECONDARY' or sui.highest_education ='SENIOR_HIGH' , 1 ,NULL)) as highHereinafterNum,
         count(IF(sui.highest_education ='JUNIOR_COLLEGE', 1 ,NULL)) as collegeNum,
         count(IF(sui.highest_education ='REGULAR_COLLEGE', 1 ,NULL)) as undergraduateNum,
