@@ -23,7 +23,7 @@
             AND ssi.date_join &lt; #{param.end}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
@@ -52,7 +52,7 @@
             AND ssi.date_left &lt; #{param.end}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
@@ -80,7 +80,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
@@ -114,7 +114,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>

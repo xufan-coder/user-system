@@ -146,10 +146,4 @@ public class UserStatisServiceImpl implements UserStatisService {
         return result;
     }
 
-    public static void main(String[] args) {
-        Double num1 = 10.0;
-        Double num2 = 3.0;
-        System.out.println(num1 / num2);
-
-    }
 }
