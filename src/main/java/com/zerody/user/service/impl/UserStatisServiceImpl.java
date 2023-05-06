@@ -21,8 +21,10 @@ import com.zerody.user.vo.statis.UserTrendQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class UserStatisServiceImpl implements UserStatisService {
     @Autowired
     private UserStatisMapper baseMapper;
 
-    private final int num = 7;
+    private final int num = 6;
 
     @Override
     public List<UserTrendQueryVo> getUserTrendS(UserStatisQueryDto param) {
@@ -90,6 +92,7 @@ public class UserStatisServiceImpl implements UserStatisService {
         }
         return result;
     }
+
 
     @Override
     public List<UserSexStatisQueryVo> getSexStatis(UserSexStatisQueryDto param) {

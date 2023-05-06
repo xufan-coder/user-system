@@ -86,6 +86,7 @@ import com.zerody.user.enums.StaffStatusEnum;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -3120,13 +3121,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     //保留两位小数
     private static BigDecimal reserveTwo(Integer d, Integer num){
-        /*DecimalFormat df = new DecimalFormat("0.00");
-        String format = df.format(d);*/
-        return (new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        DecimalFormat df = new DecimalFormat("0.00");
+        String format = df.format(b);
+        return new BigDecimal(format);
     }
 
     public static void main(String[] args) {
-        BigDecimal decimal = reserveTwo(3,1089);
+        BigDecimal decimal = reserveTwo(11,18);
         System.out.println(decimal);
     }
 
