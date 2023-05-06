@@ -1291,7 +1291,7 @@
     <select id="getDegreeAnalysis" resultType="com.zerody.user.vo.DegreeAnalysisVo">
         select
 		count(IF(sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_HIGH' or sui.highest_education ='TECHNICAL_SECONDARY'
-		or sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_COLLEGE' or sui.highest_education ='REGULAR_COLLEGE'
+		or sui.highest_education ='SENIOR_HIGH' or sui.highest_education ='JUNIOR_COLLEGE' or sui.highest_education ='REGULAR_COLLEGE'
 		or sui.highest_education ='MASTER' or sui.highest_education ='DOCTOR' , 1 ,NULL)) as allNum,
         count(IF(sui.highest_education ='PRIMARY_SCHOOL' or sui.highest_education ='JUNIOR_HIGH' or sui.highest_education ='TECHNICAL_SECONDARY' or sui.highest_education ='SENIOR_HIGH' , 1 ,NULL)) as highHereinafterNum,
         count(IF(sui.highest_education ='JUNIOR_COLLEGE', 1 ,NULL)) as collegeNum,
