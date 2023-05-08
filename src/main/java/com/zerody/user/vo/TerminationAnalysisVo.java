@@ -11,6 +11,10 @@ import java.math.BigDecimal;
 @Data
 public class TerminationAnalysisVo {
 
+    /**
+     * 离职原因id
+     */
+    private String id;
 
     /**
      * 离职原因

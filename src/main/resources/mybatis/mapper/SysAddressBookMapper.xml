@@ -231,11 +231,14 @@
             <if test="param.status neq null">
                 and ssi.status = #{param.status}
             </if>
-            <if test="param.leaveType != null and param.leaveType != ''">
-                and ssi.leave_type = #{param.leaveType}
-            </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
                 and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
+            </if>
+            <if test="param.leaveTypeIds neq null and param.leaveTypeIds.size() gt 0">
+                AND ssi.leave_type
+                <foreach collection="param.leaveTypeIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND sci.id

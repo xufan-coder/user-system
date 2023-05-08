@@ -32,6 +32,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -172,6 +173,7 @@ public class UserStatisServiceImpl implements UserStatisService {
         list.add(DegreeEnum.REGULAR_COLLEGE.name());
         list.add(DegreeEnum.MASTER.name());
         list.add(DegreeEnum.DOCTOR.name());
+        //DegreeEnum[] values = DegreeEnum.values();
         //总人数
         int num = 0;
         for (String name : list) {
@@ -197,9 +199,15 @@ public class UserStatisServiceImpl implements UserStatisService {
             } else {
                 degre.setDegree(DegreeEnum.DOCTOR.getText());
             }
+            //degre.setDegree(Objects.requireNonNull(DegreeEnum.getByText(degre.getDegree())));
+
         }
         userStatisTrendVo.setDegreeVoList(degreeVoList);
         return userStatisTrendVo;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DegreeEnum.getByText("PRIMARY_SCHOOL"));
     }
 
     private static BigDecimal reserveTwo(Integer d, Integer num){
