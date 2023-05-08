@@ -3161,13 +3161,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer num = userStatistics.getContractNum();
         //二次签约
         List<SysStaffRelationVo> list = userInductionRecordService.statistics(param);
-        log.info("二次签约人数 {}", list);
-        log.info("transfer {}", this.transfer);
-        Integer secondContractNum = 0;
+        int secondContractNum = 0;
         if (DataUtil.isNotEmpty(list)) {
-            log.info("二次签约人数进来 {}", list.size());
-            log.info("二次签约数据 {}", list);
-            List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+            //过滤空字符与null
+            List<SysStaffRelationVo> newList = list.stream().filter(o -> o.getLeaveType() != null).collect(toList());
+            List<SysStaffRelationVo> newList1 = newList.stream().filter(o -> o.getLeaveType().trim().isEmpty()).collect(toList());
+            List<SysStaffRelationVo> filterList = newList1.stream().filter(user -> !user.getLeaveType().equals(this.transfer) && DataUtil.isNotEmpty(user.getLeaveType())).collect(toList());
             secondContractNum = filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
