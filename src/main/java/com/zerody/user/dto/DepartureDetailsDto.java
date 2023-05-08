@@ -53,9 +53,9 @@ public class DepartureDetailsDto extends PageQueryDto {
     private String userType;
 
     /**
-     * 离职类型
+     * 离职类型id
      */
-    private String leaveType;
+    private List<String> leaveTypeIds;
 
     /**
      * 离职时间排序(升序asc 正序desc)
