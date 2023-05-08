@@ -50,10 +50,10 @@ public class DepartureDetailsDto extends PageQueryDto {
     /**
      * 伙伴角色(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
      */
-    private String userType;
+    private Integer userType;
 
     /**
-     * 离职类型id
+     * 离职类型id集合
      */
     private List<String> leaveTypeIds;
 
