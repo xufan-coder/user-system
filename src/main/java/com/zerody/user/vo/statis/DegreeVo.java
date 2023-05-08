@@ -18,6 +18,11 @@ public class DegreeVo {
 
     /**
      * 学历
+     *  SENIOR_HIGH("高中及以下"),
+     *  JUNIOR_COLLEGE("大专"),
+     *  REGULAR_COLLEGE("本科"),
+     *  MASTER("硕士"),
+     *  DOCTOR("博士");
      */
     private String degree;
 

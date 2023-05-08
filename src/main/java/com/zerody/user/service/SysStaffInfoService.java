@@ -227,6 +227,12 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
      */
     DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 统计学历
+    * @Date: 2023/5/8 14:31
+    */
     int getDegree(UserStatisQueryDto param);
 
     /**

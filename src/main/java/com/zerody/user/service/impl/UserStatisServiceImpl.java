@@ -167,7 +167,7 @@ public class UserStatisServiceImpl implements UserStatisService {
 
         List<DegreeVo> degreeVoList = new ArrayList<>();
         List<String> list = new ArrayList<>();
-        list.add(DegreeEnum.SENIOR_HIGH.name());
+        list.add(DegreeEnum.SENIOR_HIGH_UNDER.name());
         list.add(DegreeEnum.JUNIOR_COLLEGE.name());
         list.add(DegreeEnum.REGULAR_COLLEGE.name());
         list.add(DegreeEnum.MASTER.name());
@@ -186,6 +186,17 @@ public class UserStatisServiceImpl implements UserStatisService {
         }
         for (DegreeVo degre : degreeVoList) {
             degre.setRate(reserveTwo(degre.getNum(), num));
+            if (degre.getDegree().equals(DegreeEnum.SENIOR_HIGH_UNDER.name())) {
+                degre.setDegree(DegreeEnum.SENIOR_HIGH_UNDER.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.JUNIOR_COLLEGE.name())) {
+                degre.setDegree(DegreeEnum.JUNIOR_COLLEGE.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.REGULAR_COLLEGE.name())) {
+                degre.setDegree(DegreeEnum.REGULAR_COLLEGE.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.MASTER.name())) {
+                degre.setDegree(DegreeEnum.MASTER.getText());
+            } else {
+                degre.setDegree(DegreeEnum.DOCTOR.getText());
+            }
         }
         userStatisTrendVo.setDegreeVoList(degreeVoList);
         return userStatisTrendVo;
