@@ -3148,8 +3148,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer secondContractNum = 0;
         if (DataUtil.isNotEmpty(list)) {
             log.info("二次签约人数进来 {}", list.size());
-            List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
-            secondContractNum = filterList.size();
+            //List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+            secondContractNum = 0;
         }
         userStatistics.setSecondContractNum(secondContractNum);
         userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
