@@ -73,6 +73,7 @@ import com.zerody.user.vo.statis.UserStatisTrendVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.util.MathArrays;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1208,26 +1209,38 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
 
-            SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
-            QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
-            UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
-            PositionRecord positionRecord = new PositionRecord();
-            positionRecord.setId(UUIDutils.getUUID32());
-            positionRecord.setUserId(staff.getUserId());
-            positionRecord.setUserName(staff.getUserName());
-            positionRecord.setCompanyId(staff.getCompId());
-            positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
-            positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
-            positionRecord.setRoleName(unionRoleStaff.getRoleName());
-            positionRecord.setPositionTime(staff.getDateJoin());
-            positionRecord.setQuitTime(staff.getDateLeft());
-            positionRecord.setLeaveType(staff.getLeaveType());
-            positionRecord.setQuitReason(staff.getLeaveReason());
-            positionRecord.setCreateBy(user.getUserId());
-            positionRecord.setCreateName(user.getUserName());
-            positionRecord.setCreateTime(new Date());
-            this.positionRecordService.save(positionRecord);
+            if(oldUserInfo.getStatus()!=1){
+                SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+                QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+                queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
+                UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
+                PositionRecord positionRecord = new PositionRecord();
+                positionRecord.setId(UUIDutils.getUUID32());
+                positionRecord.setUserId(staff.getUserId());
+                positionRecord.setUserName(staff.getUserName());
+                positionRecord.setCompanyId(staff.getCompId());
+                positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
+                positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
+                positionRecord.setRoleName(unionRoleStaff.getRoleName());
+                positionRecord.setPositionTime(staff.getDateJoin());
+                positionRecord.setQuitTime(staff.getDateLeft());
+                positionRecord.setLeaveType(staff.getLeaveType());
+                positionRecord.setQuitReason(staff.getLeaveReason());
+                positionRecord.setCreateBy(user.getUserId());
+                positionRecord.setCreateName(user.getUserName());
+                positionRecord.setCreateTime(new Date());
+                this.positionRecordService.save(positionRecord);
+            }else {
+                QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
+                wrapper.lambda().eq(PositionRecord::getUserId,oldUserInfo.getId());
+                wrapper.lambda().orderByDesc(PositionRecord::getCreateTime);
+                wrapper.lambda().last("limit 0,1");
+                PositionRecord positionRecord = this.positionRecordService.getOne(wrapper);
+                positionRecord.setQuitTime(staff.getDateLeft());
+                positionRecord.setLeaveType(staff.getLeaveType());
+                positionRecord.setQuitReason(staff.getLeaveReason());
+                this.positionRecordService.updateById(positionRecord);
+            }
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
