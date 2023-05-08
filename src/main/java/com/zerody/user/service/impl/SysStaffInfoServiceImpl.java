@@ -1768,7 +1768,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+
+        String highestEducation = row[++index];
+        //学历转换成枚举入库
+        conversion(highestEducation, userInfo);
+
+        //userInfo.setHighestEducation(row[++index]);
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2033,7 +2038,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+        String highestEducation = row[++index];
+        //学历转换成枚举入库
+        conversion(highestEducation, userInfo);
+        //userInfo.setHighestEducation(row[++index]);
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2115,6 +2123,29 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return staff.getId();
     }
+
+    private void conversion(String highestEducation, SysUserInfo userInfo){
+        if (highestEducation.equals(DegreeEnum.PRIMARY_SCHOOL.getText())) {
+            userInfo.setHighestEducation(DegreeEnum.PRIMARY_SCHOOL.name());
+        } else if (highestEducation.equals(DegreeEnum.JUNIOR_HIGH.getText())) {
+            userInfo.setHighestEducation(DegreeEnum.JUNIOR_HIGH.name());
+        } else if (highestEducation.equals(DegreeEnum.TECHNICAL_SECONDARY.getText())) {
+            userInfo.setHighestEducation(DegreeEnum.TECHNICAL_SECONDARY.name());
+        } else if (highestEducation.equals(DegreeEnum.SENIOR_HIGH.getText())) {
+            userInfo.setHighestEducation(DegreeEnum.SENIOR_HIGH.name());
+        } else if(highestEducation.equals(DegreeEnum.JUNIOR_COLLEGE.getText())){
+            userInfo.setHighestEducation(DegreeEnum.JUNIOR_COLLEGE.name());
+        }else if(highestEducation.equals(DegreeEnum.REGULAR_COLLEGE.getText())){
+            userInfo.setHighestEducation(DegreeEnum.REGULAR_COLLEGE.name());
+        }else if(highestEducation.equals(DegreeEnum.MASTER.getText())){
+            userInfo.setHighestEducation(DegreeEnum.MASTER.name());
+        }else if(highestEducation.equals(DegreeEnum.DOCTOR.getText())){
+            userInfo.setHighestEducation(DegreeEnum.DOCTOR.name());
+        } else {
+            userInfo.setHighestEducation(DegreeEnum.JUNIOR_COLLEGE.name());
+        }
+    }
+
 
     private void checkParam(String[] row, StringBuilder errorStr,
                             UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user, StringBuilder recommendId) {
@@ -3145,10 +3176,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return new BigDecimal(format);
     }
 
-    public static void main(String[] args) {
-        BigDecimal decimal = new BigDecimal(1).divide(new BigDecimal(0), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-        System.out.println(decimal);
-    }
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
