@@ -11,19 +11,21 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
+import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.enums.DegreeEnum;
 import com.zerody.user.handler.user.UserStatisHandle;
 import com.zerody.user.mapper.UserStatisMapper;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
 import com.zerody.user.vo.StatisticsDataDetailsVo;
-import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
-import com.zerody.user.vo.statis.UserSexStatisQueryVo;
-import com.zerody.user.vo.statis.UserTrendQueryVo;
+import com.zerody.user.vo.statis.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -41,6 +43,9 @@ public class UserStatisServiceImpl implements UserStatisService {
 
     @Autowired
     private UserStatisMapper baseMapper;
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
 
     private final int num = 6;
 
@@ -148,5 +153,50 @@ public class UserStatisServiceImpl implements UserStatisService {
         }
         return result;
     }
+
+    @Override
+    public UserStatisTrendVo getUserTrends(UserStatisQueryDto param) {
+        UserStatisTrendVo userStatisTrendVo = new UserStatisTrendVo();
+        UserSexStatisQueryDto userSexStatisQueryDto = new UserSexStatisQueryDto();
+        List<UserSexStatisQueryVo> sexStatis = getSexStatis(userSexStatisQueryDto);
+        userStatisTrendVo.setUserSexStatisQueryVoList(sexStatis);
+
+        UserAgeStatisQueryDto userAgeStatisQueryDto = new UserAgeStatisQueryDto();
+        List<UserAgeStatisQueryVo> ageStatis = getAgeStatis(userAgeStatisQueryDto);
+        userStatisTrendVo.setAgeStatisQuery(ageStatis);
+
+        List<DegreeVo> degreeVoList = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        list.add(DegreeEnum.SENIOR_HIGH.name());
+        list.add(DegreeEnum.JUNIOR_COLLEGE.name());
+        list.add(DegreeEnum.REGULAR_COLLEGE.name());
+        list.add(DegreeEnum.MASTER.name());
+        list.add(DegreeEnum.DOCTOR.name());
+        //总人数
+        int num = 0;
+        for (String name : list) {
+            param.setHighestEducation(name);
+            int degreeNum = sysStaffInfoService.getDegree(param);
+
+            DegreeVo degreeVo = new DegreeVo();
+            degreeVo.setNum(degreeNum);
+            degreeVo.setDegree(name);
+            num += degreeNum;
+            degreeVoList.add(degreeVo);
+        }
+        for (DegreeVo degre : degreeVoList) {
+            degre.setRate(reserveTwo(degre.getNum(), num));
+        }
+        userStatisTrendVo.setDegreeVoList(degreeVoList);
+        return userStatisTrendVo;
+    }
+
+    private static BigDecimal reserveTwo(Integer d, Integer num){
+        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        DecimalFormat df = new DecimalFormat("0.00");
+        String format = df.format(b);
+        return new BigDecimal(format);
+    }
+
 
 }

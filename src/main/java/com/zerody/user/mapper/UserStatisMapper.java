@@ -25,6 +25,8 @@ public interface UserStatisMapper  {
 
     int getStatisSigning(@Param("param") UserStatisQueryDto param);
 
+    int getDegree(@Param("param") UserStatisQueryDto param);
+
     /**
      *
      * 查询解约用户
