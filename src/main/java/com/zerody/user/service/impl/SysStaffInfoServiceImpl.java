@@ -67,7 +67,9 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
+import com.zerody.user.vo.statis.DegreeVo;
 import com.zerody.user.vo.statis.SignAndRescindVo;
+import com.zerody.user.vo.statis.UserStatisTrendVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -3203,6 +3205,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         degreeAnalysis.setDoctorRate(reserveTwo(degreeAnalysis.getDoctorNum(), allNum));
         return degreeAnalysis;
     }
+
+    @Override
+    public int getDegree(UserStatisQueryDto param) {
+        return userStatisMapper.getDegree(param);
+    }
+
 
     @Override
     public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {

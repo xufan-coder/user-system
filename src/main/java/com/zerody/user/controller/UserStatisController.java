@@ -12,11 +12,8 @@ import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.statis.SignAndRescindVo;
-import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
-import com.zerody.user.vo.statis.UserSexStatisQueryVo;
+import com.zerody.user.vo.statis.*;
 import com.zerody.user.vo.*;
-import com.zerody.user.vo.statis.UserTrendQueryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -120,6 +117,64 @@ public class UserStatisController {
         }
     }
 
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取学历分析
+     * @Date: 2023/4/29 11:29
+     */
+    /*@GetMapping("/degree/analysis")
+    public DataResult<List<DegreeVo>> getDegreeAnalysis(UserStatisQueryDto param) {
+        try {
+            this.checkUtil.SetUserPositionInfo(param);
+            return R.success(this.sysStaffInfoService.getDegree(param));
+        } catch (DefaultException e) {
+            log.error("获取学历分析出错:{}", e.getMessage());
+            return R.error("获取学历分析出错");
+        } catch (Exception e) {
+            log.error("获取学历分析出错:{}", e, e);
+            return R.error("获取学历分析出错");
+        }
+    }*/
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取统计趋势
+    * @Date: 2023/5/8 12:02
+    */
+    @GetMapping("/statistics/user-trends")
+    public DataResult<UserStatisTrendVo> getUserTrends(UserStatisQueryDto param) {
+        try {
+            return R.success(this.service.getUserTrends(param));
+        } catch (DefaultException e) {
+            log.error("获取统计趋势出错:{}", e.getMessage());
+            return R.error("获取统计趋势出错");
+        } catch (Exception e) {
+            log.error("获取统计趋势出错:{}", e, e);
+            return R.error("获取统计趋势出错");
+        }
+    }
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取统计趋势(pc)
+     * @Date: 2023/5/8 12:02
+     */
+    @GetMapping("/pc/statistics/user-trends")
+    public DataResult<UserStatisTrendVo> getUserTrendsPc(UserStatisQueryDto param) {
+        try {
+            return R.success(this.service.getUserTrends(param));
+        } catch (DefaultException e) {
+            log.error("获取统计趋势(pc)出错:{}", e.getMessage());
+            return R.error("获取统计趋势(pc)出错");
+        } catch (Exception e) {
+            log.error("获取统计趋势(pc)出错:{}", e, e);
+            return R.error("获取统计趋势(pc)出错");
+        }
+    }
 
     /**
      * @Author: chenKeFeng
@@ -263,27 +318,6 @@ public class UserStatisController {
         } catch (Exception e) {
             log.error("获取离职原因分析(pc端)出错:{}", e, e);
             return R.error("获取离职原因分析(pc端)出错");
-        }
-    }
-
-
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取学历分析
-     * @Date: 2023/4/29 11:29
-     */
-    @GetMapping("/degree/analysis")
-    public DataResult<DegreeAnalysisVo> getDegreeAnalysis(UserStatisQueryDto param) {
-        try {
-            this.checkUtil.SetUserPositionInfo(param);
-            return R.success(this.sysStaffInfoService.getDegreeAnalysis(param));
-        } catch (DefaultException e) {
-            log.error("获取学历分析出错:{}", e.getMessage());
-            return R.error("获取学历分析出错");
-        } catch (Exception e) {
-            log.error("获取学历分析出错:{}", e, e);
-            return R.error("获取学历分析出错");
         }
     }
 

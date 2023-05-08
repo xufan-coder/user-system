@@ -14,7 +14,9 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.statis.DegreeVo;
 import com.zerody.user.vo.statis.SignAndRescindVo;
+import com.zerody.user.vo.statis.UserStatisTrendVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -224,6 +226,8 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
      * @Date: 2023/4/29 10:30
      */
     DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
+
+    int getDegree(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng

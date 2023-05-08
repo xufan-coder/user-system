@@ -8,6 +8,7 @@ import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.StatisticsDataDetailsVo;
 import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
 import com.zerody.user.vo.statis.UserSexStatisQueryVo;
+import com.zerody.user.vo.statis.UserStatisTrendVo;
 import com.zerody.user.vo.statis.UserTrendQueryVo;
 
 import java.util.List;
@@ -60,5 +61,7 @@ public interface UserStatisService {
      * @Date: 2023/4/29 10:30
      */
     List<StatisticsDataDetailsVo> statisticsDetails(UserStatisQueryDto param);
+
+    UserStatisTrendVo getUserTrends(UserStatisQueryDto param);
 
 }
