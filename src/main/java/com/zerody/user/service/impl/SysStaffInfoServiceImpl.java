@@ -3145,10 +3145,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return new BigDecimal(format);
     }
 
-    public static void main(String[] args) {
-        BigDecimal decimal = new BigDecimal(1).divide(new BigDecimal(0), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-        System.out.println(decimal);
-    }
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
