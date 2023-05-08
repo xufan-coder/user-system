@@ -25,6 +25,12 @@ public interface UserStatisMapper  {
 
     int getStatisSigning(@Param("param") UserStatisQueryDto param);
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 统计学历
+    * @Date: 2023/5/8 14:31
+    */
     int getDegree(@Param("param") UserStatisQueryDto param);
 
     /**

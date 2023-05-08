@@ -12,6 +12,7 @@ public enum DegreeEnum {
     JUNIOR_HIGH("初中"),
     TECHNICAL_SECONDARY("中专"),
     SENIOR_HIGH("高中"),
+    SENIOR_HIGH_UNDER("高中及以下"),
     JUNIOR_COLLEGE("大专"),
     REGULAR_COLLEGE("本科"),
     MASTER("硕士"),
