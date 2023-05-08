@@ -117,31 +117,11 @@ public class UserStatisController {
         }
     }
 
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取学历分析
-     * @Date: 2023/4/29 11:29
-     */
-    /*@GetMapping("/degree/analysis")
-    public DataResult<List<DegreeVo>> getDegreeAnalysis(UserStatisQueryDto param) {
-        try {
-            this.checkUtil.SetUserPositionInfo(param);
-            return R.success(this.sysStaffInfoService.getDegree(param));
-        } catch (DefaultException e) {
-            log.error("获取学历分析出错:{}", e.getMessage());
-            return R.error("获取学历分析出错");
-        } catch (Exception e) {
-            log.error("获取学历分析出错:{}", e, e);
-            return R.error("获取学历分析出错");
-        }
-    }*/
-
 
     /**
     * @Author: chenKeFeng
     * @param
-    * @Description: 获取统计趋势
+    * @Description: 获取统计趋势(年龄，性别，学历)
     * @Date: 2023/5/8 12:02
     */
     @GetMapping("/statistics/user-trends")
