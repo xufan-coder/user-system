@@ -3143,10 +3143,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer num = userStatistics.getContractNum();
         //二次签约
         List<SysStaffRelationVo> list = userInductionRecordService.statistics(param);
+        log.info("二次签约人数 {}", list);
+        log.info("transfer {}", this.transfer);
         Integer secondContractNum = 0;
         if (DataUtil.isNotEmpty(list)) {
-            List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
-            secondContractNum = filterList.size();
+            log.info("二次签约人数进来 {}", list.size());
+            //List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+            secondContractNum = 0;
         }
         userStatistics.setSecondContractNum(secondContractNum);
         userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
