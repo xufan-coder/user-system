@@ -3123,6 +3123,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     //保留两位小数
     private static BigDecimal reserveTwo(Integer d, Integer num){
+        if (d.equals(0)) {
+            return new BigDecimal("0.00");
+        }
         BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(b);
@@ -3130,7 +3133,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     public static void main(String[] args) {
-        BigDecimal decimal = reserveTwo(11,18);
+        BigDecimal decimal = new BigDecimal(1).divide(new BigDecimal(0), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         System.out.println(decimal);
     }
 
@@ -3150,8 +3153,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer secondContractNum = 0;
         if (DataUtil.isNotEmpty(list)) {
             log.info("二次签约人数进来 {}", list.size());
-            //List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
-            secondContractNum = 0;
+            log.info("二次签约数据 {}", list);
+            List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+            secondContractNum = filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
         userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
@@ -3221,18 +3225,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             departInfoDto.setCompId(param.getCompanyId());
             List<DepartInfoVo> departList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
             for (DepartInfoVo dept : departList) {
+                param.setDepartId(dept.getDepartmentId());
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
                 arrList.add(vo);
             }
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
             //获取部门详情
             SysDepartmentInfo sysDepartmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
+            param.setDepartId(sysDepartmentInfo.getId());
             SignSummaryVo vo = getSummary(sysDepartmentInfo.getDepartName(), param);
             arrList.add(vo);
         } else {
             //查询所有企业
             List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
             for (SysAddressBookVo com : companyList) {
+                param.setCompanyId(com.getCompId());
                 SignSummaryVo vo = getSummary(com.getCompanyName(), param);
                 arrList.add(vo);
             }
@@ -3248,6 +3255,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         IPage<SignSummaryVo> pageCompanyList = this.sysUserAddressBookMapper.pageCompanyList(param, page);
         List<SignSummaryVo> records = pageCompanyList.getRecords();
         for (SignSummaryVo c : records) {
+            param.setCompanyId(c.getCompanyId());
             SignSummaryVo summary = getSummary(c.getName(), param);
             BeanUtils.copyProperties(summary, c);
             c.setName(c.getName());

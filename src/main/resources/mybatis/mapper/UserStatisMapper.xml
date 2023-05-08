@@ -31,6 +31,7 @@
 
 </select>
 
+    <!--统计学历-->
     <select id="getDegree" resultType="int">
         SELECT
         count(1)
@@ -50,11 +51,8 @@
             <if test="param.highestEducation neq null and param.highestEducation neq ''">
                 and sui.highest_education = #{param.highestEducation}
             </if>
-            <if test="param.highestEducation neq null and param.highestEducation neq '' and param.highestEducation eq 'SENIOR_HIGH_UNDER'">
-                and sui.highest_education = #{param.highestEducation}
-            </if>
             <if test="param.highestEducation neq null and param.highestEducation eq 'SENIOR_HIGH_UNDER'">
-                and sui.highest_education = 'PRIMARY_SCHOOL' or  sui.highest_education = 'JUNIOR_HIGH' or  sui.highest_education = 'TECHNICAL_SECONDARY'
+                or sui.highest_education = 'PRIMARY_SCHOOL' or  sui.highest_education = 'JUNIOR_HIGH' or  sui.highest_education = 'TECHNICAL_SECONDARY'
                 or  sui.highest_education = 'SENIOR_HIGH'
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">

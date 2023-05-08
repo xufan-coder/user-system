@@ -12,6 +12,11 @@ import lombok.Data;
 public class SignSummaryVo {
 
     /**
+     * 企业id
+     */
+    private String companyId;
+
+    /**
      * 企业或者部门名称
      */
     private String name;
