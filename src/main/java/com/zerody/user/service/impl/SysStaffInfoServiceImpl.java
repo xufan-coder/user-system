@@ -3206,6 +3206,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
+            log.info("总数 {}", departureCount);
+            log.info("单数 {}", departureCauseCount);
             vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
             arrList.add(vo);
         }
