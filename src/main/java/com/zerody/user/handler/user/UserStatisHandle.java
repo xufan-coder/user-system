@@ -19,7 +19,7 @@ public class UserStatisHandle {
         result.add(new UserAgeStatisQueryVo("18", "25"));
         result.add(new UserAgeStatisQueryVo("26", "35"));
         result.add(new UserAgeStatisQueryVo("36", "45"));
-        result.add(new UserAgeStatisQueryVo("45以上", null));
+        result.add(new UserAgeStatisQueryVo("45", null));
         return result;
     }
 }
