@@ -127,7 +127,7 @@ public class UserStatisController {
     @GetMapping("/statistics/user-trends")
     public DataResult<UserStatisTrendVo> getUserTrends(UserStatisQueryDto param) {
         try {
-            //this.checkUtil.SetUserPositionInfo(param);
+            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.getUserTrends(param));
         } catch (DefaultException e) {
             log.error("获取统计趋势出错:{}", e.getMessage());
