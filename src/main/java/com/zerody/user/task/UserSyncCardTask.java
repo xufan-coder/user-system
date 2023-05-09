@@ -45,7 +45,8 @@ public class UserSyncCardTask {
 
         QueryWrapper<SysUserInfo> qw = new QueryWrapper<>();
         qw.lambda().isNull(SysUserInfo::getBirthdayTime);
-        qw.lambda().last("LENGTH(certificate_card) > 0");
+        qw.lambda().isNotNull(SysUserInfo::getCertificateCard);
+        qw.lambda().ne(SysUserInfo::getCertificateCard, "");
         qw.lambda().last("limit 100");
         List<SysUserInfo> userInfos = this.userService.list(qw);
 
@@ -58,6 +59,9 @@ public class UserSyncCardTask {
            entity.setIdCardSex(IdCardUtil.getSex(info.getCertificateCard()));
            //获取身份证年月日
             IdCardDate date = DateUtil.getIdCardDate(info.getCertificateCard());
+            if (DataUtil.isEmpty(date.getYear())) {
+                continue;
+            }
            entity.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
            entity.setId(info.getId());
             updateList.add(entity);

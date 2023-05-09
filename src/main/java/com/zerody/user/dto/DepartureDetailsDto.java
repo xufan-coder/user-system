@@ -3,6 +3,7 @@ package com.zerody.user.dto;
 import com.zerody.common.api.bean.PageQueryDto;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,9 +58,10 @@ public class DepartureDetailsDto extends PageQueryDto {
      */
     private List<String> leaveTypeIds;
 
-    /**
-     * 离职时间排序(升序asc 正序desc)
-     */
-    private String sort;
+    /** 起始时间 */
+    private Date begin;
+
+    /** 结束时间 */
+    private Date end;
 
 }
