@@ -3202,10 +3202,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
         for (DictQuseryVo dict : listByType) {
             TerminationAnalysisVo vo = new TerminationAnalysisVo();
-            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getId());
+            param.setType(dict.getId());
+            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(param);
             vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
+            log.info("总数 {}", departureCount);
+            log.info("单数 {}", departureCauseCount);
             vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
             arrList.add(vo);
         }

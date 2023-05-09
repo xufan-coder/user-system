@@ -27,4 +27,9 @@ public class UserStatisQueryDto  extends SetTimePeriodPage {
      */
     private String highestEducation;
 
+    /**
+     * 离职原因类型id
+     */
+    private String type;
+
 }
