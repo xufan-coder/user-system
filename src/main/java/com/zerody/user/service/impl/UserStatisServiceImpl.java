@@ -84,10 +84,10 @@ public class UserStatisServiceImpl implements UserStatisService {
         //获取人数
         for (UserAgeStatisQueryVo statis : result) {
             if (DataUtil.isNotEmpty(statis.getBeginAge())) {
-                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getBeginAge()).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
+                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(new Long(statis.getBeginAge())).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
             }
             if (DataUtil.isNotEmpty(statis.getEndAge())) {
-                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge()).toInstant(ZoneOffset.of("+8"))));
+                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(new Long(statis.getEndAge())).toInstant(ZoneOffset.of("+8"))));
             }
             statis.setNumber(this.baseMapper.getStatisAge(param));
             total += statis.getNumber();
