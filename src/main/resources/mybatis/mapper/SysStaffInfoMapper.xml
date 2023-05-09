@@ -1414,17 +1414,16 @@
         LEFT JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
-        LEFT JOIN sys_staff_info AS ssi2 ON ssi2.user_id = sb.submit_user_id
         <where>
              sb.state='BLOCK'
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND sb.company_id = #{param.companyId}
+                and sb.company_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'submitUser'">
-                AND (usd.department_id LIKE CONCAT(#{param.departId}, '\_%') or usd.department_id=#{param.departId})
+            <if test="param.departId neq null and param.departId">
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND sb.company_id
+                and sb.company_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
