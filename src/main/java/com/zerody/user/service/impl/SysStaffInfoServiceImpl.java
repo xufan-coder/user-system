@@ -3198,6 +3198,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //总离职人数
         Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
 
+        Integer total =0;
         //离职原因类型
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
         for (DictQuseryVo dict : listByType) {
@@ -3207,10 +3208,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
+            arrList.add(vo);
+            total += departureCauseCount;
             log.info("总数 {}", departureCount);
             log.info("单数 {}", departureCauseCount);
-            vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
-            arrList.add(vo);
+        }
+        for (TerminationAnalysisVo vo : arrList) {
+            vo.setPeopleRate(reserveTwo(vo.getPeopleNum(), total));
         }
         //根据占比降序
         return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(toList());
