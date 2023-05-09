@@ -221,7 +221,8 @@
         sui.id_card_front,
         sui.use_state,
         sui.train_no,
-        sui.is_prepare_executive
+        sui.is_prepare_executive,
+        ssi.leave_type
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
