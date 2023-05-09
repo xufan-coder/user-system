@@ -18,6 +18,9 @@ public enum DegreeEnum {
     MASTER("硕士"),
     DOCTOR("博士");
 
+    /**
+     * 学历描述
+     */
     private String text;
 
     public String getText() {
@@ -33,15 +36,33 @@ public enum DegreeEnum {
     }
 
 
-    public static DegreeEnum getByCode(String code) {
+    /**
+     * 中文转英文
+     * @param text 中文描述
+     * @return
+     */
+    public static DegreeEnum getByCode(String text) {
         for (DegreeEnum status : DegreeEnum.values()){
-            if(code.equals(status.name())){
+            if(text.equals(status.getText())){
                 return status;
             }
         }
         return null;
     }
 
+    /**
+     * 英文转中文
+     * @param name 英文描述
+     * @return
+     */
+    public static String getByText(String name) {
+        for (DegreeEnum status : DegreeEnum.values()){
+            if(name.equals(status.name())){
+                return status.getText();
+            }
+        }
+        return null;
+    }
 
     public static DegreeEnum getValueOf(String enumName){
         try {

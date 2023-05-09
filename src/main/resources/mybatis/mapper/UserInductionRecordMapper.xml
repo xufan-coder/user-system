@@ -38,7 +38,7 @@
     <!--统计二次签约-->
     <select id="statistics" resultType="com.zerody.user.vo.SysStaffRelationVo" parameterType="com.zerody.user.dto.statis.UserStatisQueryDto">
         select distinct ssi.id as staffId, ssi.leave_type from user_induction_record as uir
-        join sys_user_info as sui on sui.id = uir.user_id
+        join sys_user_info as sui on sui.id = uir.leave_user_id
         join sys_staff_info as ssi on ssi.user_id = sui.id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>

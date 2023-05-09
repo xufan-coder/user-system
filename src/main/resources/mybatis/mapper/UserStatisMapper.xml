@@ -14,7 +14,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.departId neq null and param.departId">
-            AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
         </if>
         <if test="param.begin neq null">
             AND ssi.date_join &gt;= #{param.begin}
@@ -46,14 +46,14 @@
                 and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId">
-                and (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.highestEducation neq null and param.highestEducation neq ''">
                 and sui.highest_education = #{param.highestEducation}
             </if>
             <if test="param.highestEducation neq null and param.highestEducation eq 'SENIOR_HIGH_UNDER'">
                 or sui.highest_education = 'PRIMARY_SCHOOL' or  sui.highest_education = 'JUNIOR_HIGH' or  sui.highest_education = 'TECHNICAL_SECONDARY'
-                or  sui.highest_education = 'SENIOR_HIGH'
+                or sui.highest_education = 'SENIOR_HIGH'
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
@@ -61,7 +61,6 @@
                 </foreach>
             </if>
         </where>
-
     </select>
 
 <select id="getStatisUnSigning" resultType="int">
@@ -76,7 +75,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.departId neq null and param.departId">
-            AND (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
         </if>
         <if test="param.begin neq null">
             AND ssi.date_left &gt;= #{param.begin}

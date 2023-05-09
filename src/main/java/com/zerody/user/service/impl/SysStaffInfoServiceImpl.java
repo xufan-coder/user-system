@@ -1768,7 +1768,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+
+        //学历转换成枚举入库
+        DegreeEnum text = DegreeEnum.getByCode(row[++index]);
+        userInfo.setHighestEducation(text.name());
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2033,7 +2036,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+        //学历转换成枚举入库
+        DegreeEnum text = DegreeEnum.getByCode(row[++index]);
+        userInfo.setHighestEducation(text.name());
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2115,6 +2120,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return staff.getId();
     }
+
 
     private void checkParam(String[] row, StringBuilder errorStr,
                             UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user, StringBuilder recommendId) {
@@ -3145,10 +3151,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return new BigDecimal(format);
     }
 
-    public static void main(String[] args) {
-        BigDecimal decimal = new BigDecimal(1).divide(new BigDecimal(0), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-        System.out.println(decimal);
-    }
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
@@ -3161,13 +3163,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         Integer num = userStatistics.getContractNum();
         //二次签约
         List<SysStaffRelationVo> list = userInductionRecordService.statistics(param);
-        log.info("二次签约人数 {}", list);
-        log.info("transfer {}", this.transfer);
-        Integer secondContractNum = 0;
+        int secondContractNum = 0;
         if (DataUtil.isNotEmpty(list)) {
-            log.info("二次签约人数进来 {}", list.size());
-            log.info("二次签约数据 {}", list);
-            List<SysStaffRelationVo> filterList = list.stream().filter(user -> !user.getLeaveType().equals(this.transfer)).collect(toList());
+            //过滤空字符与null
+            List<SysStaffRelationVo> newList = list.stream().filter(o -> o.getLeaveType() != null).collect(toList());
+            List<SysStaffRelationVo> newList1 = newList.stream().filter(o -> o.getLeaveType().trim().isEmpty()).collect(toList());
+            List<SysStaffRelationVo> filterList = newList1.stream().filter(user -> !user.getLeaveType().equals(this.transfer) && DataUtil.isNotEmpty(user.getLeaveType())).collect(toList());
             secondContractNum = filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
@@ -3202,6 +3203,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         for (DictQuseryVo dict : listByType) {
             TerminationAnalysisVo vo = new TerminationAnalysisVo();
             Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getDictName());
+            vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
             vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
