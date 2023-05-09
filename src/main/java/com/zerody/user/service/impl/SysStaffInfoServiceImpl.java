@@ -67,10 +67,13 @@ import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.dict.DictQuseryVo;
-import com.zerody.user.vo.statis.UserSexStatisQueryVo;
+import com.zerody.user.vo.statis.DegreeVo;
+import com.zerody.user.vo.statis.SignAndRescindVo;
+import com.zerody.user.vo.statis.UserStatisTrendVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.util.MathArrays;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,7 +89,6 @@ import com.zerody.user.enums.StaffStatusEnum;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -96,6 +98,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author PengQiang
@@ -248,6 +252,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private UserStatisMapper userStatisMapper;
+
+    @Autowired
+    private UserInductionRecordService userInductionRecordService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -1202,26 +1209,38 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
 
-            SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
-            QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
-            UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
-            PositionRecord positionRecord = new PositionRecord();
-            positionRecord.setId(UUIDutils.getUUID32());
-            positionRecord.setUserId(staff.getUserId());
-            positionRecord.setUserName(staff.getUserName());
-            positionRecord.setCompanyId(staff.getCompId());
-            positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
-            positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
-            positionRecord.setRoleName(unionRoleStaff.getRoleName());
-            positionRecord.setPositionTime(staff.getDateJoin());
-            positionRecord.setQuitTime(staff.getDateLeft());
-            positionRecord.setLeaveType(staff.getLeaveType());
-            positionRecord.setQuitReason(staff.getLeaveReason());
-            positionRecord.setCreateBy(user.getUserId());
-            positionRecord.setCreateName(user.getUserName());
-            positionRecord.setCreateTime(new Date());
-            this.positionRecordService.save(positionRecord);
+            if(oldUserInfo.getStatus()!=1){
+                SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
+                QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
+                queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
+                UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
+                PositionRecord positionRecord = new PositionRecord();
+                positionRecord.setId(UUIDutils.getUUID32());
+                positionRecord.setUserId(staff.getUserId());
+                positionRecord.setUserName(staff.getUserName());
+                positionRecord.setCompanyId(staff.getCompId());
+                positionRecord.setCompanyName(sysCompanyInfo.getCompanyName());
+                positionRecord.setCertificateCard(sysUserInfo.getCertificateCard());
+                positionRecord.setRoleName(unionRoleStaff.getRoleName());
+                positionRecord.setPositionTime(staff.getDateJoin());
+                positionRecord.setQuitTime(staff.getDateLeft());
+                positionRecord.setLeaveType(staff.getLeaveType());
+                positionRecord.setQuitReason(staff.getLeaveReason());
+                positionRecord.setCreateBy(user.getUserId());
+                positionRecord.setCreateName(user.getUserName());
+                positionRecord.setCreateTime(new Date());
+                this.positionRecordService.save(positionRecord);
+            }else {
+                QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
+                wrapper.lambda().eq(PositionRecord::getUserId,oldUserInfo.getId());
+                wrapper.lambda().orderByDesc(PositionRecord::getCreateTime);
+                wrapper.lambda().last("limit 0,1");
+                PositionRecord positionRecord = this.positionRecordService.getOne(wrapper);
+                positionRecord.setQuitTime(staff.getDateLeft());
+                positionRecord.setLeaveType(staff.getLeaveType());
+                positionRecord.setQuitReason(staff.getLeaveReason());
+                this.positionRecordService.updateById(positionRecord);
+            }
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -1369,21 +1388,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //学历证书
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //合作申请表 (先查询图片表(image)，如果没有数据查询文件表(commonFile))
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        List<String> imgList = this.imageService.list(imageQw).stream().map(s -> s.getImageUrl()).collect(Collectors.toList());
+        List<String> imgList = this.imageService.list(imageQw).stream().map(s -> s.getImageUrl()).collect(toList());
         if (DataUtil.isNotEmpty(imgList)) {
             userInfo.setCooperationImages(imgList);
         } else {
@@ -1392,7 +1411,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
             List<CommonFile> list = this.commonFileService.list(fileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(toList());
             userInfo.setCooperationImages(images);
         }
 
@@ -1749,7 +1768,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+
+        //学历转换成枚举入库
+        DegreeEnum text = DegreeEnum.getByCode(row[++index]);
+        userInfo.setHighestEducation(text.name());
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2014,7 +2036,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
-        userInfo.setHighestEducation(row[++index]);
+        //学历转换成枚举入库
+        DegreeEnum text = DegreeEnum.getByCode(row[++index]);
+        userInfo.setHighestEducation(text.name());
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2096,6 +2120,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return staff.getId();
     }
+
 
     private void checkParam(String[] row, StringBuilder errorStr,
                             UnionStaffDepart unionStaffDepart, UnionStaffPosition unionStaffPosition, UnionRoleStaff unionRoleStaff, UserVo user, StringBuilder recommendId) {
@@ -2378,7 +2403,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 BackUserRefVo backRef = ceoCompanyRefService.getBackRef(item.getId());
                 if(DataUtil.isNotEmpty(backRef) && DataUtil.isNotEmpty(backRef.getCompanys())){
                     //企业名称
-                    List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(Collectors.toList());
+                    List<String> collect = backRef.getCompanys().stream().map(s -> s.getCompanyName()).collect(toList());
                     item.setCompanys(collect);
                 }
             });
@@ -2532,7 +2557,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (CollectionUtils.isEmpty(iPage.getRecords())) {
             iPage.setRecords(new ArrayList<>());
         }
-        userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList());
+        userIds = iPage.getRecords().stream().map(SysUserClewCollectVo::getUserId).collect(toList());
         clews = this.clewFeignService.getClews(userIds).getData();
         if (CollectionUtils.isEmpty(clews)) {
             return iPage;
@@ -2723,7 +2748,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             //企业管理员不需要获取下级部门
             users = this.sysStaffInfoMapper.getStaffAllByDepIds(null, staff.getCompId());
         }
-        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(Collectors.toList()));
+        userIds.addAll(users.stream().map(SysUserClewCollectVo::getUserId).collect(toList()));
         DataResult<Object> reslut = this.clewFeignService.doEmpatySubordinateUserClew(userIds);
         if (!reslut.isSuccess()) {
             throw new DefaultException(reslut.getMessage());
@@ -3111,51 +3136,59 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto) {
+    public UserStatisticsVo statisticsUsers(SetSysUserInfoDto userInfoDto) {
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
     //保留两位小数
-    private static BigDecimal reserveTwo(Double d){
+    private static BigDecimal reserveTwo(Integer d, Integer num){
+        if (d.equals(0)) {
+            return new BigDecimal("0.00");
+        }
+        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         DecimalFormat df = new DecimalFormat("0.00");
-        String format = df.format(d);
-        return new BigDecimal(format).multiply(BigDecimal.valueOf(100));
+        String format = df.format(b);
+        return new BigDecimal(format);
     }
 
+
     @Override
-    public UserStatistics getUserOverview(UserStatisQueryDto param) {
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
+    public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
+        UserStatisticsVo userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
 
         //内控伙伴数量
         Integer internalControlNum = this.sysStaffInfoMapper.getInternalControlNum(param);
         userStatistics.setInternalControlUserNum(internalControlNum);
+        //总签约数量(签约中)
+        Integer num = userStatistics.getContractNum();
         //二次签约
-        userStatistics.setSecondContractNum(0);
+        List<SysStaffRelationVo> list = userInductionRecordService.statistics(param);
+        int secondContractNum = 0;
+        if (DataUtil.isNotEmpty(list)) {
+            //过滤空字符与null
+            List<SysStaffRelationVo> newList = list.stream().filter(o -> o.getLeaveType() != null).collect(toList());
+            List<SysStaffRelationVo> newList1 = newList.stream().filter(o -> o.getLeaveType().trim().isEmpty()).collect(toList());
+            List<SysStaffRelationVo> filterList = newList1.stream().filter(user -> !user.getLeaveType().equals(this.transfer) && DataUtil.isNotEmpty(user.getLeaveType())).collect(toList());
+            secondContractNum = filterList.size();
+        }
+        userStatistics.setSecondContractNum(secondContractNum);
+        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
 
-        //总签约数量
-        Integer num = userStatistics.getHistoricalContractNum();
-        userStatistics.setManagerRate(reserveTwo(new Double(userStatistics.getManagerNum()) / num) + "%");
-        userStatistics.setVicePresidentRate(reserveTwo(new Double(userStatistics.getVicePresidentNum()) / num) + "%");
-        userStatistics.setTeamLeaderRate(reserveTwo(new Double(userStatistics.getTeamLeaderNum()) / num) + "%");
+        userStatistics.setManagerRate(reserveTwo(userStatistics.getManagerNum(), num));
+        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getSecondContractNum(), num));
 
-        userStatistics.setPartnerRate(reserveTwo(new Double(userStatistics.getPartnerNum()) / num) + "%");
-        userStatistics.setMasonryMemberRate(reserveTwo(new Double(userStatistics.getMasonryMemberNum()) / num) + "%");
-        userStatistics.setProspectiveExecutiveRate(reserveTwo(new Double(userStatistics.getProspectiveExecutiveNum()) / num) + "%");
-        userStatistics.setSecondContractRate(reserveTwo(new Double(userStatistics.getSecondContractNum()) / num) + "%");
+        userStatistics.setPartnerRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getSecondContractNum(),num));
+        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum(), num));
         return userStatistics;
     }
 
+
     @Override
-    public UserStatistics statisticsContractAndRescind(UserStatisQueryDto param) {
-        //签约包含签约中和合作中
-        //今日
-        UserStatistics userStatistics = this.sysStaffInfoMapper.getPartnerTodaySignAndRescind(param);
-        userStatistics.setTodaySignNum(userStatistics.getTodaySignNum());
-        //本月
-        UserStatistics statistics = this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
-        userStatistics.setMonthSignNum(statistics.getMonthSignNum());
-        userStatistics.setMonthRescindNum(statistics.getMonthRescindNum());
-        return userStatistics;
+    public SignAndRescindVo statisticsContractAndRescind(UserStatisQueryDto param) {
+        return this.sysStaffInfoMapper.getPartnerThisMonthSignAndRescind(param);
     }
 
 
@@ -3170,25 +3203,33 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         for (DictQuseryVo dict : listByType) {
             TerminationAnalysisVo vo = new TerminationAnalysisVo();
             Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getDictName());
+            vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
-            vo.setPeopleRate(reserveTwo(new Double(departureCauseCount) / departureCount) + "%");
+            vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
             arrList.add(vo);
         }
         //根据占比降序
-        return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(Collectors.toList());
+        return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(toList());
     }
 
     @Override
     public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
         DegreeAnalysisVo degreeAnalysis = this.sysStaffInfoMapper.getDegreeAnalysis(param);
-        degreeAnalysis.setHighHereinafterRate(new BigDecimal(degreeAnalysis.getHighHereinafterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setCollegeRate(new BigDecimal(degreeAnalysis.getCollegeNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setUndergraduateRate(new BigDecimal(degreeAnalysis.getUndergraduateNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setMasterRate(new BigDecimal(degreeAnalysis.getMasterNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
-        degreeAnalysis.setDoctorRate(new BigDecimal(degreeAnalysis.getDoctorNum()).divide(new BigDecimal(degreeAnalysis.getAllNum()), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100)));
+        Integer allNum = degreeAnalysis.getAllNum();
+        degreeAnalysis.setHighHereinafterRate(reserveTwo(degreeAnalysis.getHighHereinafterNum(), allNum));
+        degreeAnalysis.setCollegeRate(reserveTwo(degreeAnalysis.getCollegeNum(),allNum));
+        degreeAnalysis.setUndergraduateRate(reserveTwo(degreeAnalysis.getUndergraduateNum(), allNum));
+        degreeAnalysis.setMasterRate(reserveTwo(degreeAnalysis.getMasterNum(),allNum));
+        degreeAnalysis.setDoctorRate(reserveTwo(degreeAnalysis.getDoctorNum(), allNum));
         return degreeAnalysis;
     }
+
+    @Override
+    public int getDegree(UserStatisQueryDto param) {
+        return userStatisMapper.getDegree(param);
+    }
+
 
     @Override
     public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {
@@ -3199,18 +3240,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             departInfoDto.setCompId(param.getCompanyId());
             List<DepartInfoVo> departList = this.sysAddressBookService.queryDepartInfo(departInfoDto);
             for (DepartInfoVo dept : departList) {
+                param.setDepartId(dept.getDepartmentId());
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
                 arrList.add(vo);
             }
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
             //获取部门详情
             SysDepartmentInfo sysDepartmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
+            param.setDepartId(sysDepartmentInfo.getId());
             SignSummaryVo vo = getSummary(sysDepartmentInfo.getDepartName(), param);
             arrList.add(vo);
         } else {
             //查询所有企业
-            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList();
+            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
             for (SysAddressBookVo com : companyList) {
+                param.setCompanyId(com.getCompId());
                 SignSummaryVo vo = getSummary(com.getCompanyName(), param);
                 arrList.add(vo);
             }
@@ -3219,20 +3263,35 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return arrList;
     }
 
+
+    @Override
+    public IPage<SignSummaryVo> getFileSummary(UserStatisQueryDto param) {
+        Page<SignSummaryVo> page = new Page<>(param.getCurrent(), param.getPageSize());
+        IPage<SignSummaryVo> pageCompanyList = this.sysUserAddressBookMapper.pageCompanyList(param, page);
+        List<SignSummaryVo> records = pageCompanyList.getRecords();
+        for (SignSummaryVo c : records) {
+            param.setCompanyId(c.getCompanyId());
+            SignSummaryVo summary = getSummary(c.getName(), param);
+            BeanUtils.copyProperties(summary, c);
+            c.setName(c.getName());
+        }
+        return pageCompanyList;
+    }
+
     private SignSummaryVo getSummary(String name, UserStatisQueryDto param){
         SignSummaryVo vo = new SignSummaryVo();
         vo.setName(name);
         //查询伙伴概况
-        UserStatistics userOverview = this.sysStaffInfoService.getUserOverview(param);
+        UserStatisticsVo userOverview = this.sysStaffInfoService.getUserOverview(param);
         BeanUtils.copyProperties(userOverview, vo);
         //统计伙伴签约与解约(今日、本月)
-        UserStatistics userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
+        SignAndRescindVo userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
         vo.setTodaySignNum(userStatistics.getTodaySignNum());
         vo.setTodayRescindNum(userStatistics.getTodayRescindNum());
         vo.setMonthSignNum(userStatistics.getMonthSignNum());
         vo.setMonthRescindNum(userStatistics.getMonthRescindNum());
         //统计伙伴签约与解约(昨日)
-        UserStatistics yesterdaySign = sysStaffInfoMapper.getYesterdaySignAndRescind(param);
+        SignAndRescindVo yesterdaySign = sysStaffInfoMapper.getYesterdaySignAndRescind(param);
         vo.setYesterdaySignNum(yesterdaySign.getYesterdaySignNum());
         vo.setYesterdayRescindNum(yesterdaySign.getYesterdayRescindNum());
         //获取学历分析
@@ -3385,7 +3444,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         //if(sameDept != null && sameDept == YesNo.YES){
-        result = result.stream().distinct().collect(Collectors.toList());
+        result = result.stream().distinct().collect(toList());
         if (!result.contains(userId)) {
             return result;
         }
@@ -3487,7 +3546,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException("未找到管理层任何信息！");
         }
         if(result.size() > 0) {
-            result = result.stream().distinct().collect(Collectors.toList());
+            result = result.stream().distinct().collect(toList());
         }
         return result;
     }
@@ -3514,7 +3573,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
      */
     private void getChilden(List<String> depIds, List<SysDepartmentInfoVo> deps, String parentId) {
         //获取子级部门集合
-        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(Collectors.toList());
+        List<SysDepartmentInfoVo> childs = deps.stream().filter(d -> parentId.equals(d.getParentId())).collect(toList());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
@@ -3527,9 +3586,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     private List<String> getSuperiorStaff(String parent, List<UnionStaffDepart> usds) {
-        List<UnionStaffDepart> us = usds.stream().filter(a -> parent.equals(a.getDepartmentId())).collect(Collectors.toList());
+        List<UnionStaffDepart> us = usds.stream().filter(a -> parent.equals(a.getDepartmentId())).collect(toList());
         if (CollectionUtils.isNotEmpty(us)) {
-            List<String> staffIds = us.stream().map(UnionStaffDepart::getStaffId).collect(Collectors.toList());
+            List<String> staffIds = us.stream().map(UnionStaffDepart::getStaffId).collect(toList());
             return staffIds;
         }
         if (parent.lastIndexOf("_") == -1) {
@@ -3546,7 +3605,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(param.getTime())) {
             param.setTime(sdf.format(new Date()));
         }
-        List<String> userId = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(Collectors.toList());
+        List<String> userId = list.stream().map(UserPerformanceReviewsVo::getUserId).collect(toList());
         DataResult<List<PerformanceReviewsVo>> prResult = contractService.getPerformanceReviews(userId, param.getName(), param.getTime());
         if (!prResult.isSuccess()) {
             throw new DefaultException("获取业绩总结报表出错");
@@ -3577,21 +3636,21 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COMPLIANCE_COMMITMENT);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setComplianceCommitments(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //学历证书
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.DIPLOMA);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(Collectors.toList()));
+        userInfo.setDiplomas(this.imageService.list(imageQw).stream().map(s->s.getImageUrl()).collect(toList()));
 
         //合作申请表
         imageQw.clear();
         imageQw.lambda().eq(Image::getConnectId, userInfo.getId());
         imageQw.lambda().eq(Image::getImageType, ImageTypeInfo.COOPERATION_APPLY);
         imageQw.lambda().orderByDesc(Image::getCreateTime);
-        List<String> cooperationImages = this.imageService.list(imageQw).stream().map(Image::getImageUrl).collect(Collectors.toList());
+        List<String> cooperationImages = this.imageService.list(imageQw).stream().map(Image::getImageUrl).collect(toList());
         if (DataUtil.isNotEmpty(cooperationImages)) {
             userInfo.setCooperationImages(cooperationImages);
         } else {
@@ -3600,7 +3659,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             fileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             fileQw.lambda().orderByDesc(CommonFile::getCreateTime);
             List<CommonFile> list = this.commonFileService.list(fileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).collect(toList());
             userInfo.setCooperationImages(images);
         }
     }
@@ -4070,7 +4129,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             commonFileQw.lambda().eq(CommonFile::getConnectId, param.getOldUserId());
             commonFileQw.lambda().eq(CommonFile::getFileType, FileTypeInfo.COOPERATION_FILE);
             List<CommonFile> list = this.commonFileService.list(commonFileQw);
-            List<String> images = list.stream().map(CommonFile::getFileUrl).distinct().collect(Collectors.toList());
+            List<String> images = list.stream().map(CommonFile::getFileUrl).distinct().collect(toList());
             userInfoDto.setCooperationImages(images);
         }
 

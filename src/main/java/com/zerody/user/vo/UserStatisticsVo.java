@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 伙伴数据统计
  * 企业管理员:0、 伙伴:1、 团队长:2、 副总:3
@@ -11,7 +13,7 @@ import lombok.Data;
  * @date : 2022/11/11 9:51
  */
 @Data
-public class UserStatistics {
+public class UserStatisticsVo {
 
     /**
      * 总经理
@@ -21,7 +23,7 @@ public class UserStatistics {
     /**
      * 总经理占比
      */
-    private String managerRate;
+    private BigDecimal managerRate;
 
     /**
      * 副总经理
@@ -31,7 +33,7 @@ public class UserStatistics {
     /**
      * 副总经理占比
      */
-    private String vicePresidentRate;
+    private BigDecimal vicePresidentRate;
 
     /**
      * 团队长
@@ -41,7 +43,7 @@ public class UserStatistics {
     /**
      * 团队长占比
      */
-    private String teamLeaderRate;
+    private BigDecimal teamLeaderRate;
 
     /**
      * 合作伙伴
@@ -51,7 +53,7 @@ public class UserStatistics {
     /**
      * 合作伙伴占比
      */
-    private String partnerRate;
+    private BigDecimal partnerRate;
 
     /**
      * 合约中(签约中)
@@ -83,7 +85,7 @@ public class UserStatistics {
     /**
      * 砖石会员占比
      */
-    private String masonryMemberRate;
+    private BigDecimal masonryMemberRate;
 
     /**
      * 预备高管
@@ -93,7 +95,7 @@ public class UserStatistics {
     /**
      * 预备高管占比
      */
-    private String prospectiveExecutiveRate;
+    private BigDecimal prospectiveExecutiveRate;
 
     /**
      * 内控伙伴
@@ -108,38 +110,8 @@ public class UserStatistics {
     /**
      * 二次签约占比
      */
-    private String secondContractRate;
+    private BigDecimal secondContractRate;
 
     //-------------------------------------------------
-
-    /**
-     * 今日签约
-     */
-    private Integer todaySignNum;
-
-    /**
-     * 本月签约
-     */
-    private Integer monthSignNum;
-
-    /**
-     * 今日解约
-     */
-    private Integer todayRescindNum;
-
-    /**
-     * 本月解约
-     */
-    private Integer monthRescindNum;
-
-    /**
-     * 昨日签约
-     */
-    private Integer yesterdaySignNum;
-
-    /**
-     * 昨日解约
-     */
-    private Integer yesterdayRescindNum;
 
 }

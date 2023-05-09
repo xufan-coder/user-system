@@ -23,13 +23,46 @@
             AND ssi.date_join &lt; #{param.end}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
     </where>
 
 </select>
+
+    <!--统计学历-->
+    <select id="getDegree" resultType="int">
+        SELECT
+        count(1)
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            <if test="param.isSign neq null and param.isSign">
+                sui.status IN (0, 3)
+            </if>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId">
+                and (usd.department_id = #{param1.departId} OR usd.department_id LIKE CONCAT(#{param1.departId}, '\_%'))
+            </if>
+            <if test="param.highestEducation neq null and param.highestEducation neq ''">
+                and sui.highest_education = #{param.highestEducation}
+            </if>
+            <if test="param.highestEducation neq null and param.highestEducation eq 'SENIOR_HIGH_UNDER'">
+                or sui.highest_education = 'PRIMARY_SCHOOL' or  sui.highest_education = 'JUNIOR_HIGH' or  sui.highest_education = 'TECHNICAL_SECONDARY'
+                or  sui.highest_education = 'SENIOR_HIGH'
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
 
 <select id="getStatisUnSigning" resultType="int">
     SELECT
@@ -52,7 +85,7 @@
             AND ssi.date_left &lt; #{param.end}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
@@ -80,7 +113,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
@@ -114,7 +147,7 @@
             AND ssi.comp_id = #{param.companyId}
         </if>
         <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-            <foreach collection="param.companyIds" item="companyId" open="ssi.id IN (" separator="," close=")">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>

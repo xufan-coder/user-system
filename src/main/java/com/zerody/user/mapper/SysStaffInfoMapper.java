@@ -9,6 +9,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.statis.SignAndRescindVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -410,7 +411,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 伙伴数据统计
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
+    UserStatisticsVo statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
 
     /**
     * @Author: chenKeFeng
@@ -418,15 +419,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     * @Description: 查询伙伴概况
     * @Date: 2023/5/4 11:14
     */
-    UserStatistics getUserOverview(@Param("param") UserStatisQueryDto dto);
-    
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取伙伴当日签约与解约
-     * @Date: 2022/11/11 10:12
-     */
-    UserStatistics getPartnerTodaySignAndRescind(@Param("param") UserStatisQueryDto param);
+    UserStatisticsVo getUserOverview(@Param("param") UserStatisQueryDto dto);
 
     /**
      * @Author: chenKeFeng
@@ -434,7 +427,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 获取伙伴本月签约与解约
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics getPartnerThisMonthSignAndRescind(@Param("param") UserStatisQueryDto param);
+    SignAndRescindVo getPartnerThisMonthSignAndRescind(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng
@@ -442,7 +435,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 获取昨日签约与解约数量
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics getYesterdaySignAndRescind(@Param("param") UserStatisQueryDto param);
+    SignAndRescindVo getYesterdaySignAndRescind(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng

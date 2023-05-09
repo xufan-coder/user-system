@@ -7,17 +7,20 @@ import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.BlacklistOperationRecord;
+import com.zerody.user.domain.Dict;
 import com.zerody.user.domain.PositionRecord;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.BlacklistOperationRecordAddDto;
 import com.zerody.user.mapper.PositionRecordMapper;
 import com.zerody.user.mapper.SysUserInfoMapper;
 import com.zerody.user.service.BlacklistOperationRecordService;
+import com.zerody.user.service.DictService;
 import com.zerody.user.service.PositionRecordService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.vo.PositionRecordListVo;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
     private SysUserInfoMapper sysUserInfoMapper;
 
     @Autowired
-    private BlacklistOperationRecordService blacklistOperationRecordService;
+    private DictService dictService;
 
     @Override
     public List<PositionRecordListVo> queryPositionRecord(String certificateCard) {
@@ -44,6 +47,12 @@ public class PositionRecordServiceImpl extends ServiceImpl<PositionRecordMapper,
             for (PositionRecord positionRecord : list) {
                 PositionRecordListVo vo = new PositionRecordListVo();
                 BeanUtils.copyProperties(positionRecord,vo);
+                if(StringUtils.isNotEmpty(positionRecord.getLeaveType())){
+                    Dict dict = this.dictService.getById(positionRecord.getLeaveType());
+                    if(DataUtil.isNotEmpty(dict)){
+                        vo.setLeaveTypeText(dict.getDictName());
+                    }
+                }
                 vos.add(vo);
             }
         }

@@ -11,23 +11,28 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
+import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.enums.DegreeEnum;
 import com.zerody.user.handler.user.UserStatisHandle;
 import com.zerody.user.mapper.UserStatisMapper;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
 import com.zerody.user.vo.StatisticsDataDetailsVo;
-import com.zerody.user.vo.statis.UserAgeStatisQueryVo;
-import com.zerody.user.vo.statis.UserSexStatisQueryVo;
-import com.zerody.user.vo.statis.UserTrendQueryVo;
+import com.zerody.user.vo.statis.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -40,7 +45,10 @@ public class UserStatisServiceImpl implements UserStatisService {
     @Autowired
     private UserStatisMapper baseMapper;
 
-    private final int num = 7;
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+    private final int num = 6;
 
     @Override
     public List<UserTrendQueryVo> getUserTrendS(UserStatisQueryDto param) {
@@ -90,6 +98,7 @@ public class UserStatisServiceImpl implements UserStatisService {
         }
         return result;
     }
+
 
     @Override
     public List<UserSexStatisQueryVo> getSexStatis(UserSexStatisQueryDto param) {
@@ -146,10 +155,67 @@ public class UserStatisServiceImpl implements UserStatisService {
         return result;
     }
 
-    public static void main(String[] args) {
-        Double num1 = 10.0;
-        Double num2 = 3.0;
-        System.out.println(num1 / num2);
+    @Override
+    public UserStatisTrendVo getUserTrends(UserStatisQueryDto param) {
+        UserStatisTrendVo userStatisTrendVo = new UserStatisTrendVo();
+        UserSexStatisQueryDto userSexStatisQueryDto = new UserSexStatisQueryDto();
+        List<UserSexStatisQueryVo> sexStatis = getSexStatis(userSexStatisQueryDto);
+        userStatisTrendVo.setUserSexStatisQueryVoList(sexStatis);
 
+        UserAgeStatisQueryDto userAgeStatisQueryDto = new UserAgeStatisQueryDto();
+        List<UserAgeStatisQueryVo> ageStatis = getAgeStatis(userAgeStatisQueryDto);
+        userStatisTrendVo.setAgeStatisQuery(ageStatis);
+
+        List<DegreeVo> degreeVoList = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        list.add(DegreeEnum.SENIOR_HIGH_UNDER.name());
+        list.add(DegreeEnum.JUNIOR_COLLEGE.name());
+        list.add(DegreeEnum.REGULAR_COLLEGE.name());
+        list.add(DegreeEnum.MASTER.name());
+        list.add(DegreeEnum.DOCTOR.name());
+        //DegreeEnum[] values = DegreeEnum.values();
+        //总人数
+        int num = 0;
+        for (String name : list) {
+            param.setHighestEducation(name);
+            int degreeNum = sysStaffInfoService.getDegree(param);
+
+            DegreeVo degreeVo = new DegreeVo();
+            degreeVo.setNum(degreeNum);
+            degreeVo.setDegree(name);
+            num += degreeNum;
+            degreeVoList.add(degreeVo);
+        }
+        for (DegreeVo degre : degreeVoList) {
+            degre.setRate(reserveTwo(degre.getNum(), num));
+            if (degre.getDegree().equals(DegreeEnum.SENIOR_HIGH_UNDER.name())) {
+                degre.setDegree(DegreeEnum.SENIOR_HIGH_UNDER.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.JUNIOR_COLLEGE.name())) {
+                degre.setDegree(DegreeEnum.JUNIOR_COLLEGE.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.REGULAR_COLLEGE.name())) {
+                degre.setDegree(DegreeEnum.REGULAR_COLLEGE.getText());
+            } else if (degre.getDegree().equals(DegreeEnum.MASTER.name())) {
+                degre.setDegree(DegreeEnum.MASTER.getText());
+            } else {
+                degre.setDegree(DegreeEnum.DOCTOR.getText());
+            }
+            //degre.setDegree(Objects.requireNonNull(DegreeEnum.getByText(degre.getDegree())));
+
+        }
+        userStatisTrendVo.setDegreeVoList(degreeVoList);
+        return userStatisTrendVo;
     }
+
+    public static void main(String[] args) {
+        System.out.println(DegreeEnum.getByText("PRIMARY_SCHOOL"));
+    }
+
+    private static BigDecimal reserveTwo(Integer d, Integer num){
+        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        DecimalFormat df = new DecimalFormat("0.00");
+        String format = df.format(b);
+        return new BigDecimal(format);
+    }
+
+
 }
