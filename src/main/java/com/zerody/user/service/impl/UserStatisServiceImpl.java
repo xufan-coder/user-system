@@ -19,6 +19,7 @@ import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
 import com.zerody.user.vo.StatisticsDataDetailsVo;
 import com.zerody.user.vo.statis.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -141,9 +142,19 @@ public class UserStatisServiceImpl implements UserStatisService {
             int terminationNum = this.baseMapper.getStatisUnSigning(param);
             //净增
             int netIncreaseNum = newAgencyNum - terminationNum;
-            //签约中(累计每日每约的新签约)
-            lastAgencyNum = newAgencyNum + lastAgencyNum;
 
+            UserStatisQueryDto dto = new UserStatisQueryDto();
+            BeanUtils.copyProperties(param, dto);
+            dto.setBegin(null);
+            dto.setEnd(null);
+            //总签约中(签约与合作中)
+            int agencyNum = this.baseMapper.getStatisSigning(dto);
+            if (num != num) {
+                //签约中(累计每日每月的新签约)
+                lastAgencyNum = agencyNum - newAgencyNum;
+            } else {
+                lastAgencyNum = agencyNum;
+            }
             vo.setDateStr(timeOperate.getFormat(param.getBegin()));
             vo.setNewAgencyNum(newAgencyNum);
             vo.setTerminationNum(terminationNum);
