@@ -1409,26 +1409,21 @@
 
     <!--统计内控数伙伴数量(内部和外部)-->
     <select id="getInternalControlNum" resultType="java.lang.Integer" parameterType="com.zerody.user.dto.SetSysUserInfoDto">
-        select
-		count(distinct sb.id) from staff_blacklist as sb
-		join sys_user_info as sui on sui.certificate_card = sb.identity_card
-		join sys_staff_info as ssi on ssi.user_id = sui.id
-        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+        SELECT
+        count(1) FROM staff_blacklist AS sb
+        LEFT JOIN sys_staff_info AS ssi ON ssi.user_id = sb.user_id
+        LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_staff_info AS ssi2 ON ssi2.user_id = sb.submit_user_id
         <where>
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+                AND sb.company_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
-                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
-            </if>
-            <if test="param.begin neq null">
-                AND ssi.date_join &gt;= #{param.begin}
-            </if>
-            <if test="param.end neq null ">
-                AND ssi.date_join &lt; #{param.end}
+            <if test="param.departId neq null and param.departId neq '' and param.queryDimensionality eq 'submitUser'">
+                AND (usd.department_id LIKE CONCAT(#{param.departId}, '\_%') or usd.department_id=#{param.departId})
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND ssi.comp_id
+                AND sb.company_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
