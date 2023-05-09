@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.enums.TimeOperate;
 import com.zerody.common.exception.DefaultException;
@@ -7,6 +8,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.common.vo.IdCardDate;
 import com.zerody.user.domain.Data;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
@@ -136,6 +138,10 @@ public class UserStatisServiceImpl implements UserStatisService {
             param.setEnd(startTime);
             //开始时间
             param.setBegin(timeOperate.getPrev(startTime));
+
+            SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+            System.out.println(sdf.format(param.getBegin()));
+            System.out.println(sdf.format(param.getEnd()));
             //新签约
             int newAgencyNum = this.baseMapper.getStatisSigning(param);
             //解约
@@ -143,24 +149,23 @@ public class UserStatisServiceImpl implements UserStatisService {
             //净增
             int netIncreaseNum = newAgencyNum - terminationNum;
 
+            //Date min = this.baseMapper.getDateJoinMin();
             UserStatisQueryDto dto = new UserStatisQueryDto();
             BeanUtils.copyProperties(param, dto);
-            dto.setBegin(null);
-            dto.setEnd(null);
             //总签约中(签约与合作中)
-            int agencyNum = this.baseMapper.getStatisSigning(dto);
-            if (i == 0) {
+            int agencyNum = this.baseMapper.getHistorySign(dto);
+            /*if (i == 0) {
                 //第一次不用递减(月份倒序)
                 lastAgencyNum = agencyNum;
             } else {
                 //签约中(累计每日每月的新签约)
-                lastAgencyNum = agencyNum - newAgencyNum;
-            }
+                lastAgencyNum = agencyNum - newAgencyNum - terminationNum;
+            }*/
             vo.setDateStr(timeOperate.getFormat(param.getBegin()));
             vo.setNewAgencyNum(newAgencyNum);
             vo.setTerminationNum(terminationNum);
             vo.setNetIncreaseNum(netIncreaseNum);
-            vo.setAgencyNum(lastAgencyNum);
+            vo.setAgencyNum(agencyNum);
             result.add(vo);
             startTime = param.getBegin();
         }
@@ -170,11 +175,16 @@ public class UserStatisServiceImpl implements UserStatisService {
     @Override
     public UserStatisTrendVo getUserTrends(UserStatisQueryDto param) {
         UserStatisTrendVo userStatisTrendVo = new UserStatisTrendVo();
+
         UserSexStatisQueryDto userSexStatisQueryDto = new UserSexStatisQueryDto();
+        BeanUtils.copyProperties(param, userSexStatisQueryDto);
+        //性别
         List<UserSexStatisQueryVo> sexStatis = getSexStatis(userSexStatisQueryDto);
         userStatisTrendVo.setUserSexStatisQueryVoList(sexStatis);
 
         UserAgeStatisQueryDto userAgeStatisQueryDto = new UserAgeStatisQueryDto();
+        BeanUtils.copyProperties(param, userAgeStatisQueryDto);
+        //年龄
         List<UserAgeStatisQueryVo> ageStatis = getAgeStatis(userAgeStatisQueryDto);
         userStatisTrendVo.setAgeStatisQuery(ageStatis);
 

@@ -5,6 +5,8 @@ import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+
 /**
  * @author PengQiang
  * @ClassName UserStatisMapper
@@ -24,6 +26,8 @@ public interface UserStatisMapper  {
      */
 
     int getStatisSigning(@Param("param") UserStatisQueryDto param);
+
+    int getHistorySign(@Param("param") UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
@@ -71,4 +75,13 @@ public interface UserStatisMapper  {
      */
 
     Integer getSexStatis(@Param("param") UserSexStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取入职时间最小值
+    * @Date: 2023/5/9 14:51
+    */
+    Date getDateJoinMin();
+
 }
