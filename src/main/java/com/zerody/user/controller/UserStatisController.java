@@ -249,7 +249,6 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/partner/details")
     public DataResult<List<StatisticsDataDetailsVo>> statisticsDetailsPc(UserStatisQueryDto param) {
         try {
-            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.statisticsDetails(param));
         } catch (DefaultException e) {
             log.error("统计伙伴签约详情出错:{}", e.getMessage());
