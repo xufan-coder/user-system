@@ -771,8 +771,10 @@ public class SysStaffInfoController {
     public DataResult<IPage<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto dto) {
         log.info("时间范围 {}", dto.getTime());
         try {
-            dto.setBegin(dto.getTime().get(0));
-            dto.setEnd(dto.getTime().get(1));
+            if (DataUtil.isNotEmpty(dto.getTime())) {
+                dto.setBegin(dto.getTime().get(0));
+                dto.setEnd(dto.getTime().get(1));
+            }
             //判断是否为企业管理员
             if (UserUtils.getUser().isBack()){
                 dto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
