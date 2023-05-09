@@ -295,7 +295,8 @@
         sui.train_no,
         sui.avatar AS user_avatar,
         sui.is_prepare_executive,
-        ssi.is_diamond_member
+        ssi.is_diamond_member,
+        ssi.leave_type
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
