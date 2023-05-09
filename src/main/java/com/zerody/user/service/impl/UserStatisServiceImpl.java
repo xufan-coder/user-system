@@ -149,11 +149,12 @@ public class UserStatisServiceImpl implements UserStatisService {
             dto.setEnd(null);
             //总签约中(签约与合作中)
             int agencyNum = this.baseMapper.getStatisSigning(dto);
-            if (num != num) {
+            if (i == 0) {
+                //第一次不用递减(月份倒序)
+                lastAgencyNum = agencyNum;
+            } else {
                 //签约中(累计每日每月的新签约)
                 lastAgencyNum = agencyNum - newAgencyNum;
-            } else {
-                lastAgencyNum = agencyNum;
             }
             vo.setDateStr(timeOperate.getFormat(param.getBegin()));
             vo.setNewAgencyNum(newAgencyNum);
