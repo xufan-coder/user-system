@@ -58,10 +58,19 @@ public class DepartureDetailsDto extends PageQueryDto {
      */
     private List<String> leaveTypeIds;
 
-    /** 起始时间 */
-    private Date begin;
+    /**
+     * 起始时间
+     */
+    private String begin;
 
-    /** 结束时间 */
-    private Date end;
+    /**
+     * 结束时间
+     */
+    private String end;
+
+    /**
+     * 时间数组
+     */
+    private List<String> time;
 
 }

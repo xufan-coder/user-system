@@ -188,27 +188,13 @@ public class UserStatisServiceImpl implements UserStatisService {
         }
         for (DegreeVo degre : degreeVoList) {
             degre.setRate(reserveTwo(degre.getNum(), num));
-            if (degre.getDegree().equals(DegreeEnum.SENIOR_HIGH_UNDER.name())) {
-                degre.setDegree(DegreeEnum.SENIOR_HIGH_UNDER.getText());
-            } else if (degre.getDegree().equals(DegreeEnum.JUNIOR_COLLEGE.name())) {
-                degre.setDegree(DegreeEnum.JUNIOR_COLLEGE.getText());
-            } else if (degre.getDegree().equals(DegreeEnum.REGULAR_COLLEGE.name())) {
-                degre.setDegree(DegreeEnum.REGULAR_COLLEGE.getText());
-            } else if (degre.getDegree().equals(DegreeEnum.MASTER.name())) {
-                degre.setDegree(DegreeEnum.MASTER.getText());
-            } else {
-                degre.setDegree(DegreeEnum.DOCTOR.getText());
-            }
-            //degre.setDegree(Objects.requireNonNull(DegreeEnum.getByText(degre.getDegree())));
+            degre.setDegree(DegreeEnum.getByText(degre.getDegree()));
 
         }
         userStatisTrendVo.setDegreeVoList(degreeVoList);
         return userStatisTrendVo;
     }
 
-    public static void main(String[] args) {
-        System.out.println(DegreeEnum.getByText("PRIMARY_SCHOOL"));
-    }
 
     private static BigDecimal reserveTwo(Integer d, Integer num){
         BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
