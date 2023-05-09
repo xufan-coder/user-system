@@ -155,7 +155,6 @@ public class UserStatisServiceImpl implements UserStatisService {
             } else {
                 lastAgencyNum = agencyNum;
             }
-
             vo.setDateStr(timeOperate.getFormat(param.getBegin()));
             vo.setNewAgencyNum(newAgencyNum);
             vo.setTerminationNum(terminationNum);
