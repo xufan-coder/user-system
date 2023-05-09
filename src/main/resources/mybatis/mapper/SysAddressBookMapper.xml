@@ -246,19 +246,13 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="param.begin neq null ">
+            <if test="param.begin neq null">
                 AND ssi.date_left &gt;= #{param.begin}
             </if>
             <if test="param.end neq null">
                 AND ssi.date_left &lt; #{param.end}
             </if>
         </where>
-        <if test="param.sort neq null and param.sort eq 'asc'">
-            order by ssi.date_left asc
-        </if>
-        <if test="param.sort neq null and param.sort eq 'desc'">
-            order by ssi.date_left desc
-        </if>
     </select>
 
 </mapper>

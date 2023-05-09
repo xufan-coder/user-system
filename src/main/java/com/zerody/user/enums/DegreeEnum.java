@@ -43,7 +43,7 @@ public enum DegreeEnum {
      */
     public static DegreeEnum getByCode(String text) {
         for (DegreeEnum status : DegreeEnum.values()){
-            if(text.equals(status.name())){
+            if(text.equals(status.getText())){
                 return status;
             }
         }
@@ -55,10 +55,10 @@ public enum DegreeEnum {
      * @param name 英文描述
      * @return
      */
-    public static DegreeEnum getByText(String name) {
+    public static String getByText(String name) {
         for (DegreeEnum status : DegreeEnum.values()){
-            if(name.equals(status.getText())){
-                return status;
+            if(name.equals(status.name())){
+                return status.getText();
             }
         }
         return null;
