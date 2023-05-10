@@ -48,7 +48,7 @@ public interface UserStatisMapper  {
      *
      * @return
      */
-    int getBelowHighSchool(UserStatisQueryDto param);
+    int getBelowHighSchool(@Param("param") UserStatisQueryDto param);
 
     /**
      *
