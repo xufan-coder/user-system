@@ -39,7 +39,7 @@
         LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
             (
-            (sui.STATUS IN ( 0, 3 ) and ssi.date_join &lt; #{param.end})
+            (ssi.status IN ( 0, 3 ) and ssi.date_join &lt; #{param.end})
             or(ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1 and ssi.date_left  &gt;= #{param.end})
             )
             <if test="param.companyId neq null and param.companyId neq ''">
