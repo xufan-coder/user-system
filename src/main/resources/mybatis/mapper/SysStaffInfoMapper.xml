@@ -1270,15 +1270,16 @@
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
             ssi.leave_type=#{param.type} and ssi.deleted =0 and sui.status !=-1 and ssi.status = 1
-            <if test="param.departId neq null and param.departId neq ''">
-                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
-                    #{companyId}
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
                 </foreach>
             </if>
         </where>
