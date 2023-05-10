@@ -3170,19 +3170,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> newList = list.stream().filter(o -> o.getLeaveType() != null).collect(toList());
             List<SysStaffRelationVo> newList1 = newList.stream().filter(o -> o.getLeaveType().trim().isEmpty()).collect(toList());
             List<SysStaffRelationVo> filterList = newList1.stream().filter(user -> !user.getLeaveType().equals(this.transfer) && DataUtil.isNotEmpty(user.getLeaveType())).collect(toList());
-            secondContractNum = filterList.size();
+            //总的减去离职原因为调离新公司的
+            secondContractNum = list.size() - filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
         userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
 
         userStatistics.setManagerRate(reserveTwo(userStatistics.getManagerNum(), num));
-        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getVicePresidentNum(), num));
+        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getTeamLeaderNum(), num));
 
-        userStatistics.setPartnerRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getSecondContractNum(),num));
-        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setPartnerRate(reserveTwo(userStatistics.getPartnerNum(), num));
+        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getMasonryMemberNum(),num));
+        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getProspectiveExecutiveNum(), num));
         return userStatistics;
     }
 
