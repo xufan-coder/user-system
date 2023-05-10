@@ -477,7 +477,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
             staffUw.lambda().set(SysStaffInfo::getDateLeft, null);
+            staffUw.lambda().set(SysStaffInfo::getDateJoin, new Date());
             this.update(staffUw);
+
             UserCopyResultVo result = new UserCopyResultVo();
             result.setUserId(param.getReinstateId());
             //删除token
@@ -534,7 +536,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         //更新入职时间
-        log.info("更新入职时间 {}", new Date());
         staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
