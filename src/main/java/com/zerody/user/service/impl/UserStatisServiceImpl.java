@@ -153,7 +153,7 @@ public class UserStatisServiceImpl implements UserStatisService {
             //Date min = this.baseMapper.getDateJoinMin();
             UserStatisQueryDto dto = new UserStatisQueryDto();
             BeanUtils.copyProperties(param, dto);
-            //总签约中(签约与合作中)
+            //总签约中(签约与合作中) 查询历史签约
             int agencyNum = this.baseMapper.getHistorySign(dto);
             /*if (i == 0) {
                 //第一次不用递减(月份倒序)

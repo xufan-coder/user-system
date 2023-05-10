@@ -3155,6 +3155,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
+        //查询伙伴概况
         UserStatisticsVo userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
 
         //内控伙伴数量
