@@ -132,17 +132,13 @@ public class UserStatisServiceImpl implements UserStatisService {
             throw new DefaultException("日期类型错误");
         }
         Date startTime = timeOperate.getNext();
-        int lastAgencyNum = 0;
+        //int lastAgencyNum = 0;
         for (int i = 0; i < num; i++) {
             StatisticsDataDetailsVo vo = new StatisticsDataDetailsVo();
             //结束时间
             param.setEnd(startTime);
             //开始时间
             param.setBegin(timeOperate.getPrev(startTime));
-
-            SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-            System.out.println(sdf.format(param.getBegin()));
-            System.out.println(sdf.format(param.getEnd()));
             //新签约
             int newAgencyNum = this.baseMapper.getStatisSigning(param);
             //解约
@@ -223,8 +219,10 @@ public class UserStatisServiceImpl implements UserStatisService {
         return userStatisTrendVo;
     }
 
-
     private static BigDecimal reserveTwo(Integer d, Integer num){
+        if (d.equals(0)) {
+            return BigDecimal.ZERO;
+        }
         BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(b);
