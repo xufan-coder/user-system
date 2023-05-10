@@ -6,9 +6,12 @@ import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
+import com.zerody.user.service.DictService;
 import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.dict.DictQuseryVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,6 +26,9 @@ import java.util.List;
 public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Resource
     private SysAddressBookMapper sysMailListMapper;
+
+    @Autowired
+    private DictService dictService;
 
     @Override
     public List<SysAddressBookVo> queryAddressBook(List<String> list,Integer isProData) {
@@ -48,7 +54,14 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Override
     public IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param) {
         Page<DepartureDetailsVo> page = new Page<>(param.getCurrent(), param.getPageSize());
-        return this.sysMailListMapper.getDepartureUserList(param, page);
+        IPage<DepartureDetailsVo> departureUserList = this.sysMailListMapper.getDepartureUserList(param, page);
+        List<DepartureDetailsVo> records = departureUserList.getRecords();
+        for (DepartureDetailsVo record : records) {
+            String leaveType = record.getLeaveType();
+            DictQuseryVo dict = dictService.getListById(leaveType);
+            record.setLeaveReason(dict.getDictName());
+        }
+        return departureUserList;
     }
 
 }

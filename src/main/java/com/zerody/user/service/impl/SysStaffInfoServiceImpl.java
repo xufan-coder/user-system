@@ -454,9 +454,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
 
-
-
-
     @Override
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
@@ -536,6 +533,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        //更新入职时间
+        log.info("更新入职时间 {}", new Date());
+        staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
@@ -3285,12 +3285,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return pageCompanyList;
     }
 
+    /**
+     * 报表
+     *
+     * @param name 企业 部门名称
+     * @param param 参数类
+     * @return
+     */
     private SignSummaryVo getSummary(String name, UserStatisQueryDto param){
         SignSummaryVo vo = new SignSummaryVo();
         vo.setName(name);
         //查询伙伴概况
         UserStatisticsVo userOverview = this.sysStaffInfoService.getUserOverview(param);
         BeanUtils.copyProperties(userOverview, vo);
+        //报表中的签约中 = 签约 + 合作中
+        vo.setContractNum(userOverview.getContractNum() + userOverview.getInCooperationNum());
+
         //统计伙伴签约与解约(今日、本月)
         SignAndRescindVo userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
         vo.setTodaySignNum(userStatistics.getTodaySignNum());
