@@ -3175,7 +3175,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             secondContractNum = list.size() - filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
-        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
+        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum() , num));
 
         userStatistics.setManagerRate(reserveTwo(userStatistics.getManagerNum(), num));
         userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getVicePresidentNum(), num));
@@ -3235,6 +3235,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public int getDegree(UserStatisQueryDto param) {
         return userStatisMapper.getDegree(param);
+    }
+
+    @Override
+    public int getBelowHighSchool(UserStatisQueryDto param) {
+        return userStatisMapper.getBelowHighSchool(param);
     }
 
 

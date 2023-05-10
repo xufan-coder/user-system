@@ -31,7 +31,7 @@ public interface UserStatisMapper  {
     * @Author: chenKeFeng
     * @param  
     * @Description: 查询历史签约
-    * @Date: 2023/5/10 12:24
+    * @Date: 2023/5/10 14:17
     */
     int getHistorySign(@Param("param") UserStatisQueryDto param);
 
@@ -42,6 +42,13 @@ public interface UserStatisMapper  {
     * @Date: 2023/5/8 14:31
     */
     int getDegree(@Param("param") UserStatisQueryDto param);
+
+    /**
+     * 获取高中以下
+     *
+     * @return
+     */
+    int getBelowHighSchool(UserStatisQueryDto param);
 
     /**
      *

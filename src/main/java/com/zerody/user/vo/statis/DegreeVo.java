@@ -17,7 +17,7 @@ public class DegreeVo {
     private Integer num;
 
     /**
-     * 学历
+     *  学历
      *  SENIOR_HIGH("高中及以下"),
      *  JUNIOR_COLLEGE("大专"),
      *  REGULAR_COLLEGE("本科"),
