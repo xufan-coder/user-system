@@ -13,7 +13,7 @@
         <if test="param.companyId neq null and param.companyId neq ''">
             AND ssi.comp_id = #{param.companyId}
         </if>
-        <if test="param.departId neq null and param.departId">
+        <if test="param.departId neq null and param.departId neq ''">
             AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
         </if>
         <if test="param.begin neq null">
@@ -45,7 +45,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -70,7 +70,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.highestEducation neq null and param.highestEducation neq ''">
@@ -101,7 +101,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -123,7 +123,7 @@
         <if test="param.companyId neq null and param.companyId neq ''">
             AND ssi.comp_id = #{param.companyId}
         </if>
-        <if test="param.departId neq null and param.departId">
+        <if test="param.departId neq null and param.departId neq ''">
             AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
         </if>
         <if test="param.begin neq null">
