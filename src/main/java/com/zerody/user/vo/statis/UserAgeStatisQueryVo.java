@@ -16,7 +16,7 @@ public class UserAgeStatisQueryVo {
 
     }
 
-    public UserAgeStatisQueryVo(String beginAge, String endAge) {
+    public UserAgeStatisQueryVo(Integer beginAge, Integer endAge) {
         this.beginAge = beginAge;
         this.endAge = endAge;
     }
@@ -24,12 +24,12 @@ public class UserAgeStatisQueryVo {
     /**
      * 起始年龄
      */
-    private String beginAge;
+    private Integer beginAge;
 
     /**
      * 结束年龄
      */
-    private String endAge;
+    private Integer endAge;
 
     /**
      * 人数

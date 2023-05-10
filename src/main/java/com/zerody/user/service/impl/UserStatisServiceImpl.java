@@ -79,15 +79,16 @@ public class UserStatisServiceImpl implements UserStatisService {
 
     @Override
     public List<UserAgeStatisQueryVo> getAgeStatis(UserAgeStatisQueryDto param) {
-        Integer total = 0; // 总人数
+        // 总人数
+        Integer total = 0;
         List<UserAgeStatisQueryVo> result = UserStatisHandle.getStatisUserAge();
         //获取人数
         for (UserAgeStatisQueryVo statis : result) {
             if (DataUtil.isNotEmpty(statis.getBeginAge())) {
-                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(new Long(statis.getBeginAge())).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
+                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getBeginAge()).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
             }
             if (DataUtil.isNotEmpty(statis.getEndAge())) {
-                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(new Long(statis.getEndAge())).toInstant(ZoneOffset.of("+8"))));
+                param.setEnd(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge()).toInstant(ZoneOffset.of("+8"))));
             }
             statis.setNumber(this.baseMapper.getStatisAge(param));
             total += statis.getNumber();
