@@ -22,4 +22,8 @@ public class UserStatisHandle {
         result.add(new UserAgeStatisQueryVo(46, null));
         return result;
     }
+
+    public static void main(String[] args) {
+
+    }
 }

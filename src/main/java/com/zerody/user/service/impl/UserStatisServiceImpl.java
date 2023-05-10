@@ -92,6 +92,8 @@ public class UserStatisServiceImpl implements UserStatisService {
             }
             statis.setNumber(this.baseMapper.getStatisAge(param));
             total += statis.getNumber();
+            param.setBegin(null);
+            param.setEnd(null);
         }
         if (total == 0) {
             return result;
