@@ -454,9 +454,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
 
-
-
-
     @Override
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
@@ -536,6 +533,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        //更新入职时间
+        staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);

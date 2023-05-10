@@ -71,4 +71,9 @@ public class DepartureDetailsVo {
      */
     private String staffId;
 
+    /**
+     * 离职原因id
+     */
+    private String leaveType;
+
 }
