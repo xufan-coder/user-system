@@ -3197,7 +3197,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param) {
         List<TerminationAnalysisVo> arrList = new ArrayList<>();
         //总离职人数
-        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
+        //Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
 
         Integer total =0;
         //离职原因类型
@@ -3211,8 +3211,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             vo.setPeopleNum(departureCauseCount);
             arrList.add(vo);
             total += departureCauseCount;
-            log.info("总数 {}", departureCount);
-            log.info("单数 {}", departureCauseCount);
         }
         for (TerminationAnalysisVo vo : arrList) {
             vo.setPeopleRate(reserveTwo(vo.getPeopleNum(), total));

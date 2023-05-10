@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
@@ -57,9 +58,10 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
         IPage<DepartureDetailsVo> departureUserList = this.sysMailListMapper.getDepartureUserList(param, page);
         List<DepartureDetailsVo> records = departureUserList.getRecords();
         for (DepartureDetailsVo record : records) {
-            String leaveType = record.getLeaveType();
-            DictQuseryVo dict = dictService.getListById(leaveType);
-            record.setLeaveReason(dict.getDictName());
+            if (DataUtil.isNotEmpty(record.getLeaveType())) {
+                DictQuseryVo dict = dictService.getListById(record.getLeaveType());
+                record.setLeaveReason(dict.getDictName());
+            }
         }
         return departureUserList;
     }
