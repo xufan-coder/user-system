@@ -130,7 +130,7 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         SysUserInfo userById = sysUserInfoService.getUserById(userId);
         if(DataUtil.isNotEmpty(userById)){
            // 账号状态 0正常   1已冻结
-            if(userById.getUseState().equals(1)){
+            if(userById.getUseState()!=null&&userById.getUseState().equals(1)){
                 throw new DefaultException("您的账号已被冻结，请联系管理员！");
             }
         }
