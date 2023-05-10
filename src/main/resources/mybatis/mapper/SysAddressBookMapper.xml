@@ -253,7 +253,7 @@
             <if test="param.end neq null">
                 AND ssi.date_left &lt; #{param.end}
             </if>
-            GROUP BY ssi.date_left desc
+            order by ssi.date_left desc
         </where>
     </select>
 
