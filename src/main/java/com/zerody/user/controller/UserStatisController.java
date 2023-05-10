@@ -147,6 +147,7 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/user-trends")
     public DataResult<UserStatisTrendVo> getUserTrendsPc(UserStatisQueryDto param) {
         try {
+            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.getUserTrends(param));
         } catch (DefaultException e) {
             log.error("获取统计趋势(pc)出错:{}", e.getMessage());
@@ -228,6 +229,9 @@ public class UserStatisController {
     @GetMapping("/statistics/partner/details")
     public DataResult<List<StatisticsDataDetailsVo>> statisticsDetails(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isEmpty(param.getTimePeriod())) {
+                param.setTimePeriod(TimeOperate.DAY.name());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.statisticsDetails(param));
         } catch (DefaultException e) {
@@ -249,6 +253,10 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/partner/details")
     public DataResult<List<StatisticsDataDetailsVo>> statisticsDetailsPc(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isEmpty(param.getTimePeriod())) {
+                param.setTimePeriod(TimeOperate.DAY.name());
+            }
+            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.statisticsDetails(param));
         } catch (DefaultException e) {
             log.error("统计伙伴签约详情出错:{}", e.getMessage());
