@@ -40,8 +40,9 @@
         <where>
             (
             (ssi.status IN ( 0, 3 ) and ssi.date_join &lt; #{param.end})
-            or(ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1 and ssi.date_left  &gt;= #{param.end})
+            or (ssi.date_left  &gt;= #{param.end})
             )
+            ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
