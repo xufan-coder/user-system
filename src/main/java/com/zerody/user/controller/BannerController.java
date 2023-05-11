@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -41,10 +42,7 @@ public class BannerController {
 
     @ApiOperation("分页查询banner")
     @GetMapping
-    public DataResult<IPage<BannerListVo>> pageAd(BannerListDto param, PageQueryDto pageParam){
-        if (DataUtil.isNotEmpty(param.getEffectiveEndTime())) {
-            param.setEffectiveEndTime(new Date(param.getEffectiveEndTime().getTime() + DateUtils.DAYS));
-        }
+    public DataResult<IPage<BannerListVo>> pageAd(BannerListDto param, PageQueryDto pageParam) throws ParseException {
         IPage<BannerListVo> result = BannerService.pageAd(param, pageParam);
         return R.success(result);
     }
