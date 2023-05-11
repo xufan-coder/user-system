@@ -248,7 +248,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 签约数据汇总报表
     * @Date: 2023/5/3 15:47
     */
-    List<SignSummaryVo> getSignSummary(UserStatisQueryDto param);
+    List<SignSummaryVo> getSignSummary(UserStatisQueryDto param, UserVo user);
 
     /**
     * @Author: chenKeFeng

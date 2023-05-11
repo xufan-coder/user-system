@@ -5,7 +5,9 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.TimeOperate;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.statis.UserAgeStatisQueryDto;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
@@ -363,7 +365,7 @@ public class UserStatisController {
     /**
     * @Author: chenKeFeng
     * @param  
-    * @Description: 签约数据汇总报表
+    * @Description: 签约数据汇总报表 app
     * @Date: 2023/5/3 15:42
     */
     @GetMapping("/get/sign/summary")
@@ -372,8 +374,9 @@ public class UserStatisController {
             if (DataUtil.isNotEmpty(param.getDeptId())) {
                 param.setDepartId(param.getDeptId());
             }
+            UserVo user = UserUtils.getUser();
             this.checkUtil.SetUserPositionInfo(param);
-            return R.success(this.sysStaffInfoService.getSignSummary(param));
+            return R.success(this.sysStaffInfoService.getSignSummary(param, user));
         } catch (DefaultException e) {
             log.error("获取签约数据汇总报表出错:{}", e.getMessage());
             return R.error("获取签约数据汇总报表出错");

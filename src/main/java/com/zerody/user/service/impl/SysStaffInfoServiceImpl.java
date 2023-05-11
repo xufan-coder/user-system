@@ -3246,11 +3246,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     @Override
-    public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {
+    public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param, UserVo user) {
         log.info("1app报表入口企业id {}", param.getCompanyId());
         log.info("1app报表入口企业id集合 {}", param.getCompanyIds());
         log.info("1app报表入口部门id集合 {}", param.getDepartId());
         List<SignSummaryVo> arrList = new ArrayList<>();
+        if (user.isCEO()) {
+            //查询所有企业(ceo关联的企业)
+            log.info("ceo账号 {}", param.getCompanyIds());
+            List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
+            for (SysAddressBookVo com : companyList) {
+                param.setCompanyId(com.getCompId());
+                SignSummaryVo vo = getSummary(com.getCompanyName(), param);
+                arrList.add(vo);
+            }
+            return arrList;
+        }
         if (DataUtil.isNotEmpty(param.getCompanyId()) && DataUtil.isEmpty(param.getDeptId())) {
             //查询企业下的部门
             DepartInfoDto departInfoDto = new DepartInfoDto();
@@ -3261,20 +3272,25 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
                 arrList.add(vo);
             }
-        } else if (DataUtil.isNotEmpty(param.getDeptId())) {
-            //获取部门详情
-            SysDepartmentInfo sysDepartmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
-            param.setDepartId(sysDepartmentInfo.getId());
-            SignSummaryVo vo = getSummary(sysDepartmentInfo.getDepartName(), param);
-            arrList.add(vo);
+        } else if (DataUtil.isNotEmpty(param.getDepartId())) {
+            //查询一级部门下的全部二级部门
+            SysDepartmentInfoDto dto = new SysDepartmentInfoDto();
+            dto.setCompId(param.getCompanyId());
+            dto.setDepartId(param.getDepartId());
+            List<SysDepartmentInfoVo> departmentList = sysDepartmentInfoMapper.getSecondaryDepartmentList(dto);
+            for (SysDepartmentInfoVo dept : departmentList) {
+                param.setDepartId(dept.getId());
+                SignSummaryVo vo = getSummary(dept.getDepartName(), param);
+                arrList.add(vo);
+            }
         } else {
-            //查询所有企业
             List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
             for (SysAddressBookVo com : companyList) {
                 param.setCompanyId(com.getCompId());
                 SignSummaryVo vo = getSummary(com.getCompanyName(), param);
                 arrList.add(vo);
             }
+            return arrList;
         }
 
         return arrList;
