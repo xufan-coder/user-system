@@ -815,9 +815,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setBirthdayMonth(date.getMonth());
         //日
         sysUserInfo.setBirthdayDay(date.getDay());
+        sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
         sysUserInfoMapper.updateById(sysUserInfo);
-        sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
                 !oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
