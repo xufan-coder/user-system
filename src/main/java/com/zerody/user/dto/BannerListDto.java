@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 /**
  * @author yumiaoxia
@@ -33,7 +34,7 @@ public class BannerListDto {
     @ApiModelProperty(value = "状态")
     private Boolean enable;
     /**有效时间开始*/
-    private String effectiveStartTime;
+    private Date effectiveStartTime;
     /**有效时间结束*/
-    private String effectiveEndTime;
+    private Date effectiveEndTime;
 }
