@@ -13,6 +13,14 @@ import lombok.Data;
 @Data
 public class SysDepartmentInfoDto extends PageQueryDto {
 
+    /**
+     * 企业id
+     */
     private String compId;
+
+    /**
+     * 部门id
+     */
+    private String departId;
 
 }
