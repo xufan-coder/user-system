@@ -1219,14 +1219,15 @@
         join sys_user_info as sui on sui.id = ssi.user_id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
 		<where>
+            ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1
             <if test="param.companyId neq null and param.companyId neq ''">
-                ssi.comp_id = #{param.companyId}
+                and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId neq ''">
-                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND ssi.comp_id
+                and ssi.comp_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
@@ -1244,14 +1245,15 @@
         join sys_user_info as sui on sui.id = ssi.user_id
         left join union_staff_depart AS usd ON usd.staff_id = ssi.id
         <where>
+            ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1
             <if test="param.companyId neq null and param.companyId neq ''">
-                AND ssi.comp_id = #{param.companyId}
+                and ssi.comp_id = #{param.companyId}
             </if>
             <if test="param.departId neq null and param.departId neq ''">
-                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                AND ssi.comp_id
+                and ssi.comp_id
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
