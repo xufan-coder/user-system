@@ -141,6 +141,7 @@
     </where>
 </select>
 
+    <!--伙伴年龄统计-->
 <select id="getStatisAge" resultType="java.lang.Integer">
     SELECT
         COUNT(1)
@@ -175,6 +176,7 @@
     </where>
 </select>
 
+    <!--性别统计-->
 <select id="getSexStatis" resultType="java.lang.Integer">
     SELECT
         COUNT(1)

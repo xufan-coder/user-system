@@ -89,8 +89,11 @@ public class UserStatisServiceImpl implements UserStatisService {
                 param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getBeginAge()).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
             }
             if (DataUtil.isNotEmpty(statis.getEndAge())) {
-                param.setEnd(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge()).toInstant(ZoneOffset.of("+8"))));
+                param.setEnd(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge() + 1).toInstant(ZoneOffset.of("+8"))));
             }
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            System.out.println("起始年龄：" + sdf.format(param.getBegin()));
+            System.out.println("结束年龄：" + sdf.format(param.getEnd()));
             statis.setNumber(this.baseMapper.getStatisAge(param));
             total += statis.getNumber();
             param.setBegin(null);
