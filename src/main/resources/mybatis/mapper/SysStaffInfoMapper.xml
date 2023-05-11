@@ -1252,7 +1252,7 @@
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
                 AND ssi.comp_id
-                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">r
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
