@@ -354,6 +354,9 @@ public class UserStatisController {
     @GetMapping("/get/sign/summary")
     public DataResult<List<SignSummaryVo>> getSignSummary(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isEmpty(param.getTimePeriod())) {
+                param.setTimePeriod(TimeOperate.DAY.name());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getSignSummary(param));
         } catch (DefaultException e) {
