@@ -481,7 +481,7 @@
                 and sdi.comp_id = #{param.compId}
             </if>
             <if test="param.departId neq null and param.departId neq ''">
-                and (sdi.id like concat('',#{param.departId},'\_%'))
+                and (sdi = #{param.departId} or sdi.id like concat('',#{param.departId},'\_%'))
             </if>
         </where>
     </select>

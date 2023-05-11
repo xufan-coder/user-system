@@ -3263,6 +3263,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             dto.setCompId(param.getCompanyId());
             dto.setDepartId(param.getDepartId());
             List<SysDepartmentInfoVo> departmentList = sysDepartmentInfoMapper.getSecondaryDepartmentList(dto);
+            //过滤当前一级部门
+
             for (SysDepartmentInfoVo dept : departmentList) {
                 param.setDepartId(dept.getId());
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
