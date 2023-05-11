@@ -13,7 +13,7 @@ import lombok.Data;
 public class UserStatisQueryDto  extends SetTimePeriodPage {
 
     /**
-     * 是否仅统计签约中
+     * 是否仅统计签约中(true是，false否)
      */
     private Boolean isSign;
 
