@@ -471,4 +471,18 @@
         LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account and ssi.status in (0, 3)
          where sdi.status = 0 and ssi.user_id is not null and ssi.comp_id = #{companyId}
     </select>
+
+    <!--获取二级部门-->
+    <select id="getSecondaryDepartmentList" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
+        select sdi.id, sdi.depart_name, sdi.parent_id from sys_department_info AS sdi
+        <where>
+            sdi.status = 0
+            <if test="param.compId neq null and param.compId neq ''">
+                and sdi.comp_id = #{param.compId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                and (sdi.id like concat('',#{param.departId},'\_%'))
+            </if>
+        </where>
+    </select>
 </mapper>

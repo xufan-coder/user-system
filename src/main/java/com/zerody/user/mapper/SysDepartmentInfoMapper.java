@@ -188,4 +188,13 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     List<String> getAllDepByCompany(String companyId);
 
     List<DepartInfoVo> getDepList(@Param("companyId")String companyId);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取二级部门
+    * @Date: 2023/5/11 14:32
+    */
+    List<SysDepartmentInfoVo> getSecondaryDepartmentList(@Param("param") SysDepartmentInfoDto dto);
+
 }
