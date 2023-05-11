@@ -3141,17 +3141,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return this.sysStaffInfoMapper.statisticsUsers(userInfoDto);
     }
 
-    //保留两位小数
-    private static BigDecimal reserveTwo(Integer d, Integer num){
-        if (d.equals(0)) {
-            return new BigDecimal("0.00");
-        }
-        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-        DecimalFormat df = new DecimalFormat("0.00");
-        String format = df.format(b);
-        return new BigDecimal(format);
-    }
-
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
@@ -3175,15 +3164,15 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             secondContractNum = list.size() - filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
-        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum() , num));
+        userStatistics.setSecondContractRate(OperationUtils.reserveTwo(userStatistics.getSecondContractNum() , num));
 
-        userStatistics.setManagerRate(reserveTwo(userStatistics.getManagerNum(), num));
-        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getVicePresidentNum(), num));
-        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getTeamLeaderNum(), num));
+        userStatistics.setManagerRate(OperationUtils.reserveTwo(userStatistics.getManagerNum(), num));
+        userStatistics.setVicePresidentRate(OperationUtils.reserveTwo(userStatistics.getVicePresidentNum(), num));
+        userStatistics.setTeamLeaderRate(OperationUtils.reserveTwo(userStatistics.getTeamLeaderNum(), num));
 
-        userStatistics.setPartnerRate(reserveTwo(userStatistics.getPartnerNum(), num));
-        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getMasonryMemberNum(),num));
-        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getProspectiveExecutiveNum(), num));
+        userStatistics.setPartnerRate(OperationUtils.reserveTwo(userStatistics.getPartnerNum(), num));
+        userStatistics.setMasonryMemberRate(OperationUtils.reserveTwo(userStatistics.getMasonryMemberNum(),num));
+        userStatistics.setProspectiveExecutiveRate(OperationUtils.reserveTwo(userStatistics.getProspectiveExecutiveNum(), num));
         return userStatistics;
     }
 
@@ -3196,12 +3185,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param) {
-        log.info("离职原因分析企业id {}", param.getCompanyId());
-        log.info("离职原因分析企业id集合 {}", param.getCompanyIds());
         List<TerminationAnalysisVo> arrList = new ArrayList<>();
-        //总离职人数
-        //Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
-
         Integer total =0;
         //离职原因类型
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
@@ -3216,21 +3200,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             total += departureCauseCount;
         }
         for (TerminationAnalysisVo vo : arrList) {
-            vo.setPeopleRate(reserveTwo(vo.getPeopleNum(), total));
+            vo.setPeopleRate(OperationUtils.reserveTwo(vo.getPeopleNum(), total));
         }
         //根据占比降序
         return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(toList());
     }
 
+
     @Override
     public DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param) {
         DegreeAnalysisVo degreeAnalysis = this.sysStaffInfoMapper.getDegreeAnalysis(param);
         Integer allNum = degreeAnalysis.getAllNum();
-        degreeAnalysis.setHighHereinafterRate(reserveTwo(degreeAnalysis.getHighHereinafterNum(), allNum));
-        degreeAnalysis.setCollegeRate(reserveTwo(degreeAnalysis.getCollegeNum(),allNum));
-        degreeAnalysis.setUndergraduateRate(reserveTwo(degreeAnalysis.getUndergraduateNum(), allNum));
-        degreeAnalysis.setMasterRate(reserveTwo(degreeAnalysis.getMasterNum(),allNum));
-        degreeAnalysis.setDoctorRate(reserveTwo(degreeAnalysis.getDoctorNum(), allNum));
+        degreeAnalysis.setHighHereinafterRate(OperationUtils.reserveTwo(degreeAnalysis.getHighHereinafterNum(), allNum));
+        degreeAnalysis.setCollegeRate(OperationUtils.reserveTwo(degreeAnalysis.getCollegeNum(),allNum));
+        degreeAnalysis.setUndergraduateRate(OperationUtils.reserveTwo(degreeAnalysis.getUndergraduateNum(), allNum));
+        degreeAnalysis.setMasterRate(OperationUtils.reserveTwo(degreeAnalysis.getMasterNum(),allNum));
+        degreeAnalysis.setDoctorRate(OperationUtils.reserveTwo(degreeAnalysis.getDoctorNum(), allNum));
         return degreeAnalysis;
     }
 
@@ -3310,6 +3295,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         return pageCompanyList;
     }
+
 
     /**
      * 报表

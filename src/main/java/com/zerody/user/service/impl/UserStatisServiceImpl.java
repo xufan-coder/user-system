@@ -19,6 +19,7 @@ import com.zerody.user.handler.user.UserStatisHandle;
 import com.zerody.user.mapper.UserStatisMapper;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserStatisService;
+import com.zerody.user.util.OperationUtils;
 import com.zerody.user.vo.StatisticsDataDetailsVo;
 import com.zerody.user.vo.statis.*;
 import org.springframework.beans.BeanUtils;
@@ -213,22 +214,12 @@ public class UserStatisServiceImpl implements UserStatisService {
             degreeVoList.add(degreeVo);
         }
         for (DegreeVo degre : degreeVoList) {
-            degre.setRate(reserveTwo(degre.getNum(), num));
+            degre.setRate(OperationUtils.reserveTwo(degre.getNum(), num));
             degre.setDegree(DegreeEnum.getByText(degre.getDegree()));
 
         }
         userStatisTrendVo.setDegreeVoList(degreeVoList);
         return userStatisTrendVo;
-    }
-
-    private static BigDecimal reserveTwo(Integer d, Integer num){
-        if (d.equals(0)) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-        DecimalFormat df = new DecimalFormat("0.00");
-        String format = df.format(b);
-        return new BigDecimal(format);
     }
 
 
