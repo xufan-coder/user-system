@@ -30,4 +30,9 @@ public class UserPositionPageParam extends PageQueryDto {
     /** CEO关联企业IDS */
     private List<String> companyIds;
 
+    /**
+     * 部门id 前端使用组件无法更改
+     */
+    private String deptId;
+
 }

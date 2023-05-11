@@ -3261,7 +3261,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 SignSummaryVo vo = getSummary(dept.getDepartName(), param);
                 arrList.add(vo);
             }
-        } else if (DataUtil.isNotEmpty(param.getDepartId())) {
+        } else if (DataUtil.isNotEmpty(param.getDeptId())) {
             //获取部门详情
             SysDepartmentInfo sysDepartmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
             param.setDepartId(sysDepartmentInfo.getId());

@@ -127,6 +127,9 @@ public class UserStatisController {
     @GetMapping("/get/user/overview")
     public DataResult<UserStatisticsVo> getUserOverview(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getUserOverview(param));
         } catch (DefaultException e) {
@@ -148,6 +151,9 @@ public class UserStatisController {
     @GetMapping("/statistics/partner")
     public DataResult<SignAndRescindVo> statisticsContractAndRescind(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
         } catch (DefaultException e) {
@@ -193,6 +199,9 @@ public class UserStatisController {
     @GetMapping("/termination/analysis")
     public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysis(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getTerminationAnalysis(param));
         } catch (DefaultException e) {
@@ -214,6 +223,9 @@ public class UserStatisController {
     @GetMapping("/statistics/user-trends")
     public DataResult<UserStatisTrendVo> getUserTrends(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.getUserTrends(param));
         } catch (DefaultException e) {
