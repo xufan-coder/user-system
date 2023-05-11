@@ -11,6 +11,7 @@ import com.zerody.user.dto.BannerListDto;
 import com.zerody.user.vo.BannerListVo;
 import com.zerody.user.vo.BannerVo;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface BannerService extends IService<Banner> {
 
     void create(BannerCreateDto param);
 
-    IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam);
+    IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam) throws ParseException;
 
     List<BannerListVo> pageApp(BannerListDto param);
 

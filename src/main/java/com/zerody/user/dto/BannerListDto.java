@@ -1,6 +1,7 @@
 package com.zerody.user.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.enums.AdvertLocation;
 import com.zerody.user.enums.AdvertType;
 import com.zerody.user.enums.LinkType;
@@ -33,8 +34,12 @@ public class BannerListDto {
 
     @ApiModelProperty(value = "状态")
     private Boolean enable;
+
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     /**有效时间开始*/
-    private Date effectiveStartTime;
+    private String effectiveStartTime;
     /**有效时间结束*/
-    private Date effectiveEndTime;
+
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String effectiveEndTime;
 }
