@@ -3247,6 +3247,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {
+        log.info("app报表入口企业id {}", param.getCompanyId());
+        log.info("app报表入口企业id集合 {}", param.getCompanyIds());
+        log.info("app报表入口部门id集合 {}", param.getDepartId());
         List<SignSummaryVo> arrList = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getCompanyId())) {
             //查询企业下的部门
