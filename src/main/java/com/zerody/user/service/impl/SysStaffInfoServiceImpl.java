@@ -454,9 +454,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
 
-
-
-
     @Override
     public UserCopyResultVo doCopyStaffInner(UserCopyDto param) {
         //离职旧用户并查询出旧用户的相关信息
@@ -480,7 +477,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
             staffUw.lambda().set(SysStaffInfo::getDateLeft, null);
+            staffUw.lambda().set(SysStaffInfo::getDateJoin, new Date());
             this.update(staffUw);
+
             UserCopyResultVo result = new UserCopyResultVo();
             result.setUserId(param.getReinstateId());
             //删除token
@@ -536,6 +535,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setDeleted(YesNo.NO);
         staff.setDateJoin(setSysUserInfoDto.getDateJoin());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
+        //更新入职时间
+        staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
@@ -3154,6 +3155,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public UserStatisticsVo getUserOverview(UserStatisQueryDto param) {
+        //查询伙伴概况
         UserStatisticsVo userStatistics = this.sysStaffInfoMapper.getUserOverview(param);
 
         //内控伙伴数量
@@ -3169,19 +3171,19 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             List<SysStaffRelationVo> newList = list.stream().filter(o -> o.getLeaveType() != null).collect(toList());
             List<SysStaffRelationVo> newList1 = newList.stream().filter(o -> o.getLeaveType().trim().isEmpty()).collect(toList());
             List<SysStaffRelationVo> filterList = newList1.stream().filter(user -> !user.getLeaveType().equals(this.transfer) && DataUtil.isNotEmpty(user.getLeaveType())).collect(toList());
-            secondContractNum = filterList.size();
+            //总的减去离职原因为调离新公司的
+            secondContractNum = list.size() - filterList.size();
         }
         userStatistics.setSecondContractNum(secondContractNum);
-        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getManagerNum() , num));
+        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum() , num));
 
         userStatistics.setManagerRate(reserveTwo(userStatistics.getManagerNum(), num));
-        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setVicePresidentRate(reserveTwo(userStatistics.getVicePresidentNum(), num));
+        userStatistics.setTeamLeaderRate(reserveTwo(userStatistics.getTeamLeaderNum(), num));
 
-        userStatistics.setPartnerRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getSecondContractNum(),num));
-        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getSecondContractNum(), num));
-        userStatistics.setSecondContractRate(reserveTwo(userStatistics.getSecondContractNum(), num));
+        userStatistics.setPartnerRate(reserveTwo(userStatistics.getPartnerNum(), num));
+        userStatistics.setMasonryMemberRate(reserveTwo(userStatistics.getMasonryMemberNum(),num));
+        userStatistics.setProspectiveExecutiveRate(reserveTwo(userStatistics.getProspectiveExecutiveNum(), num));
         return userStatistics;
     }
 
@@ -3194,20 +3196,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param) {
+        log.info("离职原因分析企业id {}", param.getCompanyId());
+        log.info("离职原因分析企业id集合 {}", param.getCompanyIds());
         List<TerminationAnalysisVo> arrList = new ArrayList<>();
         //总离职人数
-        Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
+        //Integer departureCount = this.sysStaffInfoMapper.getDepartureCount(param);
 
+        Integer total =0;
         //离职原因类型
         List<DictQuseryVo> listByType = dictService.getListByType("LEAVE_TYPE");
         for (DictQuseryVo dict : listByType) {
             TerminationAnalysisVo vo = new TerminationAnalysisVo();
-            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(dict.getId());
+            param.setType(dict.getId());
+            Integer departureCauseCount = this.sysStaffInfoMapper.getDepartureCauseCount(param);
             vo.setId(dict.getId());
             vo.setName(dict.getDictName());
             vo.setPeopleNum(departureCauseCount);
-            vo.setPeopleRate(reserveTwo(departureCauseCount, departureCount));
             arrList.add(vo);
+            total += departureCauseCount;
+        }
+        for (TerminationAnalysisVo vo : arrList) {
+            vo.setPeopleRate(reserveTwo(vo.getPeopleNum(), total));
         }
         //根据占比降序
         return arrList.stream().sorted(Comparator.comparing(TerminationAnalysisVo::getPeopleRate).reversed()).collect(toList());
@@ -3230,9 +3239,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return userStatisMapper.getDegree(param);
     }
 
+    @Override
+    public int getBelowHighSchool(UserStatisQueryDto param) {
+        return userStatisMapper.getBelowHighSchool(param);
+    }
+
 
     @Override
     public List<SignSummaryVo> getSignSummary(UserStatisQueryDto param) {
+        log.info("app报表入口企业id {}", param.getCompanyId());
+        log.info("app报表入口企业id集合 {}", param.getCompanyIds());
+        log.info("app报表入口部门id集合 {}", param.getDepartId());
         List<SignSummaryVo> arrList = new ArrayList<>();
         if (DataUtil.isNotEmpty(param.getCompanyId())) {
             //查询企业下的部门
@@ -3278,12 +3295,22 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return pageCompanyList;
     }
 
+    /**
+     * 报表
+     *
+     * @param name 企业 部门名称
+     * @param param 参数类
+     * @return
+     */
     private SignSummaryVo getSummary(String name, UserStatisQueryDto param){
         SignSummaryVo vo = new SignSummaryVo();
         vo.setName(name);
         //查询伙伴概况
         UserStatisticsVo userOverview = this.sysStaffInfoService.getUserOverview(param);
         BeanUtils.copyProperties(userOverview, vo);
+        //报表中的签约中 = 签约 + 合作中
+        vo.setContractNum(userOverview.getContractNum() + userOverview.getInCooperationNum());
+
         //统计伙伴签约与解约(今日、本月)
         SignAndRescindVo userStatistics = this.sysStaffInfoService.statisticsContractAndRescind(param);
         vo.setTodaySignNum(userStatistics.getTodaySignNum());

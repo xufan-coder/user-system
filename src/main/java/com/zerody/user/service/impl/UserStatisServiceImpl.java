@@ -79,7 +79,8 @@ public class UserStatisServiceImpl implements UserStatisService {
 
     @Override
     public List<UserAgeStatisQueryVo> getAgeStatis(UserAgeStatisQueryDto param) {
-        Integer total = 0; // 总人数
+        // 总人数
+        Integer total = 0;
         List<UserAgeStatisQueryVo> result = UserStatisHandle.getStatisUserAge();
         //获取人数
         for (UserAgeStatisQueryVo statis : result) {
@@ -87,10 +88,12 @@ public class UserStatisServiceImpl implements UserStatisService {
                 param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getBeginAge()).minusDays(-1).toInstant(ZoneOffset.of("+8"))));
             }
             if (DataUtil.isNotEmpty(statis.getEndAge())) {
-                param.setBegin(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge()).toInstant(ZoneOffset.of("+8"))));
+                param.setEnd(Date.from(LocalDate.now().atStartOfDay().minusYears(statis.getEndAge()).toInstant(ZoneOffset.of("+8"))));
             }
             statis.setNumber(this.baseMapper.getStatisAge(param));
             total += statis.getNumber();
+            param.setBegin(null);
+            param.setEnd(null);
         }
         if (total == 0) {
             return result;
@@ -131,17 +134,13 @@ public class UserStatisServiceImpl implements UserStatisService {
             throw new DefaultException("日期类型错误");
         }
         Date startTime = timeOperate.getNext();
-        int lastAgencyNum = 0;
+        //int lastAgencyNum = 0;
         for (int i = 0; i < num; i++) {
             StatisticsDataDetailsVo vo = new StatisticsDataDetailsVo();
             //结束时间
             param.setEnd(startTime);
             //开始时间
             param.setBegin(timeOperate.getPrev(startTime));
-
-            SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-            System.out.println(sdf.format(param.getBegin()));
-            System.out.println(sdf.format(param.getEnd()));
             //新签约
             int newAgencyNum = this.baseMapper.getStatisSigning(param);
             //解约
@@ -152,7 +151,7 @@ public class UserStatisServiceImpl implements UserStatisService {
             //Date min = this.baseMapper.getDateJoinMin();
             UserStatisQueryDto dto = new UserStatisQueryDto();
             BeanUtils.copyProperties(param, dto);
-            //总签约中(签约与合作中)
+            //总签约中(签约与合作中) 查询历史签约
             int agencyNum = this.baseMapper.getHistorySign(dto);
             /*if (i == 0) {
                 //第一次不用递减(月份倒序)
@@ -200,7 +199,12 @@ public class UserStatisServiceImpl implements UserStatisService {
         int num = 0;
         for (String name : list) {
             param.setHighestEducation(name);
-            int degreeNum = sysStaffInfoService.getDegree(param);
+            int degreeNum= 0;
+            if ("SENIOR_HIGH_UNDER".equals(name)) {
+                degreeNum = sysStaffInfoService.getBelowHighSchool(param);
+            } else {
+                degreeNum = sysStaffInfoService.getDegree(param);
+            }
 
             DegreeVo degreeVo = new DegreeVo();
             degreeVo.setNum(degreeNum);
@@ -217,8 +221,10 @@ public class UserStatisServiceImpl implements UserStatisService {
         return userStatisTrendVo;
     }
 
-
     private static BigDecimal reserveTwo(Integer d, Integer num){
+        if (d.equals(0)) {
+            return BigDecimal.ZERO;
+        }
         BigDecimal b = new BigDecimal(d).divide(new BigDecimal(num), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(b);

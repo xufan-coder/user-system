@@ -18,8 +18,12 @@ public class UserStatisHandle {
         List<UserAgeStatisQueryVo> result = new ArrayList<>();
         result.add(new UserAgeStatisQueryVo(18, 25));
         result.add(new UserAgeStatisQueryVo(26, 35));
-        result.add(new UserAgeStatisQueryVo(36, 15));
+        result.add(new UserAgeStatisQueryVo(36, 45));
         result.add(new UserAgeStatisQueryVo(46, null));
         return result;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

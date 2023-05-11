@@ -443,7 +443,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 根据离职类型获取离职原因数量
      * @Date: 2022/11/11 10:12
      */
-    Integer getDepartureCauseCount(String type);
+    Integer getDepartureCauseCount(@Param("param") UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng

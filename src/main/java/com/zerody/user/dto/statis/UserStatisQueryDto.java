@@ -13,7 +13,7 @@ import lombok.Data;
 public class UserStatisQueryDto  extends SetTimePeriodPage {
 
     /**
-     * 是否仅统计签约中
+     * 是否仅统计签约中(true是，false否)
      */
     private Boolean isSign;
 
@@ -26,5 +26,10 @@ public class UserStatisQueryDto  extends SetTimePeriodPage {
      * 学历
      */
     private String highestEducation;
+
+    /**
+     * 离职原因类型id
+     */
+    private String type;
 
 }

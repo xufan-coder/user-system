@@ -236,6 +236,13 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     int getDegree(UserStatisQueryDto param);
 
     /**
+     * 获取高中以下
+     *
+     * @return
+     */
+    int getBelowHighSchool(UserStatisQueryDto param);
+
+    /**
     * @Author: chenKeFeng
     * @param
     * @Description: 签约数据汇总报表

@@ -1222,7 +1222,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -1247,7 +1247,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -1263,8 +1263,26 @@
     <!--根据离职类型获取离职原因数量-->
     <select id="getDepartureCauseCount" resultType="java.lang.Integer">
         select count(1) from sys_staff_info as ssi
-        left join sys_user_info as sui on sui.id = ssi.user_id
-        where ssi.leave_type=#{type} and ssi.deleted =0 and sui.status !=-1
+        JOIN sys_user_info sui ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.leave_type=#{param.type} and ssi.deleted =0 and sui.status !=-1 and ssi.status = 1
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                and (sdi.id = #{param.departId} OR sdi.id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <!--获取离职伙伴数-->
@@ -1277,7 +1295,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -1308,7 +1326,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND ssi.comp_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
@@ -1421,7 +1439,7 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 and sb.company_id = #{param.companyId}
             </if>
-            <if test="param.departId neq null and param.departId">
+            <if test="param.departId neq null and param.departId neq ''">
                 and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
             <if test="param.companyIds neq null and param.companyIds.size() gt 0">
