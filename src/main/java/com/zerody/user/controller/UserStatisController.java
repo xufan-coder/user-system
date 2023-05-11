@@ -175,6 +175,9 @@ public class UserStatisController {
     @GetMapping("/statistics/partner/details")
     public DataResult<List<StatisticsDataDetailsVo>> statisticsDetails(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             if (DataUtil.isEmpty(param.getTimePeriod())) {
                 param.setTimePeriod(TimeOperate.DAY.name());
             }
@@ -246,6 +249,9 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/user-trends")
     public DataResult<UserStatisTrendVo> getUserTrendsPc(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.service.getUserTrends(param));
         } catch (DefaultException e) {
@@ -267,6 +273,9 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/partner")
     public DataResult<SignAndRescindVo> statisticsContractAndRescindPc(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.statisticsContractAndRescind(param));
         } catch (DefaultException e) {
@@ -288,6 +297,9 @@ public class UserStatisController {
     @GetMapping("/pc/statistics/partner/details")
     public DataResult<List<StatisticsDataDetailsVo>> statisticsDetailsPc(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             if (DataUtil.isEmpty(param.getTimePeriod())) {
                 param.setTimePeriod(TimeOperate.DAY.name());
             }
@@ -312,6 +324,9 @@ public class UserStatisController {
     @GetMapping("/pc/termination/analysis")
     public DataResult<List<TerminationAnalysisVo>> getTerminationAnalysisPc(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getTerminationAnalysis(param));
         } catch (DefaultException e) {
@@ -354,8 +369,8 @@ public class UserStatisController {
     @GetMapping("/get/sign/summary")
     public DataResult<List<SignSummaryVo>> getSignSummary(UserStatisQueryDto param) {
         try {
-            if (DataUtil.isEmpty(param.getTimePeriod())) {
-                param.setTimePeriod(TimeOperate.DAY.name());
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
             }
             this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getSignSummary(param));
@@ -378,6 +393,9 @@ public class UserStatisController {
     @GetMapping("/pc/file/summary")
     public DataResult<IPage<SignSummaryVo>> getFileSummary(UserStatisQueryDto param) {
         try {
+            if (DataUtil.isNotEmpty(param.getDeptId())) {
+                param.setDepartId(param.getDeptId());
+            }
             return R.success(this.sysStaffInfoService.getFileSummary(param));
         } catch (DefaultException e) {
             log.error("伙伴档案分析(pc)出错:{}", e.getMessage());
