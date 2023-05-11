@@ -5,10 +5,12 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.api.bean.R;
 
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.AdvertisingUpdateDto;
 import com.zerody.user.dto.BannerCreateDto;
 import com.zerody.user.dto.BannerListDto;
 import com.zerody.user.service.BannerService;
+import com.zerody.user.util.DateUtils;
 import com.zerody.user.vo.BannerListVo;
 import com.zerody.user.vo.BannerVo;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +42,9 @@ public class BannerController {
     @ApiOperation("分页查询banner")
     @GetMapping
     public DataResult<IPage<BannerListVo>> pageAd(BannerListDto param, PageQueryDto pageParam){
+        if (DataUtil.isNotEmpty(param.getEffectiveEndTime())) {
+            param.setEffectiveEndTime(new Date(param.getEffectiveEndTime().getTime() + DateUtils.DAYS));
+        }
         IPage<BannerListVo> result = BannerService.pageAd(param, pageParam);
         return R.success(result);
     }
