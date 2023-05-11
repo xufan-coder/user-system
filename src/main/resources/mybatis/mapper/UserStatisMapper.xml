@@ -150,6 +150,7 @@
     JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
     LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
     <where>
+         sui.status != -1
         <if test="param.isSign neq null and param.isSign">
             AND sui.status IN (0, 3)
         </if>
@@ -185,6 +186,7 @@
     JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
     LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
     <where>
+        sui.status != -1
         <if test="param.isSign neq null and param.isSign">
             AND sui.status IN (0, 3)
         </if>
