@@ -1193,6 +1193,9 @@
         left join sys_user_info as sui on sui.id = ssi.user_id
         <where>
             ssi.deleted = 0 and sui.status != -1 and sci.is_pro_data =1 and ssi.status !=-1
+            <if test="param.isSign neq null and param.isSign">
+                and sui.status IN (0, 3)
+            </if>
             <if test="param.companyId neq null and param.companyId neq ''">
                 and ssi.comp_id = #{param.companyId}
             </if>
@@ -1202,7 +1205,7 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="param.departId != null and param.departId != ''">
+            <if test="param.departId neq null and param.departId neq ''">
                 AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
             </if>
         </where>
@@ -1232,6 +1235,9 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="param.isSign neq null and param.isSign">
+                AND sui.status IN (0, 3)
+            </if>
             and DATE_FORMAT(ssi.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
         </where>
     </select>
@@ -1257,6 +1263,9 @@
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
+            </if>
+            <if test="param.isSign neq null and param.isSign">
+                AND sui.status IN (0, 3)
             </if>
             and TO_DAYS( NOW( ) ) - TO_DAYS(ssi.create_time) &lt;= 1
         </where>
@@ -1336,6 +1345,9 @@
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
+            </if>
+            <if test="param.isSign neq null and param.isSign">
+                AND sui.status IN (0, 3)
             </if>
         </where>
     </select>
@@ -1449,6 +1461,9 @@
                 <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
                     #{id}
                 </foreach>
+            </if>
+            <if test="param.isSign neq null and param.isSign">
+                AND sui.status IN (0, 3)
             </if>
         </where>
     </select>
