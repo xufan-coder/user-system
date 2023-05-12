@@ -201,7 +201,7 @@ public class UserStatisServiceImpl implements UserStatisService {
         for (String name : list) {
             param.setHighestEducation(name);
             int degreeNum= 0;
-            if ("SENIOR_HIGH_UNDER".equals(name)) {
+            if (DegreeEnum.SENIOR_HIGH_UNDER.name().equals(name)) {
                 degreeNum = sysStaffInfoService.getBelowHighSchool(param);
             } else {
                 degreeNum = sysStaffInfoService.getDegree(param);

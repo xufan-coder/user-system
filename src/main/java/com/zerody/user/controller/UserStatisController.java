@@ -133,6 +133,9 @@ public class UserStatisController {
                 param.setDepartId(param.getDeptId());
             }
             this.checkUtil.SetUserPositionInfo(param);
+            log.info("获取统计趋势企业id {}", param.getCompanyId());
+            log.info("获取统计趋势企业id集合 {}", param.getCompanyIds());
+            log.info("获取统计趋势部门id {}", param.getDepartId());
             return R.success(this.sysStaffInfoService.getUserOverview(param));
         } catch (DefaultException e) {
             log.error("查询伙伴概况出错:{}", e.getMessage());
