@@ -267,7 +267,10 @@ public class SysUserInfoVo {
      * 惩罚记录
      */
     private List<StaffHistoryVo> staffHistoryPunishment;
-
+    /**
+     * 离职类型
+     */
+    private String leaveType;
     /**
      * 离职原因
      */

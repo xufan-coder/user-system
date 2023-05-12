@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zerody.user.mapper.UserStatisMapper" >
+
+<select id="getStatisSigning" resultType="int">
+    SELECT
+        count(1)
+    FROM sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+        sui.status in (0, 3)
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.departId neq null and param.departId neq ''">
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+        </if>
+        <if test="param.begin neq null">
+            AND ssi.date_join &gt;= #{param.begin}
+        </if>
+        <if test="param.end neq null ">
+            AND ssi.date_join &lt; #{param.end}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+    </where>
+
+</select>
+
+    <select id="getHistorySign" resultType="int">
+        SELECT
+        count(1)
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            (
+            (ssi.status IN ( 0, 3 ) and ssi.date_join &lt; #{param.end})
+            or (ssi.date_left  &gt;= #{param.end})
+            )
+            and ssi.deleted = 0 and sui.status != -1  and ssi.status !=-1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--统计学历-->
+    <select id="getDegree" resultType="int">
+        SELECT
+        count(1)
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            <if test="param.isSign neq null and param.isSign">
+                sui.status IN (0, 3)
+            </if>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.highestEducation neq null and param.highestEducation neq ''">
+                and sui.highest_education = #{param.highestEducation}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--获取高中以下-->
+    <select id="getBelowHighSchool" resultType="java.lang.Integer"
+            parameterType="com.zerody.user.dto.statis.UserStatisQueryDto">
+	 SELECT
+        count(1)
+        FROM sys_user_info AS sui
+        JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            (sui.highest_education = 'PRIMARY_SCHOOL' or  sui.highest_education = 'JUNIOR_HIGH' or  sui.highest_education = 'TECHNICAL_SECONDARY'
+            or sui.highest_education = 'SENIOR_HIGH')
+            <if test="param.isSign neq null and param.isSign">
+                and sui.status IN (0, 3)
+            </if>
+            <if test="param.companyId neq null and param.companyId neq ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                and (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+<select id="getStatisUnSigning" resultType="int">
+    SELECT
+        count(1)
+    FROM sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+        sui.status = 1
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.departId neq null and param.departId neq ''">
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+        </if>
+        <if test="param.begin neq null">
+            AND ssi.date_left &gt;= #{param.begin}
+        </if>
+        <if test="param.end neq null ">
+            AND ssi.date_left &lt; #{param.end}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+    </where>
+</select>
+
+    <!--伙伴年龄统计-->
+<select id="getStatisAge" resultType="java.lang.Integer">
+    SELECT
+        COUNT(1)
+    FROM
+        sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+         sui.status != -1
+        <if test="param.isSign neq null and param.isSign">
+            AND sui.status IN (0, 3)
+        </if>
+        <if test="param.userId neq null and param.userId neq ''">
+            AND sui.id = #{param.userId}
+        </if>
+        <if test="param.departId neq null and param.departId neq ''">
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+        </if>
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+        <if test="param.begin neq null">
+            AND sui.birthday_time &lt; #{param.begin}
+        </if>
+        <if test="param.end neq null ">
+            AND sui.birthday_time &gt;= #{param.end}
+        </if>
+    </where>
+</select>
+
+    <!--性别统计-->
+<select id="getSexStatis" resultType="java.lang.Integer">
+    SELECT
+        COUNT(1)
+    FROM
+        sys_user_info AS sui
+    JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+    LEFT JOIN union_staff_depart AS usd ON usd.staff_id = ssi.id
+    <where>
+        sui.status != -1
+        <if test="param.isSign neq null and param.isSign">
+            AND sui.status IN (0, 3)
+        </if>
+        <if test="param.userId neq null and param.userId neq ''">
+            AND sui.id = #{param.userId}
+        </if>
+        <if test="param.departId neq null and param.departId neq ''">
+            AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+        </if>
+        <if test="param.companyId neq null and param.companyId neq ''">
+            AND ssi.comp_id = #{param.companyId}
+        </if>
+        <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+            <foreach collection="param.companyIds" item="companyId" open="AND ssi.comp_id IN (" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+        <if test="param.sex neq null">
+            AND sui.id_card_sex = #{param.sex}
+        </if>
+    </where>
+</select>
+
+    <select id="getDateJoinMin" resultType="java.util.Date">
+        select min(date_join) from sys_staff_info
+    </select>
+</mapper>

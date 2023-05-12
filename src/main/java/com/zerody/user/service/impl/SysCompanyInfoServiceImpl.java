@@ -450,8 +450,9 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         staffInfo.setUserType(userTypeMap.get(admin.getStaffId()));
         //新的企业负责人
         this.sysStaffInfoService.updateById(staffInfo);
-        if (DataUtil.isNotEmpty(oldAdmin)) {
-            oldAdmin.setUserType(UserTypeInfo.PARTNER);
+        if (DataUtil.isNotEmpty(oldAdmin)) {//重置用户类型
+            userTypeMap = UserTypeUtil.getUserTypeByStaffIds(oldAdmin.getId());
+            oldAdmin.setUserType(userTypeMap.get(oldAdmin.getId()));
             this.sysStaffInfoService.updateById(oldAdmin);
         }
         //  设置企业负责人 清除该员工token

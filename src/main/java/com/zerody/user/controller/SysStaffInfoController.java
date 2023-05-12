@@ -9,28 +9,21 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
-import com.zerody.oss.api.util.Uploader;
-import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.dto.AdminsPageDto;
-import com.zerody.user.dto.IdCardUpdateDto;
-import com.zerody.user.dto.SetSysUserInfoDto;
-import com.zerody.user.dto.SysStaffInfoPageDto;
+import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
+import com.zerody.user.service.SysAddressBookService;
+import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
-import com.zerody.user.vo.SysStaffInfoVo;
 import com.zerody.user.vo.SysUserInfoVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.validation.annotation.Validated;
@@ -44,9 +37,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author PengQiang
@@ -68,6 +61,13 @@ public class SysStaffInfoController {
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private SysAddressBookService sysAddressBookService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
+
 
     /**
     *   分页查询员工信息
@@ -606,11 +606,11 @@ public class SysStaffInfoController {
     /**
     * @Author: chenKeFeng
     * @param
-    * @Description: 伙伴数据统计
+    * @Description: 伙伴数据统计(工作台)
     * @Date: 2022/11/11 9:51
     */
     @GetMapping("/statistics-users")
-    public DataResult<UserStatistics> statisticsUsers(SetSysUserInfoDto userInfoDto) {
+    public DataResult<UserStatisticsVo> statisticsUsers(SetSysUserInfoDto userInfoDto) {
         try {
             return R.success(this.sysStaffInfoService.statisticsUsers(userInfoDto));
         } catch (Exception e) {
@@ -759,4 +759,41 @@ public class SysStaffInfoController {
             return R.error("查询负责人级别错误");
         }
     }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取离职伙伴列表明细
+     * @Date: 2023/5/3 14:08
+     */
+    @GetMapping("/get/departure/user")
+    public DataResult<IPage<DepartureDetailsVo>> getDepartureUserList(DepartureDetailsDto dto) {
+        log.info("时间范围 {}", dto.getTime());
+        try {
+            if (DataUtil.isNotEmpty(dto.getTime())) {
+                dto.setBegin(dto.getTime().get(0));
+                dto.setEnd(dto.getTime().get(1));
+            }
+            //判断是否为企业管理员
+            if (UserUtils.getUser().isBack()){
+                dto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+                //判断是否为ceo
+            } else if (UserUtils.getUser().isCEO()){
+                dto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            } else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                dto.setCompanyId(companyId);
+            }
+            return R.success(sysAddressBookService.getDepartureUserList(dto));
+        } catch (DefaultException e) {
+            log.error("获取离职伙伴列表明细错误:{}", e.getMessage());
+            return R.error("获取离职伙伴列表明细错误");
+        } catch (Exception e) {
+            log.error("获取离职伙伴列表明细错误:{}", e, e);
+            return R.error("获取离职伙伴列表明细错误");
+        }
+    }
+
+
 }

@@ -25,6 +25,44 @@
               sci.id;
   </select>
 
+    <!--获取企业列表-->
+    <select id="queryCompanyList" resultType="com.zerody.user.vo.SysAddressBookVo">
+        SELECT distinct sci.company_name, sci.id as compId FROM sys_company_info AS sci
+        LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
+        LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        <where>
+            sci.status =0 and sci.is_pro_data =1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                sci.id = #{param.companyId}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--分页获取企业列表-->
+    <select id="pageCompanyList" resultType="com.zerody.user.vo.SignSummaryVo">
+        SELECT distinct sci.company_name as name, sci.id as companyId FROM sys_company_info AS sci
+        LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
+        LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        <where>
+            sci.status =0 and sci.is_pro_data =1
+            <if test="param.companyId neq null and param.companyId neq ''">
+                sci.id = #{param.companyId}
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
     <!--根据企业id查询部门信息-->
     <select id="queryDepartInfo" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
@@ -122,7 +160,8 @@
         sci.company_name AS companyName,
         ssi.id AS staffId,
         ssi.status,
-        sui.is_prepare_executive
+        sui.is_prepare_executive AS isPrepareExecutive,
+        ssi.is_diamond_member
         FROM
         sys_staff_info ssi
         LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
@@ -159,6 +198,62 @@
             <if test="param.isProData neq null">
                 AND sci.is_pro_data=#{param.isProData}
             </if>
+            <if test="param.isDiamondMember neq null">
+                AND ssi.is_diamond_member=#{param.isDiamondMember}
+            </if>
+            <if test="param.isPrepareExecutive neq null">
+                AND sui.is_prepare_executive=#{param.isPrepareExecutive}
+            </if>
+        </where>
+    </select>
+
+    <!--获取离职伙伴列表明细-->
+    <select id="getDepartureUserList" resultType="com.zerody.user.vo.DepartureDetailsVo" parameterType="com.zerody.user.dto.DepartureDetailsDto">
+        select sui.id AS id, ssi.user_type, ssi.user_name AS userName, sui.phone_number AS phone, sdi.depart_name AS departName,
+        sci.company_name AS companyName, ssi.id AS staffId, ssi.leave_reason, ssi.leave_type, ssi.date_join, ssi.date_left
+        from sys_staff_info ssi
+        JOIN sys_user_info sui ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <where>
+            ssi.deleted =0 and sui.status !=-1 and ssi.status = 1
+            <if test="param.searchName != null and param.searchName != ''">
+                and (ssi.user_name  like CONCAT('%', #{param.searchName} ,'%')
+                or sui.phone_number like CONCAT('%', #{param.searchName}, '%'))
+            </if>
+            <if test="param.userType neq null">
+                and ssi.user_type = #{param.userType}
+            </if>
+            <if test="param.status neq null">
+                and ssi.status = #{param.status}
+            </if>
+            <if test="param.leaveTypeIds neq null and param.leaveTypeIds.size() gt 0">
+                AND ssi.leave_type
+                <foreach collection="param.leaveTypeIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departmentId neq null and param.departmentId neq ''">
+                and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.begin neq null">
+                AND ssi.date_left &gt;= #{param.begin}
+            </if>
+            <if test="param.end neq null">
+                AND ssi.date_left &lt; #{param.end}
+            </if>
+            order by ssi.date_left desc
         </where>
     </select>
 

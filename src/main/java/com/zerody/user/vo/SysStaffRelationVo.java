@@ -79,5 +79,9 @@ public class SysStaffRelationVo {
      */
     private String relationDepartId;
 
+    /**
+     * 离职类型id
+     */
+    private String leaveType;
 
 }

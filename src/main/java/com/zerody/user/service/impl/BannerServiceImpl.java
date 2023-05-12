@@ -8,6 +8,7 @@ import com.itcoon.common.exception.ex.Assertion;
 import com.itcoon.transform.starter.Transformer;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.enums.util.TimeFormat;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.Banner;
@@ -18,6 +19,7 @@ import com.zerody.user.enums.LinkType;
 import com.zerody.user.execption.PlatformResponseEnum;
 import com.zerody.user.mapper.BannerMapper;
 import com.zerody.user.service.BannerService;
+import com.zerody.user.util.DateUtils;
 import com.zerody.user.util.LocalBeanUtils;
 import com.zerody.user.util.PageUtils;
 import com.zerody.user.vo.BannerListVo;
@@ -26,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,15 +59,21 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-    public IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam) {
+    public IPage<BannerListVo> pageAd(BannerListDto param, PageQueryDto pageParam) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date endTime =  null;
+        if (DataUtil.isNotEmpty(param.getEffectiveEndTime())) {
+            endTime = df.parse(param.getEffectiveEndTime());
+            endTime = new Date(endTime.getTime() + DateUtils.DAYS);
+        }
         LambdaQueryWrapper<Banner> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(!StringUtils.isEmpty(param.getName()), Banner::getName, String.format(CommonConstants.QUERY_LIKE_RAW, param.getName()));
        // wrapper.eq(param.getType() != null, Banner::getType, param.getType());
         wrapper.eq(param.getLocation() != null, Banner::getLocation, param.getLocation());
         wrapper.eq(param.getLinkType() != null, Banner::getLinkType, param.getLinkType());
         wrapper.eq(param.getEnable() != null, Banner::getEnable, param.getEnable());
-        wrapper.ge(param.getEffectiveStartTime()!=null,Banner::getEffectiveStartTime,param.getEffectiveStartTime());
-        wrapper.le(param.getEffectiveEndTime()!=null,Banner::getEffectiveEndTime,param.getEffectiveEndTime());
+        wrapper.ge(param.getEffectiveStartTime()!=null,Banner::getCreateTime,param.getEffectiveStartTime());
+        wrapper.le(DataUtil.isNotEmpty(endTime),Banner::getCreateTime,endTime);
         IPage<Banner> page = this.baseMapper.selectPage(PageUtils.getPageRequest(pageParam, "order_num", PageUtils.OrderType.DESC), wrapper);
         IPage<BannerListVo> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(Transformer.toList(BannerListVo.class).apply(page.getRecords()).done());

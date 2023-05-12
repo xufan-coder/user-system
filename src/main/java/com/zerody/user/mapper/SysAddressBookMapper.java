@@ -1,11 +1,12 @@
 package com.zerody.user.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
+import com.zerody.user.dto.DepartureDetailsDto;
 import com.zerody.user.dto.StaffByCompanyDto;
-import com.zerody.user.vo.DepartInfoVo;
-import com.zerody.user.vo.StaffInfoByAddressBookVo;
-import com.zerody.user.vo.StaffInfoByCompanyVo;
-import com.zerody.user.vo.SysAddressBookVo;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
+import com.zerody.user.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -25,6 +26,22 @@ public interface SysAddressBookMapper {
      * @return
      */
     List<SysAddressBookVo> queryAddressBook(@Param("companyIds")List<String> companyIds,@Param("isProData")Integer isProData);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取企业列表
+    * @Date: 2023/5/3 17:00
+    */
+    List<SysAddressBookVo> queryCompanyList(@Param("param") UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 分页获取企业列表
+    * @Date: 2023/5/4 18:28
+    */
+    IPage<SignSummaryVo> pageCompanyList(@Param("param") UserStatisQueryDto param, Page<SignSummaryVo> iPage);
 
     /***
      * @description 部门
@@ -53,5 +70,12 @@ public interface SysAddressBookMapper {
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
 
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取离职伙伴列表明细
+     * @Date: 2023/5/3 14:29
+     */
+    IPage<DepartureDetailsVo> getDepartureUserList(@Param("param") DepartureDetailsDto staffByCompanyDto, Page<DepartureDetailsVo> iPage);
 
 }

@@ -34,4 +34,28 @@
 		left join sys_department_info di on ui.depart_id = di.id
 		where ui.id = #{id}
     </select>
+
+    <!--统计二次签约-->
+    <select id="statistics" resultType="com.zerody.user.vo.SysStaffRelationVo" parameterType="com.zerody.user.dto.statis.UserStatisQueryDto">
+        select distinct ssi.id as staffId, ssi.leave_type from user_induction_record as uir
+        join sys_user_info as sui on sui.id = uir.leave_user_id
+        join sys_staff_info as ssi on ssi.user_id = sui.id
+        left join union_staff_depart AS usd ON usd.staff_id = ssi.id
+        <where>
+            uir.approve_state='SUCCESS'
+            <if test="param.companyId neq null and param.companyId neq ''">
+                AND ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                AND (usd.department_id = #{param.departId} OR usd.department_id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND ssi.comp_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
 </mapper>

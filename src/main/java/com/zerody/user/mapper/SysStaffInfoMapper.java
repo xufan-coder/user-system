@@ -7,7 +7,9 @@ import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.statis.SignAndRescindVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -409,7 +411,63 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      * @Description: 伙伴数据统计
      * @Date: 2022/11/11 10:12
      */
-    UserStatistics statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
+    UserStatisticsVo statisticsUsers(@Param("param") SetSysUserInfoDto userInfoDto);
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴概况
+    * @Date: 2023/5/4 11:14
+    */
+    UserStatisticsVo getUserOverview(@Param("param") UserStatisQueryDto dto);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取伙伴本月签约与解约
+     * @Date: 2022/11/11 10:12
+     */
+    SignAndRescindVo getPartnerThisMonthSignAndRescind(@Param("param") UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取昨日签约与解约数量
+     * @Date: 2022/11/11 10:12
+     */
+    SignAndRescindVo getYesterdaySignAndRescind(@Param("param") UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 根据离职类型获取离职原因数量
+     * @Date: 2022/11/11 10:12
+     */
+    Integer getDepartureCauseCount(@Param("param") UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取离职伙伴数
+    * @Date: 2023/4/29 12:39
+    */
+    Integer getDepartureCount(@Param("param") UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 获取学历分析
+    * @Date: 2023/4/29 14:35
+    */
+    DegreeAnalysisVo getDegreeAnalysis(@Param("param") UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计内控数伙伴数量
+    * @Date: 2023/4/28 18:42
+    */
+    Integer getInternalControlNum(@Param("param") UserStatisQueryDto param);
 
     /**
      * @Author: chenKeFeng

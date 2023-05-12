@@ -12,7 +12,11 @@ import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
+import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.statis.DegreeVo;
+import com.zerody.user.vo.statis.SignAndRescindVo;
+import com.zerody.user.vo.statis.UserStatisTrendVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -188,7 +192,71 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     * @Description: 伙伴数据统计
     * @Date: 2022/11/11 10:13
     */
-    UserStatistics statisticsUsers(SetSysUserInfoDto userInfoDto);
+    UserStatisticsVo statisticsUsers(SetSysUserInfoDto userInfoDto);
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴概况
+    * @Date: 2023/4/28 17:28
+    */
+    UserStatisticsVo getUserOverview(UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 统计伙伴签约与解约(今日、本月)
+    * @Date: 2023/4/28 20:19
+     * @return
+    */
+    SignAndRescindVo statisticsContractAndRescind(UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取解约原因分析
+     * @Date: 2023/4/29 10:30
+     */
+    List<TerminationAnalysisVo> getTerminationAnalysis(UserStatisQueryDto param);
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取学历分析
+     * @Date: 2023/4/29 10:30
+     */
+    DegreeAnalysisVo getDegreeAnalysis(UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 统计学历
+    * @Date: 2023/5/8 14:31
+    */
+    int getDegree(UserStatisQueryDto param);
+
+    /**
+     * 获取高中以下
+     *
+     * @return
+     */
+    int getBelowHighSchool(UserStatisQueryDto param);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 签约数据汇总报表
+    * @Date: 2023/5/3 15:47
+    */
+    List<SignSummaryVo> getSignSummary(UserStatisQueryDto param, UserVo user);
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 伙伴档案分析(pc)
+    * @Date: 2023/5/4 18:25
+    */
+    IPage<SignSummaryVo> getFileSummary(UserStatisQueryDto param);
 
     /**
     * @Author: chenKeFeng
