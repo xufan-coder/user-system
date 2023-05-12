@@ -3258,16 +3258,23 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 arrList.add(vo);
             }
         } else if (DataUtil.isNotEmpty(param.getDepartId())) {
-            //查询一级部门下的全部二级部门
-            SysDepartmentInfoDto dto = new SysDepartmentInfoDto();
-            dto.setCompId(param.getCompanyId());
-            dto.setDepartId(param.getDepartId());
-            List<SysDepartmentInfoVo> departmentList = sysDepartmentInfoMapper.getSecondaryDepartmentList(dto);
-            for (SysDepartmentInfoVo dept : departmentList) {
-                param.setDepartId(dept.getId());
-                SignSummaryVo vo = getSummary(dept.getDepartName(), param);
+            SysDepartmentInfo departmentInfo = sysDepartmentInfoMapper.selectById(param.getDepartId());
+            //判断是否为一级部门 如果是查询一级部门下的二级部门，否则查二级部门
+            if (DataUtil.isNotEmpty(departmentInfo) && DataUtil.isEmpty(departmentInfo.getParentId())) {
+                //查询二级部门
+                SysDepartmentInfoDto dto = new SysDepartmentInfoDto();
+                dto.setDepartId(param.getDepartId());
+                List<SysDepartmentInfoVo> departmentList = sysDepartmentInfoMapper.getSecondaryDepartmentList(dto);
+                for (SysDepartmentInfoVo dept : departmentList) {
+                    param.setDepartId(dept.getId());
+                    SignSummaryVo vo = getSummary(dept.getDepartName(), param);
+                    arrList.add(vo);
+                }
+            } else {
+                SignSummaryVo vo = getSummary(departmentInfo.getDepartName(), param);
                 arrList.add(vo);
             }
+
         } else {
             List<SysAddressBookVo> companyList = this.sysUserAddressBookMapper.queryCompanyList(param);
             for (SysAddressBookVo com : companyList) {
