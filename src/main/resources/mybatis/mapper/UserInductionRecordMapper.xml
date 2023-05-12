@@ -55,6 +55,9 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="param.isSign neq null and param.isSign">
+                AND sui.status IN (0, 3)
+            </if>
         </where>
     </select>
 
