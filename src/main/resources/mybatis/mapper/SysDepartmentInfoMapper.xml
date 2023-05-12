@@ -474,15 +474,13 @@
 
     <!--获取二级部门-->
     <select id="getSecondaryDepartmentList" resultType="com.zerody.user.vo.SysDepartmentInfoVo">
-        select sdi.id, sdi.depart_name, sdi.parent_id from sys_department_info AS sdi
+        select sdi.id, sdi.depart_name from sys_department_info AS sdi
         <where>
             sdi.status = 0
-            <if test="param.compId neq null and param.compId neq ''">
-                and sdi.comp_id = #{param.compId}
-            </if>
             <if test="param.departId neq null and param.departId neq ''">
-                and (sdi.id = #{param.departId} or sdi.id like concat('',#{param.departId},'\_%'))
+                and parent_id =#{param.departId}
             </if>
         </where>
     </select>
+
 </mapper>
