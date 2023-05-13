@@ -1,5 +1,9 @@
 package com.zerody.user.enums;
 
+import com.zerody.common.utils.DataUtil;
+
+import java.util.Objects;
+
 /**
  *  PRIMARY_SCHOOL("小学"), JUNIOR_HIGH("初中"), TECHNICAL_SECONDARY("中专"), SENIOR_HIGH("高中"),
  *  JUNIOR_COLLEGE("大专"), REGULAR_COLLEGE("本科"), MASTER("硕士"), DOCTOR("博士");
@@ -41,14 +45,18 @@ public enum DegreeEnum {
      * @param text 中文描述
      * @return
      */
-    public static DegreeEnum getByCode(String text) {
+    public static String getByCode(String text) {
+        if (DataUtil.isEmpty(text)) {
+            return null;
+        }
         for (DegreeEnum status : DegreeEnum.values()){
-            if(text.equals(status.getText())){
-                return status;
+            if(status.getText().equals(text)){
+                return status.name();
             }
         }
         return null;
     }
+
 
     /**
      * 英文转中文
@@ -57,7 +65,7 @@ public enum DegreeEnum {
      */
     public static String getByText(String name) {
         for (DegreeEnum status : DegreeEnum.values()){
-            if(name.equals(status.name())){
+            if(status.name().equals(name)){
                 return status.getText();
             }
         }
