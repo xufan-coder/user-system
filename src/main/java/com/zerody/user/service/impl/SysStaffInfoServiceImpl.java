@@ -1771,8 +1771,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setEmail(row[++index]);
 
         //学历转换成枚举入库
-        String  text = DegreeEnum.getByCode(row[++index]);
-        userInfo.setHighestEducation(text);
+        String text = DegreeEnum.getByCode(row[++index]);
+        if (DataUtil.isNotEmpty(text)) {
+            userInfo.setHighestEducation(text);
+        }
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
@@ -2040,6 +2042,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setEmail(row[++index]);
         //学历转换成枚举入库
         String text = DegreeEnum.getByCode(row[++index]);
+        if (DataUtil.isNotEmpty(text)) {
+            userInfo.setHighestEducation(text);
+        }
         userInfo.setHighestEducation(text);
         userInfo.setGraduatedFrom(row[++index]);
         userInfo.setMajor(row[++index]);

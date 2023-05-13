@@ -1,5 +1,7 @@
 package com.zerody.user.enums;
 
+import com.zerody.common.utils.DataUtil;
+
 import java.util.Objects;
 
 /**
@@ -44,6 +46,9 @@ public enum DegreeEnum {
      * @return
      */
     public static String getByCode(String text) {
+        if (DataUtil.isEmpty(text)) {
+            return null;
+        }
         for (DegreeEnum status : DegreeEnum.values()){
             if(status.getText().equals(text)){
                 return status.name();
@@ -51,6 +56,7 @@ public enum DegreeEnum {
         }
         return null;
     }
+
 
     /**
      * 英文转中文
