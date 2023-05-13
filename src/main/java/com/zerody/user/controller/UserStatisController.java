@@ -340,27 +340,6 @@ public class UserStatisController {
         }
     }
 
-
-    /**
-     * @Author: chenKeFeng
-     * @param
-     * @Description: 获取学历分析(pc)
-     * @Date: 2023/4/29 11:29
-     */
-    /*@GetMapping("/pc/degree/analysis")
-    public DataResult<DegreeAnalysisVo> getDegreeAnalysisPc(UserStatisQueryDto param) {
-        try {
-            this.checkUtil.SetUserPositionInfo(param);
-            return R.success(this.sysStaffInfoService.getDegreeAnalysis(param));
-        } catch (DefaultException e) {
-            log.error("获取学历分析出错:{}", e.getMessage());
-            return R.error("获取学历分析出错");
-        } catch (Exception e) {
-            log.error("获取学历分析出错:{}", e, e);
-            return R.error("获取学历分析出错");
-        }
-    }*/
-
     
     /**
     * @Author: chenKeFeng
@@ -399,6 +378,7 @@ public class UserStatisController {
             if (DataUtil.isNotEmpty(param.getDeptId())) {
                 param.setDepartId(param.getDeptId());
             }
+            this.checkUtil.SetUserPositionInfo(param);
             return R.success(this.sysStaffInfoService.getFileSummary(param));
         } catch (DefaultException e) {
             log.error("伙伴档案分析(pc)出错:{}", e.getMessage());
