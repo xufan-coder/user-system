@@ -1766,6 +1766,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setBirthdayMonth(date.getMonth());
         //日
         userInfo.setBirthdayDay(date.getDay());
+        IdCardDate card = DateUtil.getIdCardDate(userInfo.getCertificateCard());
+        userInfo.setBirthdayTime(Date.from(LocalDate.of(card.getYear(), card.getMonth(), card.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
+        userInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(userInfo.getCertificateCard()));
         userInfo.setCertificateCardAddress(row[++index]);
         userInfo.setContactAddress(row[++index]);
         userInfo.setEmail(row[++index]);
@@ -2047,6 +2050,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         userInfo.setHighestEducation(text);
         userInfo.setGraduatedFrom(row[++index]);
+        IdCardDate card = DateUtil.getIdCardDate(userInfo.getCertificateCard());
+        //月
+        userInfo.setBirthdayMonth(date.getMonth());
+        userInfo.setBirthdayDay(date.getMonth());
+        userInfo.setBirthdayTime(Date.from(LocalDate.of(card.getYear(), card.getMonth(), card.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
+        userInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(userInfo.getCertificateCard()));
         userInfo.setMajor(row[++index]);
         userInfo.setRegisterTime(new Date());
         userInfo.setStatus(status);
