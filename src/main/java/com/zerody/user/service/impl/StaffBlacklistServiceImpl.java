@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,6 +118,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private PositionRecordService positionRecordService;
 
+    @Value("${leave.type.block:}")
+    private String block;
+
     @Override
     public void addStaffBlaklistJoin(StaffBlacklistAddDto param) {
         StaffBlacklist blac = param.getBlacklist();
@@ -138,47 +142,6 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         if (DataUtil.isNotEmpty(oldBlac)) {
             throw new DefaultException("该员工已被拉黑！无法重复发起");
         }
-        SysUserInfo byId = this.userInfoService.getById(blac.getUserId());
-        //判断加入被拉黑用户 是否是预备高管 如果是 则退学
-        PrepareExecutiveRecordVo prepareExecutiveRecord = this.prepareExecutiveRecordService.getPrepareExecutiveRecordInner(blac.getUserId());
-        if(DataUtil.isNotEmpty(prepareExecutiveRecord)){
-            if(prepareExecutiveRecord.getEnterDate().after(new Date())){
-                throw new DefaultException("当前内控时间小于预备高管入学时间，不允许内控");
-            }
-            prepareExecutiveRecord.setOutDate(new Date());
-            prepareExecutiveRecord.setOutReason(param.getBlacklist().getReason());
-            prepareExecutiveRecord.setIsPrepareExecutive(2);
-            PrepareExecutiveRecord record = new PrepareExecutiveRecord();
-            BeanUtils.copyProperties(prepareExecutiveRecord,record);
-            this.prepareExecutiveRecordService.updateById(record);
-            if(DataUtil.isNotEmpty(byId)){
-                byId.setIsPrepareExecutive(2);
-                this.userInfoService.updateById(byId);
-            }
-
-        }
-        //添加一条任职记录
-        StaffInfoVo staff = this.staffInfoService.getStaffInfo(blac.getUserId());
-        SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
-        PositionRecord positionRecord = new PositionRecord();
-        QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,sysUserInfoDto.getStaffId());
-        UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
-        positionRecord.setRoleName(unionRoleStaff.getRoleName());
-        positionRecord.setId(UUIDutils.getUUID32());
-        positionRecord.setCertificateCard(sysUserInfoDto.getCertificateCard());
-        SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staff.getCompanyId());
-        if(DataUtil.isNotEmpty(companyInfo)){
-            positionRecord.setCompanyId(staff.getCompanyId());
-            positionRecord.setCompanyName(companyInfo.getCompanyName());
-        }
-        positionRecord.setUserId(blac.getUserId());
-        positionRecord.setUserName(sysUserInfoDto.getUserName());
-        positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
-        positionRecord.setCreateTime(new Date());
-        positionRecord.setQuitTime(new Date());
-        positionRecord.setQuitReason(blac.getReason());
-        positionRecordService.save(positionRecord);
         blac.setCreateTime(new Date());
         blac.setApprovalTime(new Date());
         blac.setState(StaffBlacklistApproveState.BLOCK.name());
@@ -642,6 +605,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             positionRecord.setPositionTime(sysUserInfoDto.getDateJoin());
             positionRecord.setCreateTime(new Date());
             positionRecord.setQuitTime(new Date());
+            positionRecord.setLeaveType(this.block);
             positionRecord.setQuitReason(blac.getReason());
             positionRecordService.save(positionRecord);
 //            this.remove(blacQw);

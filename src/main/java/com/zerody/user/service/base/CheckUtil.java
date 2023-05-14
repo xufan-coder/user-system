@@ -79,8 +79,12 @@ public class CheckUtil {
             param.getDepartIds().add(param.getDepartId());
         }
         param.setCompanyId(user.getCompanyId());
+        AdminVo admin = this.staffService.getIsAdmin(user);
+        if (!admin.getIsDepartAdmin() && !admin.getIsCompanyAdmin()) {
+            param.setUserId(user.getUserId());
+        }
+        param.setCompanyId(user.getCompanyId());
         if (StringUtils.isEmpty(param.getUserId()) && StringUtils.isEmpty(param.getDepartId())) {
-            AdminVo admin = this.staffService.getIsAdmin(user);
             if(admin.getIsCompanyAdmin()){
 
             } else if (admin.getIsDepartAdmin()) {
@@ -116,9 +120,12 @@ public class CheckUtil {
             }
             param.getDepartIds().add(param.getDepartId());
         }
+        AdminVo admin = this.staffService.getIsAdmin(user);
+        if (!admin.getIsDepartAdmin() && !admin.getIsCompanyAdmin()) {
+            param.setUserId(user.getUserId());
+        }
         param.setCompanyId(user.getCompanyId());
         if (StringUtils.isEmpty(param.getUserId()) && StringUtils.isEmpty(param.getDepartId())) {
-            AdminVo admin = this.staffService.getIsAdmin(user);
             if(admin.getIsCompanyAdmin()){
 
             } else if (admin.getIsDepartAdmin()) {

@@ -47,4 +47,11 @@ public class StaffByCompanyDto {
     /**是否查询离职伙伴   0-否 1-是*/
     private Integer isQuit;
 
+    /**
+     * 是否钻石会员（0-否 1-是）
+     */
+    private Integer isDiamondMember;
+
+    /** 是否预备高管 0表示否 1表示是 2表示退学*/
+    private Integer isPrepareExecutive;
 }

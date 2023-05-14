@@ -84,6 +84,11 @@ public class SysStaffInfo extends BaseModel {
      */
     private Integer deleted;
 
+    /**
+     * 离职类型
+     */
+    private String leaveType;
+
     /** 离职原因 */
     @CheckCompare(value = "leaveReason",name = "离职原因")
     private String leaveReason;
