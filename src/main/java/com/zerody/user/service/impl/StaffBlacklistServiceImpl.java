@@ -745,7 +745,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto, UserVo userVo,boolean isTraverse) {
-        MobileBlacklistQueryVo vo = new MobileBlacklistQueryVo();
+        MobileBlacklistQueryVo vo = null;
         MobileBlacklistQueryVo companys = this.baseMapper.getBlacklistByMobile(dto);
         if(DataUtil.isNotEmpty(companys)){
             if(companys.getStatus()==1){
@@ -774,6 +774,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
                 }
             }
+            vo = new MobileBlacklistQueryVo();
             BeanUtils.copyProperties(companys,vo);
         }else {
             QueryWrapper<StaffBlacklist> wrapper = new QueryWrapper<>();
@@ -787,6 +788,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             wrapper.lambda().last("limit 1");
             StaffBlacklist blacklist = this.getOne(wrapper);
             if(ObjectUtils.isNotEmpty(blacklist)){
+                vo = new MobileBlacklistQueryVo();
                 SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(blacklist.getCompanyId());
                 if(DataUtil.isNotEmpty(companyInfo)){
                     vo.setCompanyName(companyInfo.getCompanyName());
