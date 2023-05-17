@@ -255,6 +255,7 @@ public class SysAddressBookController {
                 if(DataUtil.isEmpty(byId)){
                     return R.error("获取公司失败,请求企业错误！");
                 }
+                staffByCompanyDto.setCompanyId(companyId);
                 staffByCompanyDto.setIsProData(byId.getIsProData());
             }
 

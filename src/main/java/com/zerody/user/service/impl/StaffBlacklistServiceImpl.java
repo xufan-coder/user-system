@@ -745,6 +745,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
     @Override
     public MobileBlacklistQueryVo getBlacklistByMobile(MobileAndIdentityCardDto dto, UserVo userVo,boolean isTraverse) {
+        MobileBlacklistQueryVo vo = new MobileBlacklistQueryVo();
         MobileBlacklistQueryVo companys = this.baseMapper.getBlacklistByMobile(dto);
         if(DataUtil.isNotEmpty(companys)){
             if(companys.getStatus()==1){
@@ -760,7 +761,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                 wrapper.lambda().last("limit 1");
                 StaffBlacklist blacklist = this.getOne(wrapper);
                 if(ObjectUtils.isNotEmpty(blacklist)){
-                    companys.setIsBlock(false);
+                    companys.setIsBlock(true);
                     companys.setReason(blacklist.getReason());
                     companys.setStatus(2);
                 }
@@ -773,7 +774,26 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     blacklistOperationRecordService.addBlacklistOperationRecord(operationRecord,userVo);
                 }
             }
+            BeanUtils.copyProperties(companys,vo);
+        }else {
+            QueryWrapper<StaffBlacklist> wrapper = new QueryWrapper<>();
+            wrapper.lambda().and(bl ->
+                    bl.eq(StaffBlacklist::getMobile, dto.getMobile())
+                            .or()
+                            .eq(StringUtils.isNotEmpty( dto.getIdentityCard()), StaffBlacklist::getIdentityCard,
+                                    dto.getIdentityCard())
+            );
+            wrapper.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+            wrapper.lambda().last("limit 1");
+            StaffBlacklist blacklist = this.getOne(wrapper);
+            if(ObjectUtils.isNotEmpty(blacklist)){
+                vo.setUserName(blacklist.getUserName());
+                vo.setPhoneNumber(blacklist.getMobile());
+                vo.setIsBlock(true);
+                vo.setReason(blacklist.getReason());
+                vo.setStatus(2);
+            }
         }
-        return companys;
+        return vo;
     }
 }
