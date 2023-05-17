@@ -319,6 +319,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             hintContent = hintContent.concat("”存在，请再次确认");
             throw new DefaultException(hintContent);
         }
+        //判断是否在内控名单里面
+        QueryWrapper<StaffBlacklist> blacklistQueryWrapper = new QueryWrapper<>();
+        blacklistQueryWrapper.lambda().and(bl ->
+                bl.eq(StaffBlacklist::getMobile, setSysUserInfoDto.getPhoneNumber())
+                        .or()
+                        .eq(StringUtils.isNotEmpty( setSysUserInfoDto.getCertificateCard()), StaffBlacklist::getIdentityCard,
+                                setSysUserInfoDto.getCertificateCard())
+        );
+        blacklistQueryWrapper.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+        blacklistQueryWrapper.lambda().last("limit 1");
+        StaffBlacklist blacklist = this.staffBlacklistService.getOne(blacklistQueryWrapper);
+        if(DataUtil.isNotEmpty(blacklist)){
+            throw new DefaultException("该用户已存在内控名单，请先解除内控");
+        }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
         log.info("添加用户入库参数--{}", JSON.toJSONString(sysUserInfo));
