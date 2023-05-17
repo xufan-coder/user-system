@@ -787,6 +787,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             wrapper.lambda().last("limit 1");
             StaffBlacklist blacklist = this.getOne(wrapper);
             if(ObjectUtils.isNotEmpty(blacklist)){
+                SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(blacklist.getCompanyId());
+                if(DataUtil.isNotEmpty(companyInfo)){
+                    vo.setCompanyName(companyInfo.getCompanyName());
+                }
+                vo.setCompanyId(blacklist.getCompanyId());
                 vo.setUserName(blacklist.getUserName());
                 vo.setPhoneNumber(blacklist.getMobile());
                 vo.setIsBlock(true);
