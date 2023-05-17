@@ -320,17 +320,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             throw new DefaultException(hintContent);
         }
         //判断是否在内控名单里面
-        QueryWrapper<StaffBlacklist> blacklistQueryWrapper = new QueryWrapper<>();
-        blacklistQueryWrapper.lambda().and(bl ->
-                bl.eq(StaffBlacklist::getMobile, setSysUserInfoDto.getPhoneNumber())
-                        .or()
-                        .eq(StringUtils.isNotEmpty( setSysUserInfoDto.getCertificateCard()), StaffBlacklist::getIdentityCard,
-                                setSysUserInfoDto.getCertificateCard())
-        );
-        blacklistQueryWrapper.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
-        blacklistQueryWrapper.lambda().last("limit 1");
-        StaffBlacklist blacklist = this.staffBlacklistService.getOne(blacklistQueryWrapper);
-        if(DataUtil.isNotEmpty(blacklist)){
+        MobileAndIdentityCardDto cardDto = new MobileAndIdentityCardDto();
+        cardDto.setMobile(setSysUserInfoDto.getPhoneNumber());
+        cardDto.setIdentityCard(setSysUserInfoDto.getCertificateCard());
+        MobileBlacklistQueryVo blacklist = this.staffBlacklistService.getBlacklistByMobile(cardDto, null, false);
+        if(DataUtil.isNotEmpty(blacklist) && blacklist.getStatus()==2){
             throw new DefaultException("该用户已存在内控名单，请先解除内控");
         }
         //效验通过保存用户信息
