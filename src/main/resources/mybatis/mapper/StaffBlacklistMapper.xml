@@ -159,6 +159,7 @@
             <if test="param.userId neq null and param.userId neq ''">
                 and sui.id != #{param.userId}
             </if>
+            order by sui.create_time desc
             limit 0,1
         </where>
     </select>
