@@ -335,6 +335,27 @@ public class StaffBlacklistControlller {
     }
 
     /**
+     * @Description:  根据手机号码查询是否被拉黑-app
+     * @param dto
+     * @return: com.zerody.common.api.bean.DataResult<com.zerody.user.vo.MobileBlacklistQueryVo>
+     * @Author: luolujin
+     * @Date: 2023/5/17 18:07
+     */
+    @GetMapping("/app/get-by-mobile")
+    public DataResult<MobileBlacklistQueryVo> getBlacklistByMobileApp(MobileAndIdentityCardDto dto){
+        try {
+            MobileBlacklistQueryVo result = this.service.getBlacklistByMobile(dto, UserUtils.getUser(),true);
+            return R.success(result);
+        } catch (DefaultException e) {
+            log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("根据手机号码查询是否被拉黑出错：{}", e, e);
+            return R.error("根据手机号码查询是否被拉黑出错" + e.getMessage());
+        }
+    }
+
+    /**
      *
      *
      * @author               PengQiang

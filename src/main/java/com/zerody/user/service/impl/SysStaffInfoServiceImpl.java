@@ -319,6 +319,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             hintContent = hintContent.concat("”存在，请再次确认");
             throw new DefaultException(hintContent);
         }
+        //判断是否在内控名单里面
+        MobileAndIdentityCardDto cardDto = new MobileAndIdentityCardDto();
+        cardDto.setMobile(setSysUserInfoDto.getPhoneNumber());
+        cardDto.setIdentityCard(setSysUserInfoDto.getCertificateCard());
+        MobileBlacklistQueryVo blacklist = this.staffBlacklistService.getBlacklistByMobile(cardDto, null, false);
+        if(DataUtil.isNotEmpty(blacklist) && blacklist.getStatus()==2){
+            throw new DefaultException("该用户已存在内控名单，请先解除内控");
+        }
         //效验通过保存用户信息
         sysUserInfo.setRegisterTime(new Date());
         log.info("添加用户入库参数--{}", JSON.toJSONString(sysUserInfo));
@@ -1210,12 +1218,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             staffDimissionInfo.setOperationUserName(UserUtils.getUser().getUserName());
             this.mqService.send(staffDimissionInfo, MQ.QUEUE_STAFF_DIMISSION);
 
-            if(oldUserInfo.getStatus()!=1){
+            QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
+            wrapper.lambda().eq(PositionRecord::getUserId,oldUserInfo.getId());
+            wrapper.lambda().orderByDesc(PositionRecord::getCreateTime);
+            wrapper.lambda().last("limit 0,1");
+            PositionRecord positionRecord = this.positionRecordService.getOne(wrapper);
+            if(oldUserInfo.getStatus()!=1 || DataUtil.isEmpty(positionRecord)){
                 SysCompanyInfo sysCompanyInfo = this.sysCompanyInfoMapper.selectById(staff.getCompId());
                 QueryWrapper<UnionRoleStaff> queryWrapper = new QueryWrapper<>();
                 queryWrapper.lambda().eq(UnionRoleStaff::getStaffId,setSysUserInfoDto.getStaffId());
                 UnionRoleStaff unionRoleStaff = this.unionRoleStaffMapper.selectOne(queryWrapper);
-                PositionRecord positionRecord = new PositionRecord();
+                positionRecord = new PositionRecord();
                 positionRecord.setId(UUIDutils.getUUID32());
                 positionRecord.setUserId(staff.getUserId());
                 positionRecord.setUserName(staff.getUserName());
@@ -1232,11 +1245,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 positionRecord.setCreateTime(new Date());
                 this.positionRecordService.save(positionRecord);
             }else {
-                QueryWrapper<PositionRecord> wrapper = new QueryWrapper<>();
-                wrapper.lambda().eq(PositionRecord::getUserId,oldUserInfo.getId());
-                wrapper.lambda().orderByDesc(PositionRecord::getCreateTime);
-                wrapper.lambda().last("limit 0,1");
-                PositionRecord positionRecord = this.positionRecordService.getOne(wrapper);
                 positionRecord.setQuitTime(staff.getDateLeft());
                 positionRecord.setLeaveType(staff.getLeaveType());
                 positionRecord.setQuitReason(staff.getLeaveReason());
