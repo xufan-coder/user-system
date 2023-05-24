@@ -297,13 +297,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),
                     setSysUserInfoDto.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
             }
             // 判断跨公司的
             leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),setSysUserInfoDto.getPhoneNumber(),null);
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
             }
         }
@@ -755,13 +755,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 //判断同公司的
                 LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+(leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
                 leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),null);
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
                 }
             }
@@ -1971,13 +1971,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,companyId);
                 if(leave != null){
                     errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
-                            append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
+                            append((leave.getDepartName() ==null ? "" : leave.getDepartName() ))
+                            .append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
                             append("（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
                 leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
                 }
 
@@ -2227,7 +2228,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             // 判断跨公司的
             leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
             }
 
