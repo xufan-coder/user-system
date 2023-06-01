@@ -3569,7 +3569,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }else {
                 qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
             }
-
             SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
             if(DataUtil.isNotEmpty(leader1)){
                 SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
@@ -3596,7 +3595,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(result.size() > 0) {
             result = result.stream().distinct().collect(toList());
         }
-        return result;
+        return removeLeaf(result);
+    }
+
+    public List<String> removeLeaf (List<String> userIds) {
+        List<SysUserInfo> staffList = this.sysUserInfoService.listByIds(userIds);
+        return staffList.stream().filter(s -> s.getStatus() != null && s.getStatus() == YesNo.NO).map(SysUserInfo::getId)
+                .distinct().collect(Collectors.toList());
     }
 
     @Override
