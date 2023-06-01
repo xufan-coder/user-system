@@ -3600,8 +3600,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     public List<String> removeLeaf (List<String> userIds) {
         List<SysUserInfo> staffList = this.sysUserInfoService.listByIds(userIds);
-        return staffList.stream().filter(s -> s.getStatus() != null && s.getStatus() == YesNo.NO).map(SysUserInfo::getId)
+
+        List<String> ids = staffList.stream().filter(s -> s.getStatus() != null && s.getStatus() == YesNo.NO).map(SysUserInfo::getId)
                 .distinct().collect(Collectors.toList());
+        List<String> result = new ArrayList<>();
+        for(String s : userIds) {
+            if(ids.contains(s)) {
+                result.add(s);
+            }
+        }
+        return result;
     }
 
     @Override
