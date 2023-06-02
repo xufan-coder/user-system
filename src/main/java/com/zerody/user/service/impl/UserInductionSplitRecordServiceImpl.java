@@ -238,7 +238,7 @@ public class UserInductionSplitRecordServiceImpl extends ServiceImpl<UserInducti
         log.info("添加员工入库参数--{}", JSON.toJSONString(staff));
         staff.setStatus(StatusEnum.activity.getValue());
         staff.setDeleted(YesNo.NO);
-        staff.setDateJoin(setSysUserInfoDto.getDateJoin());
+        staff.setDateJoin(induction.getSignTime());
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         this.sysStaffInfoService.save(staff);
 

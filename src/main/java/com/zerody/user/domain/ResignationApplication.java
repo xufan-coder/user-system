@@ -101,4 +101,9 @@ public class ResignationApplication implements java.io.Serializable {
      */
     private String processKey;
 
+    /**
+     * 离职状态(0.未离职、1.已离职)
+     */
+    private Integer leaveState;
+
 }
