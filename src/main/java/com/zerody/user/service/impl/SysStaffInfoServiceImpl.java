@@ -694,9 +694,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCompanyName(leaveUser.getCompanyName());
             positionRecord.setUserId(leaveUser.getUserId());
             positionRecord.setUserName(leaveUser.getUserName());
-            positionRecord.setPositionTime(new Date());
+            positionRecord.setPositionTime(leaveUser.getJoinTime());
+            if (DataUtil.isNotEmpty(positionRecord.getPositionTime())) {
+                positionRecord.setPositionTime(new Date());
+            }
             positionRecord.setCreateTime(new Date());
             positionRecord.setRoleName(leaveUser.getRoleName());
+            positionRecord.setQuitTime(leaveUser.getLeftTime());
+            if (DataUtil.isNotEmpty(positionRecord.getQuitTime())) {
+                positionRecord.setQuitTime(new Date());
+            }
             positionRecord.setQuitTime(new Date());
             positionRecord.setQuitReason(leaveReason);
             positionRecordService.save(positionRecord);
