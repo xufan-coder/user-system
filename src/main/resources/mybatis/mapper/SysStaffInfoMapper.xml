@@ -670,7 +670,9 @@
         ssi.id AS `staff_id`,
         ssi.status,
         ssi.user_type,
-        sui.create_time
+        sui.create_time,
+        ssi.date_left AS left_time,
+        ssi.date_join AS join_time
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
