@@ -31,7 +31,7 @@ public class StaffInfoByAddressBookVo {
     /**
      * 头像
      */
-    private String staffAvatar;
+    private String userAvatar;
 
     /**
      * 手机号
