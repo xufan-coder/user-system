@@ -391,7 +391,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             user.setAvatar(DEFAULT_AVATAR);
         }
         try {
-            URL url = new URL(user.getAvatar());
+            // 添加缩放参数 按长边100px等比缩放
+            URL url = new URL(user.getAvatar()+"x-oss-process=image/resize,l_100");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(5 * 1000);
