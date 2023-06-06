@@ -150,7 +150,8 @@
     <select id="getStaffByCompany" resultType="com.zerody.user.vo.StaffInfoByAddressBookVo">
         SELECT
         sui.id AS id,
-        ssi.avatar AS avatar,
+        sui.avatar AS avatar,
+        ssi.avatar AS staffAvatar,
         ssi.user_type,
         ssi.user_name AS userName,
         sui.phone_number AS phone,
