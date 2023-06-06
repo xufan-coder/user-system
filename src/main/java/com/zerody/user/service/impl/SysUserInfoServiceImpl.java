@@ -392,7 +392,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         }
         try {
             // 添加缩放参数 按长边100px等比缩放
-            URL url = new URL(user.getAvatar()+"x-oss-process=image/resize,l_100");
+            URL url = new URL(user.getAvatar()+"?x-oss-process=image/resize,l_100");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(5 * 1000);
