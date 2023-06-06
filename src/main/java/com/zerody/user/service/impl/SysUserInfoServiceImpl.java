@@ -400,7 +400,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             byte data[] = readInputStream(inStream);
             inStream.read(data);  //读数据
             inStream.close();
-            response.addHeader("Content-Disposition", "attachment;filename="+new String( "用户头像".getBytes("gb2312"), "ISO8859-1" )+".jpg");
+            response.addHeader("Content-Disposition", "inline;filename="+new String( "用户头像".getBytes("gb2312"), "ISO8859-1" )+".jpg");
             OutputStream os = response.getOutputStream();
             os.write(data);
             os.flush();
