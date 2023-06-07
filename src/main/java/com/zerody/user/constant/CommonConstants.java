@@ -14,5 +14,7 @@ public class CommonConstants {
 
 	public final static String USE_CONTROL_WHITE_LIST = "use_control:white_list";
 
+	public final static String USER_SUSPENDED_LIST = "user_suspended_list:";
+
 
 }

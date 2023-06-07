@@ -125,12 +125,9 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             throw new DefaultException("您已被禁止登录系统，如有疑问请联系公司行政人员！");
         }
         //2.1增加校验账号是否被冻结
-        SysUserInfo userById = sysUserInfoService.getUserById(userId);
-        if(DataUtil.isNotEmpty(userById)){
-           // 账号状态 0正常   1已冻结
-            if(userById.getUseState()!=null&&userById.getUseState().equals(1)){
+        Boolean isSuspended = stringRedisTemplate.hasKey(CommonConstants.USER_SUSPENDED_LIST + userId);
+        if(isSuspended){
                 throw new DefaultException("您的账号已被冻结，请联系管理员！");
-            }
         }
 
         //3再校验此人白名单
