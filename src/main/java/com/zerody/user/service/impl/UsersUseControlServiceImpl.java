@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
 import com.zerody.user.dto.UsersUseControlDto;
@@ -22,9 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,11 +39,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMapper, UsersUseControl> implements UsersUseControlService {
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
     @Override
     public void addNameList(UsersUseControlDto param) {
+        Map<String,Object> blackList=new HashMap<>();
+        Map<String,Object> whiteList=new HashMap<>();
+
         List<String> userIds = param.getUserIds();
         for (String userId : userIds) {
             QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
@@ -59,12 +67,33 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
                 usersUseControl.setMobile(sysUserInfoVo.getPhoneNumber());
                 usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
                 this.save(usersUseControl);
+                if(usersUseControl.getType()==1){
+                    blackList.put(usersUseControl.getUserId(),1);
+                }
+                if(usersUseControl.getType()==2){
+                    whiteList.put(usersUseControl.getUserId(),1);
+                }
             }
+        }
+        if(DataUtil.isNotEmpty(blackList)){
+          stringRedisTemplate.opsForHash().putAll(CommonConstants.USE_CONTROL_BLACK_LIST_, blackList);
+        }
+        if(DataUtil.isNotEmpty(whiteList)){
+            stringRedisTemplate.opsForHash().putAll(CommonConstants.USE_CONTROL_WHITE_LIST, whiteList);
         }
     }
 
     @Override
     public void removeNameList(String id) {
+        UsersUseControl one = this.getById(id);
+        if(DataUtil.isNotEmpty(one)){
+            if(one.getType()==1){
+                stringRedisTemplate.opsForHash().delete(CommonConstants.USE_CONTROL_BLACK_LIST_, one.getUserId());
+            }
+            if(one.getType()==2){
+                stringRedisTemplate.opsForHash().delete(CommonConstants.USE_CONTROL_WHITE_LIST, one.getUserId());
+            }
+        }
         this.removeById(id);
     }
 
