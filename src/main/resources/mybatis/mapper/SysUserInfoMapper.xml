@@ -596,6 +596,7 @@
 	 SELECT
         sui.id AS id,
         ssi.avatar AS avatar,
+        sui.avatar AS userAvatar,
         ssi.user_name AS userName,
         sui.phone_number AS phone,
         sjp.position_name AS positionName,

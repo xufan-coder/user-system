@@ -391,7 +391,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             user.setAvatar(DEFAULT_AVATAR);
         }
         try {
-            URL url = new URL(user.getAvatar());
+            // 添加缩放参数 按长边100px等比缩放
+            URL url = new URL(user.getAvatar()+"?x-oss-process=image/resize,l_100");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(5 * 1000);
@@ -399,7 +400,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             byte data[] = readInputStream(inStream);
             inStream.read(data);  //读数据
             inStream.close();
-            response.addHeader("Content-Disposition", "attachment;filename="+new String( "用户头像".getBytes("gb2312"), "ISO8859-1" )+".jpg");
+            response.addHeader("Content-Disposition", "inline;filename="+new String( "用户头像".getBytes("gb2312"), "ISO8859-1" )+".jpg");
             OutputStream os = response.getOutputStream();
             os.write(data);
             os.flush();
