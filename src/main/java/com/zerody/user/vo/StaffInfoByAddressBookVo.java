@@ -28,6 +28,10 @@ public class StaffInfoByAddressBookVo {
      * 头像
      */
     private String avatar;
+    /**
+     * 头像
+     */
+    private String userAvatar;
 
     /**
      * 手机号
