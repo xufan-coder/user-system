@@ -118,7 +118,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     public List<ResignationApplication> doLeaveUsers() {
         //当天已批准离职的
         QueryWrapper<ResignationApplication> qw = new QueryWrapper<>();
-        qw.select("1 as leave_state", "id", "user_id", "reason");
+        qw.select("1 as leave_state", "id", "user_id", "reason","leave_type");
         qw.lambda().eq(ResignationApplication::getApprovalState,ApproveStatusEnum.SUCCESS);
         qw.lambda().eq(ResignationApplication::getLeaveState, YesNo.NO);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

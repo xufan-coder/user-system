@@ -665,7 +665,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status, String leaveReason,UserVo user) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason,String leaveType,UserVo user) {
         if (StringUtils.isEmpty(userId)) {
             throw new DefaultException("用户id不能为空");
         }
@@ -685,6 +685,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().set(SysStaffInfo::getDateLeft, new Date());
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
+        staffUw.lambda().set(SysStaffInfo::getLeaveType, leaveType);
         this.update(staffUw);
         if (StatusEnum.stop.getValue() == status.intValue() ) {
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
