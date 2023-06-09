@@ -49,6 +49,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.constant.FileTypeInfo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
@@ -77,6 +78,7 @@ import org.apache.commons.math3.util.MathArrays;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -267,7 +269,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Value("${leave.type.transfer:}")
     private String transfer;
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -662,9 +665,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status, String leaveReason,UserVo user) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason,String leaveType,UserVo user) {
         if (StringUtils.isEmpty(userId)) {
-            throw new DefaultException("用户idid不能为空");
+            throw new DefaultException("用户id不能为空");
         }
         if (status == null) {
             throw new DefaultException("状态不能为空");
@@ -682,6 +685,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().set(SysStaffInfo::getDateLeft, new Date());
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
+        staffUw.lambda().set(SysStaffInfo::getLeaveType, leaveType);
         this.update(staffUw);
         if (StatusEnum.stop.getValue() == status.intValue() ) {
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
@@ -832,6 +836,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
+
+       //冻结账号维护redis
+       if(sysUserInfo.getUseState()!=null&&sysUserInfo.getStatus()==0){
+           if(sysUserInfo.getUseState()==1) {
+               stringRedisTemplate.opsForValue().set(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId(), sysUserInfo.getId());
+           }else {
+               if(oldUserInfo.getUseState()==1){
+                   stringRedisTemplate.delete(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId());
+               }
+           }
+       }
         sysUserInfoMapper.updateById(sysUserInfo);
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
