@@ -49,6 +49,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.constant.FileTypeInfo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
@@ -77,6 +78,7 @@ import org.apache.commons.math3.util.MathArrays;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -267,7 +269,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Value("${leave.type.transfer:}")
     private String transfer;
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -297,13 +300,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),
                     setSysUserInfoDto.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
             }
             // 判断跨公司的
             leave = sysStaffInfoMapper.getLeaveUserByCard(setSysUserInfoDto.getCertificateCard(),setSysUserInfoDto.getPhoneNumber(),null);
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
             }
         }
@@ -662,9 +665,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status, String leaveReason,UserVo user) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason,String leaveType,UserVo user) {
         if (StringUtils.isEmpty(userId)) {
-            throw new DefaultException("用户idid不能为空");
+            throw new DefaultException("用户id不能为空");
         }
         if (status == null) {
             throw new DefaultException("状态不能为空");
@@ -682,6 +685,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().set(SysStaffInfo::getDateLeft, new Date());
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
+        staffUw.lambda().set(SysStaffInfo::getLeaveType, leaveType);
         this.update(staffUw);
         if (StatusEnum.stop.getValue() == status.intValue() ) {
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
@@ -694,9 +698,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             positionRecord.setCompanyName(leaveUser.getCompanyName());
             positionRecord.setUserId(leaveUser.getUserId());
             positionRecord.setUserName(leaveUser.getUserName());
-            positionRecord.setPositionTime(new Date());
+            positionRecord.setPositionTime(leaveUser.getJoinTime());
+            if (DataUtil.isEmpty(positionRecord.getPositionTime())) {
+                positionRecord.setPositionTime(new Date());
+            }
             positionRecord.setCreateTime(new Date());
             positionRecord.setRoleName(leaveUser.getRoleName());
+            positionRecord.setQuitTime(leaveUser.getLeftTime());
+            if (DataUtil.isEmpty(positionRecord.getQuitTime())) {
+                positionRecord.setQuitTime(new Date());
+            }
             positionRecord.setQuitTime(new Date());
             positionRecord.setQuitReason(leaveReason);
             positionRecordService.save(positionRecord);
@@ -749,13 +760,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 //判断同公司的
                 LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),setSysUserInfoDto.getCompanyId());
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+(leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
                 leave = sysStaffInfoMapper.getLeaveUserByCard(oldUserInfo.getCertificateCard(),oldUserInfo.getPhoneNumber(),null);
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
                 }
             }
@@ -825,6 +836,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
+
+       //冻结账号维护redis
+       if(sysUserInfo.getUseState()!=null&&sysUserInfo.getStatus()==0){
+           if(sysUserInfo.getUseState()==1) {
+               stringRedisTemplate.opsForValue().set(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId(), sysUserInfo.getId());
+           }else {
+               if(oldUserInfo.getUseState()==1){
+                   stringRedisTemplate.delete(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId());
+               }
+           }
+       }
         sysUserInfoMapper.updateById(sysUserInfo);
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
@@ -1965,13 +1987,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 LeaveUserInfoVo leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,companyId);
                 if(leave != null){
                     errorStr.append("该伙伴原签约[").append(leave.getCompanyName()).append(" + ").
-                            append(leave.getDepartName()).append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
+                            append((leave.getDepartName() ==null ? "" : leave.getDepartName() ))
+                            .append("]，\"请联系即将签约团队的团队长在CRM-APP【伙伴签约申请】发起签约！，").
                             append("（暂不支持行政办理二次签约）");
                 }
                 // 判断跨公司的
                 leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
                 if(leave != null){
-                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                    throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                             "不允许直接办理二次入职，请联系行政发起审批!");
                 }
 
@@ -2221,7 +2244,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             // 判断跨公司的
             leave = sysStaffInfoMapper.getLeaveUserByCard(cardId,phone,null);
             if(leave != null){
-                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ leave.getDepartName()+"]，" +
+                throw new DefaultException("该伙伴原签约["+leave.getCompanyName() +" + "+ (leave.getDepartName() ==null ? "" : " + "+ leave.getDepartName() )+"]，" +
                         "不允许直接办理二次入职，请联系行政发起审批!");
             }
 
@@ -3568,7 +3591,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }else {
                 qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
             }
-
             SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
             if(DataUtil.isNotEmpty(leader1)){
                 SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
@@ -3594,6 +3616,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         if(result.size() > 0) {
             result = result.stream().distinct().collect(toList());
+        }
+        return removeLeaf(result);
+    }
+
+    public List<String> removeLeaf (List<String> userIds) {
+        List<SysUserInfo> staffList = this.sysUserInfoService.listByIds(userIds);
+
+        List<String> ids = staffList.stream().filter(s -> s.getStatus() != null && s.getStatus() == YesNo.NO).map(SysUserInfo::getId)
+                .distinct().collect(Collectors.toList());
+        List<String> result = new ArrayList<>();
+        for(String s : userIds) {
+            if(ids.contains(s)) {
+                result.add(s);
+            }
         }
         return result;
     }

@@ -115,13 +115,19 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     }
 
     @Override
-    public List<ResignationApplication> getLeaveUsers() {
+    public List<ResignationApplication> doLeaveUsers() {
         //当天已批准离职的
         QueryWrapper<ResignationApplication> qw = new QueryWrapper<>();
+        qw.select("1 as leave_state", "id", "user_id", "reason","leave_type");
         qw.lambda().eq(ResignationApplication::getApprovalState,ApproveStatusEnum.SUCCESS);
+        qw.lambda().eq(ResignationApplication::getLeaveState, YesNo.NO);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String nowDateFormat = format.format(new Date());
         qw.lambda().between(ResignationApplication::getResignationTime,nowDateFormat+" 00:00:00",nowDateFormat+" 23:59:59");
-        return this.list(qw);
+        List<ResignationApplication> result = this.list(qw);
+        if (DataUtil.isNotEmpty(result)) {
+            this.updateBatchById(result);
+        }
+        return result;
     }
 }

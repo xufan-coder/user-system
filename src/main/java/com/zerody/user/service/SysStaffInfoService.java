@@ -60,7 +60,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    void updateStaffStatus(String userId, Integer status, String leaveReason, UserVo user);
+    void updateStaffStatus(String userId, Integer status, String leaveReason, String leaveType,UserVo user);
 
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user,boolean isTraverse) throws ParseException, IllegalAccessException;
@@ -196,7 +196,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 查询伙伴概况
     * @Date: 2023/4/28 17:28
     */
@@ -229,7 +229,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 统计学历
     * @Date: 2023/5/8 14:31
     */
