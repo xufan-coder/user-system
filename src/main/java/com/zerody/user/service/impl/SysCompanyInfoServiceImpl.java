@@ -798,6 +798,12 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         return this.sysCompanyInfoMapper.getAllCompanyName(param);
     }
 
+    @Override
+    public List<CustomerQueryDimensionalityVo> getAllCompanyData() {
+        List<CustomerQueryDimensionalityVo> result= this.sysCompanyInfoMapper.getCustomerQuerydimensionality();
+        return result;
+    }
+
     public void saveCardUser(SysUserInfo userInfo,SysLoginInfo loginInfo,SysCompanyInfo sysCompanyInfo){
 //        //添加员工即为内部员工需要生成名片小程序用户账号
 //        CardUserInfo cardUserInfo = new CardUserInfo();
