@@ -12,10 +12,7 @@ import com.zerody.user.dto.SetAdminAccountDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
 import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.company.SysCompanyQueryDto;
-import com.zerody.user.vo.ReportFormsQueryVo;
-import com.zerody.user.vo.SalesmanRoleInfoVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysCompanyNameQueryVo;
+import com.zerody.user.vo.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -76,4 +73,12 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     List<SysComapnyInfoVo> getAllStructure();
 
     List<SysCompanyNameQueryVo> getAllCompanyName(SysCompanyQueryDto param);
+    /**
+    *
+    *  @description   获取全集团公司
+    *  @author        YeChangWei
+    *  @date          2023/6/21 10:08
+    *  @return        java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>
+    */
+    List<CustomerQueryDimensionalityVo> getAllCompanyData();
 }
