@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
+import com.zerody.user.api.vo.AllCompanyDataVo;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -80,5 +81,5 @@ public interface SysCompanyInfoService extends IService<SysCompanyInfo> {
     *  @date          2023/6/21 10:08
     *  @return        java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>
     */
-    List<CustomerQueryDimensionalityVo> getAllCompanyData();
+    List<AllCompanyDataVo> getAllCompanyData();
 }

@@ -12,6 +12,7 @@ import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
+import com.zerody.user.api.vo.AllCompanyDataVo;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -486,10 +487,11 @@ public class SysCompanyInfoController implements CompanyRemoteService {
     *  @date          2023/6/21 10:07
     *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>>
     */
+    @Override
     @GetMapping("/get/all-company/inner")
-    public DataResult<List<CustomerQueryDimensionalityVo>> getAllCompanyData(){
+    public DataResult<List<AllCompanyDataVo>> getAllCompanyData(){
         try {
-            List<CustomerQueryDimensionalityVo> allCompany = this.sysCompanyInfoService.getAllCompanyData();
+            List<AllCompanyDataVo> allCompany = this.sysCompanyInfoService.getAllCompanyData();
             return R.success(allCompany);
         } catch (DefaultException e) {
             log.error("获取全集团公司出错:{}", e.getMessage());

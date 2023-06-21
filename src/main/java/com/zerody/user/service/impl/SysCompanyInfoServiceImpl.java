@@ -24,6 +24,7 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.vo.AdminVo;
+import com.zerody.user.api.vo.AllCompanyDataVo;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.ReportFormsQueryDto;
@@ -799,8 +800,8 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
     }
 
     @Override
-    public List<CustomerQueryDimensionalityVo> getAllCompanyData() {
-        List<CustomerQueryDimensionalityVo> result= this.sysCompanyInfoMapper.getCustomerQuerydimensionality();
+    public List<AllCompanyDataVo> getAllCompanyData() {
+        List<AllCompanyDataVo> result= this.sysCompanyInfoMapper.getAllCompanyData();
         return result;
     }
 
