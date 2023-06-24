@@ -336,7 +336,7 @@ public class SysStaffInfoController {
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
-        log.info("根据用户id查询员工信息入参 {}", userId);
+        //log.info("根据用户id查询员工信息入参 {}", userId);
         try {
             return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),true));
         } catch (DefaultException e) {
@@ -372,7 +372,7 @@ public class SysStaffInfoController {
     *  删除员工
     */
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public DataResult<Object> deleteStaffById(@PathVariable(name = "id") String staffId){
+    public DataResult<Object> deleteStaffById(@PathVariable(name     = "id") String staffId){
         try {
             sysStaffInfoService.deleteStaffById(staffId);
             return R.success();
@@ -795,5 +795,24 @@ public class SysStaffInfoController {
         }
     }
 
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取伙伴详情
+    * @Date: 2023/6/24 16:17
+    */
+    @GetMapping("/get/details/inner")
+    public DataResult<SysUserInfoVo> getUserById(@RequestParam(value = "userId") String userId) {
+        try {
+            return R.success(this.sysStaffInfoService.getUserById(userId));
+        } catch (DefaultException e) {
+            log.error("获取伙伴详情出错:{}", e.getMessage());
+            return R.error("获取伙伴详情出错");
+        } catch (Exception e) {
+            log.error("获取伙伴详情出错:{}", e, e);
+            return R.error("获取伙伴详情出错");
+        }
+    }
 
 }

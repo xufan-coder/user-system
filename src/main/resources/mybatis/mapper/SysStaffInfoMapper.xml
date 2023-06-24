@@ -1470,4 +1470,15 @@
         </where>
     </select>
 
+    <select id="getUserById" resultType="com.zerody.user.vo.SysUserInfoVo" parameterType="java.lang.String">
+        SELECT ssi.user_name, sci.company_name, sui.phone_number, sdi.depart_name, ssi.status, sui.avatar as avatar, sui.is_prepare_executive
+        FROM sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id and sdi.status = 0
+	    where ssi.deleted = 0 and sui.status != -1 and sui.id =#{userId}
+    </select>
+
+
 </mapper>

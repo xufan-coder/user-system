@@ -17,6 +17,7 @@ import com.zerody.user.vo.*;
 import com.zerody.user.vo.statis.DegreeVo;
 import com.zerody.user.vo.statis.SignAndRescindVo;
 import com.zerody.user.vo.statis.UserStatisTrendVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -316,4 +317,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
     List<StaffInfoVo> getCompanyIdInner(String companyId);
+
+    SysUserInfoVo getUserById(String userId);
+
 }

@@ -2695,7 +2695,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
         List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
-        log.info("企业内部关系数据 {}", sysStaffRelationVos);
+        //log.info("企业内部关系数据 {}", sysStaffRelationVos);
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
 
         AdminVo admin = this.getIsAdmin(user);
@@ -3638,6 +3638,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<StaffInfoVo> getCompanyIdInner(String companyId) {
         return this.sysUserInfoMapper.getCompanyIdInner(companyId);
 }
+
+    @Override
+    public SysUserInfoVo getUserById(String userId) {
+        return this.sysStaffInfoMapper.getUserById(userId);
+    }
 
 
     private String getStaffIdByUserId(String userId) {
