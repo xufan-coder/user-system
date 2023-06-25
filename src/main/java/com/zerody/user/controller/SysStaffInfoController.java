@@ -826,6 +826,8 @@ public class SysStaffInfoController {
     @GetMapping("/get/bind/user")
     public DataResult<List<StaffInfoByAddressBookVo>> pageGetUserList(SysStaffInfoPageDto dto) {
         try {
+            UserVo user = UserUtils.getUser();
+            dto.setUserId(user.getUserId());
             return R.success(this.sysStaffInfoService.pageGetUserList(dto));
         } catch (DefaultException e) {
             log.error("获取关联我的伙伴出错:{}", e.getMessage());
