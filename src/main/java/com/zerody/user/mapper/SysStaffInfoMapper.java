@@ -495,4 +495,9 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     void updateLeaveInfo(@Param("staffId") String staffId,@Param("signTime") Date signTime);
 
     StaffInfoVo getOneStaffInfo(@Param("phone") String phone, @Param("idCard") String idCard, @Param("companyId") String companyId);
+
+    SysUserInfoVo getUserById(@Param("userId") String userId);
+
+    List<StaffInfoByAddressBookVo> pageGetUserList(@Param("param") SysStaffInfoPageDto dto, IPage<PartnerAdviserVo> iPage);
+
 }
