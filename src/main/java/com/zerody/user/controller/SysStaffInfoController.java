@@ -11,6 +11,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysAddressBookService;
@@ -812,6 +813,26 @@ public class SysStaffInfoController {
         } catch (Exception e) {
             log.error("获取伙伴详情出错:{}", e, e);
             return R.error("获取伙伴详情出错");
+        }
+    }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取关联我的伙伴
+     * @Date: 2023/6/24 16:31
+     */
+    @GetMapping("/get/bind/user")
+    public DataResult<List<StaffInfoByAddressBookVo>> pageGetUserList(SysStaffInfoPageDto dto) {
+        try {
+            return R.success(this.sysStaffInfoService.pageGetUserList(dto));
+        } catch (DefaultException e) {
+            log.error("获取关联我的伙伴出错:{}", e.getMessage());
+            return R.error("获取关联我的伙伴出错");
+        } catch (Exception e) {
+            log.error("获取关联我的伙伴出错:{}", e, e);
+            return R.error("获取关联我的伙伴出错");
         }
     }
 

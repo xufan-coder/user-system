@@ -40,6 +40,7 @@ import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.log.api.constant.SystemCodeType;
+import com.zerody.partner.api.dto.PartnerAdviserRefDto;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -257,6 +258,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private UserInductionRecordService userInductionRecordService;
+
+    @Autowired
+    private PartnerFeignService partnerFeignService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -3642,6 +3646,20 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Override
     public SysUserInfoVo getUserById(String userId) {
         return this.sysStaffInfoMapper.getUserById(userId);
+    }
+
+    @Override
+    public List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto) {
+        DataResult<List<String>> dataResult = partnerFeignService.pageGetUserList(dto.getUserId());
+        if (!dataResult.isSuccess()) {
+            throw new DefaultException("获取关联伙伴失败");
+        }
+        if (dataResult.isSuccess() && DataUtil.isEmpty(dataResult.getData())) {
+            return new ArrayList<>();
+        }
+        dto.setUserIds(dataResult.getData());
+        IPage<PartnerAdviserVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
+        return sysStaffInfoMapper.pageGetUserList(dto, iPage);
     }
 
 

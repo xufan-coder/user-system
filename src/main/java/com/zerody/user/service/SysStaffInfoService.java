@@ -320,4 +320,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     SysUserInfoVo getUserById(String userId);
 
+    List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto);
+
 }
