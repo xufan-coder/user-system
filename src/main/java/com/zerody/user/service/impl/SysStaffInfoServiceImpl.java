@@ -3661,7 +3661,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         dto.setUserIds(dataResult.getData());
         IPage<PartnerAdviserVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
-        return sysStaffInfoMapper.pageGetUserList(dto, iPage);
+        List<StaffInfoByAddressBookVo> list = sysStaffInfoMapper.pageGetUserList(dto, iPage);
+        log.info("关联伙伴数据2: {}", list);
+        return list;
     }
 
 
