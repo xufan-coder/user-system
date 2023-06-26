@@ -3650,7 +3650,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Override
     public List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto) {
+        log.info("用户id: {}", dto.getUserId());
         DataResult<List<String>> dataResult = partnerFeignService.pageGetUserList(dto.getUserId());
+        log.info("关联伙伴数据: {}", dataResult.getData());
         if (!dataResult.isSuccess()) {
             throw new DefaultException("获取关联伙伴失败");
         }
@@ -3659,7 +3661,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
         dto.setUserIds(dataResult.getData());
         IPage<PartnerAdviserVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
-        return sysStaffInfoMapper.pageGetUserList(dto, iPage);
+        List<StaffInfoByAddressBookVo> list = sysStaffInfoMapper.pageGetUserList(dto, iPage);
+        log.info("关联伙伴数据2: {}", list);
+        return list;
     }
 
 
