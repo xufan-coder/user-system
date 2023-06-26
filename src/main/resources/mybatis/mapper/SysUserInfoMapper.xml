@@ -459,9 +459,11 @@
     <select id="getUserInfoByMobile" resultType="com.zerody.user.api.vo.StaffInfoVo">
         select
         sui.id AS user_id,
-        ssi.comp_id AS `company_id`
+        ssi.comp_id AS `company_id`,
+        sci.company_name AS `companyName`
         from sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
         where
         sui.phone_number=#{mobile} AND ( sui.`status`=0 or sui.`status`=3) limit 0,1
     </select>
