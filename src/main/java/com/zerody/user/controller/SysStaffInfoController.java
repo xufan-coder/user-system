@@ -817,6 +817,7 @@ public class SysStaffInfoController {
     }
 
 
+
     /**
      * @Author: chenKeFeng
      * @param
@@ -828,6 +829,7 @@ public class SysStaffInfoController {
         try {
             UserVo user = UserUtils.getUser();
             dto.setUserId(user.getUserId());
+            log.info("获取关联我的伙伴 {}", dto);
             return R.success(this.sysStaffInfoService.pageGetUserList(dto));
         } catch (DefaultException e) {
             log.error("获取关联我的伙伴出错:{}", e.getMessage());
