@@ -79,6 +79,10 @@ public class ResignationApplication implements java.io.Serializable {
      */
     private String positionName;
     /**
+     * 离职类型
+     */
+    private String leaveType;
+    /**
      * 离职原因
      */
     private String reason;

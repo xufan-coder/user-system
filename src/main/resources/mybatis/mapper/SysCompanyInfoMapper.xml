@@ -289,7 +289,7 @@
       FROM
             sys_company_info AS sci
       WHERE
-        sci.status = 0
+        sci.status = 0 AND sci.is_pro_data = 1
     </select>
     <select id="getNotSmsCompany" resultType="string">
         SELECT
@@ -366,5 +366,15 @@
               </foreach>
           </if>
       </where>
+    </select>
+
+    <select id="getAllCompanyData" resultType="com.zerody.user.api.vo.AllCompanyDataVo">
+       SELECT
+        sci.id,
+        sci.company_name AS `name`
+        FROM
+            sys_company_info AS sci
+        WHERE
+        sci.status = 0 AND sci.is_pro_data = 1
     </select>
 </mapper>
