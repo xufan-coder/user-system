@@ -12,6 +12,7 @@ import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.RatioPageDto;
 import com.zerody.user.api.service.CompanyRemoteService;
+import com.zerody.user.api.vo.AllCompanyDataVo;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
@@ -20,10 +21,7 @@ import com.zerody.user.domain.SysCompanyInfo;
 import com.zerody.user.dto.company.SysCompanyQueryDto;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.base.CheckUtil;
-import com.zerody.user.vo.ReportFormsQueryVo;
-import com.zerody.user.vo.SalesmanRoleInfoVo;
-import com.zerody.user.vo.SysComapnyInfoVo;
-import com.zerody.user.vo.SysCompanyNameQueryVo;
+import com.zerody.user.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -480,6 +478,27 @@ public class SysCompanyInfoController implements CompanyRemoteService {
         } catch (Exception e) {
             log.warn("获取关联企业出错：{}", e, e);
             return R.error(e.getMessage());
+        }
+    }
+    /**
+    *
+    *  @description   获取全集团公司（1正式数据）
+    *  @author        YeChangWei
+    *  @date          2023/6/21 10:07
+    *  @return        com.zerody.common.api.bean.DataResult<java.util.List<com.zerody.user.vo.CustomerQueryDimensionalityVo>>
+    */
+    @Override
+    @GetMapping("/get/all-company/inner")
+    public DataResult<List<AllCompanyDataVo>> getAllCompanyData(){
+        try {
+            List<AllCompanyDataVo> allCompany = this.sysCompanyInfoService.getAllCompanyData();
+            return R.success(allCompany);
+        } catch (DefaultException e) {
+            log.error("获取全集团公司出错:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取全集团公司出错:{}", e, e);
+            return R.error("获取全集团公司出错");
         }
     }
 }

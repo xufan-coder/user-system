@@ -5,6 +5,8 @@ import com.zerody.common.bean.PageInfo;
 import com.zerody.user.dto.bean.UserPositionPageParam;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author PengQiang
  * @ClassName SysStaffInfoPageDto
@@ -83,5 +85,15 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
 
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
+
+    /**
+     * 用户id集合
+     */
+    private List<String> userIds;
+
+    /**
+     * 搜索名称(号码、名称)
+     */
+    private String searchName;
 
 }

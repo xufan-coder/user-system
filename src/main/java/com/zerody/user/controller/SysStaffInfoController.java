@@ -11,6 +11,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdminVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.enums.TemplateTypeEnum;
 import com.zerody.user.service.SysAddressBookService;
@@ -173,7 +174,7 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/loginStatus/{id}/{status}", method =  RequestMethod.PUT)
     public DataResult<Object> updateStaffStatus(@PathVariable(name = "id") String userId, @PathVariable(name = "status") Integer status){
         try {
-            sysStaffInfoService.updateStaffStatus(userId, status, null, UserUtils.getUser());
+            sysStaffInfoService.updateStaffStatus(userId, status, null,null, UserUtils.getUser());
             return R.success();
         } catch (DefaultException e){
             log.error("修改员工状态错误:{}",e.getMessage());
@@ -336,7 +337,7 @@ public class SysStaffInfoController {
      */
     @GetMapping("/get-by-user")
     public DataResult<SysUserInfoVo> getInfoByUserId(@RequestParam(value = "userId")String userId){
-        log.info("根据用户id查询员工信息入参 {}", userId);
+        //log.info("根据用户id查询员工信息入参 {}", userId);
         try {
             return R.success(sysStaffInfoService.selectStaffByUserId(userId,UserUtils.getUser(),true));
         } catch (DefaultException e) {
@@ -372,7 +373,7 @@ public class SysStaffInfoController {
     *  删除员工
     */
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public DataResult<Object> deleteStaffById(@PathVariable(name = "id") String staffId){
+    public DataResult<Object> deleteStaffById(@PathVariable(name     = "id") String staffId){
         try {
             sysStaffInfoService.deleteStaffById(staffId);
             return R.success();
@@ -795,5 +796,48 @@ public class SysStaffInfoController {
         }
     }
 
+
+    /**
+    * @Author: chenKeFeng
+    * @param
+    * @Description: 获取伙伴详情
+    * @Date: 2023/6/24 16:17
+    */
+    @GetMapping("/get/details/inner")
+    public DataResult<SysUserInfoVo> getUserById(@RequestParam(value = "userId") String userId) {
+        try {
+            return R.success(this.sysStaffInfoService.getUserById(userId));
+        } catch (DefaultException e) {
+            log.error("获取伙伴详情出错:{}", e.getMessage());
+            return R.error("获取伙伴详情出错");
+        } catch (Exception e) {
+            log.error("获取伙伴详情出错:{}", e, e);
+            return R.error("获取伙伴详情出错");
+        }
+    }
+
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取关联我的伙伴
+     * @Date: 2023/6/24 16:31
+     */
+    @GetMapping("/get/bind/user")
+    public DataResult<List<StaffInfoByAddressBookVo>> pageGetUserList(SysStaffInfoPageDto dto) {
+        try {
+            UserVo user = UserUtils.getUser();
+            dto.setUserId(user.getUserId());
+            log.info("获取关联我的伙伴 {}", dto);
+            return R.success(this.sysStaffInfoService.pageGetUserList(dto));
+        } catch (DefaultException e) {
+            log.error("获取关联我的伙伴出错:{}", e.getMessage());
+            return R.error("获取关联我的伙伴出错");
+        } catch (Exception e) {
+            log.error("获取关联我的伙伴出错:{}", e, e);
+            return R.error("获取关联我的伙伴出错");
+        }
+    }
 
 }
