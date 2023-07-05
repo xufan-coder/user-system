@@ -1505,7 +1505,7 @@
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
         <where>
-            ssi.deleted = 0 and sui.status NOT IN (-1, 1);
+            ssi.deleted = 0 and sui.status NOT IN (-1, 1)
             <if test="param.userIds neq null and param.userIds.size() gt 0">
                 and sui.id
                 <foreach collection="param.userIds" item="id" open="IN (" separator="," close=")">
