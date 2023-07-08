@@ -172,4 +172,4 @@ supplier:
     tszPublickey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCa/ffJiiW+aQGSlWrRsAmZQG662Xj5Af2vqVT1sy7d5llNVX/\
     qU8CUy5OIN1HnYMZ2QBuLdxVTm1pIDIrVe9tf3Z0uebjbSDhTru9M8DUucIauzMqifRZotshM4ZXk4cl73BqUKnlj1IrhoQVMQZrW\
     2kiEzNXM7dntA9NGR5upTwIDAQAB"
-    requestUrl: http://localhost:5005/supplier
+    requestPartnerUrl: http://localhost:5005/partner
