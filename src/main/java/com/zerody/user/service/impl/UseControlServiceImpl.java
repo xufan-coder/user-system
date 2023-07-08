@@ -120,27 +120,19 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
             throw new DefaultException("系统禁止登录，请联系管理员！");
         }
         //2在判断此人是否存在黑名单
-        QueryWrapper<UsersUseControl> qw =new QueryWrapper<>();
-        qw.lambda().eq(UsersUseControl::getUserId,userId).eq(UsersUseControl::getType,1);
-        UsersUseControl one = this.usersUseControlService.getOne(qw);
-        if(DataUtil.isNotEmpty(one)){
+        Boolean isBlack = stringRedisTemplate.opsForHash().hasKey(CommonConstants.USE_CONTROL_BLACK_LIST_, userId);
+        if(isBlack) {
             throw new DefaultException("您已被禁止登录系统，如有疑问请联系公司行政人员！");
         }
         //2.1增加校验账号是否被冻结
-        SysUserInfo userById = sysUserInfoService.getUserById(userId);
-        if(DataUtil.isNotEmpty(userById)){
-           // 账号状态 0正常   1已冻结
-            if(userById.getUseState()!=null&&userById.getUseState().equals(1)){
+        Boolean isSuspended = stringRedisTemplate.hasKey(CommonConstants.USER_SUSPENDED_LIST + userId);
+        if(isSuspended){
                 throw new DefaultException("您的账号已被冻结，请联系管理员！");
-            }
         }
 
-
         //3再校验此人白名单
-        qw.clear();
-        qw.lambda().eq(UsersUseControl::getUserId,userId).eq(UsersUseControl::getType,2);
-        UsersUseControl authorize = this.usersUseControlService.getOne(qw);
-        if(DataUtil.isNotEmpty(authorize)){
+        Boolean isWhite = stringRedisTemplate.opsForHash().hasKey(CommonConstants.USE_CONTROL_WHITE_LIST, userId);
+        if(isWhite) {
             return false;
         }
         //4.校验企业时间限制
@@ -181,12 +173,13 @@ public class UseControlServiceImpl extends ServiceImpl<UseControlMapper, UseCont
         //2022-11-10增加呼叫超出次数限制
         String sysCode = springUtil.getRequest().getHeader("sys-code");
         if(!SysCodeEnum.ZERODY_SCRM_MINI.getCode().equals(sysCode)){
+            Boolean isCallControl = stringRedisTemplate.hasKey(CommonConstants.CALL_CONTROL_USER_LIST + userId);
             //SCRM不限制
-            QueryWrapper<CallControlRecord> cqw =new QueryWrapper<>();
-            cqw.lambda().eq(CallControlRecord::getUserId,userId);
-            cqw.lambda().eq(CallControlRecord::getState, YesNo.NO);
-            CallControlRecord callControlRecord = this.callControlRecordService.getOne(cqw);
-            if(DataUtil.isNotEmpty(callControlRecord)){
+//            QueryWrapper<CallControlRecord> cqw =new QueryWrapper<>();
+//            cqw.lambda().eq(CallControlRecord::getUserId,userId);
+//            cqw.lambda().eq(CallControlRecord::getState, YesNo.NO);
+//            CallControlRecord callControlRecord = this.callControlRecordService.getOne(cqw);
+            if(isCallControl){
                 String tip="为了保护客户信息安全，当前账号因呼叫客户次数已达到限制值，现已禁止登录，如需解除限制请联系公司行政或者集团客服！";
                 throw new DefaultException(tip);
             }

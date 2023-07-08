@@ -78,6 +78,7 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
         CallControlRecord one = this.getOne(qw);
         if(DataUtil.isNotEmpty(one)){
             String key= CommonConstants.CALL_FLAG+one.getCompanyId()+":"+one.getUserId();
+            stringRedisTemplate.delete(CommonConstants.CALL_CONTROL_USER_LIST+one.getUserId());
             stringRedisTemplate.delete(key);
         }
     }
@@ -111,6 +112,7 @@ public class CallControlRecordServiceImpl extends ServiceImpl<CallControlRecordM
                 callControlRecord.setState(YesNo.NO);
                 this.save(callControlRecord);
             }
+        stringRedisTemplate.opsForValue().set(CommonConstants.CALL_CONTROL_USER_LIST+userId,userId);
     }
 
     @Override

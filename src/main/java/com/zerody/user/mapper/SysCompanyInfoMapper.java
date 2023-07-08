@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.api.dto.RatioPageDto;
+import com.zerody.user.api.vo.AllCompanyDataVo;
 import com.zerody.user.api.vo.CompanyInfoVo;
 import com.zerody.user.dto.ReportFormsQueryDto;
 import com.zerody.user.dto.SysCompanyInfoDto;
@@ -163,4 +164,6 @@ public interface SysCompanyInfoMapper extends BaseMapper<SysCompanyInfo> {
     List<SysComapnyInfoVo> getProCompnay();
 
     List<SysCompanyNameQueryVo> getAllCompanyName(@Param("param") SysCompanyQueryDto param);
+
+    List<AllCompanyDataVo> getAllCompanyData();
 }

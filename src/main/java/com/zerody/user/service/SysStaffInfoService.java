@@ -17,6 +17,7 @@ import com.zerody.user.vo.*;
 import com.zerody.user.vo.statis.DegreeVo;
 import com.zerody.user.vo.statis.SignAndRescindVo;
 import com.zerody.user.vo.statis.UserStatisTrendVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -60,7 +61,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     IPage<BosStaffInfoVo> getPageAllSuperiorStaff(SysStaffInfoPageDto sysStaffInfoPageDto);
 
-    void updateStaffStatus(String userId, Integer status, String leaveReason, UserVo user);
+    void updateStaffStatus(String userId, Integer status, String leaveReason, String leaveType,UserVo user);
 
 
     void updateStaff(SetSysUserInfoDto setSysUserInfoDto, UserVo user,boolean isTraverse) throws ParseException, IllegalAccessException;
@@ -196,7 +197,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 查询伙伴概况
     * @Date: 2023/4/28 17:28
     */
@@ -229,7 +230,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 统计学历
     * @Date: 2023/5/8 14:31
     */
@@ -316,4 +317,9 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     *  @return        java.util.List<com.zerody.user.api.vo.StaffInfoVo>
     */
     List<StaffInfoVo> getCompanyIdInner(String companyId);
+
+    SysUserInfoVo getUserById(String userId);
+
+    List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto);
+
 }
