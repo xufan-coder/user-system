@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 签约汇总数据
  *
@@ -135,5 +137,11 @@ public class SignSummaryVo {
      * 博士人数
      */
     private Integer doctorNum =0;
+
+    /**
+     * 本月流失率=本月员工流失人数/当前员工总数*100%
+     * 本月离职员工数/在职员工数
+     */
+    private BigDecimal toRunOff;
 
 }
