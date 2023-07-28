@@ -187,6 +187,9 @@
             <if test="param.status neq null">
                 and ssi.status = #{param.status}
             </if>
+            <if test="param.status neq null and param.status eq 0">
+                and ssi.status IN (0, 3)
+            </if>
             <if test="param.departmentId neq null and param.departmentId neq ''">
                 and (sdi.id = #{param.departmentId} OR sdi.id LIKE CONCAT(#{param.departmentId}, '\_%'))
             </if>
