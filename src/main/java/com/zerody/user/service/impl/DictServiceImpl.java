@@ -2,6 +2,7 @@ package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.constant.RescindType;
 import com.zerody.user.domain.Dict;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import org.springframework.beans.BeanUtils;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import com.zerody.user.mapper.DictMapper;
 import com.zerody.user.service.DictService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,5 +43,16 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Override
     public void addDict(List<Dict> entity) {
      this.saveBatch(entity);
+    }
+
+    @Override
+    public List<DictQuseryVo> rescindReason() {
+        List<DictQuseryVo> list = new ArrayList<>();
+        String[] ids = RescindType.IDS;
+        for (String id : ids) {
+            DictQuseryVo dict = getListById(id);
+            list.add(dict);
+        }
+        return list;
     }
 }

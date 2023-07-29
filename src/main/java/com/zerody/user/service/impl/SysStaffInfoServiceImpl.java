@@ -3223,6 +3223,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userStatistics.setPartnerRate(OperationUtils.reserveTwo(userStatistics.getPartnerNum(), num));
         userStatistics.setMasonryMemberRate(OperationUtils.reserveTwo(userStatistics.getMasonryMemberNum(),num));
         userStatistics.setProspectiveExecutiveRate(OperationUtils.reserveTwo(userStatistics.getProspectiveExecutiveNum(), num));
+        //本月流失率=本月员工流失人数/当前员工总数*100% 本月离职员工数/在职员工数
+        //获取本月员工离职数
+        Integer departureNum = sysStaffInfoMapper.getToRunOff(param);
+        //当前员工在职人数 在职 + 合作中
+        Integer incumbencyNum = userStatistics.getContractNum() + userStatistics.getInCooperationNum();
+        userStatistics.setToRunOff(OperationUtils.reserveTwo(departureNum, incumbencyNum));
         return userStatistics;
     }
 
