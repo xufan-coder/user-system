@@ -14,7 +14,8 @@ import lombok.Getter;
 public enum DictTypeEnum {
     IM_STATE("imState"),
     NO_CALL("noCall"),
-    LEAVE_TYPE("leaveType")
+    LEAVE_TYPE("leaveType"),
+    CAUSE_COMPLAINT("causeComplaint")
     ;
     @Getter
     private String alias;
