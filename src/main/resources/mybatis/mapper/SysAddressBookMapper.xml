@@ -172,6 +172,9 @@
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
         LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
         LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <if test="param.isSecondContract neq null and param.isSecondContract eq 1">
+            LEFT JOIN user_induction_record uir ON uir.leave_user_id = sui.id
+        </if>
         <where>
             <choose>
                 <when test="param.isQuit neq null and param.isQuit eq 1"> sui.status = 1</when>
@@ -207,6 +210,9 @@
             </if>
             <if test="param.isPrepareExecutive neq null">
                 AND sui.is_prepare_executive=#{param.isPrepareExecutive}
+            </if>
+            <if test="param.isSecondContract neq null and param.isSecondContract eq 1">
+                AND uir.approve_state='SUCCESS'
             </if>
         </where>
     </select>
