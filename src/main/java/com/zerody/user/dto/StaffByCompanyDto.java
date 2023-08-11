@@ -54,4 +54,9 @@ public class StaffByCompanyDto {
 
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
+
+    /**
+     * 是否二次签约
+     */
+    private Boolean isSecondContract =false;
 }
