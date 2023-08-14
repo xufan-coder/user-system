@@ -79,4 +79,6 @@ public class StaffInfoByAddressBookVo {
      */
     private Integer isDiamondMember;
 
+    private Boolean isSecondContract =false;
+
 }
