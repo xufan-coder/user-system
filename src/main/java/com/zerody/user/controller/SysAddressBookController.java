@@ -242,7 +242,7 @@ public class SysAddressBookController {
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         try {
-            if (UserUtils.getUser().isBack()){
+            /*if (UserUtils.getUser().isBack()){
                 staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
             }else if (UserUtils.getUser().isCEO()){
                 staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
@@ -257,7 +257,7 @@ public class SysAddressBookController {
                 }
                 staffByCompanyDto.setCompanyId(companyId);
                 staffByCompanyDto.setIsProData(byId.getIsProData());
-            }
+            }*/
 
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
