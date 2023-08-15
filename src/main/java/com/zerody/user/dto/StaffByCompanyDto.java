@@ -3,6 +3,7 @@ package com.zerody.user.dto;
 import com.zerody.user.domain.SysCompanyInfo;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,4 +60,8 @@ public class StaffByCompanyDto {
      * 是否二次签约
      */
     private Boolean isSecondContract;
+
+    private Date beginTime;
+
+    private Date endTime;
 }

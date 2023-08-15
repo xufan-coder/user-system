@@ -214,6 +214,12 @@
             <if test="param.isSecondContract neq null and param.isSecondContract eq 1">
                 AND uir.approve_state='SUCCESS'
             </if>
+            <if test="param.beginTime neq null">
+                AND ssi.date_left &gt;= #{param.beginTime}
+            </if>
+            <if test="param.endTime neq null">
+                AND ssi.date_left &lt; #{param.endTime}
+            </if>
         </where>
     </select>
 
