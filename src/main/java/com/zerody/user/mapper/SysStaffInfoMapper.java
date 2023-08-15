@@ -500,4 +500,12 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     List<StaffInfoByAddressBookVo> pageGetUserList(@Param("param") SysStaffInfoPageDto dto, IPage<PartnerAdviserVo> iPage);
 
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取本月员工离职数
+     * @Date: 2023/7/19 16:08
+     */
+    Integer getToRunOff(@Param("param") UserStatisQueryDto param);
+
 }

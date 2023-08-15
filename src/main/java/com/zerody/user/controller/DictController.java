@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.user.constant.RescindType;
 import com.zerody.user.domain.Dict;
 import com.zerody.user.enums.DictTypeEnum;
 import com.zerody.user.service.DictService;
@@ -78,4 +79,25 @@ public class DictController {
             return R.error("添加字典异常!请联系管理员");
         }
     }
+
+
+    /**
+     * @Author: chenKeFeng
+     * @param
+     * @Description: 获取个人解约申请原因
+     * @Date: 2023/7/7 15:52
+     */
+    @GetMapping("/individual/rescind/reason")
+    public DataResult<List<DictQuseryVo>> rescindReason() {
+        try {
+            return R.success(this.service.rescindReason());
+        } catch (DefaultException e) {
+            log.error("获取个人解约申请原因出错:{}", e.getMessage());
+            return R.error("获取个人解约申请原因出错");
+        } catch (Exception e) {
+            log.error("获取个人解约申请原因出错:{}", e, e);
+            return R.error("获取个人解约申请原因出错");
+        }
+    }
+
 }
