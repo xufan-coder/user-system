@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.Dict;
+import com.zerody.user.vo.TerminationAnalysisVo;
 import com.zerody.user.vo.dict.DictQuseryVo;
 
 import java.util.List;
@@ -39,4 +40,7 @@ public interface DictService extends IService<Dict> {
     DictQuseryVo getListById(String id);
 
     void addDict(List<Dict> entity);
+
+    List<DictQuseryVo> rescindReason();
+
 }
