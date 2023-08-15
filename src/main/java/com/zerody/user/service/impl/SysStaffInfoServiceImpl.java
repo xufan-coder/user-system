@@ -40,6 +40,7 @@ import com.zerody.customer.api.dto.UserClewDto;
 import com.zerody.customer.api.service.ClewRemoteService;
 import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.log.api.constant.SystemCodeType;
+import com.zerody.partner.api.dto.PartnerAdviserRefDto;
 import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -49,6 +50,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.api.vo.UserCopyResultVo;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.check.CheckUser;
+import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.constant.FileTypeInfo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
@@ -77,6 +79,7 @@ import org.apache.commons.math3.util.MathArrays;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -256,6 +259,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private UserInductionRecordService userInductionRecordService;
 
+    @Autowired
+    private PartnerFeignService partnerFeignService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -267,7 +273,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Value("${leave.type.transfer:}")
     private String transfer;
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -662,9 +669,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void updateStaffStatus(String userId, Integer status, String leaveReason,UserVo user) {
+    public void updateStaffStatus(String userId, Integer status, String leaveReason,String leaveType,UserVo user) {
         if (StringUtils.isEmpty(userId)) {
-            throw new DefaultException("用户idid不能为空");
+            throw new DefaultException("用户id不能为空");
         }
         if (status == null) {
             throw new DefaultException("状态不能为空");
@@ -682,6 +689,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffUw.lambda().set(SysStaffInfo::getDateLeft, new Date());
         staffUw.lambda().eq(SysStaffInfo::getUserId, userId);
         staffUw.lambda().set(SysStaffInfo::getLeaveReason, leaveReason);
+        staffUw.lambda().set(SysStaffInfo::getLeaveType, leaveType);
         this.update(staffUw);
         if (StatusEnum.stop.getValue() == status.intValue() ) {
             StaffDimissionInfo staffDimissionInfo = new StaffDimissionInfo();
@@ -832,6 +840,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         sysUserInfo.setBirthdayDay(date.getDay());
         sysUserInfo.setIdCardSex(com.zerody.common.utils.IdCardUtil.getSex(sysUserInfo.getCertificateCard()));
         sysUserInfo.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
+
+       //冻结账号维护redis
+       if(sysUserInfo.getUseState()!=null&&sysUserInfo.getStatus()==0){
+           if(sysUserInfo.getUseState()==1) {
+               stringRedisTemplate.opsForValue().set(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId(), sysUserInfo.getId());
+           }else {
+               if(oldUserInfo.getUseState()==1){
+                   stringRedisTemplate.delete(CommonConstants.USER_SUSPENDED_LIST + sysUserInfo.getId());
+               }
+           }
+       }
         sysUserInfoMapper.updateById(sysUserInfo);
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
@@ -2680,7 +2699,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysStaffRelationDto sysStaffRelationDto = new SysStaffRelationDto();
         sysStaffRelationDto.setRelationStaffId(userInfo.getStaffId());
         List<SysStaffRelationVo> sysStaffRelationVos = this.sysStaffRelationService.queryRelationList(sysStaffRelationDto).getSysStaffRelationVos();
-        log.info("企业内部关系数据 {}", sysStaffRelationVos);
+        //log.info("企业内部关系数据 {}", sysStaffRelationVos);
         userInfo.setStaffRelationDtoList(sysStaffRelationVos);
 
         AdminVo admin = this.getIsAdmin(user);
@@ -3623,6 +3642,29 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<StaffInfoVo> getCompanyIdInner(String companyId) {
         return this.sysUserInfoMapper.getCompanyIdInner(companyId);
 }
+
+    @Override
+    public SysUserInfoVo getUserById(String userId) {
+        return this.sysStaffInfoMapper.getUserById(userId);
+    }
+
+    @Override
+    public List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto) {
+        log.info("用户id: {}", dto.getUserId());
+        DataResult<List<String>> dataResult = partnerFeignService.pageGetUserList(dto.getUserId());
+        log.info("关联伙伴数据: {}", dataResult.getData());
+        if (!dataResult.isSuccess()) {
+            throw new DefaultException("获取关联伙伴失败");
+        }
+        if (dataResult.isSuccess() && DataUtil.isEmpty(dataResult.getData())) {
+            return new ArrayList<>();
+        }
+        dto.setUserIds(dataResult.getData());
+        IPage<PartnerAdviserVo> iPage = new Page<>(dto.getCurrent(), dto.getPageSize());
+        List<StaffInfoByAddressBookVo> list = sysStaffInfoMapper.pageGetUserList(dto, iPage);
+        log.info("关联伙伴数据2: {}", list);
+        return list;
+    }
 
 
     private String getStaffIdByUserId(String userId) {
