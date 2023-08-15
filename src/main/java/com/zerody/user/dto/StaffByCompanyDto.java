@@ -58,5 +58,5 @@ public class StaffByCompanyDto {
     /**
      * 是否二次签约
      */
-    private Boolean isSecondContract = Boolean.FALSE;
+    private Boolean isSecondContract;
 }
