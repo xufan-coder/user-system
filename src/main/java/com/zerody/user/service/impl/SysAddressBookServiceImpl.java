@@ -49,14 +49,18 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
 
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
-        return sysMailListMapper.getStaffByCompany(staffByCompanyDto);
+        List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getStaffByCompany(staffByCompanyDto);
+        log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
+        if (!staffByCompanyDto.getIsSecondContract().equals(false)) {
+            for (StaffInfoByAddressBookVo vo : staffByCompany) {
+                vo.setIsSecondContract(true);
+            }
+        }
+        return staffByCompany;
     }
 
     @Override
     public IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param) {
-        log.info("离职列表企业id {}", param.getCompanyId());
-        log.info("离职列表企业id集合 {}", param.getCompanyIds());
-        log.info("离职列表部门id集合 {}", param.getDepartmentId());
         Page<DepartureDetailsVo> page = new Page<>(param.getCurrent(), param.getPageSize());
         IPage<DepartureDetailsVo> departureUserList = this.sysMailListMapper.getDepartureUserList(param, page);
         List<DepartureDetailsVo> records = departureUserList.getRecords();
