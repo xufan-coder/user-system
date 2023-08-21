@@ -758,8 +758,6 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(user.isDeptAdmin()) {
             return superiorList;
         }
-        String deptId = user.getDeptId().split("_")[0];
-        deptId = deptId+","+user.getDeptId();
         //  团队长 伙伴
         List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
         // 移除自己
