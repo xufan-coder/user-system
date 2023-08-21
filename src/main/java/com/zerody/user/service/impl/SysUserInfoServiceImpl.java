@@ -758,10 +758,11 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(user.isDeptAdmin()) {
             return superiorList;
         }
+        String deptId = user.getDeptId().split("_")[0];
         //  副总 伙伴
-        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
+        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(deptId);
         // 移除自己
-        for (SubordinateUserQueryVo suv : departList){
+        for (SubordinateUserQueryVo suv : departList) {
             if (suv.getUserId().equals(user.getUserId())) {
                 departList.remove(suv);
                 break;
@@ -784,7 +785,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             superiorList.addAll(managerList);
         }
         //  副总 伙伴
-        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
+        String deptId = user.getDeptId().split("_")[0];
+        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(deptId);
         if(DataUtil.isNotEmpty(departList) && departList.size()!=0){
             superiorList.addAll(departList);
         }

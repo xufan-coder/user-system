@@ -372,7 +372,7 @@
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
-			where sui.status IN (0, 3)  and FIND_IN_SET(sdi.id,get_parent_list(#{departId}))
+			where sui.status IN (0, 3)  and sdi.id = #{departId}
     </select>
 
     <select id="getUserIds" resultType="string">
