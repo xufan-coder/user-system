@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 
 
-@FeignClient(value = "${zerody-partner.name:zerody-partner}", contextId = "zerody-partner")
+@FeignClient(url = "${supplier.tsz.requestPartnerUrl}",value = "${zerody-partner.name:zerody-partner}", contextId = "zerody-partner")
 public interface PartnerFeignService extends PartnerRemoteService {
 
 }
