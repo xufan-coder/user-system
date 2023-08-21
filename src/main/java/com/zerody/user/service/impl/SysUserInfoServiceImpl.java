@@ -751,7 +751,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(user.isCompanyAdmin()){
             return superiorList;
         }
-        // 团队长
+        // 副总
         // 获取总经理账户信息
         List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(user.getCompanyId());
         superiorList.addAll(managerList);
@@ -759,8 +759,9 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             return superiorList;
         }
         String deptId = user.getDeptId().split("_")[0];
-        //  副总 伙伴
-        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(deptId);
+        deptId = deptId+","+user.getDeptId();
+        //  团队长 伙伴
+        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
         // 移除自己
         for (SubordinateUserQueryVo suv : departList) {
             if (suv.getUserId().equals(user.getUserId())) {
@@ -785,8 +786,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
             superiorList.addAll(managerList);
         }
         //  副总 伙伴
-        String deptId = user.getDeptId().split("_")[0];
-        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(deptId);
+        List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
         if(DataUtil.isNotEmpty(departList) && departList.size()!=0){
             superiorList.addAll(departList);
         }
