@@ -597,6 +597,7 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Override
     public DepartInfoVo getDepartInfoInner(String departId) {
+        log.info("部门id {}", departId);
         DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoInner(departId);
         if (Objects.isNull(result)) {
             throw new DefaultException("找不到部门");

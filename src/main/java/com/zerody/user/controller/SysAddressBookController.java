@@ -258,7 +258,9 @@ public class SysAddressBookController {
                 staffByCompanyDto.setCompanyId(companyId);
                 staffByCompanyDto.setIsProData(byId.getIsProData());
             }
-
+            if (DataUtil.isEmpty(staffByCompanyDto.getIsSecondContract())) {
+                staffByCompanyDto.setIsSecondContract(false);
+            }
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());

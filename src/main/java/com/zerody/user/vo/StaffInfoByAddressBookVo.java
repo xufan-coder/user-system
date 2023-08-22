@@ -2,6 +2,8 @@ package com.zerody.user.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author zhangpingping
  * @date 2021年09月25日 12:00
@@ -78,5 +80,11 @@ public class StaffInfoByAddressBookVo {
      * 是否钻石会员（0-否 1-是）
      */
     private Integer isDiamondMember;
+
+    private Boolean isSecondContract =false;
+
+    private Date beginTime;
+
+    private Date endTime;
 
 }
