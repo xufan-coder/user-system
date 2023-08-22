@@ -143,3 +143,33 @@ leave:
   type:
     transfer: b52154f9-e5ad-11ed-ac65-0800274877ca
     block: b51a67c2-e5ad-11ed-ac65-0800274877ca
+
+supplier:
+  tsz:
+    clientId: 10001
+    #客户密码
+    clientSecret: 2a778c88c4024d929f5c6bdac90a9d0a
+    # 客户公钥
+    publicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFsRdOrsMrZiAZY7fKO/HfiMA0PdQhHNaQEyjo\
+    MmNs3QUBHZ7EFuePbsrWZautZoDFdtllP+o2Wy27BXGyxek8JTw0HFwn85ybPfWy/ufDAHTUhdLO\
+    DE6C/5bFYqI8un6DSjjxgIK3toGpq1t08dE2eWXOvSYeank6q2AeD68qiQIDAQAB"
+
+    #客户私钥
+    privateKey: "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMWxF06uwytmIBljt8o78d+IwDQ9\
+    1CEc1pATKOgyY2zdBQEdnsQW549uytZlq61mgMV22WU/6jZbLbsFcbLF6TwlPDQcXCfznJs99bL+\
+    58MAdNSF0s4MToL/lsViojy6foNKOPGAgre2gamrW3Tx0TZ5Zc69Jh5qeTqrYB4PryqJAgMBAAEC\
+    gYAU6QpiFDIooQC8LsP97CFFV52c6P1LE1XOn3gwN0Q0+5vP5mYor5OGpF1oGBD0omb0fAG6p+wK\
+    G9LWeVjxY+WrevpfoVt2pbiEJS7BDCxWVgg3pjS6jB3Alwk4aJZqqchPRhhpg47MlpoOLi2eF5d2\
+    6XpnFroGbRNfxWX1ZC74QQJBAP+OiAAhLpXafMB4Y9BKSr+tyTzIqEJqtSjiTC0ZwM6EzE8ZnVq6\
+    12OGtHMoml5BS0av1T4BBRGjcDdFohSMTzUCQQDGCN4MwM8TCuBif0uHWBiXGY7Qoh/ZPeM6pSGL\
+    QSmiTP2ArGqaLFIqQm0DLKO6NSAx7HZtOsV5kAkO/6TSDnSFAkEAr9k77BrpG2SEg0xUInd8h/jl\
+    iFXqsgkLL17IXCBkc7cdfzB4/n2iyHFgqf0+e60iRzmm2kuJWWHFTcM0jD8gIQJAddjhCwXSNKrM\
+    TNEjyS8Lsx9qdY2FFmpVxphuFch5VjQqx1/TMFwfqTZOWQ0/gZgLyKnG78mBqo2kVmCbXMVtYQJB\
+    AOt7chx3YfLyEMxH4pHE6gvFKcwH0VCBjqocBpyYRv06tbU8MHUty9rrbeCdVvJePBhaZ2AgHl4J\
+    bE4yBeZk1UI="
+
+    # 唐三藏公钥
+    tszPublickey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCa/ffJiiW+aQGSlWrRsAmZQG662Xj5Af2vqVT1sy7d5llNVX/\
+    qU8CUy5OIN1HnYMZ2QBuLdxVTm1pIDIrVe9tf3Z0uebjbSDhTru9M8DUucIauzMqifRZotshM4ZXk4cl73BqUKnlj1IrhoQVMQZrW\
+    2kiEzNXM7dntA9NGR5upTwIDAQAB"
+    requestPartnerUrl: http://localhost:5005/partner

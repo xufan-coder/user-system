@@ -366,13 +366,14 @@
             sci.company_name  AS companyName,
             ssi.avatar
         from sys_department_info sdi
-        join sys_staff_info ssi on ssi.id = sdi.admin_account
+		join sys_department_info sdi1 on sdi.id like concat(sdi1.id, '%')
+        join sys_staff_info ssi on ssi.id = sdi1.admin_account
         JOIN sys_user_info AS sui ON ssi.user_id = sui.id
         LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
         LEFT JOIN union_role_staff urs ON urs.staff_id = ssi.id
         LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
         LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
-			where sui.status IN (0, 3)  and FIND_IN_SET(sdi.id,get_parent_list(#{departId}))
+			where sui.status IN (0, 3)  and sdi.id = #{departId}
     </select>
 
     <select id="getUserIds" resultType="string">
