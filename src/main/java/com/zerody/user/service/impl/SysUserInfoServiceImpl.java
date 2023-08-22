@@ -751,17 +751,17 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         if(user.isCompanyAdmin()){
             return superiorList;
         }
-        // 团队长
+        // 副总
         // 获取总经理账户信息
         List<SubordinateUserQueryVo> managerList =this.companyAdminMapper.getAdminList(user.getCompanyId());
         superiorList.addAll(managerList);
         if(user.isDeptAdmin()) {
             return superiorList;
         }
-        //  副总 伙伴
+        //  团队长 伙伴
         List<SubordinateUserQueryVo> departList = this.sysDepartmentInfoMapper.getSuperiorParentList(user.getDeptId());
         // 移除自己
-        for (SubordinateUserQueryVo suv : departList){
+        for (SubordinateUserQueryVo suv : departList) {
             if (suv.getUserId().equals(user.getUserId())) {
                 departList.remove(suv);
                 break;
