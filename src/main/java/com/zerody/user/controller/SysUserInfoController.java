@@ -349,18 +349,21 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             checkCallControl(params.getSysCode(),info.getId());
         }
         List<SysUserIdentifier> identifierInfos = sysUserIdentifierService.getIdentifierInfos(info.getId());
-        if(!Objects.isNull(identifierInfos)){
+        if(identifierInfos.size()>0){
             SysUserIdentifier sysUserIdentifier1 = identifierInfos.get(0);
-            SysUserIdentifier sysUserIdentifier2 = identifierInfos.get(1);
             if(DataUtil.isNotEmpty(sysUserIdentifier1)){
                 info.setEquipmentNo(sysUserIdentifier1.getEquipmentNo());
                 info.setEquipmentName(sysUserIdentifier1.getEquipmentName());
             }
+        }
+        if(identifierInfos.size()>1){
+            SysUserIdentifier sysUserIdentifier2 = identifierInfos.get(1);
             if(DataUtil.isNotEmpty(sysUserIdentifier2)){
                 info.setEquipmentNo2(sysUserIdentifier2.getEquipmentNo());
                 info.setEquipmentName2(sysUserIdentifier2.getEquipmentName());
             }
         }
+
 		return R.success(info);
 	}
 

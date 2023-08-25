@@ -338,7 +338,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Override
     public void addUnbound(String userId,String updateUserId,String id) {
-        SysUserIdentifier identifier = this.getIdentifierInfo(id);
+        SysUserIdentifier identifier = this.getIdentifierInfo(null,id);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
