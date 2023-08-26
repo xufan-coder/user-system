@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -126,14 +127,15 @@ public class SysUserIdentifierController {
     }
 
     /**
+     * 参数：23-08-25增加一个传绑定主键id
      * @author kuang
      * @description  解除绑定
      **/
     @GetMapping("/remove/{id}")
-    public DataResult<Object> unbound(@PathVariable String id){
+    public DataResult<Object> unbound(@PathVariable(value = "id") String userId,@RequestParam String id){
 
         try {
-            this.service.addUnbound(id,UserUtils.getUserId());
+            this.service.addUnbound(userId,UserUtils.getUserId(),id);
             return R.success();
         } catch (Exception e) {
             return R.error("解除绑定出错:"+e.getMessage());
@@ -145,10 +147,10 @@ public class SysUserIdentifierController {
      * @description  解除绑定-app
      **/
     @GetMapping("/remove/app/{id}")
-    public DataResult<Object> unBoundApp(@PathVariable String id){
+    public DataResult<Object> unBoundApp(@PathVariable(value = "id") String userId,@RequestParam String id){
 
         try {
-            this.service.addUnbound(id,UserUtils.getUserId());
+            this.service.addUnbound(id,UserUtils.getUserId(),id);
             return R.success();
         } catch (Exception e) {
             return R.error("解除绑定出错:"+e.getMessage());
@@ -180,14 +182,14 @@ public class SysUserIdentifierController {
      * @description 设备绑定详情信息
      **/
     @GetMapping("/get/identifier-info")
-    public DataResult<SysUserIdentifier> getIdentifierInfo(){
+    public DataResult<List<SysUserIdentifier>> getIdentifierInfo(){
         try {
             String userId = UserUtils.getUserId();
-            SysUserIdentifier identifier = this.service.getIdentifierInfo(userId);
-            if(Objects.isNull(identifier)) {
-                identifier = new SysUserIdentifier();
+            List<SysUserIdentifier> identifierInfos = this.service.getIdentifierInfos(userId);
+            if(Objects.isNull(identifierInfos)) {
+                identifierInfos = new ArrayList<>();
             }
-            return R.success(identifier);
+            return R.success(identifierInfos);
         } catch (Exception e) {
             return R.error("设备绑定详情信息出错:"+e.getMessage());
         }
@@ -199,10 +201,10 @@ public class SysUserIdentifierController {
      * @description 查询伙伴绑定的设备详情
      **/
     @GetMapping("/get/user-identifier-info/{id}")
-    public DataResult<SysUserIdentifierVo> getUserIdentifierInfo(@PathVariable String id){
+    public DataResult<List<SysUserIdentifierVo>> getUserIdentifierInfo(@PathVariable String id){
         try {
-            SysUserIdentifierVo identifierVo = this.service.getUserIdentifierInfo(id);
-            return R.success(identifierVo);
+            List<SysUserIdentifierVo> userIdentifierInfos = this.service.getUserIdentifierInfos(id);
+            return R.success(userIdentifierInfos);
         } catch (Exception e) {
             return R.error("设备绑定详情信息出错:"+e.getMessage());
         }
@@ -213,10 +215,10 @@ public class SysUserIdentifierController {
      * @description 查询伙伴绑定的设备详情--app
      **/
     @GetMapping("/get/app/user-identifier-info/{id}")
-    public DataResult<SysUserIdentifierVo> getAppUserIdentifierInfo(@PathVariable String id){
+    public DataResult<List<SysUserIdentifierVo>> getAppUserIdentifierInfo(@PathVariable String id){
         try {
-            SysUserIdentifierVo identifierVo = this.service.getUserIdentifierInfo(id);
-            return R.success(identifierVo);
+            List<SysUserIdentifierVo> userIdentifierInfos = this.service.getUserIdentifierInfos(id);
+            return R.success(userIdentifierInfos);
         } catch (DefaultException e){
             log.error("设备绑定详情信息出错-app:{}", e.getMessage());
             return R.error(e.getMessage());

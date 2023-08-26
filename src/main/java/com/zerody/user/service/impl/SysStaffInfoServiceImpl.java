@@ -3499,7 +3499,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(leader)) {
             SysStaffInfo byId = this.getById(leader.getAdminAccount());
             if (DataUtil.isNotEmpty(byId)) {
-                result.add(byId.getUserId());
+                //离职的不需要
+                if(byId.getStatus()!=1){
+                    result.add(byId.getUserId());
+                }
             }
         }
 
@@ -3513,7 +3516,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 if(DataUtil.isNotEmpty(leader1)){
                     SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
                     if(DataUtil.isNotEmpty(byId1)){
-                        result.add(byId1.getUserId());
+                        //离职的不需要
+                        if(byId1.getStatus()!=1){
+                            result.add(byId1.getUserId());
+                        }
                     }
                 }
             }
