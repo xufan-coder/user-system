@@ -159,90 +159,92 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     @Override
     public void leaveUserIm(String userId){
         DataResult<List<String>> customerIds = this.signOrderService.getCustomerId(userId);
-        SysUserInfo sysUserInfo = this.sysUserInfoService.getById(userId);
-        List<String> customerId = customerIds.getData();
-        log.info("是否有放款用户：{}",customerId);
-        if(DataUtil.isNotEmpty(customerId) && customerId.size() > 0){
-            //发送给上级
-            StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
-            if(DataUtil.isNotEmpty(staffInfoVo)){
-                log.info("上级用户：{}",staffInfoVo);
-                //参数值
-                Map params = new HashMap();
-                params.put("userId",staffInfoVo.getUserId());
-                params.put("name",sysUserInfo.getUserName());
-                params.put("type",0);
-                params.put("departId",staffInfoVo.getDepartId());
-                params.put("companyId",staffInfoVo.getCompanyId());
-                params.put("title","客户跟进提醒");
-
-                //推送小藏参数
-                FlowMessageDto dto= new FlowMessageDto();
-                // 标题
-                dto.setTitle("客户跟进提醒");
-                //来源
-                dto.setMessageSource("extend");
-                // 跳转路径
-                dto.setUrl(loanCustomerConfig.getUrl());
-
-                //参数值替换
-                JSONObject json = new JSONObject(params);
-                dto.setQuery(json);
-                dto.setArguments(json);
-
-                SendRobotMessageDto data = new SendRobotMessageDto();
-                String massage = Expression.parse(loanCustomerConfig.getContent(), params);
-                dto.setContent(massage);
-                data.setContent(massage);
-                data.setTarget(staffInfoVo.getUserId());
-                data.setContentPush(massage);
-                data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
-                data.setType(MESSAGE_TYPE_FLOW);
-                log.info("参数"+JSONObject.toJSONString(data));
-                DataResult<Long> result = this.sendMsgFeignService.send(data);
-                log.info("推送IM结果:{}", JSONObject.toJSONString(result));
-
-                //发送给上上级
-                StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
-                if(DataUtil.isNotEmpty(infoVo)){
-                    log.info("上上级：{}",infoVo);
+        if(customerIds.isSuccess()){
+            SysUserInfo sysUserInfo = this.sysUserInfoService.getById(userId);
+            List<String> customerId = customerIds.getData();
+            log.info("是否有放款用户：{}",customerId);
+            if(DataUtil.isNotEmpty(customerId) && customerId.size() > 0){
+                //发送给上级
+                StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
+                if(DataUtil.isNotEmpty(staffInfoVo)){
+                    log.info("上级用户：{}",staffInfoVo);
                     //参数值
-                    Map param = new HashMap();
-                    params.put("userId",infoVo.getUserId());
-                    params.put("name",infoVo.getUserName());
+                    Map params = new HashMap();
+                    params.put("userId",staffInfoVo.getUserId());
+                    params.put("name",sysUserInfo.getUserName());
                     params.put("type",0);
-                    params.put("departId",infoVo.getDepartId());
-                    params.put("companyId",infoVo.getCompanyId());
-                    param.put("title","客户跟进提醒");
+                    params.put("departId",staffInfoVo.getDepartId());
+                    params.put("companyId",staffInfoVo.getCompanyId());
+                    params.put("title","客户跟进提醒");
 
                     //推送小藏参数
-                    FlowMessageDto dtos= new FlowMessageDto();
+                    FlowMessageDto dto= new FlowMessageDto();
                     // 标题
-                    dtos.setTitle("客户跟进提醒");
+                    dto.setTitle("客户跟进提醒");
                     //来源
-                    dtos.setMessageSource("extend");
+                    dto.setMessageSource("extend");
                     // 跳转路径
-                    dtos.setUrl(loanSuperiorConfig.getUrl());
+                    dto.setUrl(loanCustomerConfig.getUrl());
 
                     //参数值替换
-                    JSONObject jsons = new JSONObject(param);
-                    dtos.setQuery(jsons);
-                    dtos.setArguments(jsons);
+                    JSONObject json = new JSONObject(params);
+                    dto.setQuery(json);
+                    dto.setArguments(json);
 
-                    SendRobotMessageDto datas = new SendRobotMessageDto();
-                    String massages = Expression.parse(loanSuperiorConfig.getContent(), param);
-                    dtos.setContent(massages);
-                    datas.setContent(massages);
-                    datas.setTarget(infoVo.getUserId());
-                    datas.setContentPush(massages);
-                    datas.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dtos));
-                    datas.setType(MESSAGE_TYPE_FLOW);
-                    log.info("参数"+JSONObject.toJSONString(datas));
-                    DataResult<Long> results = this.sendMsgFeignService.send(datas);
-                    log.info("推送IM结果:{}", JSONObject.toJSONString(results));
+                    SendRobotMessageDto data = new SendRobotMessageDto();
+                    String massage = Expression.parse(loanCustomerConfig.getContent(), params);
+                    dto.setContent(massage);
+                    data.setContent(massage);
+                    data.setTarget(staffInfoVo.getUserId());
+                    data.setContentPush(massage);
+                    data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
+                    data.setType(MESSAGE_TYPE_FLOW);
+                    log.info("参数"+JSONObject.toJSONString(data));
+                    DataResult<Long> result = this.sendMsgFeignService.send(data);
+                    log.info("推送IM结果:{}", JSONObject.toJSONString(result));
+
+                    //发送给上上级
+                    StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
+                    if(DataUtil.isNotEmpty(infoVo)){
+                        log.info("上上级：{}",infoVo);
+                        //参数值
+                        Map param = new HashMap();
+                        params.put("userId",infoVo.getUserId());
+                        params.put("name",infoVo.getUserName());
+                        params.put("type",0);
+                        params.put("departId",infoVo.getDepartId());
+                        params.put("companyId",infoVo.getCompanyId());
+                        param.put("title","客户跟进提醒");
+
+                        //推送小藏参数
+                        FlowMessageDto dtos= new FlowMessageDto();
+                        // 标题
+                        dtos.setTitle("客户跟进提醒");
+                        //来源
+                        dtos.setMessageSource("extend");
+                        // 跳转路径
+                        dtos.setUrl(loanSuperiorConfig.getUrl());
+
+                        //参数值替换
+                        JSONObject jsons = new JSONObject(param);
+                        dtos.setQuery(jsons);
+                        dtos.setArguments(jsons);
+
+                        SendRobotMessageDto datas = new SendRobotMessageDto();
+                        String massages = Expression.parse(loanSuperiorConfig.getContent(), param);
+                        dtos.setContent(massages);
+                        datas.setContent(massages);
+                        datas.setTarget(infoVo.getUserId());
+                        datas.setContentPush(massages);
+                        datas.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dtos));
+                        datas.setType(MESSAGE_TYPE_FLOW);
+                        log.info("参数"+JSONObject.toJSONString(datas));
+                        DataResult<Long> results = this.sendMsgFeignService.send(datas);
+                        log.info("推送IM结果:{}", JSONObject.toJSONString(results));
+                    }
                 }
-            }
 
+            }
         }
 
     }
