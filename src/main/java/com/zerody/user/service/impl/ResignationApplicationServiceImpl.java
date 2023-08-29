@@ -161,10 +161,12 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
         DataResult<List<String>> customerIds = this.signOrderService.getCustomerId(userId);
         SysUserInfo sysUserInfo = this.sysUserInfoService.getById(userId);
         List<String> customerId = customerIds.getData();
+        log.info("是否有放款用户：{}",customerId);
         if(DataUtil.isNotEmpty(customerId) && customerId.size() > 0){
             //发送给上级
             StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
             if(DataUtil.isNotEmpty(staffInfoVo)){
+                log.info("上级用户：{}",staffInfoVo);
                 //参数值
                 Map params = new HashMap();
                 params.put("userId",staffInfoVo.getUserId());
@@ -203,6 +205,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                 //发送给上上级
                 StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
                 if(DataUtil.isNotEmpty(infoVo)){
+                    log.info("上上级：{}",infoVo);
                     //参数值
                     Map param = new HashMap();
                     params.put("userId",infoVo.getUserId());
@@ -230,7 +233,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     String massages = Expression.parse(loanSuperiorConfig.getContent(), param);
                     dtos.setContent(massages);
                     datas.setContent(massages);
-                    datas.setTarget(staffInfoVo.getUserId());
+                    datas.setTarget(infoVo.getUserId());
                     datas.setContentPush(massages);
                     datas.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dtos));
                     datas.setType(MESSAGE_TYPE_FLOW);
