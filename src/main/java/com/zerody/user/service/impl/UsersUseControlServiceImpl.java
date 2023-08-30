@@ -45,8 +45,8 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
     private SysStaffInfoService sysStaffInfoService;
     @Override
     public void addNameList(UsersUseControlDto param) {
-        Map<String,Object> blackList=new HashMap<>();
-        Map<String,Object> whiteList=new HashMap<>();
+        Map<String,Integer> blackList=new HashMap<>();
+        Map<String,Integer> whiteList=new HashMap<>();
 
         List<String> userIds = param.getUserIds();
         for (String userId : userIds) {
