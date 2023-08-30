@@ -167,8 +167,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
             if(DataUtil.isNotEmpty(customerId) && customerId.size() > 0){
                 //发送给上级
                 StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
+                log.info("上级用户：{}",staffInfoVo);
                 if(DataUtil.isNotEmpty(staffInfoVo)){
-                    log.info("上级用户：{}",staffInfoVo);
                     //参数值
                     Map params = new HashMap();
                     params.put("userId",staffInfoVo.getUserId());
@@ -191,7 +191,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     JSONObject json = new JSONObject(params);
                     dto.setQuery(json);
                     dto.setArguments(json);
-
+                    log.info("查看参数：{}",dto.getArguments());
                     SendRobotMessageDto data = new SendRobotMessageDto();
                     String massage = Expression.parse(loanCustomerConfig.getContent(), params);
                     dto.setContent(massage);
@@ -206,8 +206,8 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
 
                     //发送给上上级
                     StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
+                    log.info("上上级：{}",infoVo);
                     if(DataUtil.isNotEmpty(infoVo)){
-                        log.info("上上级：{}",infoVo);
                         //参数值
                         Map param = new HashMap();
                         params.put("userId",infoVo.getUserId());
