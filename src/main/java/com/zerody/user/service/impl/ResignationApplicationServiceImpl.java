@@ -22,6 +22,7 @@ import com.zerody.user.dto.FlowMessageDto;
 import com.zerody.user.dto.ResignationPageDto;
 import com.zerody.user.enums.ApproveStatusEnum;
 import com.zerody.user.enums.VisitNoticeTypeEnum;
+import com.zerody.user.feign.ContractFeignService;
 import com.zerody.user.feign.SignOrderFeignService;
 import com.zerody.user.mapper.ResignationApplicationMapper;
 import com.zerody.user.service.PositionRecordService;
@@ -60,7 +61,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
     @Autowired
     private SysUserInfoService sysUserInfoService;
     @Autowired
-    private SignOrderFeignService signOrderService;
+    private ContractFeignService contractFeignService;
     @Autowired
     private LoanCustomerConfig loanCustomerConfig;
     @Autowired
@@ -158,7 +159,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
 
     @Override
     public void leaveUserIm(String userId){
-        DataResult<List<String>> customerIds = this.signOrderService.getCustomerId(userId);
+        DataResult<List<String>> customerIds = this.contractFeignService.getCustomerId(userId);
         if(customerIds.isSuccess()){
             SysUserInfo sysUserInfo = this.sysUserInfoService.getById(userId);
             List<String> customerId = customerIds.getData();
