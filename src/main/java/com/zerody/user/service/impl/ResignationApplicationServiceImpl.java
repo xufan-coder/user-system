@@ -174,11 +174,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                             sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
                     Object parse = JSONObject.parse(queryStr);
 
-                    String msg =
-                            String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
-
-                    String argumentsStr = String.format(loanCustomerConfig.getQuery(),staffInfoVo.getUserId());
-                    Object parse1 = JSONObject.parse(argumentsStr);
+                    String msg = String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
 
                     JSONArray array = new JSONArray();
                     JSONObject json = new JSONObject();
@@ -186,7 +182,6 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     json.put("h5Url",null);
                     json.put("url",loanCustomerConfig.getUrl());
                     json.put("query",parse);
-                    json.put("arguments",parse1);
                     json.put("messageSource","extend");
                     array.add(json);
 
@@ -215,11 +210,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                                 sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
                         Object parses = JSONObject.parse(queryStrs);
 
-                        String msgs =
-                                String.format(loanSuperiorConfig.getContent(),sysUserInfo.getUserName());
-
-                        String argumentsStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
-                        Object parse1s = JSONObject.parse(argumentsStrs);
+                        String msgs = String.format(loanSuperiorConfig.getContent(),sysUserInfo.getUserName());
 
                         JSONArray arrays = new JSONArray();
                         JSONObject jsons = new JSONObject();
@@ -227,7 +218,6 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                         jsons.put("h5Url",null);
                         jsons.put("url",loanSuperiorConfig.getUrl());
                         jsons.put("query",parses);
-                        jsons.put("arguments",parse1s);
                         jsons.put("messageSource","extend");
                         arrays.add(jsons);
 
