@@ -262,6 +262,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private PartnerFeignService partnerFeignService;
 
+    @Autowired
+    private  ResignationApplicationService resignationApplicationService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -1276,6 +1279,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 positionRecord.setQuitReason(staff.getLeaveReason());
                 this.positionRecordService.updateById(positionRecord);
             }
+            //如果该伙伴有放款用户 则通知上级一句上上级
+            this.resignationApplicationService.leaveUserIm(oldUserInfo.getId());
         }
         //  员工为离职状态时 清除token
         if (removeToken && StatusEnum.stop.getValue().equals(setSysUserInfoDto.getStatus())) {
@@ -3499,7 +3504,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(leader)) {
             SysStaffInfo byId = this.getById(leader.getAdminAccount());
             if (DataUtil.isNotEmpty(byId)) {
-                result.add(byId.getUserId());
+                //离职的不需要
+                if(byId.getStatus()!=1){
+                    result.add(byId.getUserId());
+                }
             }
         }
 
@@ -3513,7 +3521,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 if(DataUtil.isNotEmpty(leader1)){
                     SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
                     if(DataUtil.isNotEmpty(byId1)){
-                        result.add(byId1.getUserId());
+                        //离职的不需要
+                        if(byId1.getStatus()!=1){
+                            result.add(byId1.getUserId());
+                        }
                     }
                 }
             }
@@ -4200,6 +4211,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(!leaveFlag) {
             // 修改员工档案为离职
             this.sysStaffInfoMapper.updateStatus(staff1.getId(), StatusEnum.stop.getValue(), "调离新公司");
+            //如果该伙伴有放款用户 则通知上级一句上上级
+            this.resignationApplicationService.leaveUserIm(param.getOldUserId());
             this.checkUtil.removeUserToken(staff1.getUserId());
         }
         //查询家庭成员

@@ -118,6 +118,9 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private PositionRecordService positionRecordService;
 
+    @Autowired
+    private ResignationApplicationService resignationApplicationService;
+
     @Value("${leave.type.block:}")
     private String block;
 
@@ -586,6 +589,8 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
                     this.userInfoService.updateById(byId);
                 }
             }
+            //如果该伙伴有放款用户 则通知上级一句上上级
+            this.resignationApplicationService.leaveUserIm(blac.getUserId());
             //添加一条任职记录
             SetSysUserInfoDto sysUserInfoDto = this.sysStaffInfoMapper.getUserInfoByUserId(blac.getUserId());
             PositionRecord positionRecord = new PositionRecord();
