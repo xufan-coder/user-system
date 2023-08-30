@@ -141,14 +141,16 @@ msg:
     content2: ''
   loan:
     url: /data/analysis/sign/list
-    query: '{"agoCharge":"${agoCharge}","title":"${title}","type":"${type}","userId":"${userId}","departId":"${departId}","companyId":"${companyId}"}'
+    query: '{"arguments":"${arguments}","title":"${title}","type":"${type}","userId":"${userId}","departId":"${departId}","companyId":"${companyId}"}'
     arguments:
-    content: '${name}伙伴已解约，他最近的签单客户由您继续服务，已通过短信通知客户，请留意客户咨询来电！'
+    title: '客户跟进提醒'
+    content: '【%s】伙伴已解约，他最近的签单客户由您继续服务，已通过短信通知客户，请留意客户咨询来电！'
   superior:
     url: /data/analysis/sign/list
-    query: '{"agoCharge":"${agoCharge}","title":"${title}","type":"${type}","userId":"${userId}","departId":"${departId}","companyId":"${companyId}"}'
+    query: '{"arguments":"${arguments}","title":"${title}","type":"${type}","userId":"${userId}","departId":"${departId}","companyId":"${companyId}"}'
     arguments:
-    content: '${name}伙伴已解约，他最近的签单客户由他的团队长跟进，请做好监督，预防客户流失!'
+    title: '客户跟进提醒'
+    content: '【%s】伙伴已解约，他最近的签单客户由他的团队长跟进，请做好监督，预防客户流失!'
 leave:
   type:
     transfer: b52154f9-e5ad-11ed-ac65-0800274877ca
