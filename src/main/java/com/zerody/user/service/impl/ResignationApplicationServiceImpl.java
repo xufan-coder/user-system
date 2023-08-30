@@ -173,7 +173,9 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     String queryStr = String.format(loanCustomerConfig.getQuery(),staffInfoVo.getUserId());
                     Object parse = JSONObject.parse(queryStr);
 
-                    String msg =  String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
+                    String msg =
+                            String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName(),0,
+                                    sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
 
                     String argumentsStr = String.format(loanCustomerConfig.getQuery(),staffInfoVo.getUserId());
                     Object parse1 = JSONObject.parse(argumentsStr);
@@ -211,7 +213,9 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                         String queryStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
                         Object parses = JSONObject.parse(queryStrs);
 
-                        String msgs =  String.format(loanSuperiorConfig.getContent(),sysUserInfo.getUserName());
+                        String msgs =
+                                String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName(),0,
+                                        sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
 
                         String argumentsStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
                         Object parse1s = JSONObject.parse(argumentsStrs);
