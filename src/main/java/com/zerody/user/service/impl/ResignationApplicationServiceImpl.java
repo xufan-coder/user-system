@@ -184,6 +184,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     JSONObject json = new JSONObject();
                     json.put("name","查看签单记录");
                     json.put("h5Url",null);
+                    json.put("url",loanCustomerConfig.getUrl());
                     json.put("query",parse);
                     json.put("arguments",parse1);
                     json.put("messageSource","extend");
@@ -215,7 +216,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                         Object parses = JSONObject.parse(queryStrs);
 
                         String msgs =
-                                String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
+                                String.format(loanSuperiorConfig.getContent(),sysUserInfo.getUserName());
 
                         String argumentsStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
                         Object parse1s = JSONObject.parse(argumentsStrs);
@@ -224,6 +225,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                         JSONObject jsons = new JSONObject();
                         jsons.put("name","查看签单记录");
                         jsons.put("h5Url",null);
+                        json.put("url",loanSuperiorConfig.getUrl());
                         jsons.put("query",parses);
                         jsons.put("arguments",parse1s);
                         jsons.put("messageSource","extend");
