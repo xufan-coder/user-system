@@ -225,7 +225,7 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                         JSONObject jsons = new JSONObject();
                         jsons.put("name","查看签单记录");
                         jsons.put("h5Url",null);
-                        json.put("url",loanSuperiorConfig.getUrl());
+                        jsons.put("url",loanSuperiorConfig.getUrl());
                         jsons.put("query",parses);
                         jsons.put("arguments",parse1s);
                         jsons.put("messageSource","extend");
