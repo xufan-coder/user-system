@@ -170,12 +170,12 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                 StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
                 log.info("上级用户：{}",staffInfoVo);
                 if(DataUtil.isNotEmpty(staffInfoVo)){
-                    String queryStr = String.format(loanCustomerConfig.getQuery(),staffInfoVo.getUserId());
+                    String queryStr = String.format(loanCustomerConfig.getQuery(),0,
+                            sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
                     Object parse = JSONObject.parse(queryStr);
 
                     String msg =
-                            String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName(),0,
-                                    sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
+                            String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
 
                     String argumentsStr = String.format(loanCustomerConfig.getQuery(),staffInfoVo.getUserId());
                     Object parse1 = JSONObject.parse(argumentsStr);
@@ -210,12 +210,12 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                     StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
                     log.info("上上级：{}",infoVo);
                     if(DataUtil.isNotEmpty(infoVo)){
-                        String queryStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
+                        String queryStrs = String.format(loanSuperiorConfig.getQuery(),0,
+                                sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
                         Object parses = JSONObject.parse(queryStrs);
 
                         String msgs =
-                                String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName(),0,
-                                        sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
+                                String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
 
                         String argumentsStrs = String.format(loanSuperiorConfig.getQuery(),infoVo.getUserId());
                         Object parse1s = JSONObject.parse(argumentsStrs);
