@@ -21,4 +21,7 @@ public interface ResignationApplicationService extends IService<ResignationAppli
     IPage<ResignationApplication> selectPage(ResignationPageDto dto);
 
     List<ResignationApplication> doLeaveUsers();
+
+    void leaveUserIm(String userId);
+
 }
