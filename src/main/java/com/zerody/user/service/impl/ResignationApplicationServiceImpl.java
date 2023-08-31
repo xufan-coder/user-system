@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -169,80 +170,75 @@ public class ResignationApplicationServiceImpl extends ServiceImpl<ResignationAp
                 StaffInfoVo staffInfoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(userId);
                 log.info("上级用户：{}",staffInfoVo);
                 if(DataUtil.isNotEmpty(staffInfoVo)){
-                    //参数值
-                    Map params = new HashMap();
-                    params.put("userId",staffInfoVo.getUserId());
-                    params.put("name",sysUserInfo.getUserName());
-                    params.put("type",0);
-                    params.put("departId",staffInfoVo.getDepartId());
-                    params.put("companyId",staffInfoVo.getCompanyId());
-                    params.put("title","客户跟进提醒");
+                    String queryStr = String.format(loanCustomerConfig.getQuery(),0,
+                            sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
+                    Object parse = JSONObject.parse(queryStr);
 
-                    //推送小藏参数
-                    FlowMessageDto dto= new FlowMessageDto();
-                    // 标题
-                    dto.setTitle("客户跟进提醒");
-                    //来源
-                    dto.setMessageSource("extend");
-                    // 跳转路径
-                    dto.setUrl(loanCustomerConfig.getUrl());
+                    String msg = String.format(loanCustomerConfig.getContent(),sysUserInfo.getUserName());
 
-                    //参数值替换
-                    JSONObject json = new JSONObject(params);
-                    dto.setQuery(json);
-                    dto.setArguments(json);
-                    log.info("查看参数：{}",dto.getArguments());
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("name","查看签单记录");
+                    json.put("h5Url",null);
+                    json.put("url",loanCustomerConfig.getUrl());
+                    json.put("query",parse);
+                    json.put("messageSource","extend");
+                    array.add(json);
+
+                    Map<String,Object> dataMap = new HashMap<>();
+                    dataMap.put("title",loanCustomerConfig.getTitle());
+                    dataMap.put("content",msg);
+                    dataMap.put("buttons",array);
+
                     SendRobotMessageDto data = new SendRobotMessageDto();
-                    String massage = Expression.parse(loanCustomerConfig.getContent(), params);
-                    dto.setContent(massage);
-                    data.setContent(massage);
+                    data.setContent(msg);
                     data.setTarget(staffInfoVo.getUserId());
-                    data.setContentPush(massage);
-                    data.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dto));
-                    data.setType(MESSAGE_TYPE_FLOW);
-                    log.info("参数"+JSONObject.toJSONString(data));
-                    DataResult<Long> result = this.sendMsgFeignService.send(data);
+                    data.setContentPush(msg);
+                    data.setContentExtra(JSONObject.toJSONString(dataMap));
+                    data.setType(1013);
+                    data.setConversationType(0);
+                    data.setPersistFlag(3);
+                    com.zerody.common.api.bean.DataResult<Long> result = sendMsgFeignService.send(data);
+                    log.info("推送参数结果:{}", JSONObject.toJSONString(data));
                     log.info("推送IM结果:{}", JSONObject.toJSONString(result));
 
                     //发送给上上级
                     StaffInfoVo infoVo = this.sysUserInfoService.getSuperiorNotCompanyAdmin(staffInfoVo.getUserId());
                     log.info("上上级：{}",infoVo);
                     if(DataUtil.isNotEmpty(infoVo)){
-                        //参数值
-                        Map param = new HashMap();
-                        params.put("userId",infoVo.getUserId());
-                        params.put("name",infoVo.getUserName());
-                        params.put("type",0);
-                        params.put("departId",infoVo.getDepartId());
-                        params.put("companyId",infoVo.getCompanyId());
-                        param.put("title","客户跟进提醒");
+                        String queryStrs = String.format(loanSuperiorConfig.getQuery(),0,
+                                sysUserInfo.getId(),staffInfoVo.getDepartId(),staffInfoVo.getCompanyId());
+                        Object parses = JSONObject.parse(queryStrs);
 
-                        //推送小藏参数
-                        FlowMessageDto dtos= new FlowMessageDto();
-                        // 标题
-                        dtos.setTitle("客户跟进提醒");
-                        //来源
-                        dtos.setMessageSource("extend");
-                        // 跳转路径
-                        dtos.setUrl(loanSuperiorConfig.getUrl());
+                        String msgs = String.format(loanSuperiorConfig.getContent(),sysUserInfo.getUserName());
 
-                        //参数值替换
-                        JSONObject jsons = new JSONObject(param);
-                        dtos.setQuery(jsons);
-                        dtos.setArguments(jsons);
+                        JSONArray arrays = new JSONArray();
+                        JSONObject jsons = new JSONObject();
+                        jsons.put("name","查看签单记录");
+                        jsons.put("h5Url",null);
+                        jsons.put("url",loanSuperiorConfig.getUrl());
+                        jsons.put("query",parses);
+                        jsons.put("messageSource","extend");
+                        arrays.add(jsons);
+
+                        Map<String,Object> dataMaps = new HashMap<>();
+                        dataMaps.put("title",loanSuperiorConfig.getTitle());
+                        dataMaps.put("content",msgs);
+                        dataMaps.put("buttons",arrays);
 
                         SendRobotMessageDto datas = new SendRobotMessageDto();
-                        String massages = Expression.parse(loanSuperiorConfig.getContent(), param);
-                        dtos.setContent(massages);
-                        datas.setContent(massages);
+                        datas.setContent(msgs);
                         datas.setTarget(infoVo.getUserId());
-                        datas.setContentPush(massages);
-                        datas.setContentExtra(com.zerody.flow.client.util.JsonUtils.toString(dtos));
-                        datas.setType(MESSAGE_TYPE_FLOW);
-                        log.info("参数"+JSONObject.toJSONString(datas));
-                        DataResult<Long> results = this.sendMsgFeignService.send(datas);
+                        datas.setContentPush(msgs);
+                        datas.setContentExtra(JSONObject.toJSONString(dataMaps));
+                        datas.setType(1013);
+                        datas.setConversationType(0);
+                        datas.setPersistFlag(3);
+                        com.zerody.common.api.bean.DataResult<Long> results = sendMsgFeignService.send(datas);
+                        log.info("推送参数结果:{}", JSONObject.toJSONString(datas));
                         log.info("推送IM结果:{}", JSONObject.toJSONString(results));
                     }
+
                 }
 
             }

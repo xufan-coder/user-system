@@ -12,9 +12,13 @@ import org.springframework.stereotype.Component;
 public class LoanSuperiorConfig {
     private String url;
 
+    private String h5Url;
+
     private String query;
 
     private String arguments;
 
     private String content;
+
+    private String title;
 }
