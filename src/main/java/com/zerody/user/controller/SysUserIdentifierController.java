@@ -150,7 +150,7 @@ public class SysUserIdentifierController {
     public DataResult<Object> unBoundApp(@PathVariable(value = "id") String userId,@RequestParam String id){
 
         try {
-            this.service.addUnbound(id,UserUtils.getUserId(),id);
+            this.service.addUnbound(userId,UserUtils.getUserId(),id);
             return R.success();
         } catch (Exception e) {
             return R.error("解除绑定出错:"+e.getMessage());
