@@ -75,13 +75,13 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
         }
         if(DataUtil.isNotEmpty(blackList)){
             for (String s : blackList) {
-                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_BLACK_LIST_,s,1);
+                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_BLACK_LIST_,s,"1");
             }
 
         }
         if(DataUtil.isNotEmpty(whiteList)){
             for (String s : whiteList) {
-                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_WHITE_LIST,s,1);
+                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_WHITE_LIST,s,"1");
             }
         }
     }
