@@ -338,6 +338,7 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
 
     @Override
     public void addUnbound(String userId,String updateUserId,String id) {
+        //此处不合理的地方是解绑a设备会退出b设备
         SysUserIdentifier identifier = this.getIdentifierInfo(null,id);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
