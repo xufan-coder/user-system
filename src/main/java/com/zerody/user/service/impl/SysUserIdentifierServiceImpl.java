@@ -92,9 +92,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     @Override
     public void addSysUserIdentifier(SysUserIdentifier data) {
 
-        SysUserIdentifier identifier = this.getIdentifierInfo(data.getUserId());
-        if(identifier != null) {
-            throw new DefaultException("该账号已绑定设备号");
+        List<SysUserIdentifier> identifierInfos = this.getIdentifierInfos(data.getUserId());
+        if(identifierInfos.size() >2) {
+            throw new DefaultException("该账号已绑定两个设备号");
         }
         data.setId(UUIDutils.getUUID32());
         userAssignment(data,data.getUserId());
@@ -337,8 +337,9 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     }
 
     @Override
-    public void addUnbound(String userId,String updateUserId) {
-        SysUserIdentifier identifier = this.getIdentifierInfo(userId);
+    public void addUnbound(String userId,String updateUserId,String id) {
+        //todo 此处不合理的地方是解绑a设备会退出b设备
+        SysUserIdentifier identifier = this.getIdentifierInfo(null,id);
         if(identifier == null) {
             throw new DefaultException("未找到有效设备绑定数据");
         }
@@ -408,6 +409,16 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
     }
 
     @Override
+    public List<SysUserIdentifier> getIdentifierInfos(String userId) {
+        QueryWrapper<SysUserIdentifier> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysUserIdentifier:: getState, YesNo.YES);
+        if(StringUtils.isNotEmpty(userId)) {
+            queryWrapper.lambda().eq(SysUserIdentifier:: getUserId, userId);
+        }
+        return this.list(queryWrapper);
+    }
+
+    @Override
     public SysUserIdentifier getIdentifierInfo(String userId, String id ){
         QueryWrapper<SysUserIdentifier> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysUserIdentifier:: getState, YesNo.YES);
@@ -462,5 +473,53 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         }
         identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
         return identifierVo;
+    }
+
+    @Override
+    public  List<SysUserIdentifierVo> getUserIdentifierInfos(String userId){
+        //获取用户登录设备详情
+        List<SysUserIdentifier> identifierInfos = this.getIdentifierInfos(userId);
+        List<SysUserIdentifierVo> sysUserIdentifierVos = new ArrayList<>();
+
+        //用户登录信息
+        QueryWrapper<SysLoginInfo> loginQw = new QueryWrapper<>();
+        loginQw.lambda().eq(SysLoginInfo::getUserId, userId);
+        SysLoginInfo logInfo = sysLoginInfoMapper.selectOne(loginQw);
+        for (SysUserIdentifier identifier : identifierInfos) {
+            SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
+            if(!Objects.isNull(identifier)){
+                BeanUtils.copyProperties(identifier,identifierVo);
+                identifierVo.setUsername(identifier.getCreateUsername());
+                // 获取ceo的最近登录时间
+                if(Objects.isNull(logInfo)) {
+                    CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                    identifierVo.setLastLoginTime(ceo.getLoginTime());
+                }else {
+                    identifierVo.setLastLoginTime(logInfo.getLoginTime());
+                }
+            }else {
+                //查询员工详情信息
+                SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
+                if(Objects.isNull(user)) {
+                    //获取ceo详情
+                    CeoUserInfo ceo = ceoUserInfoService.getUserById(userId);
+                    identifierVo.setUsername(ceo.getUserName());
+                    identifierVo.setMobile(ceo.getPhoneNumber());
+                    identifierVo.setCompanyName(ceo.getCompany());
+                    identifierVo.setCreateUsername(ceo.getUserName());
+                    identifierVo.setLastLoginTime(ceo.getLoginTime());
+                }else {
+                    identifierVo.setUsername(user.getUserName());
+                    identifierVo.setMobile(user.getPhoneNumber());
+                    identifierVo.setCompanyName(user.getCompanyName());
+                    identifierVo.setCreateUsername(user.getUserName());
+                    identifierVo.setLastLoginTime(logInfo.getLoginTime());
+                }
+            }
+            identifierVo.setBinding(Objects.isNull(identifier) ? YesNo.NO : YesNo.YES);
+            sysUserIdentifierVos.add(identifierVo);
+        }
+
+        return sysUserIdentifierVos;
     }
 }

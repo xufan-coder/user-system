@@ -26,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +43,8 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
     private SysStaffInfoService sysStaffInfoService;
     @Override
     public void addNameList(UsersUseControlDto param) {
-        Map<String,Object> blackList=new HashMap<>();
-        Map<String,Object> whiteList=new HashMap<>();
+       List<String> blackList=new ArrayList<>();
+       List<String> whiteList=new ArrayList<>();
 
         List<String> userIds = param.getUserIds();
         for (String userId : userIds) {
@@ -68,18 +66,23 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
                 usersUseControl.setCompanyId(sysUserInfoVo.getCompanyId());
                 this.save(usersUseControl);
                 if(usersUseControl.getType()==1){
-                    blackList.put(usersUseControl.getUserId(),1);
+                    blackList.add(usersUseControl.getUserId());
                 }
                 if(usersUseControl.getType()==2){
-                    whiteList.put(usersUseControl.getUserId(),1);
+                    whiteList.add(usersUseControl.getUserId());
                 }
             }
         }
         if(DataUtil.isNotEmpty(blackList)){
-          stringRedisTemplate.opsForHash().putAll(CommonConstants.USE_CONTROL_BLACK_LIST_, blackList);
+            for (String s : blackList) {
+                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_BLACK_LIST_,s,"1");
+            }
+
         }
         if(DataUtil.isNotEmpty(whiteList)){
-            stringRedisTemplate.opsForHash().putAll(CommonConstants.USE_CONTROL_WHITE_LIST, whiteList);
+            for (String s : whiteList) {
+                stringRedisTemplate.opsForHash().put(CommonConstants.USE_CONTROL_WHITE_LIST,s,"1");
+            }
         }
     }
 

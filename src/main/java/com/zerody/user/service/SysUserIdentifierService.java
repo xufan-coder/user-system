@@ -39,7 +39,7 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
      * @param userId 需要解绑的伙伴id
      * @param updateUserId 当前登录用户id
      */
-    void addUnbound(String userId,String updateUserId);
+    void addUnbound(String userId,String updateUserId,String id);
 
     Page<SysUserIdentifier> getPageUserIdentifier(SysUserIdentifierQueryDto queryDto);
 
@@ -48,5 +48,9 @@ public interface SysUserIdentifierService  extends IService<SysUserIdentifier> {
     SysUserIdentifier getIdentifierInfo(String userId,String id);
 
     SysUserIdentifierVo getUserIdentifierInfo(String userId);
+
+    List<SysUserIdentifierVo> getUserIdentifierInfos(String userId);
+
+    List<SysUserIdentifier> getIdentifierInfos(String userId);
 
 }
