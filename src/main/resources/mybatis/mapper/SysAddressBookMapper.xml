@@ -82,6 +82,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
+        AND sdi.is_show_business = 1
         <if test="param.compId neq null and param.compId neq ''">
             AND sci.id=#{param.compId}
         </if>
@@ -122,6 +123,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        AND sdi.is_show_business = 1
         <if test="param.departmentId neq null and param.departmentId neq ''">
             AND sdi.parent_id=#{param.departmentId}
         </if>
@@ -271,6 +273,87 @@
             </if>
             order by ssi.date_left desc
         </where>
+    </select>
+
+<!-- 部门(有是否显示两种)   -->
+    <select id="queryDepartInfoAll" resultType="com.zerody.user.vo.DepartInfoVo">
+        SELECT
+        COUNT( sui.id )AS staffCountId,
+        sdi.depart_name,
+        sci.company_name,
+        sdi.id AS departmentId,
+        ssis.user_name,
+        sci.id AS copmId,
+        ssi.user_type,
+        sui.id AS userId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
+        LEFT JOIN union_staff_depart AS usd ON (sdi.id = usd.department_id OR usd.department_id LIKE CONCAT(sdi.id, '\_%'))
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id and ssi.comp_id = sci.id
+        LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
+        WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
+        <if test="param.compId neq null and param.compId neq ''">
+            AND sci.id=#{param.compId}
+        </if>
+        <if test="param.userType neq null">
+            AND ssi.user_type=#{param.userType}
+        </if>
+        <if test="param.status neq null">
+            AND ssi.status=#{param.status}
+        </if>
+        <if test="param.userName neq null and param.userName neq ''">
+            AND sui.user_name=#{param.userName}
+        </if>
+        <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
+            AND sui.phone_number=#{param.phoneNumber}
+        </if>
+
+        GROUP BY
+        sdi.id;
+    </select>
+
+<!-- 团队(有是否显示两种)   -->
+    <select id="queryTeamAll" resultType="com.zerody.user.vo.DepartInfoVo">
+        SELECT
+        COUNT( sui.id )AS staffCountId,
+        sdi.depart_name,
+        sci.company_name,
+        sdi.id AS departmentId,
+        ssis.user_name,
+        sci.id AS copmId,
+        ssi.user_type,
+        sui.id AS userId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_department_info AS sdi ON sdi.comp_id = sci.id AND sdi.`status`!='-1'
+        LEFT JOIN union_staff_depart AS usd ON  (sdi.id = usd.department_id OR usd.department_id LIKE CONCAT(sdi.id, '\_%'))
+        LEFT JOIN sys_staff_info AS ssi ON usd.staff_id = ssi.id and ssi.comp_id = sci.id
+        LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
+        WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        <if test="param.departmentId neq null and param.departmentId neq ''">
+            AND sdi.parent_id=#{param.departmentId}
+        </if>
+        <if test="param.compId neq null and param.compId neq ''">
+            AND sci.id=#{param.compId}
+        </if>
+        <if test="param.userType neq null">
+            AND ssi.user_type=#{param.userType}
+        </if>
+        <if test="param.status neq null">
+            AND ssi.status=#{param.status}
+        </if>
+        <if test="param.userName neq null and param.userName neq ''">
+            AND sui.user_name=#{param.userName}
+        </if>
+        <if test="param.phoneNumber neq null and param.phoneNumber neq ''">
+            AND sui.phone_number=#{param.phoneNumber}
+        </if>
+
+        GROUP BY
+        sdi.id;
     </select>
 
 </mapper>
