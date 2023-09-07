@@ -53,6 +53,7 @@
         <where>
             is_enabled = 0 and addr_level &lt;=  #{level}
         </where>
+        order by `code` = '440000' desc
     </select>
     <select id="getCodeByLikeName" resultType="java.lang.String" >
          select
