@@ -1545,4 +1545,37 @@
         </where>
     </select>
 
+    <select id="getUserIdByCompanyIds" resultType="java.lang.String">
+        SELECT sui.id
+        FROM sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+	    <where>
+	    ssi.deleted = 0 and sui.status != -1
+             <if test="companyIds neq null and companyIds.size() gt 0">
+                    and ssi.comp_id
+                    <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                        #{id}
+                    </foreach>
+              </if>
+        </where>
+    </select>
+
+
+    <select id="getUserIdByDeptIds" resultType="java.lang.String">
+        SELECT sui.id
+        FROM sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        <where>
+	     ssi.deleted = 0 and sui.status != -1
+             <if test="deptIds neq null and deptIds.size() gt 0">
+                AND
+                <foreach collection="deptIds" item="id" open="(" separator="OR" close=")">
+                    (usd.department_id = #{id} OR usd.department_id LIKE CONCAT( #{id}, '\_%'))
+                </foreach>
+             </if>
+         </where>
+    </select>
+
 </mapper>

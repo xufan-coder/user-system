@@ -9,6 +9,7 @@ import com.zerody.common.utils.DataUtil;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.domain.Msg;
 import com.zerody.user.domain.UsersUseControl;
+import com.zerody.user.dto.UsersTokenControlDto;
 import com.zerody.user.dto.UsersUseControlDto;
 import com.zerody.user.dto.UsersUseControlListDto;
 import com.zerody.user.dto.UsersUseControlPageDto;
@@ -16,6 +17,7 @@ import com.zerody.user.mapper.UsersUseControlMapper;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.SysUserInfoService;
 import com.zerody.user.service.UsersUseControlService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.LoginUserInfoVo;
 import com.zerody.user.vo.ReportFormsQueryVo;
 import com.zerody.user.vo.SysUserInfoVo;
@@ -41,6 +43,8 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+    @Autowired
+    private CheckUtil checkUtil;
     @Override
     public void addNameList(UsersUseControlDto param) {
        List<String> blackList=new ArrayList<>();
@@ -124,5 +128,21 @@ public class UsersUseControlServiceImpl extends ServiceImpl<UsersUseControlMappe
         List<UsersUseControl> list = this.list(qw);
         List<String> userIds = list.stream().map(UsersUseControl::getUserId).collect(Collectors.toList());
         return userIds;
+    }
+
+    @Override
+    public void removeToken(UsersTokenControlDto param) {
+        List<String> list=new ArrayList<>();
+        if(1==param.getType()){
+            //1 企业id 下线所有企业的token
+           list=sysStaffInfoService.getUserIdByCompanyIds(param.getRemoveIds());
+        }else if(2==param.getType()){
+            //2 部门id 下线所有部门下级的token
+            list=sysStaffInfoService.getUserIdByDeptIds(param.getRemoveIds());
+        }else if(3==param.getType()){
+            //3 用户id 下线所有id的token
+            list=param.getRemoveIds();
+        }
+        this.checkUtil.removeUserTokens(list);
     }
 }

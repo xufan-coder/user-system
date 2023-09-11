@@ -322,4 +322,7 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<StaffInfoByAddressBookVo> pageGetUserList(SysStaffInfoPageDto dto);
 
+    List<String> getUserIdByCompanyIds(List<String> companyIds);
+
+    List<String> getUserIdByDeptIds(List<String> deptIds);
 }

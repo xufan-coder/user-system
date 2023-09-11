@@ -6,6 +6,7 @@ import com.zerody.common.constant.TimeDimensionality;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.enums.util.TimeFormat;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
@@ -222,6 +223,15 @@ public class CheckUtil {
         userIds.add(userId);
         log.info("删除了id：{},的token ", userId);
         oauthFeignService.removeToken(userIds);
+    }
+
+    public void removeUserTokens(List<String> userIds) {
+        DataResult result = oauthFeignService.removeToken(userIds);
+        if(DataUtil.isNotEmpty(result)&&result.isSuccess()){
+            log.info("删除了token集合:{} ", JsonUtils.toString(userIds));
+        }else {
+            log.info("删除token集合失败:{} ", JsonUtils.toString(userIds));
+        }
     }
 
     public void getCheckAddBlacListParam(StaffBlacklistAddDto param) {
