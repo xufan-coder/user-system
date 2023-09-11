@@ -330,7 +330,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             deps = this.sysDepartmentInfoMapper.getAllDepByCompanyId(user.getCompanyId());
         } else if (admin.getIsDepartAdmin()) {
             deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(user);
-            parentId = this.getById(user.getDeptId()).getParentId();
+            SysDepartmentInfo byId = this.getById(user.getDeptId());
+            if(DataUtil.isNotEmpty(byId) && DataUtil.isNotEmpty(byId.getParentId())){
+                parentId = byId.getParentId();
+            }
+
         } else {
             return null;
         }
