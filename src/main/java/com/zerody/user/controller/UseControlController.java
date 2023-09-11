@@ -179,6 +179,7 @@ public class UseControlController  implements RestrictRemoteService {
 	}
 
 	/**
+	 * 强制下线功能
 	 *   移除/公司/部门/团队/用户的登录状态
 	 */
 	@PostMapping("/remove/token")
