@@ -226,7 +226,7 @@ public class CheckUtil {
     }
 
     public void removeUserTokens(List<String> userIds) {
-        DataResult result = oauthFeignService.removeToken(userIds);
+        DataResult result = oauthFeignService.removeTokenAsyn(userIds);
         if(DataUtil.isNotEmpty(result)&&result.isSuccess()){
             log.info("删除了token集合:{} ", JsonUtils.toString(userIds));
         }else {
