@@ -8,6 +8,7 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.domain.CommonFile;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.dto.FrameworkBlacListQueryPageDto;
 import com.zerody.user.dto.InternalControlDto;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 员工黑名单控制类
@@ -382,13 +384,26 @@ public class StaffBlacklistControlller {
     /**
      * BOSS查看页面
      * 统计内控名单-按企业
+     * 2023-09-15修改为纵向权限
      * @author  DaBai
      * @date  2022/10/10 15:12
      */
     @GetMapping("/statistics-by-company")
     public DataResult<List<BlackListCount>> getBlacklistCount(){
         try {
+            UserVo user = UserUtils.getUser();
             List<BlackListCount> result = this.service.getBlacklistCount();
+            boolean isCeo = user.isCEO();
+            boolean isBack = user.isBack();
+            if(isCeo||isBack){
+                return R.success(result);
+            }else {
+                String companyId = user.getCompanyId();
+                if(DataUtil.isNotEmpty(companyId)){
+                    List<BlackListCount> collect = result.stream().filter(s -> s.getCompanyId().equals(companyId)).collect(Collectors.toList());
+                    return R.success(collect);
+                }
+            }
             return R.success(result);
         } catch (DefaultException e) {
             log.error("统计黑名单企业人数出错：{}", e, e);
