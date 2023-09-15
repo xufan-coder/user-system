@@ -227,6 +227,17 @@ public class StaffBlacklistControlller {
     @GetMapping("/app/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
         try {
+            UserVo user = UserUtils.getUser();
+            if (!user.isCEO()) {
+                if(DataUtil.isEmpty(param.getCompanyId())) {
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }
+                String deptId = user.getDeptId();
+                param.setDepartId(deptId);
+            }else {
+                // 设置组织架构条件值
+                param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            }
             param.setQueryDimensionality("blockUser");
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
