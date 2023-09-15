@@ -232,8 +232,23 @@ public class StaffBlacklistControlller {
                 if(DataUtil.isEmpty(param.getCompanyId())) {
                     param.setCompanyId(UserUtils.getUser().getCompanyId());
                 }
-                String deptId = user.getDeptId();
-                param.setDepartId(deptId);
+                if(user.isCompanyAdmin()){
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }else if(user.isDeptAdmin()){
+                    String deptId = user.getDeptId();
+                    if(DataUtil.isNotEmpty(param.getDepartId())){
+                        if(param.getDepartId().contains(deptId)){
+
+                        }else {
+                            param.setDepartId(deptId);
+                        }
+                    }else {
+                        param.setDepartId(deptId);
+                    }
+                }else {
+                    String deptId = user.getDeptId();
+                    param.setDepartId(deptId);
+                }
             }else {
                 // 设置组织架构条件值
                 param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
