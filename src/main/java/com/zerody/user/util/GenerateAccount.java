@@ -1,6 +1,7 @@
 package com.zerody.user.util;
 
 import com.xxl.job.core.util.DateUtil;
+import com.zerody.common.exception.DefaultException;
 import org.joda.time.DateTime;
 
 import java.io.UnsupportedEncodingException;
@@ -146,7 +147,7 @@ public class GenerateAccount {
         int min = 100000;  // 最小值为100000
         int max = 999999;  // 最大值为999999
         String i= String.valueOf(random.nextInt(max - min + 1));
-        String top = "130888";
+        String top = "13888";
         return top + i;
     }
 
