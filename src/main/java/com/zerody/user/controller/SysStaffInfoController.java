@@ -18,6 +18,7 @@ import com.zerody.user.service.SysAddressBookService;
 import com.zerody.user.service.SysCompanyInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.base.CheckUtil;
+import com.zerody.user.util.GenerateAccount;
 import com.zerody.user.vo.*;
 import com.zerody.user.vo.BosStaffInfoVo;
 import com.zerody.user.vo.StaffInfoByCompanyVo;
@@ -168,6 +169,28 @@ public class SysStaffInfoController {
             return R.error("添加合作伙伴失败,请求异常");
         }
     }
+
+
+    @PostMapping("/generate/account")
+    public DataResult<Object> generate(@RequestBody SetSysUserInfoDto setSysUserInfoDto) {
+        try {
+            for (int i = 0; i <= 100; i++){
+                setSysUserInfoDto.setUserName(GenerateAccount.generateName());
+                setSysUserInfoDto.setCertificateCard(GenerateAccount.generateIDCard());
+                setSysUserInfoDto.setPhoneNumber(GenerateAccount.generateIDCard());
+                sysStaffInfoService.addStaff(setSysUserInfoDto);
+            }
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("批量插入账号出错:{}", e.getMessage());
+            return R.error("批量插入账号出错");
+        } catch (Exception e) {
+            log.error("批量插入账号出错:{}", e, e);
+            return R.error("批量插入账号出错");
+        }
+    }
+
+
 
 
     //修改员工状态
@@ -829,7 +852,7 @@ public class SysStaffInfoController {
         try {
             UserVo user = UserUtils.getUser();
             dto.setUserId(user.getUserId());
-            log.info("获取关联我的伙伴 {}", dto);
+            log.info("获取关联我的伙伴入参 {}", dto);
             return R.success(this.sysStaffInfoService.pageGetUserList(dto));
         } catch (DefaultException e) {
             log.error("获取关联我的伙伴出错:{}", e.getMessage());
