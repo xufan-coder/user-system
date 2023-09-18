@@ -177,7 +177,7 @@ public class SysStaffInfoController {
             for (int i = 0; i <= 100; i++){
                 setSysUserInfoDto.setUserName(GenerateAccount.generateName());
                 setSysUserInfoDto.setCertificateCard(GenerateAccount.generateIDCard());
-                setSysUserInfoDto.setPhoneNumber(GenerateAccount.generateIDCard());
+                setSysUserInfoDto.setPhoneNumber(GenerateAccount.generateMobile());
                 sysStaffInfoService.addStaff(setSysUserInfoDto);
             }
             return R.success();
