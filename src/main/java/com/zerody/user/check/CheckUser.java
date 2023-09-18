@@ -9,6 +9,7 @@ import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UserResume;
 import com.zerody.user.dto.SetSysUserInfoDto;
 import com.zerody.user.util.IdCardUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
  * Description: 检查用户
  * Created by pengqiang on 2020/12/17 10:15
  */
+@Slf4j
 public class CheckUser {
 
 
@@ -31,6 +33,7 @@ public class CheckUser {
             throw new DefaultException("手机号码不能为空");
         }
         if (!sysUserInfo.getPhoneNumber().matches("\\d{11}")) {
+            log.info("手机号码 {}", sysUserInfo.getPhoneNumber());
             throw new DefaultException("手机号码长度不正确");
         }
         if (StringUtils.isNotEmpty(sysUserInfo.getCertificateCard())) {
