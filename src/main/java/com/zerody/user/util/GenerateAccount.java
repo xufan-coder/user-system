@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -82,6 +83,7 @@ public class GenerateAccount {
 
     /**
      * 随机生成合法的身份证号码
+     *
      * @return
      */
     public static String generateIDCard() {
@@ -140,23 +142,37 @@ public class GenerateAccount {
 
     /**
      * 随机生成号码
+     *
      * @return
      */
     public static String generateMobile() {
+
         Random random = new Random();
-        int min = 100000;  // 最小值为100000
-        int max = 999999;  // 最大值为999999
-        String i= String.valueOf(random.nextInt(max - min + 1));
-        String top = "13888";
-        return top + i;
+        StringBuilder sb = new StringBuilder();
+        boolean[] used = new boolean[10]; // 记录数字是否被使用过
+
+        while (sb.length() < 6) {
+            int digit = random.nextInt(10); // 生成0到9之间的随机数
+
+            if (!used[digit]) {
+                used[digit] = true;
+                sb.append(digit);
+            }
+        }
+
+        String top = "18999";
+        return top + sb.toString();
+
     }
 
 
     public static void main(String[] args) {
-        String s = generateMobile();
-        System.out.println(s);
-        if (!s.matches("\\d{11}")) {
-            throw new DefaultException("手机号码长度不正确");
+        for (int i = 0; i <= 100; i++) {
+            String s = generateMobile();
+            System.out.println(s);
+            if (!s.matches("\\d{11}")) {
+                throw new DefaultException("手机号码长度不正确");
+            }
         }
     }
 
