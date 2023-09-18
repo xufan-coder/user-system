@@ -152,4 +152,12 @@ public class GenerateAccount {
     }
 
 
+    public static void main(String[] args) {
+        String s = generateMobile();
+        System.out.println(s);
+        if (!s.matches("\\d{11}")) {
+            throw new DefaultException("手机号码长度不正确");
+        }
+    }
+
 }
