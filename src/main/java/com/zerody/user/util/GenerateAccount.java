@@ -145,7 +145,7 @@ public class GenerateAccount {
      *
      * @return
      */
-    public static String generateMobile() {
+    public static String generateMobile(String mobile) {
 
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
@@ -159,21 +159,8 @@ public class GenerateAccount {
                 sb.append(digit);
             }
         }
+        return mobile + sb.toString();
 
-        String top = "18999";
-        return top + sb.toString();
-
-    }
-
-
-    public static void main(String[] args) {
-        for (int i = 0; i <= 100; i++) {
-            String s = generateMobile();
-            System.out.println(s);
-            if (!s.matches("\\d{11}")) {
-                throw new DefaultException("手机号码长度不正确");
-            }
-        }
     }
 
 }
