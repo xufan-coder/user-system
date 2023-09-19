@@ -854,7 +854,7 @@ public class SysStaffInfoController {
     /**
      * @param
      * @Author: ljj
-     * @Description: 获取新增荣誉墙和惩罚墙
+     * @Description: 获取我的新增荣誉墙、惩罚墙
      * @Date 2023/9/18
      */
     @GetMapping("/get/honor-punishment-wall")

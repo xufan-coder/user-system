@@ -5,20 +5,23 @@
 <mapper namespace="com.zerody.user.mapper.StaffHistoryMapper">
     <select id="getHonorPunishmentWall" resultType="com.zerody.user.vo.StaffHistoryVo">
         select
-            sh.type,
-            count(sh.describe)as `dynamic`,
+            sh.`type`,
+            count(sh.`describe`)as `dynamic`,
             sh.staff_id,
             ssi.user_name,
             date(sh.time)as `time`,
-            sh.describe,
+            sh.`describe`,
             i.image_url
         from staff_history sh
-        join image i on sh.staff_id=i.connect_id
-        join sys_staff_info ssi on sh.staff_id = ssi.id
+        left join image i on sh.staff_id=i.connect_id
+        left join sys_staff_info ssi on sh.staff_id = ssi.id
         <where>
-            where type = #{type} and staff_id = #{staffId}
+            sh.staff_id = #{param.staffId}
+            <if test="param.type neq null and param.type neq ''">
+            AND sh.`type` = #{param.type}
+            </if>
         </where>
-        group by time
-        order by time desc
+        group by `time`
+        order by `time` desc
     </select>
 </mapper>
