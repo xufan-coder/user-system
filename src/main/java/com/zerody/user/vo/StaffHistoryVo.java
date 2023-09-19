@@ -16,7 +16,10 @@ import java.util.List;
  */
 @Data
 public class StaffHistoryVo {
-
+    /**
+     * 描述统计
+     */
+    private Integer describeCount;
     /**
      * ID
      */

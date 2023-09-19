@@ -6,10 +6,10 @@
     <select id="getHonorPunishmentWall" resultType="com.zerody.user.vo.StaffHistoryVo">
         select
             sh.`type`,
-            count(sh.`describe`)as `dynamic`,
+            count(sh.`describe`)as `describeCount`,
             sh.staff_id,
             ssi.user_name,
-            date(sh.time)as `time`,
+            date_format(sh.time,'%Y-%m')as `time`,
             sh.`describe`,
             i.image_url
         from staff_history sh
