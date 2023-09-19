@@ -52,4 +52,17 @@ public interface StaffHistoryService extends IService<StaffHistory> {
     List<StaffHistoryVo> queryStaffHistory(StaffHistoryQueryDto staffHistoryQueryDto);
 
 
+
+
+
+
+
+    /***
+     * @description 获取新增荣誉墙和惩罚墙
+     * @author ljj
+     * @date 2023/9/18
+     * @param
+     * @return
+     */
+    List<StaffHistoryVo> getHonorPunishmentWall(StaffHistoryDto staffHistoryDto);
 }

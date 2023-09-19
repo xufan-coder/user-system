@@ -9,12 +9,14 @@ import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.StaffHistory;
+import com.zerody.user.dto.CallControlRecordPageDto;
 import com.zerody.user.dto.StaffHistoryDto;
 import com.zerody.user.dto.StaffHistoryQueryDto;
 import com.zerody.user.enums.StaffHistoryTypeEnum;
 import com.zerody.user.mapper.StaffHistoryMapper;
 import com.zerody.user.service.ImageService;
 import com.zerody.user.service.StaffHistoryService;
+import com.zerody.user.vo.CallControlRecordVo;
 import com.zerody.user.vo.StaffHistoryVo;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.Data;
@@ -40,6 +42,9 @@ import java.util.Objects;
 public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, StaffHistory> implements StaffHistoryService {
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private StaffHistoryMapper staffHistoryMapper;
 
     @Override
     public void addStaffHistory(StaffHistoryDto staffHistoryDto) {
@@ -133,5 +138,13 @@ public class StaffHistoryServiceImpl extends ServiceImpl<StaffHistoryMapper, Sta
         return staffHistoryVos;
     }
 
-
+    /**
+     * @author ljj
+     * @date 2023/9/18
+     */
+    @Override
+    public List<StaffHistoryVo> getHonorPunishmentWall(StaffHistoryDto Dto) {
+        List<StaffHistoryVo> list = this.staffHistoryMapper.getHonorPunishmentWall(Dto);
+        return list;
+    }
 }
