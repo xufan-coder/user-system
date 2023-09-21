@@ -12,7 +12,6 @@
             companyName,
             deptId,
             deptName,
-            postId,
             postName,
             mobile,
             identityCard,

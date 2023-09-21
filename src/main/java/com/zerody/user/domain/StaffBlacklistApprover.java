@@ -98,10 +98,6 @@ public class StaffBlacklistApprover implements Serializable {
 	 */
 	private String deptName;
 	/**
-	 * 岗位id
-	 */
-	private String postId;
-	/**
 	 * 岗位名称
 	 */
 	private String postName;
@@ -114,4 +110,8 @@ public class StaffBlacklistApprover implements Serializable {
 	 */
 	private String roleName;
 
+	/**
+	 * 拉黑企业名称
+	 */
+	private String companyName;
 }
