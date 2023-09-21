@@ -810,6 +810,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         map.put("blackDto", JsonUtils.toString(param));
         params.setVariables(map);
         params.setBusinessKey(blacklist.getId());
+        log.info("发起参数：{}",JsonUtils.toString(params));
         com.zerody.flow.api.dto.base.DataResult<ProcessStartResultDto> dataResult = processServerFeignService.startProcessByKey(params);
         if (!dataResult.isSuccess()) {
             log.info("审批流程异常：{}", JSONObject.toJSONString(dataResult));
