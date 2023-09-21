@@ -68,30 +68,4 @@ public class StaffBlacklistApproverController {
         }
     }
 
-
-    /**************************************************************************************************
-     **
-     * 原子服务调用
-     *  添加伙伴内控申请记录
-     *
-     * @param param
-     * @return {@link StaffBlacklistApprover }
-     * @author DaBai
-     * @date 2023/9/21  10:48
-     */
-    @PostMapping("/add")
-    public DataResult<StaffBlacklistApprover> addStaffBlaklistRecord(@RequestBody StaffBlacklistApprover param){
-        try {
-            StaffBlacklistApprover result = this.service.addStaffBlaklistRecord(param);
-            return R.success(result);
-        } catch (DefaultException e) {
-            log.error("添加内控申请记录错误：{}", e.getMessage(), e);
-            return R.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("添加内控申请记录错误：{}", e, e);
-            return R.error("添加内控申请记录错误" + e.getMessage());
-        }
-    }
-
-
 }
