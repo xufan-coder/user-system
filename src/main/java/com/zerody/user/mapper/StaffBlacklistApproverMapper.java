@@ -5,10 +5,11 @@ import com.zerody.user.domain.StaffBlacklistApprover;
 import com.zerody.user.dto.StaffBlacklistApproverPageDto;
 import com.zerody.user.vo.StaffBlacklistApproverVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
 public interface StaffBlacklistApproverMapper extends BaseMapper<StaffBlacklistApprover> {
 
-    IPage<StaffBlacklistApproverVo> getBlacklistApproverPage(StaffBlacklistApproverPageDto param, IPage<StaffBlacklistApproverVo> iPage);
+    IPage<StaffBlacklistApproverVo> getBlacklistApproverPage(@Param("param") StaffBlacklistApproverPageDto param, IPage<StaffBlacklistApproverVo> iPage);
 }
