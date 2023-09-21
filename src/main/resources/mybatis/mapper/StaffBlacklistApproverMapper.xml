@@ -45,8 +45,8 @@
             <if test="param.mobile neq null and param.mobile neq ''">
                 AND sba.mobile LIKE CONCAT('%', #{param.mobile}, '%')
             </if>
-            <if test="param.approveState neq null and param.approveState neq ''">
-                AND sba.approveState LIKE CONCAT('%', #{param.approveState}, '%')
+            <if test="param.approveState neq null">
+                AND sba.approveState = #{param.approveState}
             </if>
             <if test="param.type neq null">
                 AND sba.type = #{param.type}
