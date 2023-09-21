@@ -119,6 +119,49 @@ public class StaffBlacklistControlller {
         }
     }
 
+    /**************************************************************************************************
+     **
+     *  pc流程发起内控名单审批
+     *
+     * @param param
+     * @return {@link null }
+     * @author DaBai
+     * @date 2023/9/21  11:37
+     */
+    @PostMapping("/process/join")
+    public DataResult<Object> addStaffBlaklistProcessJoin(@RequestBody StaffBlacklistAddDto param){
+        try {
+            this.checkUtil.getCheckAddBlacListParam(param);
+            UserVo user = UserUtils.getUser();
+            param.getBlacklist().setSubmitUserName(user.getUserName());
+            param.getBlacklist().setSubmitUserId(user.getUserId());
+            if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
+                if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
+                    return R.error("请输入手机号码");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getCompanyId())) {
+                    return R.error("请选择企业");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
+                    return R.error("请输入名称");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getIdentityCard())) {
+                    return R.error("请输入身份证号码");
+                }
+            }
+            this.service.addStaffBlaklistProcessJoin(param,user);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("pc流程发起内控名单审批错误：{}", e.getMessage(), e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("内控添加请求出错：{}", e, e);
+            return R.error("内控添加请求出错" + e.getMessage());
+        }
+    }
+
+
+
 
 
     /**
