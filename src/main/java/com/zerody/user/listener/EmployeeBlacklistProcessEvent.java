@@ -60,6 +60,8 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
         //监听流程变量是撤销则修改状态为撤销
         FlowState flowState = eventData.getFlowData().getFlowState();
         String json = eventData.getVariables().get("blackDto").toString();
+        String lastHandlerName = eventData.getVariables().get("last_handler_name") != null ?
+                eventData.getVariables().get("last_handler_name").toString() : "";
         if(DataUtil.isNotEmpty(flowState)) {
 
             QueryWrapper<StaffBlacklistApprover> qw =new QueryWrapper<>();
@@ -78,11 +80,15 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                 //处理拒绝逻辑
                 if(approveFlag){
                     one.setApproveState(ApproveStatusEnum.FAIL.name());
+                    one.setApproveTime(new Date());
+                    one.setApproverName(lastHandlerName);
                 }
             }else if (flowState.getState() == FlowState.approved.getState()) {
                 //处理通过逻辑
                 if(approveFlag){
                     one.setApproveState(ApproveStatusEnum.SUCCESS.name());
+                    one.setApproveTime(new Date());
+                    one.setApproverName(lastHandlerName);
                 }
                 //通过之后添加到内控
                 if(DataUtil.isNotEmpty(json)){
@@ -90,7 +96,7 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                     if(BlacklistTypeEnum.EXTERNAL.getValue()== dto.getBlacklist().getType()){
                         this.staffBlacklistService.addStaffBlaklistJoin(dto);
                     }else {
-                        this.staffBlacklistService.addStaffBlaklist(dto);
+                        this.staffBlacklistService.addStaffBlaklist(dto,null);
                     }
                 }
             }

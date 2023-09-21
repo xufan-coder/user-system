@@ -108,7 +108,7 @@ public class StaffBlacklistControlller {
     public DataResult<StaffBlacklistAddDto> addStaffBlaklist(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
-            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
+            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param,null);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("添加内控名单错误：{}", e, e);
@@ -173,9 +173,10 @@ public class StaffBlacklistControlller {
     @PostMapping("/join")
     public DataResult<StaffBlacklistAddDto> addStaffBlaklistJoin(@RequestBody StaffBlacklistAddDto param){
         try {
+            UserVo user = UserUtils.getUser();
             this.checkUtil.getCheckAddBlacListParam(param);
-            param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
-            param.getBlacklist().setSubmitUserId(UserUtils.getUser().getUserId());
+            param.getBlacklist().setSubmitUserName(user.getUserName());
+            param.getBlacklist().setSubmitUserId(user.getUserId());
             if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
                 if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
                     return R.error("请输入手机号码");
@@ -191,7 +192,7 @@ public class StaffBlacklistControlller {
                 }
                 this.service.addStaffBlaklistJoin(param);
             }else {
-                this.service.addStaffBlaklist(param);
+                this.service.addStaffBlaklist(param,user);
             }
             return R.success();
         } catch (DefaultException e) {

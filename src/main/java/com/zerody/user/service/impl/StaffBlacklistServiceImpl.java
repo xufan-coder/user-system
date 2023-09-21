@@ -554,7 +554,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
+    public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param,UserVo user) {
         StaffBlacklist blac = param.getBlacklist();
         log.info("拉黑:{}",blac);
         if (StringUtils.isEmpty(blac.getId())) {
@@ -681,7 +681,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
         appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(blac.getUserId()));
         SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
-        UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
+        UserLogUtil.addUserLog(userInfo, user,"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
     }
 
