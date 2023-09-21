@@ -92,11 +92,11 @@ public class StaffBlacklistApprover implements Serializable {
 	/**
 	 * 部门id
 	 */
-	private String dtptId;
+	private String deptId;
 	/**
 	 * 部门名称
 	 */
-	private String dtptName;
+	private String deptName;
 	/**
 	 * 岗位id
 	 */
