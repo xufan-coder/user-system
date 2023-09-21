@@ -95,15 +95,11 @@ public class StaffBlacklistApprover implements Serializable {
 	/**
 	 * 部门id
 	 */
-	private String dtptId;
+	private String deptId;
 	/**
 	 * 部门名称
 	 */
-	private String dtptName;
-	/**
-	 * 岗位id
-	 */
-	private String postId;
+	private String deptName;
 	/**
 	 * 岗位名称
 	 */
@@ -116,6 +112,11 @@ public class StaffBlacklistApprover implements Serializable {
 	 * 角色名称
 	 */
 	private String roleName;
+
+	/**
+	 * 拉黑企业名称
+	 */
+	private String companyName;
 
 	@TableField(exist = false)
 	private List<String> images;

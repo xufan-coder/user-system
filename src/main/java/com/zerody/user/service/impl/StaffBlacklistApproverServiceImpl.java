@@ -1,5 +1,7 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
@@ -8,9 +10,12 @@ import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.StaffBlacklistApprover;
 import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.dto.StaffBlacklistApproverPageDto;
 import com.zerody.user.mapper.StaffBlacklistApproverMapper;
 import com.zerody.user.service.ImageService;
 import com.zerody.user.service.StaffBlacklistApproverService;
+import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.StaffBlacklistApproverVo;
 import com.zerody.user.service.SysStaffInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +68,11 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
         imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST_RECORD);
         this.imageService.addImages(imageRemoveQw, imageAdds);
         return staffBlacklistApprover;
+    }
+    @Override
+    public IPage<StaffBlacklistApproverVo> getBlacklistApproverPage(StaffBlacklistApproverPageDto param) {
+        IPage<StaffBlacklistApproverVo> iPage = new Page<>(param.getCurrent(), param.getPageSize());
+        iPage = this.baseMapper.getBlacklistApproverPage(param, iPage);
+        return iPage;
     }
 }
