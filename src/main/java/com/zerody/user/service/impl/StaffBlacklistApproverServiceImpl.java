@@ -43,8 +43,9 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
         if(DataUtil.isNotEmpty(staffBlacklistApprover.getUserId())){
             //填部门，企业名称 岗位 和角色
             StaffInfoVo staff = this.staffInfoService.getStaffInfo(staffBlacklistApprover.getUserId());
-            staffBlacklistApprover.setDtptId(staff.getDepartId());
-            staffBlacklistApprover.setDtptName(staff.getDepartmentName());
+            staffBlacklistApprover.setCompanyName(staff.getCompanyName());
+            staffBlacklistApprover.setDeptId(staff.getDepartId());
+            staffBlacklistApprover.setDeptName(staff.getDepartmentName());
             staffBlacklistApprover.setPostName(staff.getPositionName());
             staffBlacklistApprover.setRoleName(staff.getRoleName());
             staffBlacklistApprover.setRoleId(staff.getRoleId());
