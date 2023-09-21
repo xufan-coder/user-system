@@ -8,5 +8,6 @@ import com.zerody.user.domain.StaffBlacklistApprover;
  */
 public interface StaffBlacklistApproverService extends IService<StaffBlacklistApprover> {
 
+    StaffBlacklistApprover addStaffBlaklistRecord(StaffBlacklistApprover param);
 }
 

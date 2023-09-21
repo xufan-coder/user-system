@@ -11,4 +11,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklistApproverMapper, StaffBlacklistApprover> implements StaffBlacklistApproverService {
 
+    @Override
+    public StaffBlacklistApprover addStaffBlaklistRecord(StaffBlacklistApprover param) {
+        return null;
+    }
 }
