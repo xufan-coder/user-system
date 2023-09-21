@@ -15,9 +15,11 @@ import com.zerody.user.mapper.StaffBlacklistApproverMapper;
 import com.zerody.user.service.ImageService;
 import com.zerody.user.service.StaffBlacklistApproverService;
 import com.zerody.user.vo.FrameworkBlacListQueryPageVo;
+import com.zerody.user.vo.StaffBlacklistApproverDetailVo;
 import com.zerody.user.vo.StaffBlacklistApproverVo;
 import com.zerody.user.service.SysStaffInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -75,5 +77,15 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
         IPage<StaffBlacklistApproverVo> iPage = new Page<>(param.getCurrent(), param.getPageSize());
         iPage = this.baseMapper.getBlacklistApproverPage(param, iPage);
         return iPage;
+    }
+
+    @Override
+    public StaffBlacklistApproverDetailVo getDetailById(String id) {
+        StaffBlacklistApproverDetailVo detailVo = new StaffBlacklistApproverDetailVo();
+        StaffBlacklistApprover byId = this.getById(id);
+        BeanUtils.copyProperties(byId,detailVo);
+        List<String> listImages = this.imageService.getListImages(id, ImageTypeInfo.STAFF_BLACKLIST_RECORD);
+        detailVo.setImages(listImages);
+        return detailVo;
     }
 }
