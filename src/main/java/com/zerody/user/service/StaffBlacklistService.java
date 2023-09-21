@@ -100,4 +100,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param);
 
     InternalControlVo updateInternalControl(InternalControlDto internalControlDto);
+
+    void addStaffBlaklistProcessJoin(StaffBlacklistAddDto param,UserVo userVo);
+
 }

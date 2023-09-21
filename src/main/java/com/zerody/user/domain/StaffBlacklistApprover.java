@@ -1,10 +1,13 @@
 package com.zerody.user.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 /**
  * 内控名单申请记录
@@ -113,5 +116,8 @@ public class StaffBlacklistApprover implements Serializable {
 	 * 角色名称
 	 */
 	private String roleName;
+
+	@TableField(exist = false)
+	private List<String> images;
 
 }
