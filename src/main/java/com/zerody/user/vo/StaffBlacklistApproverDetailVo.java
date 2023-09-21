@@ -14,5 +14,5 @@ public class StaffBlacklistApproverDetailVo extends StaffBlacklistApproverVo{
     private List<String> images;
 
     /** 视频证据 */
-    private List<String> video;
+    private String video;
 }
