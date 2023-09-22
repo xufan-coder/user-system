@@ -12,6 +12,7 @@ import com.zerody.flow.api.event.FlowEventType;
 import com.zerody.flow.api.event.TaskData;
 import com.zerody.flow.api.state.FlowState;
 import com.zerody.flow.client.event.FlowEventHandler;
+import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.domain.StaffBlacklistApprover;
 import com.zerody.user.domain.SysUserIdentifier;
 import com.zerody.user.domain.UserInductionRecord;
@@ -29,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,7 +62,10 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
         String processInstId = eventData.getProcessInstId();
         //监听流程变量是撤销则修改状态为撤销
         FlowState flowState = eventData.getFlowData().getFlowState();
-        String json = eventData.getVariables().get("blackDto").toString();
+        String json =eventData.getVariables().get("blackDto") != null ?
+                eventData.getVariables().get("blackDto").toString() : "";
+        Object imgs =eventData.getVariables().get("imgs");
+        Map<String, Object> variables = eventData.getVariables();
         String lastHandlerName = eventData.getVariables().get("last_handler_name") != null ?
                 eventData.getVariables().get("last_handler_name").toString() : "";
         if(DataUtil.isNotEmpty(flowState)) {
@@ -91,13 +97,37 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                     one.setApproverName(lastHandlerName);
                 }
                 //通过之后添加到内控
+                StaffBlacklistAddDto dto =null;
                 if(DataUtil.isNotEmpty(json)){
-                    StaffBlacklistAddDto dto = JSON.parseObject(json, StaffBlacklistAddDto.class);
-                    if(BlacklistTypeEnum.EXTERNAL.getValue()== dto.getBlacklist().getType()){
-                        this.staffBlacklistService.addStaffBlaklistJoin(dto);
-                    }else {
-                        this.staffBlacklistService.addStaffBlaklist(dto,null);
+                    dto=JSON.parseObject(json, StaffBlacklistAddDto.class);
+                }else {
+                    dto=new StaffBlacklistAddDto();
+                    List<String> images= imgs != null? (List)imgs:null;
+                    //组装参数 app发起只会是1类型的内部内控伙伴申请，所以只组装1类型的参数
+                    dto.setImages(images);
+                    StaffBlacklist staffBlacklist=new StaffBlacklist();
+                    String type =variables.get("type")!= null?variables.get("type").toString():null;
+                    String userId =variables.get("userId")!= null?variables.get("userId").toString():"";
+                    String reason =variables.get("reason")!= null?variables.get("reason").toString():"";
+                    String companyId =variables.get("companyId")!= null?variables.get("companyId").toString():"";
+                    String startUserId =variables.get("start_user_id")!= null?variables.get("start_user_id").toString():"";
+                    String startUseName =variables.get("start_user_name")!= null?variables.get("start_user_name").toString():"";
+                    if(DataUtil.isNotEmpty(type)){
+                        staffBlacklist.setType(Integer.parseInt(type));
                     }
+                    staffBlacklist.setUserId(userId);
+                    staffBlacklist.setReason(reason);
+                    staffBlacklist.setCompanyId(companyId);
+                    staffBlacklist.setProcessId(processInstId);
+                    staffBlacklist.setProcessKey("EmployeeBlacklist");
+                    staffBlacklist.setSubmitUserId(startUserId);
+                    staffBlacklist.setSubmitUserName(startUseName);
+                    dto.setBlacklist(staffBlacklist);
+                }
+                if(BlacklistTypeEnum.EXTERNAL.getValue()== dto.getBlacklist().getType()){
+                    this.staffBlacklistService.addStaffBlaklistJoin(dto);
+                }else {
+                    this.staffBlacklistService.addStaffBlaklist(dto,null);
                 }
             }
             if(DataUtil.isNotEmpty(one)){
