@@ -1,7 +1,12 @@
 package com.zerody.user.vo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zerody.common.enums.user.StaffBlacklistApproveState;
+import com.zerody.common.utils.DataUtil;
+import com.zerody.user.util.CommonUtils;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 
@@ -74,6 +79,7 @@ public class StaffBlacklistApproverVo {
     /**
      * 审批时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date approveTime;
 
     /**
@@ -90,4 +96,19 @@ public class StaffBlacklistApproverVo {
      * 拉黑原因
      */
     private String reason;
+
+    public String getIdentityCard() {
+        String idCard = this.identityCard;
+        if (DataUtil.isEmpty(idCard)) {
+                return  "";
+        }
+        return CommonUtils.idEncrypt(idCard, 2, 2);
+    }
+
+    public String getMobile() {
+        if (StringUtils.isEmpty(this.mobile)) {
+            return "";
+        }
+        return this.mobile.replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2");
+    }
 }

@@ -282,7 +282,8 @@ public class StaffBlacklistControlller {
                     String deptId = user.getDeptId();
                     if(DataUtil.isNotEmpty(param.getDepartId())){
                         if(param.getDepartId().contains(deptId)){
-
+                            log.info("副总经理入参----->");
+                            param.setDepartId(param.getDepartId());
                         }else {
                             param.setDepartId(deptId);
                         }

@@ -83,6 +83,9 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
     public StaffBlacklistApproverDetailVo getDetailById(String id) {
         StaffBlacklistApproverDetailVo detailVo = new StaffBlacklistApproverDetailVo();
         StaffBlacklistApprover byId = this.getById(id);
+        if (DataUtil.isEmpty(byId)) {
+            return null;
+        }
         BeanUtils.copyProperties(byId,detailVo);
         List<String> listImages = this.imageService.getListImages(id, ImageTypeInfo.STAFF_BLACKLIST_RECORD);
         detailVo.setImages(listImages);
