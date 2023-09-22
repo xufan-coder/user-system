@@ -10,7 +10,7 @@ import java.util.List;
  * @create 2023/9/21 15:12
  */
 @Data
-public class StaffBlacklistApproverDetailVo extends StaffBlacklistApprover{
+public class StaffBlacklistApproverDetailVo extends StaffBlacklistApproverVo{
     /** 违规图片 */
     private List<String> images;
 

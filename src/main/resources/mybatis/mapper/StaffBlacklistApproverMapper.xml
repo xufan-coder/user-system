@@ -21,7 +21,10 @@
             type,
             submit_user_name,
             reason,
-            approve_state
+            approve_state,
+            process_id,
+            process_key,
+            approver_name
         from
         staff_blacklist_approver as sba
         <where>
