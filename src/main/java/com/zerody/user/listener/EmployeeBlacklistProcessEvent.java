@@ -100,6 +100,8 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                 StaffBlacklistAddDto dto =null;
                 if(DataUtil.isNotEmpty(json)){
                     dto=JSON.parseObject(json, StaffBlacklistAddDto.class);
+                    dto.getBlacklist().setProcessId(processInstId);
+                    dto.getBlacklist().setProcessKey("EmployeeBlacklist");
                 }else {
                     dto=new StaffBlacklistAddDto();
                     List<String> images= imgs != null? (List)imgs:null;
