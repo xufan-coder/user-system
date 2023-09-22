@@ -273,6 +273,7 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
         try {
             UserVo user = UserUtils.getUser();
+            log.info("user.isDeptAdmin() 结果----->{}",user.isDeptAdmin());
             if (!user.isCEO()) {
                 if(DataUtil.isEmpty(param.getCompanyId())) {
                     log.info("入参0000----->");
@@ -288,6 +289,7 @@ public class StaffBlacklistControlller {
                         if(param.getDepartId().contains(deptId)){
 
                         }else {
+                            log.info("入参2222+3333----->");
                             param.setDepartId(deptId);
                         }
                     }else {
