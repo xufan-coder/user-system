@@ -99,6 +99,19 @@ public class StaffBlacklistApproverVo {
     private String reason;
 
     /**
+     * 流程id
+     */
+    private String processId;
+    /**
+     * 流程key
+     */
+    private String processKey;
+    /**
+     * 审批人姓名
+     */
+    private String approverName;
+
+    /**
      * 审批状态 APPROVAL审批中,FAIL拒绝,SUCCESS已通过
      */
     private String approveState;
