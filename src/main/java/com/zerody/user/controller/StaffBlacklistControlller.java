@@ -272,7 +272,42 @@ public class StaffBlacklistControlller {
     @GetMapping("/app/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
         try {
-            this.checkUtil.SetUserPositionInfo(param);
+            log.info("入参----->{}",JsonUtils.toString(param));
+            UserVo user = UserUtils.getUser();
+            log.info("user.isDeptAdmin() 结果----->{}",user.isDeptAdmin());
+            if (!user.isCEO()) {
+                if(DataUtil.isEmpty(param.getCompanyId())) {
+                    log.info("入参0000----->");
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }
+                if(user.isCompanyAdmin()){
+                    log.info("入参1111----->");
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }else if(!user.isDeptAdmin()){
+                    log.info("入参2222----->");
+                    String deptId = user.getDeptId();
+                    if(DataUtil.isNotEmpty(param.getDepartId())){
+                        if(param.getDepartId().contains(deptId)){
+
+                        }else {
+                            log.info("入参2222+3333----->");
+                            param.setDepartId(deptId);
+                        }
+                    }else {
+                        log.info("入参3333----->");
+                        param.setDepartId(deptId);
+                    }
+                }else {
+                    log.info("入参4444----->");
+                    String deptId = user.getDeptId();
+                    param.setDepartId(deptId);
+                }
+            }else {
+                // 设置组织架构条件值
+                param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+            }
+            param.setQueryDimensionality("blockUser");
+            log.info("入参5555----->{}", JsonUtils.toString(param));
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
