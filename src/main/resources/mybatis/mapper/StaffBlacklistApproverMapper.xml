@@ -6,38 +6,32 @@
     <select id="getBlacklistApproverPage" resultType="com.zerody.user.vo.StaffBlacklistApproverVo">
         select
             id,
-            userId,
-            userName,
-            companyId,
-            companyName,
-            deptId,
-            deptName,
-            postName,
+            user_id,
+            user_name,
+            company_id,
+            company_name,
+            dept_id,
+            dept_name,
+            post_name,
             mobile,
-            identityCard,
-            roleId,
-            roleName,
-            approveTime,
+            identity_card,
+            role_id,
+            role_name,
+            approve_time,
             type,
-            submitUserName,
+            submit_user_name,
             reason
         from
         staff_blacklist_approver as sba
         <where>
-            <if test="param.departId neq null and param.departId neq ''">
-                AND (sba.dept_id = #{param.departId} OR sba.dept_id LIKE CONCAT(#{param.departId}, '\_%'))
+            <if test="param.deptId neq null and param.deptId neq ''">
+                AND (sba.dept_id = #{param.deptId} OR sba.dept_id LIKE CONCAT(#{param.deptId}, '\_%'))
             </if>
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sba.company_id = #{param.companyId}
             </if>
-            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
-                and sba.company_id
-                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
-                    #{id}
-                </foreach>
-            </if>
             <if test="param.userName neq null and param.userName neq ''">
-                AND sba.userName LIKE CONCAT('%', #{param.userName}, '%')
+                AND sba.user_name LIKE CONCAT('%', #{param.userName}, '%')
             </if>
             <if test="param.submitUserName neq null and param.submitUserName neq ''">
                 AND sba.submit_user_name LIKE CONCAT('%', #{param.submitUserName}, '%')
@@ -46,12 +40,12 @@
                 AND sba.mobile LIKE CONCAT('%', #{param.mobile}, '%')
             </if>
             <if test="param.approveState neq null">
-                AND sba.approveState = #{param.approveState}
+                AND sba.approve_state = #{param.approveState}
             </if>
             <if test="param.type neq null">
                 AND sba.type = #{param.type}
             </if>
         </where>
-        order by approveTime desc
+        order by approve_time desc
     </select>
 </mapper>

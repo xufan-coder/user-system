@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
@@ -272,24 +273,31 @@ public class StaffBlacklistControlller {
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
         try {
             UserVo user = UserUtils.getUser();
+            log.info("user.isDeptAdmin() 结果----->{}",user.isDeptAdmin());
             if (!user.isCEO()) {
                 if(DataUtil.isEmpty(param.getCompanyId())) {
+                    log.info("入参0000----->");
                     param.setCompanyId(UserUtils.getUser().getCompanyId());
                 }
                 if(user.isCompanyAdmin()){
+                    log.info("入参1111----->");
                     param.setCompanyId(UserUtils.getUser().getCompanyId());
                 }else if(user.isDeptAdmin()){
+                    log.info("入参2222----->");
                     String deptId = user.getDeptId();
                     if(DataUtil.isNotEmpty(param.getDepartId())){
                         if(param.getDepartId().contains(deptId)){
 
                         }else {
+                            log.info("入参2222+3333----->");
                             param.setDepartId(deptId);
                         }
                     }else {
+                        log.info("入参3333----->");
                         param.setDepartId(deptId);
                     }
                 }else {
+                    log.info("入参4444----->");
                     String deptId = user.getDeptId();
                     param.setDepartId(deptId);
                 }
@@ -298,6 +306,7 @@ public class StaffBlacklistControlller {
                 param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
             }
             param.setQueryDimensionality("blockUser");
+            log.info("入参5555----->{}", JsonUtils.toString(param));
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
