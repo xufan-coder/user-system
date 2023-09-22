@@ -20,7 +20,8 @@
             approve_time,
             type,
             submit_user_name,
-            reason
+            reason,
+            approve_state
         from
         staff_blacklist_approver as sba
         <where>
