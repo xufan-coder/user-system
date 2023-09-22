@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 /**
  * 内控名单申请记录
@@ -31,6 +32,7 @@ public class StaffBlacklistApprover implements Serializable {
 	/**
 	 * 审批时间
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
 	private Date approveTime;
 	/**
 	 * 审批状态 APPROVAL审批中,FAIL拒绝,SUCCESS已通过
@@ -43,6 +45,7 @@ public class StaffBlacklistApprover implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
 	private Date createTime;
 	/**
 	 * 拉黑原因
@@ -71,6 +74,7 @@ public class StaffBlacklistApprover implements Serializable {
 	/**
 	 * 修改时间
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
 	private Date updateTime;
 	/**
 	 * 提交人姓名
