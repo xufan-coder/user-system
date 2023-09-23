@@ -12,6 +12,7 @@ import com.zerody.flow.api.event.FlowEventType;
 import com.zerody.flow.api.event.TaskData;
 import com.zerody.flow.api.state.FlowState;
 import com.zerody.flow.client.event.FlowEventHandler;
+import com.zerody.flow.client.util.JsonUtils;
 import com.zerody.user.domain.StaffBlacklist;
 import com.zerody.user.domain.StaffBlacklistApprover;
 import com.zerody.user.domain.SysUserIdentifier;
@@ -110,6 +111,7 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                     StaffBlacklist staffBlacklist=new StaffBlacklist();
                     String type =variables.get("type")!= null?variables.get("type").toString():null;
                     String userId =variables.get("userId")!= null?variables.get("userId").toString():"";
+                    log.info("被拉黑的用户id:{}",userId);
                     String reason =variables.get("reason")!= null?variables.get("reason").toString():"";
                     String companyId =variables.get("companyId")!= null?variables.get("companyId").toString():"";
                     String startUserId =variables.get("start_user_id")!= null?variables.get("start_user_id").toString():"";
@@ -126,6 +128,7 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                     staffBlacklist.setSubmitUserName(startUseName);
                     dto.setBlacklist(staffBlacklist);
                 }
+                log.info("被拉黑的用户:{}", JsonUtils.toString(dto));
                 if(BlacklistTypeEnum.EXTERNAL.getValue()== dto.getBlacklist().getType()){
                     this.staffBlacklistService.addStaffBlaklistJoin(dto);
                 }else {
