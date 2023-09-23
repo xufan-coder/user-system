@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.enums.ApproveStatusEnum;
+import com.zerody.user.enums.BlacklistApproveStateEnum;
 import com.zerody.user.util.CommonUtils;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -120,7 +121,7 @@ public class StaffBlacklistApproverVo {
         if (StringUtils.isEmpty(this.approveState)) {
             return null;
         }
-        return ApproveStatusEnum.getByCode(approveState).getText();
+        return BlacklistApproveStateEnum.getByCode(approveState).getText();
     }
 
     public String getIdentityCard() {
