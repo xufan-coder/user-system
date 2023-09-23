@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
@@ -108,7 +109,7 @@ public class StaffBlacklistControlller {
     public DataResult<StaffBlacklistAddDto> addStaffBlaklist(@RequestBody StaffBlacklistAddDto param){
         try {
             this.checkUtil.getCheckAddBlacListParam(param);
-            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param);
+            StaffBlacklistAddDto result = this.service.addStaffBlaklist(param,null);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("添加内控名单错误：{}", e, e);
@@ -118,6 +119,49 @@ public class StaffBlacklistControlller {
             return R.error("添加内控名单错误" + e.getMessage());
         }
     }
+
+    /**************************************************************************************************
+     **
+     *  pc流程发起内控名单审批
+     *
+     * @param param
+     * @return {@link null }
+     * @author DaBai
+     * @date 2023/9/21  11:37
+     */
+    @PostMapping("/process/join")
+    public DataResult<Object> addStaffBlaklistProcessJoin(@RequestBody StaffBlacklistAddDto param){
+        try {
+            this.checkUtil.getCheckAddBlacListParam(param);
+            UserVo user = UserUtils.getUser();
+            param.getBlacklist().setSubmitUserName(user.getUserName());
+            param.getBlacklist().setSubmitUserId(user.getUserId());
+            if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
+                if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
+                    return R.error("请输入手机号码");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getCompanyId())) {
+                    return R.error("请选择企业");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getUserName())) {
+                    return R.error("请输入名称");
+                }
+                if (StringUtils.isEmpty(param.getBlacklist().getIdentityCard())) {
+                    return R.error("请输入身份证号码");
+                }
+            }
+            this.service.addStaffBlaklistProcessJoin(param,user);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("pc流程发起内控名单审批错误：{}", e.getMessage(), e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("内控添加请求出错：{}", e, e);
+            return R.error("内控添加请求出错" + e.getMessage());
+        }
+    }
+
+
 
 
 
@@ -130,9 +174,10 @@ public class StaffBlacklistControlller {
     @PostMapping("/join")
     public DataResult<StaffBlacklistAddDto> addStaffBlaklistJoin(@RequestBody StaffBlacklistAddDto param){
         try {
+            UserVo user = UserUtils.getUser();
             this.checkUtil.getCheckAddBlacListParam(param);
-            param.getBlacklist().setSubmitUserName(UserUtils.getUser().getUserName());
-            param.getBlacklist().setSubmitUserId(UserUtils.getUser().getUserId());
+            param.getBlacklist().setSubmitUserName(user.getUserName());
+            param.getBlacklist().setSubmitUserId(user.getUserId());
             if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()){
                 if (StringUtils.isEmpty(param.getBlacklist().getMobile())) {
                     return R.error("请输入手机号码");
@@ -148,7 +193,7 @@ public class StaffBlacklistControlller {
                 }
                 this.service.addStaffBlaklistJoin(param);
             }else {
-                this.service.addStaffBlaklist(param);
+                this.service.addStaffBlaklist(param,user);
             }
             return R.success();
         } catch (DefaultException e) {
@@ -227,25 +272,33 @@ public class StaffBlacklistControlller {
     @GetMapping("/app/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
         try {
+            log.info("入参----->{}",JsonUtils.toString(param));
             UserVo user = UserUtils.getUser();
+            log.info("user.isDeptAdmin() 结果----->{}",user.isDeptAdmin());
             if (!user.isCEO()) {
                 if(DataUtil.isEmpty(param.getCompanyId())) {
+                    log.info("入参0000----->");
                     param.setCompanyId(UserUtils.getUser().getCompanyId());
                 }
                 if(user.isCompanyAdmin()){
+                    log.info("入参1111----->");
                     param.setCompanyId(UserUtils.getUser().getCompanyId());
-                }else if(user.isDeptAdmin()){
+                }else if(!user.isDeptAdmin()){
+                    log.info("入参2222----->");
                     String deptId = user.getDeptId();
                     if(DataUtil.isNotEmpty(param.getDepartId())){
                         if(param.getDepartId().contains(deptId)){
 
                         }else {
+                            log.info("入参2222+3333----->");
                             param.setDepartId(deptId);
                         }
                     }else {
+                        log.info("入参3333----->");
                         param.setDepartId(deptId);
                     }
                 }else {
+                    log.info("入参4444----->");
                     String deptId = user.getDeptId();
                     param.setDepartId(deptId);
                 }
@@ -254,6 +307,7 @@ public class StaffBlacklistControlller {
                 param.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
             }
             param.setQueryDimensionality("blockUser");
+            log.info("入参5555----->{}", JsonUtils.toString(param));
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
