@@ -109,9 +109,8 @@ public class EmployeeBlacklistProcessEvent implements FlowEventHandler {
                     //组装参数 app发起只会是1类型的内部内控伙伴申请，所以只组装1类型的参数
                     dto.setImages(images);
                     StaffBlacklist staffBlacklist=new StaffBlacklist();
-                    log.info("流程信息:{}", JsonUtils.toString(variables));
                     String type =variables.get("type")!= null?variables.get("type").toString():null;
-                    String userId =variables.get("userId")!= null?variables.get("userId").toString():"";
+                    String userId =variables.get("blackUserId")!= null?variables.get("blackUserId").toString():"";
                     String reason =variables.get("reason")!= null?variables.get("reason").toString():"";
                     String companyId =variables.get("companyId")!= null?variables.get("companyId").toString():"";
                     String startUserId =variables.get("start_user_id")!= null?variables.get("start_user_id").toString():"";
