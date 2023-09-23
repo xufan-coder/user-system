@@ -51,6 +51,9 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
             staffBlacklistApprover.setPostName(staff.getPositionName());
             staffBlacklistApprover.setRoleName(staff.getRoleName());
             staffBlacklistApprover.setRoleId(staff.getRoleId());
+            staffBlacklistApprover.setUserName(staff.getUserName());
+            staffBlacklistApprover.setMobile(staff.getMobile());
+            staffBlacklistApprover.setIdentityCard(staff.getIdentityCard());
         }
         this.save(staffBlacklistApprover);
         //保存图片
