@@ -55,21 +55,23 @@ public class StaffBlacklistApproverServiceImpl extends ServiceImpl<StaffBlacklis
         this.save(staffBlacklistApprover);
         //保存图片
         List<String> images = staffBlacklistApprover.getImages();
-        List<Image> imageAdds = new ArrayList<>();
-        Image image;
-        for (String s : images) {
-            image = new Image();
-            image.setConnectId(staffBlacklistApprover.getId());
-            image.setId(UUIDutils.getUUID32());
-            image.setImageType(ImageTypeInfo.STAFF_BLACKLIST_RECORD);
-            image.setImageUrl(s);
-            image.setCreateTime(new Date());
-            imageAdds.add(image);
+        if(DataUtil.isNotEmpty(images)) {
+            List<Image> imageAdds = new ArrayList<>();
+            Image image;
+            for (String s : images) {
+                image = new Image();
+                image.setConnectId(staffBlacklistApprover.getId());
+                image.setId(UUIDutils.getUUID32());
+                image.setImageType(ImageTypeInfo.STAFF_BLACKLIST_RECORD);
+                image.setImageUrl(s);
+                image.setCreateTime(new Date());
+                imageAdds.add(image);
+            }
+            QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
+            imageRemoveQw.lambda().eq(Image::getConnectId, staffBlacklistApprover.getId());
+            imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST_RECORD);
+            this.imageService.addImages(imageRemoveQw, imageAdds);
         }
-        QueryWrapper<Image> imageRemoveQw = new QueryWrapper<>();
-        imageRemoveQw.lambda().eq(Image::getConnectId, staffBlacklistApprover.getId());
-        imageRemoveQw.lambda().eq(Image::getImageType, ImageTypeInfo.STAFF_BLACKLIST_RECORD);
-        this.imageService.addImages(imageRemoveQw, imageAdds);
         return staffBlacklistApprover;
     }
     @Override
