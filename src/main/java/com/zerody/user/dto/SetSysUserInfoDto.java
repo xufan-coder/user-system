@@ -189,4 +189,6 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
 
+    private String mobile;
+
 }

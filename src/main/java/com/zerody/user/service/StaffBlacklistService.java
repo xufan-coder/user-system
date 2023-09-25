@@ -34,7 +34,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
      * @param                param
      * @return               void
      */
-    StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param);
+    StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param,UserVo user);
 
     /**
      *
@@ -100,4 +100,7 @@ public interface StaffBlacklistService extends IService<StaffBlacklist> {
     List<StaffBlacklist> updateRelieveByMobile(StaffBlacklist param);
 
     InternalControlVo updateInternalControl(InternalControlDto internalControlDto);
+
+    void addStaffBlaklistProcessJoin(StaffBlacklistAddDto param,UserVo userVo);
+
 }

@@ -177,4 +177,22 @@ public class UseControlController  implements RestrictRemoteService {
 		}
 
 	}
+
+	/**
+	 * 强制下线功能
+	 *   移除/公司/部门/团队/用户的登录状态
+	 */
+	@PostMapping("/remove/token")
+	public DataResult removeToken(@RequestBody UsersTokenControlDto param){
+		try {
+			this.usesUseControlService.removeToken(param);
+			return R.success();
+		} catch (DefaultException e) {
+			log.error("请求错误：{}", e, e.getMessage());
+			return R.error(e.getMessage());
+		} catch (Exception e) {
+			log.error("请求错误：{}", e, e);
+			return R.error("请求错误" + e.getMessage());
+		}
+	}
 }

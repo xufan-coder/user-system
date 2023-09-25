@@ -15,6 +15,7 @@ import java.util.Map;
 public class ImageTypeInfo {
 
     public final  static  String STAFF_BLACKLIST = "staff-blacklist";
+    public final  static  String STAFF_BLACKLIST_RECORD = "staff-blacklist-record";
 
     public final  static  String STAFF_HONOR="HONOR";
 

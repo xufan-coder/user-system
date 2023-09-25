@@ -78,4 +78,20 @@ public interface SysAddressBookMapper {
      */
     IPage<DepartureDetailsVo> getDepartureUserList(@Param("param") DepartureDetailsDto staffByCompanyDto, Page<DepartureDetailsVo> iPage);
 
+    /**
+    *
+    *  @description    部门(有是否显示两种)
+    *  @author        YeChangWei
+    *  @date          2023/9/1 16:08
+    *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
+    */
+    List<DepartInfoVo> queryDepartInfoAll(@Param("param")DepartInfoDto departInfoDto);
+    /**
+    *
+    *  @description    团队(有是否显示两种)
+    *  @author        YeChangWei
+    *  @date          2023/9/1 16:08
+    *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
+    */
+    List<DepartInfoVo> queryTeamAll(@Param("param")DepartInfoDto departInfoDto);
 }

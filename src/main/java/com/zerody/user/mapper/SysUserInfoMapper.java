@@ -116,7 +116,7 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
      * @description DELL
      * @date 2021/4/1 20:56
      */
-    @Select("SELECT id FROM sys_user_info where is_deleted = 1")
+    @Select("SELECT id FROM sys_user_info where is_deleted = 1 limit 10")
     List<String> getUserIdsByIsDeleted();
 
     /**
