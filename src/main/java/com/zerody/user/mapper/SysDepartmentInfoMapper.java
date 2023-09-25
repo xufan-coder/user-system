@@ -197,4 +197,5 @@ public interface SysDepartmentInfoMapper extends BaseMapper<SysDepartmentInfo> {
     */
     List<SysDepartmentInfoVo> getSecondaryDepartmentList(@Param("param") SysDepartmentInfoDto dto);
 
+    DepartInfoVo getDepartInfoShow(@Param("id")String departId);
 }
