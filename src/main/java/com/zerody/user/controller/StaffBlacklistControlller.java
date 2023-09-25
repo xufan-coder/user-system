@@ -1,5 +1,6 @@
 package com.zerody.user.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
@@ -245,15 +246,18 @@ public class StaffBlacklistControlller {
     @GetMapping("/all/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAllPage(FrameworkBlacListQueryPageDto param){
         try {
-//            if (!UserUtils.getUser().isBackAdmin()) {
-//                if(DataUtil.isEmpty(param.getCompanyId())) {
-//                    param.setCompanyId(UserUtils.getUser().getCompanyId());
-//                }
-//            }else {
-//                // 设置组织架构条件值
-//                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
-//            }
+            if (!UserUtils.getUser().isBackAdmin()) {
+                if(DataUtil.isEmpty(param.getCompanyId())) {
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }
+            }else {
+                // 设置组织架构条件值
+                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            }
             param.setQueryDimensionality("blockUser");
+
+            log.info("查询全部黑名单员工入参:{}", JSON.toJSONString(param));
+
             IPage<FrameworkBlacListQueryPageVo> result = this.service.getPageBlackList(param);
             return R.success(result);
         } catch (DefaultException e) {
