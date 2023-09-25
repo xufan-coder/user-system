@@ -219,4 +219,6 @@ public interface SysDepartmentInfoService extends IService<SysDepartmentInfo> {
     *  @return        java.util.List<com.zerody.user.vo.SysDepartmentInfoVo>
     */
     List<String> getAllDepByCompany(String companyId);
+
+    DepartInfoVo getDepartInfoShow(String departId);
 }
