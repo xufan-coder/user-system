@@ -17,6 +17,10 @@ import java.util.List;
 @Data
 public class StaffHistoryVo {
     /**
+     * 员工姓名
+     */
+    private String userName;
+    /**
      * 描述统计
      */
     private Integer describeCount;
