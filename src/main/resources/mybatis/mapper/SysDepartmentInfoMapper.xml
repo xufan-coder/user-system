@@ -484,4 +484,21 @@
         </where>
     </select>
 
+    <!-- 根据部门id获取部门相关信息(只展示显示的)   -->
+    <select id="getDepartInfoShow" resultType="com.zerody.user.api.vo.DepartInfoVo">
+        SELECT
+        sdi.id,
+        sdi.depart_name,
+        ssi.id AS admin_staff_id,
+        ssi.user_id AS admin_user_id,
+        ssi.user_name AS admin_user_name,
+        sdi.parent_id AS parent_depart_id
+        FROM
+        sys_department_info AS sdi
+        LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account
+        <where>
+            sdi.is_show_business = 1 AND sdi.id = #{id}
+        </where>
+    </select>
+
 </mapper>

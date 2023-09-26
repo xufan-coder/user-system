@@ -34,6 +34,12 @@
             <if test="param.companyId neq null and param.companyId neq ''">
                 AND sba.company_id = #{param.companyId}
             </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                and sba.company_id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="param.userName neq null and param.userName neq ''">
                 AND sba.user_name LIKE CONCAT('%', #{param.userName}, '%')
             </if>

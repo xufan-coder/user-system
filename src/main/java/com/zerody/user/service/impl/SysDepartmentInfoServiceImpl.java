@@ -647,6 +647,17 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         return departmentInfoVos;
     }
 
+    @Override
+    public DepartInfoVo getDepartInfoShow(String departId) {
+        log.info("部门id {}", departId);
+        DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoShow(departId);
+        if (Objects.isNull(result)) {
+            throw new DefaultException("找不到部门");
+        }
+        result.setIsFinally(this.getDepartIsFinally(departId, Boolean.FALSE.booleanValue()));
+        return result;
+    }
+
     private void getStructureChildrens(List<UserStructureVo> list) {
         if (CollectionUtils.isEmpty(list)) {
             return;

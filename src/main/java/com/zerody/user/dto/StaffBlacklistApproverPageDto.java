@@ -1,6 +1,8 @@
 package com.zerody.user.dto;
 
 import com.zerody.common.api.bean.PageQueryDto;
+import com.zerody.user.dto.bean.UserPositionPageParam;
+import com.zerody.user.dto.bean.UserPositionParam;
 import lombok.Data;
 
 /**
@@ -8,7 +10,7 @@ import lombok.Data;
  * @create 2023/9/21 10:50
  */
 @Data
-public class StaffBlacklistApproverPageDto extends PageQueryDto {
+public class StaffBlacklistApproverPageDto extends UserPositionPageParam {
 
     /**
      * 手机号
@@ -32,14 +34,4 @@ public class StaffBlacklistApproverPageDto extends PageQueryDto {
      * 黑名单姓名
      */
     private String userName;
-
-    /**
-     * 拉黑企业id
-     */
-    private String companyId;
-
-    /**
-     * 部门id
-     */
-    private String deptId;
 }

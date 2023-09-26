@@ -3,10 +3,13 @@ package com.zerody.user.controller;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.StaffBlacklistApprover;
 import com.zerody.user.service.StaffBlacklistApproverService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.StaffBlacklistApproverPageDto;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.StaffBlacklistApproverDetailVo;
 import com.zerody.user.vo.StaffBlacklistApproverVo;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,9 @@ public class StaffBlacklistApproverController {
     @Autowired
     private StaffBlacklistApproverService service;
 
+    @Autowired
+    private CheckUtil checkUtil;
+
     /**
     * @Description:         分页查询内控名单申请记录
     * @Param:               [param]
@@ -35,6 +41,14 @@ public class StaffBlacklistApproverController {
     @GetMapping("/page")
     public DataResult<IPage<StaffBlacklistApproverVo>> getBlacklistApproverPage(StaffBlacklistApproverPageDto param){
         try {
+            if (!UserUtils.getUser().isBackAdmin()) {
+                if(DataUtil.isEmpty(param.getCompanyId())) {
+                    param.setCompanyId(UserUtils.getUser().getCompanyId());
+                }
+            }else {
+                // 设置组织架构条件值
+                param.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+            }
             IPage<StaffBlacklistApproverVo> page = service.getBlacklistApproverPage(param);
             return R.success(page);
         } catch (DefaultException e) {
