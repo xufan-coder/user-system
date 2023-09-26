@@ -150,12 +150,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         blacQw.lambda().last("limit 0,1");
         StaffBlacklist oldBlac = this.getOne(blacQw);
         if (DataUtil.isNotEmpty(oldBlac)) {
-            throw new DefaultException("该号码已被拉黑！无法不需重复添加");
+            throw new DefaultException("该号码已被拉黑！不需重复添加");
         }
         blacQw.lambda().eq(StaffBlacklist::getType, 2);
         //外部内控名单验重 两者不并存
         if (DataUtil.isNotEmpty(oldBlac)) {
-            throw new DefaultException("该员工已被拉黑！无法重复发起");
+            throw new DefaultException("该员工已被拉黑！不需重复添加");
         }
         blac.setCreateTime(new Date());
         blac.setApprovalTime(new Date());
