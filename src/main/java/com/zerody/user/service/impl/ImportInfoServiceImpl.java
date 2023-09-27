@@ -63,7 +63,8 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
     }
 
     @Override
-    public void doExportImportInfo(HttpServletResponse response, String id) throws IOException {
+    public void
+    doExportImportInfo(HttpServletResponse response, String id) throws IOException {
         ImportInfo info = this.getById(id);
         String[] header;
         Integer[] requiredNum ;
@@ -97,7 +98,7 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
 
         HSSFWorkbook workbook = ExcelToolUtil.createExcel(header, data, requiredNum);
 //        response.getContentType("octets/stream");
-        response.addHeader("Content-Disposition", "attachment;filename="+new String( fileName.getBytes("gb2312"), "ISO8859-1" )+".xls");
+        response.addHeader("Content-Disposition", "attachment;filename="+java.net.URLEncoder.encode(fileName, "UTF-8")+".xls");
         OutputStream os = response.getOutputStream();
         workbook.write(os);
         os.close();
