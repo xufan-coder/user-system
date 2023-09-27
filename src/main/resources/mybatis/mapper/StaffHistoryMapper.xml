@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerody.user.mapper.StaffHistoryMapper">
+    <select id="getHonorPunishmentWall" resultType="com.zerody.user.vo.StaffHistoryVo">
+        select
+            sh.`type`,
+            count(sh.`describe`)as `describeCount`,
+            sh.staff_id,
+            ssi.user_name,
+            date_format(sh.time,'%Y-%m')as `time`,
+            sh.`describe`,
+            i.image_url
+        from staff_history sh
+        left join image i on sh.staff_id=i.connect_id
+        left join sys_staff_info ssi on sh.staff_id = ssi.id
+        <where>
+            sh.staff_id = #{param.staffId}
+            <if test="param.type neq null and param.type neq ''">
+            AND sh.`type` = #{param.type}
+            </if>
+        </where>
+        group by `time`
+        order by `time` desc
+    </select>
+</mapper>

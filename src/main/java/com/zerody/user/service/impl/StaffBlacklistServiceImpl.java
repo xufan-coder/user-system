@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,12 +14,16 @@ import com.zerody.common.enums.StatusEnum;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
+import com.zerody.common.util.EntityUtils;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.FileUtil;
 import com.zerody.common.vo.UserVo;
+import com.zerody.flow.api.dto.process.ProcessStartDto;
+import com.zerody.flow.api.dto.process.ProcessStartResultDto;
 import com.zerody.log.api.constant.DataCodeType;
 import com.zerody.user.api.dto.mq.StaffDimissionInfo;
 import com.zerody.user.api.vo.StaffInfoVo;
@@ -26,8 +31,10 @@ import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
 import com.zerody.user.dto.*;
+import com.zerody.user.enums.BlacklistTypeEnum;
 import com.zerody.user.enums.ImportStateEnum;
 import com.zerody.user.feign.OauthFeignService;
+import com.zerody.user.feign.ProcessServerFeignService;
 import com.zerody.user.handler.blacklist.BlacklistParamHandle;
 import com.zerody.user.handler.user.SysUserDimissionHandle;
 import com.zerody.user.mapper.CeoCompanyRefMapper;
@@ -121,6 +128,11 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     @Autowired
     private ResignationApplicationService resignationApplicationService;
 
+    @Autowired
+    private ProcessServerFeignService processServerFeignService;
+    @Autowired
+    private StaffBlacklistApproverService staffBlacklistApproverService;
+
     @Value("${leave.type.block:}")
     private String block;
 
@@ -138,12 +150,12 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
         blacQw.lambda().last("limit 0,1");
         StaffBlacklist oldBlac = this.getOne(blacQw);
         if (DataUtil.isNotEmpty(oldBlac)) {
-            throw new DefaultException("该号码已被拉黑！无法不需重复添加");
+            throw new DefaultException("该号码已被拉黑！不需重复添加");
         }
         blacQw.lambda().eq(StaffBlacklist::getType, 2);
         //外部内控名单验重 两者不并存
         if (DataUtil.isNotEmpty(oldBlac)) {
-            throw new DefaultException("该员工已被拉黑！无法重复发起");
+            throw new DefaultException("该员工已被拉黑！不需重复添加");
         }
         blac.setCreateTime(new Date());
         blac.setApprovalTime(new Date());
@@ -542,7 +554,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
     }
 
     @Override
-    public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param) {
+    public StaffBlacklistAddDto addStaffBlaklist(StaffBlacklistAddDto param,UserVo user) {
         StaffBlacklist blac = param.getBlacklist();
         log.info("拉黑:{}",blac);
         if (StringUtils.isEmpty(blac.getId())) {
@@ -669,7 +681,7 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
 
         appUserPushService.updateById(SysUserDimissionHandle.staffDimissionPush(blac.getUserId()));
         SysUserInfo userInfo = userInfoService.getUserById(blac.getUserId());
-        UserLogUtil.addUserLog(userInfo, UserUtils.getUser(),"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
+        UserLogUtil.addUserLog(userInfo, user,"加入伙伴内控名单:原因["+blac.getReason()+"]", DataCodeType.PARTNER_LOCK);
         return param;
     }
 
@@ -746,6 +758,73 @@ public class StaffBlacklistServiceImpl extends ServiceImpl<StaffBlacklistMapper,
             }
         }
         return vo;
+    }
+
+    @Override
+    public void addStaffBlaklistProcessJoin(StaffBlacklistAddDto param,UserVo user) {
+        StaffBlacklist blacklist = param.getBlacklist();
+        StaffBlacklist oldBlac=null;
+        QueryWrapper<StaffBlacklist> blacQw = new QueryWrapper<>();
+        if(BlacklistTypeEnum.EXTERNAL.getValue()== param.getBlacklist().getType()) {
+            blacQw.lambda().and(bl ->
+                    bl.eq(StaffBlacklist::getMobile, blacklist.getMobile())
+                            .or()
+                            .eq(StaffBlacklist::getIdentityCard, blacklist.getIdentityCard())
+            );
+        }else {
+            StaffInfoVo staff = this.staffInfoService.getStaffInfo(blacklist.getUserId());
+            if(DataUtil.isNotEmpty(staff)){
+                StaffInfoVo finalStaffInfo = staff;
+                blacQw.lambda().and(bl ->
+                        bl.eq(StaffBlacklist::getMobile, finalStaffInfo.getMobile())
+                                .or()
+                                .eq(StringUtils.isNotEmpty( finalStaffInfo.getIdentityCard()), StaffBlacklist::getIdentityCard,
+                                        finalStaffInfo.getIdentityCard())
+                );
+            }
+        }
+        blacQw.lambda().eq(StaffBlacklist::getState, StaffBlacklistApproveState.BLOCK.name());
+        blacQw.lambda().last("limit 0,1");
+        oldBlac=this.getOne(blacQw);
+
+        //内部内控名单验重
+        if (DataUtil.isNotEmpty(oldBlac)) {
+            throw new DefaultException("该伙伴已被拉黑！无法重复发起");
+        }
+
+
+
+
+        //发起流程审批
+        ProcessStartDto params = new ProcessStartDto();
+        //员工流程key
+        params.setProcessDefKey("EmployeeBlacklist");
+        params.setCompanyId(user.getCompanyId());
+        params.setStarter(user.getUserId());
+        params.setStarterName(user.getUserName());
+
+        //查询详情作为流程变量
+        blacklist.setCompanyId(user.getCompanyId());
+        Map<String, Object> map = EntityUtils.entityToMap(blacklist);
+        map.put("imgs",param.getImages());
+        map.put("blackDto", JsonUtils.toString(param));
+        params.setVariables(map);
+        params.setBusinessKey(blacklist.getId());
+        log.info("发起参数：{}",JsonUtils.toString(params));
+        com.zerody.flow.api.dto.base.DataResult<ProcessStartResultDto> dataResult = processServerFeignService.startProcessByKey(params);
+        if (!dataResult.isSuccess()) {
+            log.info("审批流程异常：{}", JSONObject.toJSONString(dataResult));
+            throw new DefaultException("审批流程异常" + dataResult.getMessage());
+        }
+        ProcessStartResultDto data = dataResult.getData();
+
+        //添加审批记录
+        StaffBlacklistApprover approver=new StaffBlacklistApprover();
+        BeanUtils.copyProperties(blacklist,approver);
+        approver.setProcessId(data.getProcInstId());
+        approver.setProcessKey("EmployeeBlacklist");
+        approver.setImages(param.getImages());
+        staffBlacklistApproverService.addStaffBlaklistRecord(approver);
     }
 
     @Override

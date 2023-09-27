@@ -330,7 +330,11 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
             deps = this.sysDepartmentInfoMapper.getAllDepByCompanyId(user.getCompanyId());
         } else if (admin.getIsDepartAdmin()) {
             deps =  this.sysDepartmentInfoMapper.getSubordinateStructure(user);
-            parentId = this.getById(user.getDeptId()).getParentId();
+            SysDepartmentInfo byId = this.getById(user.getDeptId());
+            if(DataUtil.isNotEmpty(byId) && DataUtil.isNotEmpty(byId.getParentId())){
+                parentId = byId.getParentId();
+            }
+
         } else {
             return null;
         }
@@ -641,6 +645,17 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
     public List<String> getAllDepByCompany(String companyId) {
         List<String> departmentInfoVos = this.sysDepartmentInfoMapper.getAllDepByCompany(companyId);
         return departmentInfoVos;
+    }
+
+    @Override
+    public DepartInfoVo getDepartInfoShow(String departId) {
+        log.info("部门id {}", departId);
+        DepartInfoVo result = this.sysDepartmentInfoMapper.getDepartInfoShow(departId);
+        if (Objects.isNull(result)) {
+            throw new DefaultException("找不到部门");
+        }
+        result.setIsFinally(this.getDepartIsFinally(departId, Boolean.FALSE.booleanValue()));
+        return result;
     }
 
     private void getStructureChildrens(List<UserStructureVo> list) {

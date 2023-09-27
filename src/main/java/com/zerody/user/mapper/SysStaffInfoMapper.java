@@ -415,7 +415,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 查询伙伴概况
     * @Date: 2023/5/4 11:14
     */
@@ -455,7 +455,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     /**
     * @Author: chenKeFeng
-    * @param  
+    * @param
     * @Description: 获取学历分析
     * @Date: 2023/4/29 14:35
     */
@@ -508,4 +508,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
      */
     Integer getToRunOff(@Param("param") UserStatisQueryDto param);
 
+    List<String> getUserIdByCompanyIds(@Param("companyIds")List<String> companyIds);
+
+    List<String> getUserIdByDeptIds(@Param("deptIds")List<String> deptIds);
 }

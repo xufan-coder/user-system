@@ -34,6 +34,15 @@ public interface SysAddressBookService {
      * @return
      */
     List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto);
+    /**
+     *
+     *  @description   部门(有是否显示两种)
+     *  @author        YeChangWei
+     *  @date          2023/9/1 16:02
+     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
+     */
+    List<DepartInfoVo> queryDepartInfoAll(DepartInfoDto departInfoDto);
+
 
     /***
      * @description 团队
@@ -43,6 +52,15 @@ public interface SysAddressBookService {
      * @return
      */
     List<DepartInfoVo> queryTeam(DepartInfoDto departInfoDto);
+
+    /**
+     *
+     *  @description   团队(有是否显示两种)
+     *  @author        YeChangWei
+     *  @date          2023/9/1 16:05
+     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
+     */
+    List<DepartInfoVo> queryTeamAll(DepartInfoDto departInfoDto);
 
     /***
      * @description  查询员工
