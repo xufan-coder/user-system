@@ -222,6 +222,7 @@
         sui.use_state,
         sui.train_no,
         sui.is_prepare_executive,
+        ssi.expire_time,
         ssi.leave_type
         FROM
         sys_user_info sui
@@ -296,6 +297,7 @@
         sui.avatar AS user_avatar,
         sui.is_prepare_executive,
         ssi.is_diamond_member,
+        ssi.expire_time,
         ssi.leave_type
         FROM
         sys_user_info sui
@@ -1471,7 +1473,7 @@
     </select>
 
     <select id="getUserById" resultType="com.zerody.user.vo.SysUserInfoVo" parameterType="java.lang.String">
-        SELECT ssi.user_name, sci.company_name, sui.phone_number, sdi.depart_name, ssi.status, sui.avatar as avatar, sui.is_prepare_executive
+        SELECT ssi.user_name, sci.company_name, sui.phone_number, sdi.depart_name, ssi.status, sui.avatar as avatar,ssi.expire_time, sui.is_prepare_executive
         FROM sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
         LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id

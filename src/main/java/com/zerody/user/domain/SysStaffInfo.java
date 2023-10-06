@@ -2,6 +2,7 @@ package com.zerody.user.domain;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.user.constant.CheckCompare;
 import com.zerody.user.domain.base.BaseModel;
 import lombok.Data;
@@ -123,5 +124,11 @@ public class SysStaffInfo extends BaseModel {
      */
     @CheckCompare(value = "isDiamondMember",name = "是否钻石会员")
     private Integer isDiamondMember;
+
+    /**
+     *  合约结束时间
+     **/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date expireTime;
 
 }
