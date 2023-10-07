@@ -1580,5 +1580,17 @@
          </where>
     </select>
 
+    <select id="getExpireTimeStaff" resultType="com.zerody.user.vo.ExpireTimeNoticeVo">
+        SELECT sui.id,sci.company_name,ssi.id as staffId,sui.user_name,ssi.date_join,ssi.expire_time
+        FROM sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        <where>
+	     ssi.deleted = 0 and sui.status != -1
+         and ( DATE_FORMAT(ssi.expire_time,'%Y%m%d') = DATE_FORMAT(#{param.thirty},'%Y%m%d')
+                OR DATE_FORMAT(ssi.expire_time,'%Y%m%d') = DATE_FORMAT(#{param.ninety},'%Y%m%d')
+                )
+         </where>
+    </select>
 
 </mapper>

@@ -3697,6 +3697,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return null;
     }
 
+    @Override
+    public List<ExpireTimeNoticeVo> getExpireTimeStaff(ExpireTimeNoticeDto dto) {
+        List<ExpireTimeNoticeVo> list=sysStaffInfoMapper.getExpireTimeStaff(dto);
+        return list;
+    }
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
