@@ -83,6 +83,7 @@ public class ExpireTimeNoticeTask {
 
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContent(message);
+        data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(vo.getId());
         data.setContentPush(message);
         data.setContentExtra(JsonUtils.toString(dto));
