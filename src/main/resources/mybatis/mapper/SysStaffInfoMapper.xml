@@ -1562,6 +1562,24 @@
         </where>
     </select>
 
+    <select id="getNewCompany" resultType="string">
+
+    SELECT
+	    sci.company_name
+    FROM
+	sys_user_info AS sui
+	JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+	LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+    <where>
+        ssi.`status` IN ( 0, 3 )
+        <if test="identityCardNum neq null and identityCardNum neq ''">
+            and sui.certificate_card = #{identityCardNum}
+        </if>
+    </where>
+    ORDER BY
+	ssi.create_time DESC
+	LIMIT 0,1
+    </select>
 
     <select id="getUserIdByDeptIds" resultType="java.lang.String">
         SELECT sui.id
