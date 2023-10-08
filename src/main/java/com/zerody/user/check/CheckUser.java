@@ -44,7 +44,7 @@ public class CheckUser {
             throw new DefaultException("身份证不能为空");
         }
 
-        if (DataUtil.isNotEmpty(sysUserInfo.getExpireTime())) {
+        if (DataUtil.isEmpty(sysUserInfo.getExpireTime())) {
             throw new DefaultException("请选择合约结束时间");
         }
 
