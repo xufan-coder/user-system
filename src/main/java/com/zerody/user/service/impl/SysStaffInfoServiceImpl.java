@@ -2716,6 +2716,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setIdentityCardNum(userInfo.getCertificateCard());
         userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
         userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
+        //在已离职的公司显示最新入职的公司
+        if(userInfo.getStatus()==1 && StringUtils.isNotEmpty(userInfo.getCertificateCard())){
+            String newCompany = this.sysStaffInfoMapper.getNewCompany(userInfo.getCertificateCard());
+            userInfo.setNewCompany(newCompany);
+        }
         if (admin.getIsCompanyAdmin()) {
             userInfo.setSuperiorName(userInfo.getUserName());
             return userInfo;

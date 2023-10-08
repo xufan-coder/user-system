@@ -402,4 +402,7 @@ public class SysUserInfoVo {
      **/
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date expireTime;
+
+    /**最新入职公司 */
+    private String newCompany;
 }
