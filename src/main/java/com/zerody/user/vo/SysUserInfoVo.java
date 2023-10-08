@@ -1,5 +1,6 @@
 package com.zerody.user.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zerody.common.enums.customer.EducationBackgroundEnum;
 import com.zerody.user.constant.CheckCompare;
@@ -395,4 +396,10 @@ public class SysUserInfoVo {
      *    是否加入预备高管  0代表否 1代表是 2代表退学
      */
     private Integer isPrepareExecutive;
+
+    /**
+     *  合约结束时间
+     **/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date expireTime;
 }

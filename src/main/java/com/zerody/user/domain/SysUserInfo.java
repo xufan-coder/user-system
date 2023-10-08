@@ -321,4 +321,13 @@ public class SysUserInfo extends BaseModel {
      * 身份证性别  (0.女、1.男)
      */
     private Integer idCardSex;
+
+
+    /**
+     *  合约结束时间
+     **/
+    @TableField(exist = false)
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date expireTime;
+
 }
