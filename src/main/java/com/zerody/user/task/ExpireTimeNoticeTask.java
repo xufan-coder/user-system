@@ -87,7 +87,7 @@ public class ExpireTimeNoticeTask {
         data.setTarget(vo.getId());
         data.setContentPush(message);
         data.setContentExtra(JsonUtils.toString(dto));
-        data.setType(1);
+        data.setType(1014);
         com.zerody.common.api.bean.DataResult<Long> result = this.sendMsgFeignService.send(data);
         LOGGER.info(vo.getUserName()+"-合约到期通知推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
