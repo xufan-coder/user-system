@@ -76,9 +76,9 @@ public class ExpireTimeNoticeTask {
         // 标题
         dto.setTitle(title);
         DateFormat dfs = new SimpleDateFormat("yyyy年MM月dd日");
-        String dataJoin = dfs.format(vo.getDataJoin());
+        String dateJoin = dfs.format(vo.getDateJoin());
         String expireTime = dfs.format(vo.getExpireTime());
-        String message = String.format(tip,vo.getUserName(),vo.getCompanyName(),dataJoin,expireTime);
+        String message = String.format(tip,vo.getUserName(),vo.getCompanyName(),dateJoin,expireTime);
         dto.setContent(message);
 
         SendRobotMessageDto data = new SendRobotMessageDto();

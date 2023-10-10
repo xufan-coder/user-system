@@ -41,7 +41,7 @@ public class ExpireTimeNoticeVo {
      * 创建时间
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
-    private Date dataJoin;
+    private Date dateJoin;
 
     /**
      *  合约结束时间
