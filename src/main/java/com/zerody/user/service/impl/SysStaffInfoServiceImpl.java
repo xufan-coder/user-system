@@ -2718,7 +2718,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setCertificateCard(CommonUtils.idEncrypt(userInfo.getCertificateCard()));
         //在已离职的公司显示最新入职的公司
         if(userInfo.getStatus()==1 && StringUtils.isNotEmpty(userInfo.getIdentityCardNum())){
-            String newCompany = this.sysStaffInfoMapper.getNewCompany(userInfo.getCertificateCard());
+            String newCompany = this.sysStaffInfoMapper.getNewCompany(userInfo.getIdentityCardNum());
             userInfo.setNewCompany(newCompany);
         }
         if (admin.getIsCompanyAdmin()) {
