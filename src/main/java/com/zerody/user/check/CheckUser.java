@@ -44,10 +44,6 @@ public class CheckUser {
             throw new DefaultException("身份证不能为空");
         }
 
-        if (DataUtil.isEmpty(sysUserInfo.getExpireTime())) {
-            throw new DefaultException("请选择合约结束时间");
-        }
-
         if (StringUtils.isNotEmpty(sysUserInfo.getUrgentPhone()) && !PhoneHomeLocationUtils.checkPhoneBoolean(sysUserInfo.getUrgentPhone())) {
             throw new DefaultException("紧急联系人电话不合法");
         }
