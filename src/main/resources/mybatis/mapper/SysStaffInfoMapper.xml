@@ -222,6 +222,7 @@
         sui.use_state,
         sui.train_no,
         sui.is_prepare_executive,
+        ssi.expire_time,
         ssi.leave_type
         FROM
         sys_user_info sui
@@ -296,6 +297,7 @@
         sui.avatar AS user_avatar,
         sui.is_prepare_executive,
         ssi.is_diamond_member,
+        ssi.expire_time,
         ssi.leave_type
         FROM
         sys_user_info sui
@@ -1471,7 +1473,7 @@
     </select>
 
     <select id="getUserById" resultType="com.zerody.user.vo.SysUserInfoVo" parameterType="java.lang.String">
-        SELECT ssi.user_name, sci.company_name, sui.phone_number, sdi.depart_name, ssi.status, sui.avatar as avatar, sui.is_prepare_executive
+        SELECT ssi.user_name, sci.company_name, sui.phone_number, sdi.depart_name, ssi.status, sui.avatar as avatar,ssi.expire_time, sui.is_prepare_executive
         FROM sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
         LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
@@ -1560,6 +1562,23 @@
         </where>
     </select>
 
+    <select id="getNewCompany" resultType="string">
+    SELECT
+	    sci.company_name
+    FROM
+	sys_user_info AS sui
+	JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+	LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+    <where>
+        ssi.`status` IN ( 0, 3 )
+        <if test="identityCardNum neq null and identityCardNum neq ''">
+            and sui.certificate_card = #{identityCardNum}
+        </if>
+    </where>
+    ORDER BY
+	ssi.create_time DESC
+	LIMIT 0,1
+    </select>
 
     <select id="getUserIdByDeptIds" resultType="java.lang.String">
         SELECT sui.id
@@ -1578,5 +1597,17 @@
          </where>
     </select>
 
+    <select id="getExpireTimeStaff" resultType="com.zerody.user.vo.ExpireTimeNoticeVo">
+        SELECT sui.id,sci.company_name,ssi.id as staffId,sui.user_name,ssi.date_join,ssi.expire_time
+        FROM sys_user_info sui
+        JOIN sys_staff_info ssi ON sui.id = ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id = ssi.comp_id
+        <where>
+	     ssi.deleted = 0 and sui.status != -1
+         and ( DATE_FORMAT(ssi.expire_time,'%Y%m%d') = DATE_FORMAT(#{param.thirty},'%Y%m%d')
+                OR DATE_FORMAT(ssi.expire_time,'%Y%m%d') = DATE_FORMAT(#{param.ninety},'%Y%m%d')
+                )
+         </where>
+    </select>
 
 </mapper>
