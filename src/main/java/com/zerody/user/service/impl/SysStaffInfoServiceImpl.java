@@ -560,6 +560,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //更新入职时间
         staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
+
+        //保存旧账号的身份证以及合规承诺书
+        this.sendOssType(setSysUserInfoDto,sysUserInfo.getId());
+
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
@@ -4302,5 +4306,39 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userInfoDto.setStaffRelationDtoList(relationDtos);
         }
         return userInfoDto;
+    }
+
+    public void sendOssType(SetSysUserInfoDto setSysUserInfoDto,String id){
+        ImageSendOssVo ossVo = new ImageSendOssVo();
+        ossVo.setCompanyId(setSysUserInfoDto.getCompanyId());
+        String suffix =UUIDutils.getUUID32()+"#deplicate";
+        ossVo.setSuffix(suffix);
+        UpdateWrapper<SysUserInfo> wrapper = new UpdateWrapper<>();
+        wrapper.lambda().eq(SysUserInfo::getId,id);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardFront())){
+            ossVo.setFileKey(setSysUserInfoDto.getIdCardFront());
+            this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+            wrapper.lambda().set(SysUserInfo::getIdCardFront,setSysUserInfoDto.getIdCardFront()+suffix);
+        }
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())){
+            ossVo.setFileKey(setSysUserInfoDto.getIdCardReverse());
+            this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+            wrapper.lambda().set(SysUserInfo::getIdCardFront,setSysUserInfoDto.getIdCardReverse()+suffix);
+        }
+        this.sysUserInfoService.update(wrapper);
+        Image image = new Image();
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getComplianceCommitments()) && setSysUserInfoDto.getComplianceCommitments().size()>0){
+            for (String commitment : setSysUserInfoDto.getComplianceCommitments()) {
+                ossVo.setFileKey(commitment);
+                this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+                image.setConnectId(id);
+                image.setImageUrl(commitment+suffix);
+                image.setImageType(ImageTypeInfo.COMPLIANCE_COMMITMENT);
+                image.setCreateTime(new Date());
+                this.imageService.save(image);
+            }
+
+        }
+
     }
 }
