@@ -4323,7 +4323,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())){
             ossVo.setFileKey(setSysUserInfoDto.getIdCardReverse());
             this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
-            wrapper.lambda().set(SysUserInfo::getIdCardFront,setSysUserInfoDto.getIdCardReverse()+suffix);
+            wrapper.lambda().set(SysUserInfo::getIdCardReverse,setSysUserInfoDto.getIdCardReverse()+suffix);
         }
         this.sysUserInfoService.update(wrapper);
         Image image = new Image();
