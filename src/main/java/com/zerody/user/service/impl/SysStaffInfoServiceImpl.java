@@ -4311,32 +4311,33 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public void sendOssType(SetSysUserInfoDto setSysUserInfoDto,String id){
         ImageSendOssVo ossVo = new ImageSendOssVo();
         ossVo.setCompanyId(setSysUserInfoDto.getCompanyId());
-        String suffix =UUIDutils.getUUID32()+"#deplicate";
+        String suffix = null;
         ossVo.setSuffix(suffix);
         UpdateWrapper<SysUserInfo> wrapper = new UpdateWrapper<>();
         wrapper.lambda().eq(SysUserInfo::getId,id);
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardFront())){
+            suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
             ossVo.setFileKey(setSysUserInfoDto.getIdCardFront());
             this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
             wrapper.lambda().set(SysUserInfo::getIdCardFront,setSysUserInfoDto.getIdCardFront()+suffix);
         }
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())){
+            suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
             ossVo.setFileKey(setSysUserInfoDto.getIdCardReverse());
             this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
             wrapper.lambda().set(SysUserInfo::getIdCardReverse,setSysUserInfoDto.getIdCardReverse()+suffix);
         }
         this.sysUserInfoService.update(wrapper);
         Image image = new Image();
+        List<String>  commitments= new ArrayList<>();
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getComplianceCommitments()) && setSysUserInfoDto.getComplianceCommitments().size()>0){
             for (String commitment : setSysUserInfoDto.getComplianceCommitments()) {
                 ossVo.setFileKey(commitment);
                 this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
-                image.setConnectId(id);
-                image.setImageUrl(commitment+suffix);
-                image.setImageType(ImageTypeInfo.COMPLIANCE_COMMITMENT);
-                image.setCreateTime(new Date());
-                this.imageService.save(image);
+                suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
+                commitments.add(commitment+suffix);
             }
+            setSysUserInfoDto.setComplianceCommitments(commitments);
 
         }
 
