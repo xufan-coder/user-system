@@ -142,7 +142,7 @@
             sci.company_name AS companyName,
             sui.phone_number,
             sdi.depart_name AS departName,
-            ssi.status
+            sui.status
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
