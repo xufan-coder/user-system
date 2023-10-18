@@ -24,11 +24,14 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CheckUser {
 
+    public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers) {
+        checkParam(sysUserInfo, familyMembers, false);
+    }
 
     /**
      * 用户操作参数校验
      */
-    public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers) {
+    public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers, boolean filter) {
         if (StringUtils.isBlank(sysUserInfo.getPhoneNumber())) {
             throw new DefaultException("手机号码不能为空");
         }
@@ -44,7 +47,7 @@ public class CheckUser {
             throw new DefaultException("身份证不能为空");
         }
 
-        if (DataUtil.isEmpty(sysUserInfo.getExpireTime())) {
+        if (DataUtil.isEmpty(sysUserInfo.getExpireTime()) && !filter) {
             throw new DefaultException("请选择合约结束时间");
         }
 
