@@ -175,6 +175,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         sysCompanyInfo.setCreateUser(UserUtils.getUserName());
         sysCompanyInfo.setIsEdit(YesNo.YES);
         sysCompanyInfo.setIsUpdateName(YesNo.NO);
+        sysCompanyInfo.setId(null);
         this.saveOrUpdate(sysCompanyInfo);
         SetSysUserInfoDto userInfoDto = new SetSysUserInfoDto();
         userInfoDto.setCertificateCard(sysCompanyInfo.getCertificateCard());
