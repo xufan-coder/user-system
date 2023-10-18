@@ -557,6 +557,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //更新入职时间
         staff.setDateJoin(new Date());
         this.saveOrUpdate(staff);
+
+        //保存旧账号的身份证以及合规承诺书
+        this.sendOssType(setSysUserInfoDto,sysUserInfo.getId());
+
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
         StaffInfoUtil.saveRelation(setSysUserInfoDto,sysUserInfo,staff);
 
@@ -1793,6 +1797,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setPhoneNumber(row[1]);
         int index = 5 ;
         staff.setDateJoin(format.parse(row[++index]));
+        staff.setExpireTime(format.parse(row[++index]));
         ++index;
         ++index;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
@@ -1910,7 +1915,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","企业","部门","岗位","角色","签约日期", "合约结束日期", "状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】, "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[7]) || DataUtil.isEmpty(row[14])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[7]) || DataUtil.isEmpty(row[15])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
@@ -2069,7 +2074,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
         staff.setDateJoin(format.parse(row[5]));
-        int index = 7;
+        staff.setExpireTime(format.parse(row[6]));
+        int index = 8;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[++index]);
         userInfo.setNation(row[++index]);
@@ -2715,10 +2721,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setSensitivePhone(userInfo.getPhoneNumber());
         userInfo.setIdentityCardNum(userInfo.getCertificateCard());
         userInfo.setPhoneNumber(CommonUtils.mobileEncrypt(userInfo.getPhoneNumber()));
-        userInfo.setCertificateCard(CommonUtils.idEncrypt( userInfo.getCertificateCard()));
+        userInfo.setCertificateCard(CommonUtils.idEncrypt(userInfo.getCertificateCard()));
         //在已离职的公司显示最新入职的公司
-        if(userInfo.getStatus()==1 && StringUtils.isNotEmpty(userInfo.getCertificateCard())){
-            String newCompany = this.sysStaffInfoMapper.getNewCompany(userInfo.getCertificateCard());
+        if(userInfo.getStatus()==1 && StringUtils.isNotEmpty(userInfo.getIdentityCardNum())){
+            String newCompany = this.sysStaffInfoMapper.getNewCompany(userInfo.getIdentityCardNum());
             userInfo.setNewCompany(newCompany);
         }
         if (admin.getIsCompanyAdmin()) {
@@ -4141,6 +4147,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         bean.setJobName(data[index++]);
         bean.setRoleName(data[index++]);
         bean.setDateJoin(data[index++]);
+        bean.setExpireTime(data[index++]);
         bean.setRecommendMobile(data[index++]);
         bean.setStatus(data[index++]);
         bean.setGender(data[index++]);
@@ -4296,5 +4303,40 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userInfoDto.setStaffRelationDtoList(relationDtos);
         }
         return userInfoDto;
+    }
+
+    public void sendOssType(SetSysUserInfoDto setSysUserInfoDto,String id){
+        ImageSendOssVo ossVo = new ImageSendOssVo();
+        ossVo.setCompanyId(setSysUserInfoDto.getCompanyId());
+        String suffix = null;
+        ossVo.setSuffix(suffix);
+        UpdateWrapper<SysUserInfo> wrapper = new UpdateWrapper<>();
+        wrapper.lambda().eq(SysUserInfo::getId,id);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardFront())){
+            suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
+            ossVo.setFileKey(setSysUserInfoDto.getIdCardFront());
+            this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+            wrapper.lambda().set(SysUserInfo::getIdCardFront,setSysUserInfoDto.getIdCardFront()+suffix);
+        }
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())){
+            suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
+            ossVo.setFileKey(setSysUserInfoDto.getIdCardReverse());
+            this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+            wrapper.lambda().set(SysUserInfo::getIdCardReverse,setSysUserInfoDto.getIdCardReverse()+suffix);
+        }
+        this.sysUserInfoService.update(wrapper);
+        Image image = new Image();
+        List<String>  commitments= new ArrayList<>();
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getComplianceCommitments()) && setSysUserInfoDto.getComplianceCommitments().size()>0){
+            for (String commitment : setSysUserInfoDto.getComplianceCommitments()) {
+                ossVo.setFileKey(commitment);
+                this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
+                suffix ="#"+UUIDutils.getUUID32()+"#deplicate";
+                commitments.add(commitment+suffix);
+            }
+            setSysUserInfoDto.setComplianceCommitments(commitments);
+
+        }
+
     }
 }

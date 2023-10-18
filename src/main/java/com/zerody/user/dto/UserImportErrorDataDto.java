@@ -1,6 +1,9 @@
 package com.zerody.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author PengQiang
@@ -105,5 +108,10 @@ public class UserImportErrorDataDto {
 
     /** 联系地址 */
     private String familyContactAddress;
+
+    /**
+     *  合约结束时间
+     **/
+    private String expireTime;
 
 }

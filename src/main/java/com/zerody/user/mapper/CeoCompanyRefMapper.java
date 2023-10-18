@@ -17,7 +17,7 @@ import java.util.List;
 public interface CeoCompanyRefMapper extends BaseMapper<CeoCompanyRef> {
 
     @Select({"<script> SELECT sci.id, sci.company_name AS companyName FROM ceo_company_ref ccr  JOIN sys_company_info sci ON sci.id = ccr.company_id ",
-            "where ccr.ceo_id= #{ceoId}</script>"})
+            "where sci.status= 0 and ccr.ceo_id= #{ceoId}</script>"})
     List<CompanyRefVo> getCeoRef(@Param("ceoId") String ceoId);
 
 

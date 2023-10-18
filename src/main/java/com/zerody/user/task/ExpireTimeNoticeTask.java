@@ -9,6 +9,8 @@ import com.zerody.common.util.JsonUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
 import com.zerody.expression.Expression;
+import com.zerody.im.api.dto.SendHighMessageButton;
+import com.zerody.im.api.dto.SendHighMessageDto;
 import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.im.util.IM;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -72,13 +75,13 @@ public class ExpireTimeNoticeTask {
 
 
     private void sendPush(ExpireTimeNoticeVo vo){
-        FlowMessageDto dto = new FlowMessageDto();
+        SendHighMessageDto dto = new SendHighMessageDto();
         // 标题
         dto.setTitle(title);
         DateFormat dfs = new SimpleDateFormat("yyyy年MM月dd日");
-        String dataJoin = dfs.format(vo.getDataJoin());
+        String dateJoin = dfs.format(vo.getDateJoin());
         String expireTime = dfs.format(vo.getExpireTime());
-        String message = String.format(tip,vo.getUserName(),vo.getCompanyName(),dataJoin,expireTime);
+        String message = String.format(tip,vo.getUserName(),vo.getCompanyName(),dateJoin,expireTime);
         dto.setContent(message);
 
         SendRobotMessageDto data = new SendRobotMessageDto();
