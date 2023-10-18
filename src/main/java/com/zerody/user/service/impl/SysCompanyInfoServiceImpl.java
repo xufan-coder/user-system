@@ -181,6 +181,7 @@ public class SysCompanyInfoServiceImpl extends BaseService<SysCompanyInfoMapper,
         userInfoDto.setCompanyId(sysCompanyInfo.getId());
         userInfoDto.setPhoneNumber(sysCompanyInfo.getContactPhone());
         userInfoDto.setUserName(sysCompanyInfo.getContactName());
+        userInfoDto.setFilter(Boolean.TRUE);
         userInfoDto.setCertificateCard(sysCompanyInfo.getCertificateCard());
         SysStaffInfo staff = this.sysStaffInfoService.addStaff(userInfoDto);
         CompanyAdmin admin = new CompanyAdmin();

@@ -197,4 +197,6 @@ public class SetSysUserInfoDto extends SysUserInfo {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date expireTime;
 
+    private Boolean filter = false;
+
 }
