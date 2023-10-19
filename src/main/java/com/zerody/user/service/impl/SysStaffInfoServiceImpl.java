@@ -288,10 +288,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         log.info("添加伙伴入参---{}", JSON.toJSONString(sysUserInfo));
 
         //参数校验
-        CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers());
-        if (DataUtil.isEmpty(sysUserInfo.getExpireTime())) {
-            throw new DefaultException("请选择合约结束时间");
-        }
+        CheckUser.checkParam(sysUserInfo, setSysUserInfoDto.getFamilyMembers(), setSysUserInfoDto.getFilter());
         //离职不校验参数
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getStatus())){
             if(setSysUserInfoDto.getStatus()!=1){
