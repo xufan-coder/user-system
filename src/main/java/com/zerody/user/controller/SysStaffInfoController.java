@@ -156,6 +156,7 @@ public class SysStaffInfoController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public DataResult<Object> addStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto) {
         try {
+            setSysUserInfoDto.setFilter(Boolean.FALSE);
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e) {
@@ -251,6 +252,7 @@ public class SysStaffInfoController {
     @PostMapping("/app-add")
     public DataResult<Object> addAppStaff(@Validated @RequestBody SetSysUserInfoDto setSysUserInfoDto) {
         try {
+            setSysUserInfoDto.setFilter(Boolean.FALSE);
             sysStaffInfoService.addStaff(setSysUserInfoDto);
             return R.success();
         } catch (DefaultException e) {
