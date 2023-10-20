@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class CheckUser {
 
     public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers) {
-        checkParam(sysUserInfo, familyMembers, false);
+        checkParam(sysUserInfo, familyMembers, true);
     }
 
     /**
