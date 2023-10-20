@@ -3597,42 +3597,43 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<String> getDeptLeader(String userId,String signDeptId) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
-        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+
+         QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         // 优先获取部门id的团队长
         if(StringUtils.isNotEmpty(signDeptId)){
             qw.lambda().eq(BaseModel::getId,signDeptId);
+            // 注释原因2023-10-20 审批只需要总经理审批  大白让的  旧公司只查总经理
+            String dept = StringUtils.isNotEmpty(signDeptId) ? signDeptId: staffInfo.getDepartId();
+            //团队长  并且是分配在团队的而不是在部门
+            SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
+            if(DataUtil.isNotEmpty(leader) && !dept.split("_")[0].equals(dept)) {
+                SysStaffInfo byId = this.getById(leader.getAdminAccount());
+                if (DataUtil.isNotEmpty(byId)) {
+                    result.add(byId.getUserId());
+                }
+            }
+
+            //副总
+            if(staffInfo.getDepartId() != null || StringUtils.isNotEmpty(signDeptId)) {
+                qw.clear();
+                // 优先获取部门id的副总
+                if(StringUtils.isNotEmpty(signDeptId)){
+                    qw.lambda().eq(BaseModel::getId,signDeptId.split("_")[0]);
+                }else {
+                    qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
+                }
+                SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
+                if(DataUtil.isNotEmpty(leader1)){
+                    SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
+                    if(DataUtil.isNotEmpty(byId1)){
+                        result.add(byId1.getUserId());
+                    }
+                }
+            }
         }else {
             qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId());
         }
 
-
-        String dept = StringUtils.isNotEmpty(signDeptId) ? signDeptId: staffInfo.getDepartId();
-        //团队长  并且是分配在团队的而不是在部门
-        SysDepartmentInfo leader = this.sysDepartmentInfoService.getOne(qw);
-        if(DataUtil.isNotEmpty(leader) && !dept.split("_")[0].equals(dept)) {
-            SysStaffInfo byId = this.getById(leader.getAdminAccount());
-            if (DataUtil.isNotEmpty(byId)) {
-                result.add(byId.getUserId());
-            }
-        }
-
-        //副总
-        if(staffInfo.getDepartId() != null || StringUtils.isNotEmpty(signDeptId)) {
-            qw.clear();
-            // 优先获取部门id的副总
-            if(StringUtils.isNotEmpty(signDeptId)){
-                qw.lambda().eq(BaseModel::getId,signDeptId.split("_")[0]);
-            }else {
-                qw.lambda().eq(BaseModel::getId,staffInfo.getDepartId().split("_")[0]);
-            }
-            SysDepartmentInfo leader1 = this.sysDepartmentInfoService.getOne(qw);
-            if(DataUtil.isNotEmpty(leader1)){
-                SysStaffInfo byId1 = this.getById(leader1.getAdminAccount());
-                if(DataUtil.isNotEmpty(byId1)){
-                    result.add(byId1.getUserId());
-                }
-            }
-        }
         // 总经理
         if(StringUtils.isNotEmpty(staffInfo.getCompanyId())){
             QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
