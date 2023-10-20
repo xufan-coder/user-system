@@ -3597,7 +3597,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<String> getDeptLeader(String userId,String signDeptId) {
         List<String> result =new ArrayList<>();
         StaffInfoVo staffInfo = this.getStaffInfo(userId);
-        QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
+        /* 注释原因2023-10-20 OA审批只需要总经理审批  大白让的 
+         **/QueryWrapper<SysDepartmentInfo> qw =new QueryWrapper<>();
         // 优先获取部门id的团队长
         if(StringUtils.isNotEmpty(signDeptId)){
             qw.lambda().eq(BaseModel::getId,signDeptId);
@@ -3632,7 +3633,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                     result.add(byId1.getUserId());
                 }
             }
-        }
+        }*/
         // 总经理
         if(StringUtils.isNotEmpty(staffInfo.getCompanyId())){
             QueryWrapper<CompanyAdmin> comAdminQw = new QueryWrapper<>();
