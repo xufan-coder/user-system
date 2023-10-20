@@ -191,4 +191,12 @@ public class SetSysUserInfoDto extends SysUserInfo {
 
     private String mobile;
 
+    /**
+     *  合约结束时间
+     **/
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private Date expireTime;
+
+    private Boolean filter = false;
+
 }

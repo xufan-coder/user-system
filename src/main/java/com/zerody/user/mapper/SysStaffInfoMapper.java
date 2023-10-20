@@ -511,4 +511,8 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<String> getUserIdByCompanyIds(@Param("companyIds")List<String> companyIds);
 
     List<String> getUserIdByDeptIds(@Param("deptIds")List<String> deptIds);
+
+    List<ExpireTimeNoticeVo> getExpireTimeStaff(@Param("param")ExpireTimeNoticeDto dto);
+
+    String getNewCompany(@Param("identityCardNum") String identityCardNum);
 }
