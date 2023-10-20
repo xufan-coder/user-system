@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class CheckUser {
 
     public static void checkParam(SysUserInfo sysUserInfo, List<FamilyMember> familyMembers) {
-        checkParam(sysUserInfo, familyMembers, false);
+        checkParam(sysUserInfo, familyMembers, true);
     }
 
     /**
@@ -47,9 +47,9 @@ public class CheckUser {
             throw new DefaultException("身份证不能为空");
         }
 
-        if (DataUtil.isEmpty(sysUserInfo.getExpireTime()) && !filter) {
-            throw new DefaultException("请选择合约结束时间");
-        }
+//        if (DataUtil.isEmpty(sysUserInfo.getExpireTime()) && !filter) {
+//            throw new DefaultException("请选择合约结束时间");
+//        }
 
         if (StringUtils.isNotEmpty(sysUserInfo.getUrgentPhone()) && !PhoneHomeLocationUtils.checkPhoneBoolean(sysUserInfo.getUrgentPhone())) {
             throw new DefaultException("紧急联系人电话不合法");
