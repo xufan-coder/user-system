@@ -1915,7 +1915,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","企业","部门","岗位","角色","签约日期", "合约结束日期", "状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】, "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[7]) || DataUtil.isEmpty(row[15])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[15])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
