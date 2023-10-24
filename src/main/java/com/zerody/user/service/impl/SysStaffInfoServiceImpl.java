@@ -1193,6 +1193,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SysStaffInfo staffInfo = this.getById(staff.getId());
             Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
             staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
+            this.updateById(staffInfo);
             userDepart.setUserId(staffInfo.getUserId());
             SysDepartmentInfo departInfo = this.sysDepartmentInfoService.getById(userDepart.getDepartId());
             if (DataUtil.isNotEmpty(departInfo)) {
