@@ -1220,7 +1220,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.sysDepartmentInfoService.update(departEditUw);
             }
             Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
-            log.info("userType:{}", userTypeMap.get(staffInfo.getId()));
             staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
             this.updateById(staffInfo);
         }
