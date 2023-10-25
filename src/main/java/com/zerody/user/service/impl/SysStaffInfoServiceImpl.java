@@ -1207,6 +1207,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             List<String> departIds = new ArrayList<>();
             if (DataUtil.isNotEmpty(oldDepart)) {
+                UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
+                departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
+                departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+                departEditUw.lambda().eq(SysDepartmentInfo::getId, oldDept.getId());
+                this.sysDepartmentInfoService.update(departEditUw);
                 departIds.add(oldDepart);
             }
             if (DataUtil.isNotEmpty(setSysUserInfoDto.getDepartId())) {
@@ -1215,11 +1220,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(departIds)) {
                 UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
                 departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
-                departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
                 departEditUw.lambda().in(SysDepartmentInfo::getId, departIds);
                 this.sysDepartmentInfoService.update(departEditUw);
             }
             Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
+            log.info("{}-userType:{}", sysUserInfo.getUserName(), userTypeMap.get(staffInfo.getId()));
             staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
             this.updateById(staffInfo);
         }
