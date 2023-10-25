@@ -1191,9 +1191,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             SetUserDepartDto userDepart = new SetUserDepartDto();
             userDepart.setDepartId(setSysUserInfoDto.getDepartId());
             SysStaffInfo staffInfo = this.getById(staff.getId());
-            Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
-            staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
-            this.updateById(staffInfo);
             userDepart.setUserId(staffInfo.getUserId());
             SysDepartmentInfo departInfo = this.sysDepartmentInfoService.getById(userDepart.getDepartId());
             if (DataUtil.isNotEmpty(departInfo)) {
@@ -1218,9 +1215,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             if (DataUtil.isNotEmpty(departIds)) {
                 UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
                 departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
+                departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
                 departEditUw.lambda().in(SysDepartmentInfo::getId, departIds);
                 this.sysDepartmentInfoService.update(departEditUw);
             }
+            Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
+            staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
+            this.updateById(staffInfo);
         }
         if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
@@ -1327,14 +1328,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
-            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
-            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
-            SysDepartmentInfo depAdmin = this.sysDepartmentInfoMapper.selectOne(depQw);//原负责的部门id
-            if (depAdmin == null || depAdmin.getId().equals(setSysUserInfoDto.getDepartId())) {
-                return;
-            }
-            depAdmin.setAdminAccount(null);
-            this.sysDepartmentInfoMapper.updateById(depAdmin);
+//            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+//            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
+//            SysDepartmentInfo depAdmin = this.sysDepartmentInfoMapper.selectOne(depQw);//原负责的部门id
+//            if (depAdmin == null || depAdmin.getId().equals(setSysUserInfoDto.getDepartId())) {
+//                return;
+//            }
+//            depAdmin.setAdminAccount(null);
+//            this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
 //        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
