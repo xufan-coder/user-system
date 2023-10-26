@@ -39,7 +39,10 @@ public class MobileBlacklistQueryVo {
     /** 部门名称 */
     private String departName;
 
-    public String getphoneNumber() {
+    /** 手机号脱敏 */
+    private String phoneNumberPri;
+
+    public String getphoneNumberPri() {
         if(StringUtils.isNotEmpty(phoneNumber)){
             return CommonUtils.mobileEncrypt(phoneNumber);
         }
