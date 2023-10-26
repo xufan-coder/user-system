@@ -1797,7 +1797,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setPhoneNumber(row[1]);
         int index = 5 ;
         staff.setDateJoin(format.parse(row[++index]));
-        staff.setExpireTime(format.parse(row[++index]));
+        if(DataUtil.isNotEmpty(format.parse(row[++index]))) {
+            staff.setExpireTime(format.parse(row[index]));
+        }
         ++index;
         ++index;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
@@ -2074,7 +2076,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
         staff.setDateJoin(format.parse(row[5]));
-        staff.setExpireTime(format.parse(row[6]));
+        if(DataUtil.isNotEmpty(format.parse(row[6]))) {
+            staff.setExpireTime(format.parse(row[6]));
+        }
         int index = 8;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[++index]);
