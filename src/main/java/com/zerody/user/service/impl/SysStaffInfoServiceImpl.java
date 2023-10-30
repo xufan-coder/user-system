@@ -1207,6 +1207,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             }
             List<String> departIds = new ArrayList<>();
             if (DataUtil.isNotEmpty(oldDepart)) {
+                UpdateWrapper<SysDepartmentInfo> departEditUw = new UpdateWrapper<>();
+                departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
+                departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
+                departEditUw.lambda().eq(SysDepartmentInfo::getId, oldDept.getId());
+                this.sysDepartmentInfoService.update(departEditUw);
                 departIds.add(oldDepart);
             }
             if (DataUtil.isNotEmpty(setSysUserInfoDto.getDepartId())) {
@@ -1218,6 +1223,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 departEditUw.lambda().in(SysDepartmentInfo::getId, departIds);
                 this.sysDepartmentInfoService.update(departEditUw);
             }
+            Map<String, Integer> userTypeMap = UserTypeUtil.getUserTypeByStaffIds(staffInfo.getId());
+            log.info("{}-userType:{}", sysUserInfo.getUserName(), userTypeMap.get(staffInfo.getId()));
+            staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
+            this.updateById(staffInfo);
         }
         if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {
@@ -1324,14 +1333,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             sd.setDepartmentId(setSysUserInfoDto.getDepartId());
             sd.setStaffId(staff.getId());
             unionStaffDepartMapper.insert(sd);
-            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
-            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
-            SysDepartmentInfo depAdmin = this.sysDepartmentInfoMapper.selectOne(depQw);//原负责的部门id
-            if (depAdmin == null || depAdmin.getId().equals(setSysUserInfoDto.getDepartId())) {
-                return;
-            }
-            depAdmin.setAdminAccount(null);
-            this.sysDepartmentInfoMapper.updateById(depAdmin);
+//            QueryWrapper<SysDepartmentInfo> depQw = new QueryWrapper<>();
+//            depQw.lambda().eq(SysDepartmentInfo::getAdminAccount, staff.getId());
+//            SysDepartmentInfo depAdmin = this.sysDepartmentInfoMapper.selectOne(depQw);//原负责的部门id
+//            if (depAdmin == null || depAdmin.getId().equals(setSysUserInfoDto.getDepartId())) {
+//                return;
+//            }
+//            depAdmin.setAdminAccount(null);
+//            this.sysDepartmentInfoMapper.updateById(depAdmin);
         }
         //如果手机号码更改了则解除名片关联,并按照新的手机号创建新名片
 //        if (DataUtil.isNotEmpty(oldUserInfo) && (!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber()))) {
