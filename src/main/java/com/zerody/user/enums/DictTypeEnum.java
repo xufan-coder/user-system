@@ -17,7 +17,8 @@ public enum DictTypeEnum {
     LEAVE_TYPE("leaveType"),
     CAUSE_COMPLAINT("causeComplaint"),
     REJECT("reject"),
-    REVOKE("revoke")
+    REVOKE("revoke"),
+    PARTNER_LEAVE_TYPE("partnerLeaveType")
     ;
     @Getter
     private String alias;
