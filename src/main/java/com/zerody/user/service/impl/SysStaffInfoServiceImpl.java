@@ -492,6 +492,38 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.prepareExecutiveRecordService.updateById(record);
                 user.setIsPrepareExecutive(YesNo.YES);
             }
+            String staffId = getStaffIdByUserId(param.getReinstateId());
+            //删除旧部门
+            QueryWrapper<UnionStaffDepart> deleteDepart = new QueryWrapper<>();
+            deleteDepart.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+            this.unionStaffDeparService.remove(deleteDepart);
+            //部门
+            if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
+                UnionStaffDepart sd = new UnionStaffDepart();
+                sd.setDepartmentId(setSysUserInfoDto.getDepartId());
+                sd.setStaffId(staffId);
+                unionStaffDepartMapper.insert(sd);
+            }
+            //删除旧部门
+            QueryWrapper<UnionRoleStaff> deleteRole = new QueryWrapper<>();
+            deleteRole.lambda().eq(UnionRoleStaff::getStaffId, staffId);
+            this.unionRoleStaffService.remove(deleteRole);
+            String roleName=null;
+            if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
+                //角色
+                UnionRoleStaff rs = new UnionRoleStaff();
+                rs.setStaffId(staffId);
+                rs.setRoleId(setSysUserInfoDto.getRoleId());
+                //去查询角色名
+                DataResult<?> result = oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
+                if (!result.isSuccess()) {
+                    throw new DefaultException("服务异常！");
+                }
+                JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
+                rs.setRoleName(obj.get("roleName").toString());
+                roleName=obj.get("roleName").toString();
+                unionRoleStaffMapper.insert(rs);
+            }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
             staffUw.lambda().set(SysStaffInfo::getStatus, YesNo.NO);
@@ -877,7 +909,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
-        userUw.lambda().set(SysUserInfo::getExpireTime, sysUserInfo.getExpireTime());
         userUw.lambda().eq(SysUserInfo::getId, sysUserInfo.getId());
         //处理null修改问题
         this.sysUserInfoService.update(userUw);
@@ -902,6 +933,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff =  this.getOne(staffQW);
+        //处理null修改问题
+        UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
+        staffUw.lambda().set(SysStaffInfo::getExpireTime, sysUserInfo.getExpireTime());
+        staffUw.lambda().eq(SysStaffInfo::getId, staff.getId());
+        //处理null修改问题
+        this.update(staffUw);
         // 对比伙伴信息
         List<UserCompar> staffList = UserCompareUtil.compareTwoClass(staff,setSysUserInfoDto);
 
