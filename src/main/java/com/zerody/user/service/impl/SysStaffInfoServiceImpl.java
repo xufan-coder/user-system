@@ -877,6 +877,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
+        userUw.lambda().set(SysUserInfo::getExpireTime, sysUserInfo.getExpireTime());
         userUw.lambda().eq(SysUserInfo::getId, sysUserInfo.getId());
         //处理null修改问题
         this.sysUserInfoService.update(userUw);
