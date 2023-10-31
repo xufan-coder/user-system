@@ -85,10 +85,10 @@ public class ImportInfoServiceImpl extends ServiceImpl<ImportInfoMapper, ImportI
             case ImportResultInfoType.STAFF_EXTERNAL_VICE:
                 if (DataUtil.isNotEmpty(info.getCompanyId())) {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 4, 5, 6, 14};
+                    requiredNum = new Integer[]{0, 1, 4, 5, 14};
                 } else {
                     header = Arrays.copyOf(SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE, SysStaffInfoServiceImpl.COMPANY_STAFF_EXCEL_TITTLE.length + 1);
-                    requiredNum = new Integer[]{0, 1, 2, 5, 6, 7, 15};
+                    requiredNum = new Integer[]{0, 1, 2, 5, 6, 15};
                 }
                 header[header.length - 1] = "导入失败原因";
                 data = this.getStaffoseRecord(id, info.getCompanyId());

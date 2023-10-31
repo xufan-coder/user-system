@@ -113,8 +113,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, SysStaffInfo> implements SysStaffInfoService {
-    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "签约日期*", "合约结束日期*","推荐人手机号码" ,"状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
-    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "签约日期*","合约结束日期*", "推荐人手机号码", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话", "从事行业", "联系地址"};
+    public static final String[] STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "部门", "岗位", "角色*", "签约日期*", "合约结束日期","推荐人手机号码" ,"状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
+    public static final String[] COMPANY_STAFF_EXCEL_TITTLE = new String[]{"姓名*", "手机号码*", "企业*", "部门", "岗位", "角色*", "签约日期*","合约结束日期", "推荐人手机号码", "状态", "性别", "籍贯", "民族", "婚姻", "出生年月日", "身份证号码*", "户籍地址", "居住地址", "电子邮箱", "学历", "毕业院校", "所学专业", "紧急联系人姓名", "紧急联系人电话", "紧急联系人关系", "家庭成员姓名", "家庭成员关系", "家庭成员电话", "从事行业", "联系地址"};
     private static final String[] PERFORMANCE_REVIEWS_EXPORT_TITLE = {"企业名称", "部门", "角色", "姓名", "业绩收入", "回款笔数", "放款金额", "放款笔数", "签单金额", "签单笔数", "在审批金额", "审批笔数", "月份"};
     @Autowired
     private UnionRoleStaffMapper unionRoleStaffMapper;
@@ -491,6 +491,38 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 BeanUtils.copyProperties(prepareExecutiveRecord,record);
                 this.prepareExecutiveRecordService.updateById(record);
                 user.setIsPrepareExecutive(YesNo.YES);
+            }
+            String staffId = getStaffIdByUserId(param.getReinstateId());
+            //删除旧部门
+            QueryWrapper<UnionStaffDepart> deleteDepart = new QueryWrapper<>();
+            deleteDepart.lambda().eq(UnionStaffDepart::getStaffId, staffId);
+            this.unionStaffDeparService.remove(deleteDepart);
+            //部门
+            if (StringUtils.isNotEmpty(setSysUserInfoDto.getDepartId())) {
+                UnionStaffDepart sd = new UnionStaffDepart();
+                sd.setDepartmentId(setSysUserInfoDto.getDepartId());
+                sd.setStaffId(staffId);
+                unionStaffDepartMapper.insert(sd);
+            }
+            //删除旧部门
+            QueryWrapper<UnionRoleStaff> deleteRole = new QueryWrapper<>();
+            deleteRole.lambda().eq(UnionRoleStaff::getStaffId, staffId);
+            this.unionRoleStaffService.remove(deleteRole);
+            String roleName=null;
+            if (StringUtils.isNotEmpty(setSysUserInfoDto.getRoleId())) {
+                //角色
+                UnionRoleStaff rs = new UnionRoleStaff();
+                rs.setStaffId(staffId);
+                rs.setRoleId(setSysUserInfoDto.getRoleId());
+                //去查询角色名
+                DataResult<?> result = oauthFeignService.getRoleById(setSysUserInfoDto.getRoleId());
+                if (!result.isSuccess()) {
+                    throw new DefaultException("服务异常！");
+                }
+                JSONObject obj = (JSONObject) JSON.toJSON(result.getData());
+                rs.setRoleName(obj.get("roleName").toString());
+                roleName=obj.get("roleName").toString();
+                unionRoleStaffMapper.insert(rs);
             }
             UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
             staffUw.lambda().eq(SysStaffInfo::getUserId, param.getReinstateId());
@@ -901,6 +933,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         QueryWrapper<SysStaffInfo> staffQW = new QueryWrapper<>();
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff =  this.getOne(staffQW);
+        //处理null修改问题
+        UpdateWrapper<SysStaffInfo> staffUpdate = new UpdateWrapper<>();
+        staffUpdate.lambda().set(SysStaffInfo::getExpireTime, sysUserInfo.getExpireTime());
+        staffUpdate.lambda().eq(SysStaffInfo::getId, staff.getId());
+        //处理null修改问题
+        this.update(staffUpdate);
         // 对比伙伴信息
         List<UserCompar> staffList = UserCompareUtil.compareTwoClass(staff,setSysUserInfoDto);
 
@@ -1806,7 +1844,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setPhoneNumber(row[1]);
         int index = 5 ;
         staff.setDateJoin(format.parse(row[++index]));
-        staff.setExpireTime(format.parse(row[++index]));
+        if(DataUtil.isNotEmpty(row[++index])) {
+            staff.setExpireTime(format.parse(row[index]));
+        }
         ++index;
         ++index;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
@@ -1924,7 +1964,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","企业","部门","岗位","角色","签约日期", "合约结束日期", "状态","性别","籍贯","民族","婚姻","出生年月日"【11】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【18】, "家庭成员姓名", "家庭成员关系", "家庭成员电话","从事行业", "联系地址"};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[7]) || DataUtil.isEmpty(row[15])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[2]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[15])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
@@ -2083,7 +2123,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfo.setUserName(row[0]);
         userInfo.setPhoneNumber(row[1]);
         staff.setDateJoin(format.parse(row[5]));
-        staff.setExpireTime(format.parse(row[6]));
+        if(DataUtil.isNotEmpty(row[6])) {
+            staff.setExpireTime(format.parse(row[6]));
+        }
         int index = 8;
         userInfo.setGender(row[++index].equals(StaffGenderEnum.MALE.getDesc()) ? StaffGenderEnum.MALE.getValue() : StaffGenderEnum.FEMALE.getValue());
         userInfo.setAncestral(row[++index]);
@@ -2203,7 +2245,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         //{"姓名","手机号码","部门","岗位","角色", "推荐人手机号码","状态","性别","籍贯","民族","婚姻","出生年月日"【10】,
         // "身份证号码","户籍地址","居住地址","电子邮箱","最高学历","毕业院校","所学专业"【17】};
         //必填项校验
-        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4]) || DataUtil.isEmpty(row[5])|| DataUtil.isEmpty(row[6]) || DataUtil.isEmpty(row[14])) {
+        if (DataUtil.isEmpty(row[0]) || DataUtil.isEmpty(row[1]) || DataUtil.isEmpty(row[4]) || DataUtil.isEmpty(row[5]) || DataUtil.isEmpty(row[14])) {
             errorStr.append("请填写红色区域必填项,");
         }
         //手机号码校验
