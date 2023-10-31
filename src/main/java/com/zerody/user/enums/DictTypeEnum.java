@@ -15,7 +15,9 @@ public enum DictTypeEnum {
     IM_STATE("imState"),
     NO_CALL("noCall"),
     LEAVE_TYPE("leaveType"),
-    CAUSE_COMPLAINT("causeComplaint")
+    CAUSE_COMPLAINT("causeComplaint"),
+    REJECT("reject"),
+    REVOKE("revoke")
     ;
     @Getter
     private String alias;
