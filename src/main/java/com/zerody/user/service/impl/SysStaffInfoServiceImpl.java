@@ -934,11 +934,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staffQW.lambda().eq(SysStaffInfo::getUserId, sysUserInfo.getId());
         SysStaffInfo staff =  this.getOne(staffQW);
         //处理null修改问题
-        UpdateWrapper<SysStaffInfo> staffUw = new UpdateWrapper<>();
-        staffUw.lambda().set(SysStaffInfo::getExpireTime, sysUserInfo.getExpireTime());
-        staffUw.lambda().eq(SysStaffInfo::getId, staff.getId());
+        UpdateWrapper<SysStaffInfo> staffUpdate = new UpdateWrapper<>();
+        staffUpdate.lambda().set(SysStaffInfo::getExpireTime, sysUserInfo.getExpireTime());
+        staffUpdate.lambda().eq(SysStaffInfo::getId, staff.getId());
         //处理null修改问题
-        this.update(staffUw);
+        this.update(staffUpdate);
         // 对比伙伴信息
         List<UserCompar> staffList = UserCompareUtil.compareTwoClass(staff,setSysUserInfoDto);
 
