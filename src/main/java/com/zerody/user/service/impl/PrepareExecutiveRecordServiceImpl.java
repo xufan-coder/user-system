@@ -48,9 +48,14 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
 
             //同步预备高管状态字段到用户表
-            SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
-            sysUserInfo.setIsPrepareExecutive(param.getIsPrepareExecutive());
-            sysUserInfoService.updateById(sysUserInfo);
+//            SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+////            sysUserInfo.setIsPrepareExecutive(param.getIsPrepareExecutive());
+////            sysUserInfoService.updateById(sysUserInfo);
+            UpdateWrapper<SysUserInfo> uw =new UpdateWrapper<>();
+            uw.lambda().eq(BaseModel::getId,param.getUserId());
+            uw.lambda().set(SysUserInfo::getIsPrepareExecutive,param.getIsPrepareExecutive());
+            sysUserInfoService.update(uw);
+
 
             prepareExecutiveRecord.setCompanyId(sysUserInfoVo.getCompanyId());
             prepareExecutiveRecord.setCompanyName(sysUserInfoVo.getCompanyName());
@@ -189,6 +194,10 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
                     uw.lambda().eq(BaseModel::getId,param.getUserId());
                     uw.lambda().set(SysUserInfo::getIsPrepareExecutive,0);
                     sysUserInfoService.update(uw);
+                    UpdateWrapper<PrepareExecutiveRecord> uwr =new UpdateWrapper<>();
+                    uwr.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
+                    uwr.lambda().set(PrepareExecutiveRecord::getIsPrepareExecutive,0);
+                    this.update(uwr);
                 }
             }
         }
