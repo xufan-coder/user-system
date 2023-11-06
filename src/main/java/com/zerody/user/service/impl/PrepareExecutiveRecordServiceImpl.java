@@ -53,7 +53,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
 ////            sysUserInfoService.updateById(sysUserInfo);
             UpdateWrapper<SysUserInfo> uw =new UpdateWrapper<>();
             uw.lambda().eq(BaseModel::getId,param.getUserId());
-            uw.lambda().set(SysUserInfo::getIsPrepareExecutive,0);
+            uw.lambda().set(SysUserInfo::getIsPrepareExecutive,param.getIsPrepareExecutive());
             sysUserInfoService.update(uw);
 
 
