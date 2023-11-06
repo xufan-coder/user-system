@@ -1,11 +1,13 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.PrepareExecutiveRecordDto;
 import com.zerody.user.mapper.PrepareExecutiveRecordMapper;
 import com.zerody.user.service.*;
@@ -183,9 +185,10 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             PrepareExecutiveRecordVo recordVo = this.getPrepareExecutiveRecord(param.getUserId());
             if(DataUtil.isNotEmpty(recordVo)){
                 if (recordVo.getIsPrepareExecutive() == 2){
-                    SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
-                    sysUserInfo.setIsPrepareExecutive(0);
-                    sysUserInfoService.updateById(sysUserInfo);
+                    UpdateWrapper<SysUserInfo> uw =new UpdateWrapper<>();
+                    uw.lambda().eq(BaseModel::getId,param.getUserId());
+                    uw.lambda().set(SysUserInfo::getIsPrepareExecutive,0);
+                    sysUserInfoService.update(uw);
                 }
             }
         }
