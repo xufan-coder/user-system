@@ -227,6 +227,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
         qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
         if(DataUtil.isEmpty(one)){
