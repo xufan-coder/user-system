@@ -40,7 +40,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
     @Override
     public void addPrepareExecutiveRecord(PrepareExecutiveRecordDto param, UserVo userVo) {
 
-        if (param.getIsPrepareExecutive() != 0 && param.getIsPrepareExecutive() != null){
+        if (param.getIsPrepareExecutive() != 0 && DataUtil.isNotEmpty(param.getIsPrepareExecutive())){
 
             PrepareExecutiveRecord prepareExecutiveRecord = new PrepareExecutiveRecord();
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
