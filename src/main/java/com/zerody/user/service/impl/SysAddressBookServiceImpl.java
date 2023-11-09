@@ -65,7 +65,7 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getStaffByCompany(staffByCompanyDto);
-        log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
+        //log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
         if (!staffByCompanyDto.getIsSecondContract().equals(false)) {
             for (StaffInfoByAddressBookVo vo : staffByCompany) {
                 vo.setIsSecondContract(true);

@@ -169,10 +169,16 @@ public class SysStaffInfoController {
     }
 
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 批量生成伙伴账号
+    * @Date: 2023/11/4 15:18
+    */
     @PostMapping("/generate/account")
     public DataResult<Object> generate(@RequestBody SetSysUserInfoDto setSysUserInfoDto) {
         try {
-            for (int i = 0; i <= 100; i++){
+            for (int i = 0; i < 1000; i++){
                 setSysUserInfoDto.setUserName(GenerateAccount.generateName());
                 setSysUserInfoDto.setCertificateCard(GenerateAccount.generateIDCard());
                 setSysUserInfoDto.setPhoneNumber(GenerateAccount.generateMobile(setSysUserInfoDto.getMobile()));

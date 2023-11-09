@@ -246,6 +246,19 @@
             <if test="param.endTime neq null">
                 AND ssi.date_left &lt; #{param.endTime}
             </if>
+
+            <if test="param.addBeginTime neq null">
+                AND ssi.date_join &gt;= #{param.addBeginTime}
+            </if>
+            <if test="param.addEndTime neq null">
+                AND ssi.date_join &gt;= #{param.addEndTime}
+            </if>
+            <if test="param.removeBeginTime neq null">
+                AND ssi.date_left &gt;= #{param.removeBeginTime}
+            </if>
+            <if test="param.removeEndTime neq null">
+                AND ssi.date_left &gt;= #{param.removeEndTime}
+            </if>
         </where>
     </select>
 
