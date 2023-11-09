@@ -28,6 +28,13 @@ public interface SysAddressBookMapper {
     List<SysAddressBookVo> queryAddressBook(@Param("companyIds")List<String> companyIds,@Param("isProData")Integer isProData);
 
     /**
+     * @Author: ljj
+     * @param
+     * @Description: 获取公司下拉(是否显示)
+     * @Date: 2023/11/8
+     */
+    List<SysAddressBookVo> selectAddressBooks(@Param("companyIds")List<String> companyIds,@Param("isProData")Integer isProData);
+    /**
     * @Author: chenKeFeng
     * @param
     * @Description: 获取企业列表

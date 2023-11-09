@@ -26,6 +26,14 @@ public interface SysAddressBookService {
      */
     List<SysAddressBookVo> queryAddressBook(List<String> list,Integer isProData);
 
+    /**
+     * @Author: ljj
+     * @param
+     * @Description: 获取公司下拉(是否显示)
+     * @Date: 2023/11/8
+     */
+    List<SysAddressBookVo> selectAddressBooks(List<String> list,Integer isProData);
+
     /***
      * @description 部门
      * @author zhangpingping
@@ -78,5 +86,4 @@ public interface SysAddressBookService {
     * @Date: 2023/5/3 14:40
     */
     IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param);
-    
 }

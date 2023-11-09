@@ -25,6 +25,30 @@
               sci.id;
   </select>
 
+    <select id="selectAddressBooks" resultType="com.zerody.user.vo.SysAddressBookVo">
+        SELECT
+        COUNT( sui.id )as staffCountId ,
+        sci.company_name,
+        sci.id as compId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
+        LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON sui.id = usd.staff_id
+        LEFT JOIN sys_department_info AS sdi ON usd.department_id = sdi.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        where sci.status=0 AND (sdi.is_show_business=1 AND sdi.is_show_business is not null )
+        <if test="companyIds neq null and companyIds.size() gt 0">
+            AND sci.id
+            <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="isProData neq null">
+            AND sci.is_pro_data=#{isProData}
+        </if>
+        GROUP BY
+        sci.id;
+    </select>
     <!--获取企业列表-->
     <select id="queryCompanyList" resultType="com.zerody.user.vo.SysAddressBookVo">
         SELECT distinct sci.company_name, sci.id as compId FROM sys_company_info AS sci
