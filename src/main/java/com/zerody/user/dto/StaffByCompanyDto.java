@@ -64,4 +64,25 @@ public class StaffByCompanyDto {
     private Date beginTime;
 
     private Date endTime;
+
+    /**
+     * 签约开始时间
+     */
+    private Date addBeginTime;
+
+    /**
+     * 签约介绍时间
+     */
+    private Date addEndTime;
+
+    /**
+     * 解约开始时间
+     */
+    private Date removeBeginTime;
+
+    /**
+     * 解约开始时间
+     */
+    private Date removeEndTime;
+
 }

@@ -36,6 +36,11 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
         List<SysAddressBookVo> sysMailListVos = this.sysMailListMapper.queryAddressBook(list,isProData);
         return sysMailListVos;
     }
+    @Override
+    public List<SysAddressBookVo> selectAddressBooks(List<String> list,Integer isProData) {
+        List<SysAddressBookVo> sysMailListVo = this.sysMailListMapper.selectAddressBooks(list,isProData);
+        return sysMailListVo;
+    }
 
     @Override
     public List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto) {
@@ -60,7 +65,7 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getStaffByCompany(staffByCompanyDto);
-        log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
+        //log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
         if (!staffByCompanyDto.getIsSecondContract().equals(false)) {
             for (StaffInfoByAddressBookVo vo : staffByCompany) {
                 vo.setIsSecondContract(true);
