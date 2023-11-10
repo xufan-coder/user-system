@@ -25,7 +25,8 @@
 		urs.role_name     AS roleName,
 		sci.company_name  AS companyName,
 		sci.id 			  as companyId,
-		ssi.avatar
+		ssi.avatar,
+		ssi.user_type
 		FROM company_admin AS ca
 		JOIN sys_staff_info AS ssi  ON ssi.id =ca.staff_id
 		JOIN sys_user_info sui ON ssi.user_id = sui.id and ssi.`status` in (0, 3)
