@@ -350,6 +350,7 @@ public class SysAddressBookController {
             if (DataUtil.isEmpty(staffByCompanyDto.getIsSecondContract())) {
                 staffByCompanyDto.setIsSecondContract(false);
             }
+            log.info("部门id {}", staffByCompanyDto.getDepartmentId());
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());
