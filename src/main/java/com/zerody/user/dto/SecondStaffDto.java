@@ -69,21 +69,21 @@ public class SecondStaffDto extends UserPositionPageParam {
     /**
      * 签约开始时间
      */
-    private Date addBeginTime;
+    private String addBeginTime;
 
     /**
      * 签约结束时间
      */
-    private Date addEndTime;
+    private String addEndTime;
 
     /**
      * 解约开始时间
      */
-    private Date removeBeginTime;
+    private String removeBeginTime;
 
     /**
      * 解约开始时间
      */
-    private Date removeEndTime;
+    private String removeEndTime;
 
 }
