@@ -330,13 +330,6 @@ public class SysAddressBookController {
      */
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
-        String addBeginTime = DateUtil.getDateTimeH24(staffByCompanyDto.getAddBeginTime());
-        String addEndTime = DateUtil.getDateTimeH24(staffByCompanyDto.getAddBeginTime());
-        log.info("签约开始时间 {}，签约结束时间 {}",addBeginTime, addEndTime);
-        String removeBeginTime = DateUtil.getDateTimeH24(staffByCompanyDto.getRemoveBeginTime());
-        String removeEndTime = DateUtil.getDateTimeH24(staffByCompanyDto.getRemoveEndTime());
-        log.info("解约开始时间 {}，解约结束时间 {}",removeBeginTime, removeEndTime);
-        log.info("按企业获取员工 {}", JSON.toJSONString(staffByCompanyDto));
         try {
             if (UserUtils.getUser().isBack()){
                 staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
@@ -357,7 +350,6 @@ public class SysAddressBookController {
             if (DataUtil.isEmpty(staffByCompanyDto.getIsSecondContract())) {
                 staffByCompanyDto.setIsSecondContract(false);
             }
-            log.info("部门id {}", staffByCompanyDto.getDepartmentId());
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());

@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.DepartureDetailsVo;
@@ -78,6 +79,9 @@ public interface SysAddressBookService {
      * @return
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto);
+
+    List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto);
+
 
     /**
     * @Author: chenKeFeng

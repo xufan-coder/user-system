@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
@@ -76,6 +77,8 @@ public interface SysAddressBookMapper {
      * @return
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
+
+    List<StaffInfoByAddressBookVo> getUserArchives(@Param("param") SecondStaffDto staffByCompanyDto);
 
     /**
      * @Author: chenKeFeng
