@@ -80,6 +80,42 @@ public class SysAddressBookController {
         }
     }
 
+    /***
+     * 只用作boss下拉列表
+     * @description 获取公司（是否显示）
+     * @author ljj
+     * @date 2023/11/8
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/address-book/is-show")
+    public DataResult<List<SysAddressBookVo>> selectAddressBooks() {
+        List<String> companyIds=null;
+        Integer isProData=null;
+        SysCompanyInfo byId=null;
+        try {
+            if (UserUtils.getUser().isBack()){
+                companyIds =this.checkUtil.setBackCompany(UserUtils.getUserId());
+            }else if (UserUtils.getUser().isCEO()){
+                companyIds = this.checkUtil.setCeoCompany(UserUtils.getUserId());
+            }else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                if(DataUtil.isEmpty(companyId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                byId = sysCompanyInfoService.getById(companyId);
+                if(DataUtil.isEmpty(byId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                isProData=byId.getIsProData();
+            }
+            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.selectAddressBooks(companyIds,isProData);
+            return R.success(sysAddressBookVos);
+        } catch (Exception e) {
+            log.error("获取公司错误:{}", e);
+            return R.error("获取公司失败,请求异常");
+        }
+    }
 
     /**************************************************************************************************
      **
