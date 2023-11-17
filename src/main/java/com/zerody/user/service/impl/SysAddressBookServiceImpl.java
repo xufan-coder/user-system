@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.DictService;
@@ -66,6 +67,17 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getStaffByCompany(staffByCompanyDto);
         if (!staffByCompanyDto.getIsSecondContract().equals(false)) {
+            for (StaffInfoByAddressBookVo vo : staffByCompany) {
+                vo.setIsSecondContract(true);
+            }
+        }
+        return staffByCompany;
+    }
+
+    @Override
+    public List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto) {
+        List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getUserArchives(dto);
+        if (!dto.getIsSecondContract().equals(false)) {
             for (StaffInfoByAddressBookVo vo : staffByCompany) {
                 vo.setIsSecondContract(true);
             }
