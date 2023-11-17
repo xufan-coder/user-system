@@ -328,6 +328,7 @@ public class SysAddressBookController {
      */
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
+        log.info("按企业获取员工 {}", JSON.toJSONString(staffByCompanyDto));
         try {
             if (UserUtils.getUser().isBack()){
                 staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));

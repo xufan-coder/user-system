@@ -71,7 +71,7 @@ public class StaffByCompanyDto {
     private Date addBeginTime;
 
     /**
-     * 签约介绍时间
+     * 签约结束时间
      */
     private Date addEndTime;
 
