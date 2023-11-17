@@ -60,7 +60,7 @@ public class SecondStaffDto extends UserPositionPageParam {
     /**
      * 是否二次签约
      */
-    private Boolean isSecondContract;
+    private Boolean isSecondContract =false;
 
     private Date beginTime;
 
