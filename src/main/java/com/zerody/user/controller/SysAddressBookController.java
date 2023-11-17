@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.DateUtil;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -328,6 +330,12 @@ public class SysAddressBookController {
      */
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
+        String addBeginTime = DateUtil.getDateTimeH24(staffByCompanyDto.getAddBeginTime());
+        String addEndTime = DateUtil.getDateTimeH24(staffByCompanyDto.getAddBeginTime());
+        log.info("签约开始时间 {}，签约结束时间 {}",addBeginTime, addEndTime);
+        String removeBeginTime = DateUtil.getDateTimeH24(staffByCompanyDto.getRemoveBeginTime());
+        String removeEndTime = DateUtil.getDateTimeH24(staffByCompanyDto.getRemoveEndTime());
+        log.info("解约开始时间 {}，解约结束时间 {}",removeBeginTime, removeEndTime);
         log.info("按企业获取员工 {}", JSON.toJSONString(staffByCompanyDto));
         try {
             if (UserUtils.getUser().isBack()){
