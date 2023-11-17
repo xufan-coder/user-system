@@ -77,7 +77,7 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Override
     public List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto) {
         List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getUserArchives(dto);
-        if (!dto.getIsSecondContract().equals(false)) {
+        if (DataUtil.isNotEmpty(dto.getIsSecondContract()) && !dto.getIsSecondContract().equals(false)) {
             for (StaffInfoByAddressBookVo vo : staffByCompany) {
                 vo.setIsSecondContract(true);
             }

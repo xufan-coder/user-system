@@ -20,7 +20,7 @@ public class SecondStaffDto extends UserPositionPageParam {
     /**
      * 部门ID
      */
-    private String departmentId;
+    //private String departmentId;
     /**
      * 是否部门（0 是部门 1团队）
      */
