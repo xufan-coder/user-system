@@ -40,6 +40,9 @@ public class AnalyzeController {
     @Autowired
     private SysAddressBookService sysAddressBookService;
 
+    @Autowired
+    private CheckUtil checkUtil;
+
 
     /**
     * @Author: chenKeFeng
@@ -61,7 +64,7 @@ public class AnalyzeController {
         log.info("解约开始时间 {}，解约结束时间 {}", removeBeginTime, removeEndTime);
         log.info("查询伙伴档案二级页面入参 {}", JSON.toJSONString(dto));
         try {
-            //this.checkUtil.SetUserPositionInfo(dto);
+            this.checkUtil.SetUserPositionInfo(dto);
             log.info("查询伙伴档案二级页面赋值入参 {}", JSON.toJSONString(dto));
             return R.success(sysAddressBookService.getUserArchives(dto));
         } catch (DefaultException e) {
