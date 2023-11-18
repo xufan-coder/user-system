@@ -80,6 +80,12 @@ public interface SysAddressBookService {
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto);
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴档案二级页面
+    * @Date: 2023/11/18 10:33
+    */
     List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto);
 
 

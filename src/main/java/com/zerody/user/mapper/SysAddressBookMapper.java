@@ -78,6 +78,12 @@ public interface SysAddressBookMapper {
      */
     List<StaffInfoByAddressBookVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
 
+    /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴档案二级页面
+    * @Date: 2023/11/18 10:22
+    */
     List<StaffInfoByAddressBookVo> getUserArchives(@Param("param") SecondStaffDto staffByCompanyDto);
 
     /**

@@ -3,9 +3,11 @@ package com.zerody.user.util;
 import com.alibaba.nacos.api.utils.StringUtils;
 import com.zerody.common.constant.TimeDimensionality;
 import com.zerody.common.util.DateUtil;
+import com.zerody.common.utils.DataUtil;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -72,6 +74,27 @@ public class DateUtils {
         // TODO: 2021/4/23 所有都没有的 返回当天
       return  Date.from(now.atStartOfDay().toInstant(ZoneOffset.of("+8")));
     }
+
+    /**
+     * 为单数月份前面补0
+     * 例：2022-3-01 转 2022-03-01
+     * @param dateString
+     * @return
+     */
+    public static String convertTime(String dateString){
+        if (DataUtil.isNotEmpty(dateString)) {
+            // 使用 DateTimeFormatter 解析字符串为 LocalDate 对象，并格式化输出
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-M-dd");
+            LocalDate localDate = LocalDate.parse(dateString, inputFormatter);
+
+            // 使用另一个格式化器来输出日期字符串，确保月份显示为两位数
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return localDate.format(outputFormatter);
+        } else {
+            return null;
+        }
+    }
+
 
     public static void main(String[] args) {
         Date monthStart = Date

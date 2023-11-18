@@ -66,7 +66,7 @@ public class UserSyncCardTask {
            entity.setId(info.getId());
             updateList.add(entity);
         }
-        log.info("初始化身份证生日");
+        //log.info("初始化身份证生日");
         if(updateList.size() > 0) {
             this.userService.updateBatchById(updateList);
         }
