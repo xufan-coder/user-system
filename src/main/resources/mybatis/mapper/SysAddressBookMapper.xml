@@ -106,7 +106,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
-        AND sdi.is_show_business = 1
+        <!--AND sdi.is_show_business = 1-->
         <if test="param.compId neq null and param.compId neq ''">
             AND sci.id=#{param.compId}
         </if>
