@@ -17,7 +17,7 @@ public class PrepareExecutiveRecordDto {
     private String userId;
 
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
-    private Integer isPrepareExecutive;
+    private int isPrepareExecutive;
 
     /** 入学日期 */
     @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
