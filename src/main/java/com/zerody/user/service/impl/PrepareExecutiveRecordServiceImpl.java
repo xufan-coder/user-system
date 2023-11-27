@@ -1,11 +1,13 @@
 package com.zerody.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.PrepareExecutiveRecordDto;
 import com.zerody.user.mapper.PrepareExecutiveRecordMapper;
 import com.zerody.user.service.*;
@@ -40,15 +42,20 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
     @Override
     public void addPrepareExecutiveRecord(PrepareExecutiveRecordDto param, UserVo userVo) {
 
-        if (param.getIsPrepareExecutive() != 0 && param.getIsPrepareExecutive() != null){
+        if (param.getIsPrepareExecutive() != 0 && DataUtil.isNotEmpty(param.getIsPrepareExecutive())){
 
             PrepareExecutiveRecord prepareExecutiveRecord = new PrepareExecutiveRecord();
             SysUserInfoVo sysUserInfoVo = sysStaffInfoService.selectStaffByUserId(param.getUserId(), userVo, true);
 
             //同步预备高管状态字段到用户表
-            SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
-            sysUserInfo.setIsPrepareExecutive(param.getIsPrepareExecutive());
-            sysUserInfoService.updateById(sysUserInfo);
+//            SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
+////            sysUserInfo.setIsPrepareExecutive(param.getIsPrepareExecutive());
+////            sysUserInfoService.updateById(sysUserInfo);
+            UpdateWrapper<SysUserInfo> uw =new UpdateWrapper<>();
+            uw.lambda().eq(BaseModel::getId,param.getUserId());
+            uw.lambda().set(SysUserInfo::getIsPrepareExecutive,param.getIsPrepareExecutive());
+            sysUserInfoService.update(uw);
+
 
             prepareExecutiveRecord.setCompanyId(sysUserInfoVo.getCompanyId());
             prepareExecutiveRecord.setCompanyName(sysUserInfoVo.getCompanyName());
@@ -183,9 +190,14 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
             PrepareExecutiveRecordVo recordVo = this.getPrepareExecutiveRecord(param.getUserId());
             if(DataUtil.isNotEmpty(recordVo)){
                 if (recordVo.getIsPrepareExecutive() == 2){
-                    SysUserInfo sysUserInfo = sysUserInfoService.getUserById(param.getUserId());
-                    sysUserInfo.setIsPrepareExecutive(0);
-                    sysUserInfoService.updateById(sysUserInfo);
+                    UpdateWrapper<SysUserInfo> uw =new UpdateWrapper<>();
+                    uw.lambda().eq(BaseModel::getId,param.getUserId());
+                    uw.lambda().set(SysUserInfo::getIsPrepareExecutive,0);
+                    sysUserInfoService.update(uw);
+                    UpdateWrapper<PrepareExecutiveRecord> uwr =new UpdateWrapper<>();
+                    uwr.lambda().eq(PrepareExecutiveRecord::getUserId,param.getUserId());
+                    uwr.lambda().set(PrepareExecutiveRecord::getIsPrepareExecutive,0);
+                    this.update(uwr);
                 }
             }
         }
@@ -215,6 +227,7 @@ public class PrepareExecutiveRecordServiceImpl extends ServiceImpl<PrepareExecut
         QueryWrapper<PrepareExecutiveRecord> qw = new QueryWrapper<>();
         qw.lambda().eq(PrepareExecutiveRecord::getUserId,userId);
         qw.lambda().orderByDesc(PrepareExecutiveRecord::getEnterDate);
+        qw.lambda().orderByDesc(PrepareExecutiveRecord::getCreateTime);
         qw.lambda().last("limit 0,1");
         PrepareExecutiveRecord one = this.getOne(qw);
         if(DataUtil.isEmpty(one)){
