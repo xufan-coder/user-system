@@ -56,13 +56,13 @@ public class AnalyzeController {
         String addEndTime = DateUtils.convertTime(dto.getAddEndTime());
         dto.setAddBeginTime(addBeginTime);
         dto.setAddEndTime(addEndTime);
-        log.info("签约开始时间 {}，签约结束时间 {}", addBeginTime, addEndTime);
+        //log.info("签约开始时间 {}，签约结束时间 {}", addBeginTime, addEndTime);
         String removeBeginTime = DateUtils.convertTime(dto.getRemoveBeginTime());
         String removeEndTime = DateUtils.convertTime(dto.getRemoveEndTime());
         dto.setRemoveBeginTime(removeBeginTime);
         dto.setRemoveEndTime(removeEndTime);
-        log.info("解约开始时间 {}，解约结束时间 {}", removeBeginTime, removeEndTime);
-        log.info("查询伙伴档案二级页面入参 {}", JSON.toJSONString(dto));
+        /*log.info("解约开始时间 {}，解约结束时间 {}", removeBeginTime, removeEndTime);
+        log.info("查询伙伴档案二级页面入参 {}", JSON.toJSONString(dto));*/
         try {
             this.checkUtil.SetUserPositionInfo(dto);
             log.info("查询伙伴档案二级页面赋值入参 {}", JSON.toJSONString(dto));
@@ -74,22 +74,6 @@ public class AnalyzeController {
             log.error("查询伙伴档案二级页面错误:{}", e, e);
             return R.error("查询伙伴档案二级页面,请求异常");
         }
-    }
-
-
-    public static void main(String[] args) {
-        // 输入的日期字符串
-        String dateString = "2022-3-01";
-
-        // 使用 DateTimeFormatter 解析字符串为 LocalDate 对象，并格式化输出
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-M-dd");
-        LocalDate localDate = LocalDate.parse(dateString, inputFormatter);
-
-        // 使用另一个格式化器来输出日期字符串，确保月份显示为两位数
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = localDate.format(outputFormatter);
-
-        System.out.println("格式化后的日期字符串: " + formattedDate);
     }
 
 }
