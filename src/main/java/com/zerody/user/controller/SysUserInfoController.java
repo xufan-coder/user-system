@@ -803,6 +803,22 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
         }
     }
 
+    @RequestMapping(value = "/get/user/job", method = RequestMethod.GET)
+    @Override
+    public DataResult<List<com.zerody.user.api.vo.SysUserInfoVo>> getUserByDepartOrRoleJob(@RequestParam(value = "departId", required = false)String departId,
+                                                                                        @RequestParam(value = "roleId", required = false) String roleId,
+                                                                                        @RequestParam(value = "companyId", required = false) String companyId){
+        try {
+
+            return R.success(sysStaffInfoService.getUserByDepartOrRole(departId, roleId, companyId));
+        } catch (DefaultException e){
+            log.error("根据公司id获取在职的下级错误:{}",e,e);
+            return R.error(e.getMessage());
+        }  catch (Exception e) {
+            log.error("根据公司id获取在职的下级错误:{}",e,e);
+            return R.error("根据公司id获取在职的下级错误,请求异常");
+        }
+    }
 
     /**
      *

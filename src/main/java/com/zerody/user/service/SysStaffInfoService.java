@@ -138,6 +138,8 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRole(String departId, String roleId, String companyId);
 
+    List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRoleJob(String departId, String roleId, String companyId);
+
     List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId);
 
     IPage<UserPerformanceReviewsVo> getPagePerformanceReviews(UserPerformanceReviewsPageDto param) throws ParseException;
