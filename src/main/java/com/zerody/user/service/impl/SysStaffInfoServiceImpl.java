@@ -906,6 +906,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.staffBlacklistService.updateById(blacklist);
             }
         }
+        //修改了用户手机号码,清除该用户token
+        if(!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
+            removeToken = !removeToken;
+        }
+
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
