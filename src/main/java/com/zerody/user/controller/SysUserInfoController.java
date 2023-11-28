@@ -810,7 +810,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
                                                                                         @RequestParam(value = "companyId", required = false) String companyId){
         try {
 
-            return R.success(sysStaffInfoService.getUserByDepartOrRole(departId, roleId, companyId));
+            return R.success(sysStaffInfoService.getUserByDepartOrRoleJob(departId, roleId, companyId));
         } catch (DefaultException e){
             log.error("根据公司id获取在职的下级错误:{}",e,e);
             return R.error(e.getMessage());
