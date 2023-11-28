@@ -96,7 +96,7 @@ public interface SysAddressBookMapper {
 
     /**
     *
-    *  @description    部门(有是否显示两种)
+    *  @description    部门
     *  @author        YeChangWei
     *  @date          2023/9/1 16:08
     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
@@ -104,7 +104,7 @@ public interface SysAddressBookMapper {
     List<DepartInfoVo> queryDepartInfoAll(@Param("param")DepartInfoDto departInfoDto);
     /**
     *
-    *  @description    团队(有是否显示两种)
+    *  @description    团队
     *  @author        YeChangWei
     *  @date          2023/9/1 16:08
     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>

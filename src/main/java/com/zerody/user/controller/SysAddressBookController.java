@@ -162,7 +162,7 @@ public class SysAddressBookController {
 
 
     /***
-     * @description 部门(只展示显示)
+     * @description 部门
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
@@ -188,14 +188,14 @@ public class SysAddressBookController {
     }
 
     /***
-     * @description 部门(有是否显示两种)
+     * @description 部门(只展示显示)
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
      * @return
      */
-    @GetMapping(value = "/depart-info/all")
-    public DataResult<List<DepartInfoVo>> queryDepartInfoAll(String id) {
+    @GetMapping(value = "/depart-info/show")
+    public DataResult<List<DepartInfoVo>> queryDepartInfoShow(String id) {
         try {
             if (StringUtils.isEmpty(id)) {
                 id = UserUtils.getUser().getCompanyId();
@@ -241,13 +241,13 @@ public class SysAddressBookController {
         }
     }
     /***
-     * @description 团队(有是否显示两种)
+     * @description 团队(只展示显示)
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
      * @return
      */
-    @GetMapping(value = "/team/all")
+    @GetMapping(value = "/team/show")
     public DataResult<List<DepartInfoVo>> queryTeamAll(String id, String departmentId) {
         try {
             if (StringUtils.isEmpty(id)) {

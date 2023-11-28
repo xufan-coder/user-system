@@ -300,7 +300,7 @@
         </where>
     </select>
 
-<!-- 部门(有是否显示两种)   -->
+
     <select id="queryDepartInfoAll" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -319,6 +319,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
+        AND sdi.is_show_business = 1
         <if test="param.compId neq null and param.compId neq ''">
             AND sci.id=#{param.compId}
         </if>
@@ -339,7 +340,7 @@
         sdi.id;
     </select>
 
-<!-- 团队(有是否显示两种)   -->
+
     <select id="queryTeamAll" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -358,6 +359,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        AND sdi.is_show_business = 1
         <if test="param.departmentId neq null and param.departmentId neq ''">
             AND sdi.parent_id=#{param.departmentId}
         </if>
