@@ -64,13 +64,23 @@ public class UserSyncCardTask {
             }
            entity.setBirthdayTime(Date.from(LocalDate.of(date.getYear(), date.getMonth(), date.getDay()).atStartOfDay().toInstant(ZoneOffset.of("+8"))));
            entity.setId(info.getId());
-            updateList.add(entity);
+           updateList.add(entity);
         }
-        log.info("初始化身份证生日");
+        //log.info("初始化身份证生日");
         if(updateList.size() > 0) {
             this.userService.updateBatchById(updateList);
         }
         return ReturnT.SUCCESS;
+    }
+
+    public static void main(String[] args) {
+        SysUserInfo entity = new SysUserInfo();
+        entity.setIdCardSex(IdCardUtil.getSex("440300198202277150"));
+        IdCardDate date = DateUtil.getIdCardDate("440300198202277150");
+        System.out.println(date.getYear());
+        System.out.println(date.getMonth());
+        System.out.println(date.getDay());
+
     }
 
 }

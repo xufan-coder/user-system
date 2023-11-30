@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.mapper.SysAddressBookMapper;
 import com.zerody.user.service.DictService;
@@ -36,6 +37,11 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
         List<SysAddressBookVo> sysMailListVos = this.sysMailListMapper.queryAddressBook(list,isProData);
         return sysMailListVos;
     }
+    @Override
+    public List<SysAddressBookVo> selectAddressBooks(List<String> list,Integer isProData) {
+        List<SysAddressBookVo> sysMailListVo = this.sysMailListMapper.selectAddressBooks(list,isProData);
+        return sysMailListVo;
+    }
 
     @Override
     public List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto) {
@@ -60,7 +66,6 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     @Override
     public List<StaffInfoByAddressBookVo> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getStaffByCompany(staffByCompanyDto);
-        log.info("二次签约 {}", staffByCompanyDto.getIsSecondContract());
         if (!staffByCompanyDto.getIsSecondContract().equals(false)) {
             for (StaffInfoByAddressBookVo vo : staffByCompany) {
                 vo.setIsSecondContract(true);
@@ -70,10 +75,18 @@ public class SysAddressBookServiceImpl implements SysAddressBookService {
     }
 
     @Override
+    public List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto) {
+        List<StaffInfoByAddressBookVo> staffByCompany = sysMailListMapper.getUserArchives(dto);
+        if (DataUtil.isNotEmpty(dto.getIsSecondContract()) && !dto.getIsSecondContract().equals(false)) {
+            for (StaffInfoByAddressBookVo vo : staffByCompany) {
+                vo.setIsSecondContract(true);
+            }
+        }
+        return staffByCompany;
+    }
+
+    @Override
     public IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param) {
-        /*log.info("离职列表企业id {}", param.getCompanyId());
-        log.info("离职列表企业id集合 {}", param.getCompanyIds());
-        log.info("离职列表部门id集合 {}", param.getDepartmentId());*/
         Page<DepartureDetailsVo> page = new Page<>(param.getCurrent(), param.getPageSize());
         IPage<DepartureDetailsVo> departureUserList = this.sysMailListMapper.getDepartureUserList(param, page);
         List<DepartureDetailsVo> records = departureUserList.getRecords();

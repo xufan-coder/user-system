@@ -3,6 +3,7 @@ package com.zerody.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.vo.DepartInfoVo;
 import com.zerody.user.vo.DepartureDetailsVo;
@@ -26,6 +27,14 @@ public interface SysAddressBookService {
      */
     List<SysAddressBookVo> queryAddressBook(List<String> list,Integer isProData);
 
+    /**
+     * @Author: ljj
+     * @param
+     * @Description: 获取公司下拉(是否显示)
+     * @Date: 2023/11/8
+     */
+    List<SysAddressBookVo> selectAddressBooks(List<String> list,Integer isProData);
+
     /***
      * @description 部门
      * @author zhangpingping
@@ -36,7 +45,7 @@ public interface SysAddressBookService {
     List<DepartInfoVo> queryDepartInfo(DepartInfoDto departInfoDto);
     /**
      *
-     *  @description   部门(有是否显示两种)
+     *  @description
      *  @author        YeChangWei
      *  @date          2023/9/1 16:02
      *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
@@ -55,7 +64,7 @@ public interface SysAddressBookService {
 
     /**
      *
-     *  @description   团队(有是否显示两种)
+     *  @description
      *  @author        YeChangWei
      *  @date          2023/9/1 16:05
      *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
@@ -74,9 +83,17 @@ public interface SysAddressBookService {
     /**
     * @Author: chenKeFeng
     * @param  
+    * @Description: 查询伙伴档案二级页面
+    * @Date: 2023/11/18 10:33
+    */
+    List<StaffInfoByAddressBookVo> getUserArchives(SecondStaffDto dto);
+
+
+    /**
+    * @Author: chenKeFeng
+    * @param  
     * @Description: 获取离职伙伴列表明细
     * @Date: 2023/5/3 14:40
     */
     IPage<DepartureDetailsVo> getDepartureUserList(DepartureDetailsDto param);
-    
 }
