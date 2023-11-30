@@ -5,6 +5,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.DateUtil;
 import com.zerody.common.util.UserUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.domain.SysCompanyInfo;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +82,42 @@ public class SysAddressBookController {
         }
     }
 
+    /***
+     * 只用作boss下拉列表
+     * @description 获取公司（是否显示）
+     * @author ljj
+     * @date 2023/11/8
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/address-book/is-show")
+    public DataResult<List<SysAddressBookVo>> selectAddressBooks() {
+        List<String> companyIds=null;
+        Integer isProData=null;
+        SysCompanyInfo byId=null;
+        try {
+            if (UserUtils.getUser().isBack()){
+                companyIds =this.checkUtil.setBackCompany(UserUtils.getUserId());
+            }else if (UserUtils.getUser().isCEO()){
+                companyIds = this.checkUtil.setCeoCompany(UserUtils.getUserId());
+            }else {
+                String companyId = UserUtils.getUser().getCompanyId();
+                if(DataUtil.isEmpty(companyId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                byId = sysCompanyInfoService.getById(companyId);
+                if(DataUtil.isEmpty(byId)){
+                    return R.error("获取公司失败,请求企业错误！");
+                }
+                isProData=byId.getIsProData();
+            }
+            List<SysAddressBookVo> sysAddressBookVos = this.sysAddressBookService.selectAddressBooks(companyIds,isProData);
+            return R.success(sysAddressBookVos);
+        } catch (Exception e) {
+            log.error("获取公司错误:{}", e);
+            return R.error("获取公司失败,请求异常");
+        }
+    }
 
     /**************************************************************************************************
      **
@@ -124,7 +162,7 @@ public class SysAddressBookController {
 
 
     /***
-     * @description 部门(只展示显示)
+     * @description 部门
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
@@ -150,14 +188,14 @@ public class SysAddressBookController {
     }
 
     /***
-     * @description 部门(有是否显示两种)
+     * @description 部门(只展示显示)
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
      * @return
      */
-    @GetMapping(value = "/depart-info/all")
-    public DataResult<List<DepartInfoVo>> queryDepartInfoAll(String id) {
+    @GetMapping(value = "/depart-info/show")
+    public DataResult<List<DepartInfoVo>> queryDepartInfoShow(String id) {
         try {
             if (StringUtils.isEmpty(id)) {
                 id = UserUtils.getUser().getCompanyId();
@@ -177,7 +215,7 @@ public class SysAddressBookController {
 
 
     /***
-     * @description 团队(只展示显示)
+     * @description 团队
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
@@ -203,13 +241,13 @@ public class SysAddressBookController {
         }
     }
     /***
-     * @description 团队(有是否显示两种)
+     * @description 团队(只展示显示)
      * @author zhangpingping
      * @date 2021/9/25
      * @param [id]
      * @return
      */
-    @GetMapping(value = "/team/all")
+    @GetMapping(value = "/team/show")
     public DataResult<List<DepartInfoVo>> queryTeamAll(String id, String departmentId) {
         try {
             if (StringUtils.isEmpty(id)) {
@@ -312,6 +350,7 @@ public class SysAddressBookController {
             if (DataUtil.isEmpty(staffByCompanyDto.getIsSecondContract())) {
                 staffByCompanyDto.setIsSecondContract(false);
             }
+            log.info("部门id {}", staffByCompanyDto.getDepartmentId());
             return R.success(sysAddressBookService.getStaffByCompany(staffByCompanyDto));
         } catch (DefaultException e) {
             log.error("获取员工错误:{}", JSON.toJSONString(staffByCompanyDto), e.getMessage());

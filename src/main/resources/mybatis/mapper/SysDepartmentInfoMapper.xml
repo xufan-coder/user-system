@@ -364,7 +364,8 @@
             sjp.position_name AS positionName,
             urs.role_name     AS roleName,
             sci.company_name  AS companyName,
-            ssi.avatar
+            ssi.avatar,
+            ssi.user_type
         from sys_department_info sdi
 		join sys_department_info sdi1 on sdi.id like concat(sdi1.id, '%')
         join sys_staff_info ssi on ssi.id = sdi1.admin_account
@@ -497,7 +498,7 @@
         sys_department_info AS sdi
         LEFT JOIN sys_staff_info AS ssi ON ssi.id = sdi.admin_account
         <where>
-            sdi.id = #{id}
+            sdi.id = #{id} AND sdi.is_show_business = 1
         </where>
     </select>
 

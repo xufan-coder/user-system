@@ -906,6 +906,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 this.staffBlacklistService.updateById(blacklist);
             }
         }
+        //修改了用户手机号码,清除该用户token
+        if(!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
+            this.checkUtil.removeUserToken(sysUserInfo.getId());
+            removeToken = !removeToken;
+        }
+
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
@@ -2922,6 +2928,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         return this.sysStaffInfoMapper.getUserByDepartOrRole(departId, roleId, companyId);
     }
+
+    public List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRoleJob(String departId, String roleId, String companyId) {
+
+        return this.sysStaffInfoMapper.getUserByDepartOrRoleJob(departId, roleId, companyId);
+    }
+
 
     @Override
     public List<com.zerody.user.api.vo.SysUserInfoVo> getSuperiorUesrByUserAndRole(String userId, String roleId) {

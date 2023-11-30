@@ -231,6 +231,10 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
                                                                  @Param("companyId") String companyId);
 
+    List<com.zerody.user.api.vo.SysUserInfoVo> getUserByDepartOrRoleJob(@Param("departId") String departId,
+                                                                        @Param("roleId") String roleId,
+                                                                        @Param("companyId") String companyId);
+
     /**
      *
      * 通过员工id查询用户

@@ -1,17 +1,18 @@
 package com.zerody.user.dto;
 
-import com.zerody.user.domain.SysCompanyInfo;
+import com.zerody.user.dto.bean.UserPositionPageParam;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * @author zhangpingping
- * @date 2021年09月25日 10:48
+ * @author : chenKeFeng
+ * @date : 2023/11/17 16:28
  */
 @Data
-public class StaffByCompanyDto {
+public class SecondStaffDto extends UserPositionPageParam {
+
     /**
      * 企业ID
      */
@@ -19,19 +20,19 @@ public class StaffByCompanyDto {
     /**
      * 部门ID
      */
-    private String departmentId;
+    //private String departmentId;
     /**
      * 是否部门（0 是部门 1团队）
      */
     private Integer isDepartment;
 
     /**
-    *    关联企业隔离数据
-    */
+     *    关联企业隔离数据
+     */
     private List<String> companyIds;
     /**
-    *   标记企业
-    */
+     *   标记企业
+     */
     private Integer isProData;
     /**
      * 员工类型(企业管理员:0、 伙伴:1、 团队长:2、 副总:3)
@@ -59,7 +60,7 @@ public class StaffByCompanyDto {
     /**
      * 是否二次签约
      */
-    private Boolean isSecondContract;
+    private Boolean isSecondContract =false;
 
     private Date beginTime;
 
@@ -68,21 +69,21 @@ public class StaffByCompanyDto {
     /**
      * 签约开始时间
      */
-    private Date addBeginTime;
+    private String addBeginTime;
 
     /**
      * 签约结束时间
      */
-    private Date addEndTime;
+    private String addEndTime;
 
     /**
      * 解约开始时间
      */
-    private Date removeBeginTime;
+    private String removeBeginTime;
 
     /**
      * 解约开始时间
      */
-    private Date removeEndTime;
+    private String removeEndTime;
 
 }

@@ -1,6 +1,7 @@
 package com.zerody.user.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
@@ -275,6 +276,7 @@ public class StaffBlacklistControlller {
       */
     @GetMapping("/app/page")
     public DataResult<IPage<FrameworkBlacListQueryPageVo>> getAppPage(FrameworkBlacListQueryPageDto param){
+        log.info("查询黑名单入参 {}", JSONObject.toJSON(param));
         try {
             UserVo user = UserUtils.getUser();
             if (!user.isCEO()) {

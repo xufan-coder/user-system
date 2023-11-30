@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.user.dto.DepartInfoDto;
 import com.zerody.user.dto.DepartureDetailsDto;
+import com.zerody.user.dto.SecondStaffDto;
 import com.zerody.user.dto.StaffByCompanyDto;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
 import com.zerody.user.vo.*;
@@ -27,6 +28,13 @@ public interface SysAddressBookMapper {
      */
     List<SysAddressBookVo> queryAddressBook(@Param("companyIds")List<String> companyIds,@Param("isProData")Integer isProData);
 
+    /**
+     * @Author: ljj
+     * @param
+     * @Description: 获取公司下拉(是否显示)
+     * @Date: 2023/11/8
+     */
+    List<SysAddressBookVo> selectAddressBooks(@Param("companyIds")List<String> companyIds,@Param("isProData")Integer isProData);
     /**
     * @Author: chenKeFeng
     * @param
@@ -71,6 +79,14 @@ public interface SysAddressBookMapper {
     List<StaffInfoByAddressBookVo> getStaffByCompany(@Param("param")StaffByCompanyDto staffByCompanyDto);
 
     /**
+    * @Author: chenKeFeng
+    * @param  
+    * @Description: 查询伙伴档案二级页面
+    * @Date: 2023/11/18 10:22
+    */
+    List<StaffInfoByAddressBookVo> getUserArchives(@Param("param") SecondStaffDto staffByCompanyDto);
+
+    /**
      * @Author: chenKeFeng
      * @param
      * @Description: 获取离职伙伴列表明细
@@ -80,7 +96,7 @@ public interface SysAddressBookMapper {
 
     /**
     *
-    *  @description    部门(有是否显示两种)
+    *  @description    部门
     *  @author        YeChangWei
     *  @date          2023/9/1 16:08
     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>
@@ -88,7 +104,7 @@ public interface SysAddressBookMapper {
     List<DepartInfoVo> queryDepartInfoAll(@Param("param")DepartInfoDto departInfoDto);
     /**
     *
-    *  @description    团队(有是否显示两种)
+    *  @description    团队
     *  @author        YeChangWei
     *  @date          2023/9/1 16:08
     *  @return        java.util.List<com.zerody.user.vo.DepartInfoVo>

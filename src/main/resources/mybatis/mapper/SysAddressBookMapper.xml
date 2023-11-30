@@ -25,6 +25,30 @@
               sci.id;
   </select>
 
+    <select id="selectAddressBooks" resultType="com.zerody.user.vo.SysAddressBookVo">
+        SELECT
+        COUNT( sui.id )as staffCountId ,
+        sci.company_name,
+        sci.id as compId
+        FROM
+        sys_company_info AS sci
+        LEFT JOIN sys_staff_info AS ssi ON sci.id = ssi.comp_id
+        LEFT JOIN sys_user_info AS sui  ON ssi.user_id = sui.id
+        LEFT JOIN union_staff_depart AS usd ON sui.id = usd.staff_id
+        LEFT JOIN sys_department_info AS sdi ON usd.department_id = sdi.id and ( sui.`status` = 0 OR sui.`status` = 3 )
+        where sci.status=0 AND (sdi.is_show_business=1 AND sdi.is_show_business is not null )
+        <if test="companyIds neq null and companyIds.size() gt 0">
+            AND sci.id
+            <foreach collection="companyIds" item="id" open="IN (" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="isProData neq null">
+            AND sci.is_pro_data=#{isProData}
+        </if>
+        GROUP BY
+        sci.id;
+    </select>
     <!--获取企业列表-->
     <select id="queryCompanyList" resultType="com.zerody.user.vo.SysAddressBookVo">
         SELECT distinct sci.company_name, sci.id as compId FROM sys_company_info AS sci
@@ -82,7 +106,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
-        AND sdi.is_show_business = 1
+        <!--AND sdi.is_show_business = 1-->
         <if test="param.compId neq null and param.compId neq ''">
             AND sci.id=#{param.compId}
         </if>
@@ -123,7 +147,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
-        AND sdi.is_show_business = 1
+
         <if test="param.departmentId neq null and param.departmentId neq ''">
             AND sdi.parent_id=#{param.departmentId}
         </if>
@@ -225,6 +249,7 @@
         </where>
     </select>
 
+
     <!--获取离职伙伴列表明细-->
     <select id="getDepartureUserList" resultType="com.zerody.user.vo.DepartureDetailsVo" parameterType="com.zerody.user.dto.DepartureDetailsDto">
         select sui.id AS id, ssi.user_type, ssi.user_name AS userName, sui.phone_number AS phone, sdi.depart_name AS departName,
@@ -269,13 +294,13 @@
                 AND ssi.date_left &gt;= #{param.begin}
             </if>
             <if test="param.end neq null">
-                AND ssi.date_left &lt; #{param.end}
+                AND ssi.date_left &lt;= #{param.end}
             </if>
             order by ssi.date_left desc
         </where>
     </select>
 
-<!-- 部门(有是否显示两种)   -->
+
     <select id="queryDepartInfoAll" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -294,6 +319,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE (sdi.parent_id IS NULL OR sdi.parent_id='')
+        AND sdi.is_show_business = 1
         <if test="param.compId neq null and param.compId neq ''">
             AND sci.id=#{param.compId}
         </if>
@@ -314,7 +340,7 @@
         sdi.id;
     </select>
 
-<!-- 团队(有是否显示两种)   -->
+
     <select id="queryTeamAll" resultType="com.zerody.user.vo.DepartInfoVo">
         SELECT
         COUNT( sui.id )AS staffCountId,
@@ -333,6 +359,7 @@
         LEFT JOIN sys_user_info AS sui ON ssi.user_id = sui.id and ( sui.`status` = 0 OR sui.`status` = 3 )
         LEFT JOIN sys_staff_info AS ssis ON sdi.admin_account=ssis.id
         WHERE sdi.parent_id IS NOT NULL AND sdi.parent_id!=''
+        AND sdi.is_show_business = 1
         <if test="param.departmentId neq null and param.departmentId neq ''">
             AND sdi.parent_id=#{param.departmentId}
         </if>
@@ -356,4 +383,80 @@
         sdi.id;
     </select>
 
+    <!--查询伙伴档案二级页面-->
+    <select id="getUserArchives" resultType="com.zerody.user.vo.StaffInfoByAddressBookVo">
+        SELECT sui.id AS id, ssi.avatar AS avatar, sui.avatar AS userAvatar, ssi.user_type, ssi.user_name AS userName, sui.phone_number AS phone,
+        sjp.position_name AS positionName, urs.role_name AS roleName, sdi.depart_name AS departName, sci.company_name AS companyName,
+        ssi.id AS staffId, ssi.status, sui.is_prepare_executive AS isPrepareExecutive, ssi.is_diamond_member
+        FROM sys_staff_info ssi
+        LEFT JOIN sys_user_info sui ON sui.id=ssi.user_id
+        LEFT JOIN sys_company_info sci ON sci.id=ssi.comp_id
+        LEFT JOIN union_role_staff urs ON urs.staff_id=ssi.id
+        LEFT JOIN union_staff_position usp ON usp.staff_id = ssi.id
+        LEFT JOIN sys_job_position sjp ON sjp.id = usp.position_id
+        LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+        LEFT JOIN sys_department_info sdi ON sdi.id = usd.department_id
+        <if test="param.isSecondContract neq null and param.isSecondContract eq 1">
+            LEFT JOIN user_induction_record uir ON uir.leave_user_id = sui.id
+        </if>
+        <where>
+            <choose>
+                <when test="param.isQuit neq null and param.isQuit eq 1"> sui.status = 1</when>
+                <when test="param.isShowLeave eq null or param.isShowLeave eq 0">  sui.status IN (0, 3)</when>
+                <when test="param.isShowLeave neq null and param.isShowLeave eq 1">  sui.status IN (0, 1, 3)</when>
+            </choose>
+            <if test="param.companyId != null and param.companyId != ''">
+                and ssi.comp_id = #{param.companyId}
+            </if>
+            <if test="param.userType neq null and param.userType neq ''">
+                and ssi.user_type = #{param.userType}
+            </if>
+            <if test="param.status neq null">
+                and ssi.status = #{param.status}
+            </if>
+            <if test="param.status neq null and param.status eq 0">
+                and ssi.status IN (0, 3)
+            </if>
+            <if test="param.departId neq null and param.departId neq ''">
+                and (sdi.id = #{param.departId} OR sdi.id LIKE CONCAT(#{param.departId}, '\_%'))
+            </if>
+            <if test="param.companyIds neq null and param.companyIds.size() gt 0">
+                AND sci.id
+                <foreach collection="param.companyIds" item="id" open="IN (" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="param.isProData neq null">
+                AND sci.is_pro_data=#{param.isProData}
+            </if>
+            <if test="param.isDiamondMember neq null">
+                AND ssi.is_diamond_member=#{param.isDiamondMember}
+            </if>
+            <if test="param.isPrepareExecutive neq null">
+                AND sui.is_prepare_executive=#{param.isPrepareExecutive}
+            </if>
+            <if test="param.isSecondContract neq null and param.isSecondContract eq 1">
+                AND uir.approve_state='SUCCESS'
+            </if>
+            <if test="param.beginTime neq null">
+                AND ssi.date_left &gt;= #{param.beginTime}
+            </if>
+            <if test="param.endTime neq null">
+                AND ssi.date_left &lt; #{param.endTime}
+            </if>
+
+            <if test="param.addBeginTime neq null and param.addBeginTime neq ''">
+                AND ssi.date_join &gt;= #{param.addBeginTime}
+            </if>
+            <if test="param.addEndTime neq null and param.addEndTime neq ''">
+                AND ssi.date_join &lt;= #{param.addEndTime}
+            </if>
+            <if test="param.removeBeginTime neq null and param.removeBeginTime neq ''">
+                AND ssi.date_left &gt;= #{param.removeBeginTime}
+            </if>
+            <if test="param.removeEndTime neq null and param.removeEndTime neq ''">
+                AND ssi.date_left &lt;= #{param.removeEndTime}
+            </if>
+        </where>
+    </select>
 </mapper>

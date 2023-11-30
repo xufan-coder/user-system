@@ -488,6 +488,11 @@ public class SysUserIdentifierServiceImpl  extends ServiceImpl<SysUserIdentifier
         for (SysUserIdentifier identifier : identifierInfos) {
             SysUserIdentifierVo identifierVo = new SysUserIdentifierVo();
             if(!Objects.isNull(identifier)){
+                //查询员工详情信息
+                SysStaffInfoDetailsVo user = sysStaffInfoMapper.getStaffinfoDetails(userId);
+                if(DataUtil.isNotEmpty(user)) {
+                    identifier.setMobile(user.getPhoneNumber());
+                }
                 BeanUtils.copyProperties(identifier,identifierVo);
                 identifierVo.setUsername(identifier.getCreateUsername());
                 // 获取ceo的最近登录时间
