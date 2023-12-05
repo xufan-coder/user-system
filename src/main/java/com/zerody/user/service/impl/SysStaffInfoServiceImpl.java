@@ -4388,7 +4388,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
             wrapper.lambda().set(SysUserInfo::getIdCardReverse,setSysUserInfoDto.getIdCardReverse()+suffix);
         }
-        this.sysUserInfoService.update(wrapper);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardFront()) || DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())) {
+            this.sysUserInfoService.update(wrapper);
+        }
         Image image = new Image();
         List<String>  commitments= new ArrayList<>();
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getComplianceCommitments()) && setSysUserInfoDto.getComplianceCommitments().size()>0){
