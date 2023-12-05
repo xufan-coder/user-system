@@ -1255,6 +1255,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
                 departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
                 departEditUw.lambda().eq(SysDepartmentInfo::getId, oldDept.getId());
+                departEditUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffInfo.getId());
                 this.sysDepartmentInfoService.update(departEditUw);
                 departIds.add(oldDepart);
             }
