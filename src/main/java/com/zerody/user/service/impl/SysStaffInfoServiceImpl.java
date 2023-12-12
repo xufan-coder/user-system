@@ -1255,6 +1255,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                 departEditUw.lambda().set(SysDepartmentInfo::getIsEdit, YesNo.YES);
                 departEditUw.lambda().set(SysDepartmentInfo::getAdminAccount, null);
                 departEditUw.lambda().eq(SysDepartmentInfo::getId, oldDept.getId());
+                departEditUw.lambda().eq(SysDepartmentInfo::getAdminAccount, staffInfo.getId());
                 this.sysDepartmentInfoService.update(departEditUw);
                 departIds.add(oldDepart);
             }
@@ -4388,7 +4389,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             this.mqService.send(JSONObject.toJSONString(ossVo), MQ.QUEUE_OSS_IMAGE_SUFFIX);
             wrapper.lambda().set(SysUserInfo::getIdCardReverse,setSysUserInfoDto.getIdCardReverse()+suffix);
         }
-        this.sysUserInfoService.update(wrapper);
+        if(DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardFront()) || DataUtil.isNotEmpty(setSysUserInfoDto.getIdCardReverse())) {
+            this.sysUserInfoService.update(wrapper);
+        }
         Image image = new Image();
         List<String>  commitments= new ArrayList<>();
         if(DataUtil.isNotEmpty(setSysUserInfoDto.getComplianceCommitments()) && setSysUserInfoDto.getComplianceCommitments().size()>0){
