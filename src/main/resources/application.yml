@@ -185,3 +185,4 @@ supplier:
     qU8CUy5OIN1HnYMZ2QBuLdxVTm1pIDIrVe9tf3Z0uebjbSDhTru9M8DUucIauzMqifRZotshM4ZXk4cl73BqUKnlj1IrhoQVMQZrW\
     2kiEzNXM7dntA9NGR5upTwIDAQAB"
     requestPartnerUrl: http://localhost:5005/partner
+    requestAdviserUrl: http://localhost:5005/adviser
