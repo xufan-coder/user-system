@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.zerody.common.vo.UserVo;
+import com.zerody.user.api.vo.AdviserUserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
@@ -519,4 +520,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<ExpireTimeNoticeVo> getExpireTimeStaff(@Param("param")ExpireTimeNoticeDto dto);
 
     String getNewCompany(@Param("identityCardNum") String identityCardNum);
+
+    List<AdviserUserVo> getDeptUserListByDeptId(@Param("deptId") String deptId, @Param("check") int check);
 }
