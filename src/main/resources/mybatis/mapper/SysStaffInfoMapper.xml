@@ -1634,4 +1634,16 @@
          </where>
     </select>
 
+    <select id="getDeptUserListByDeptId" resultType="com.zerody.user.api.vo.AdviserUserVo">
+        select ssi.user_id, sd.department_id from
+		union_staff_depart sd
+        join sys_staff_info ssi on sd.staff_id = ssi.id and ssi.`status` = 0
+        <if test="check == 0" >
+            where sd.department_id = #{deptId}
+        </if>
+        <if test="check == 1" >
+            where sd.department_id like concat('%',#{deptId},'%')
+        </if>
+    </select>
+
 </mapper>

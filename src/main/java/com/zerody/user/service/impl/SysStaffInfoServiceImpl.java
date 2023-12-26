@@ -45,16 +45,16 @@ import com.zerody.sms.api.dto.SmsDto;
 import com.zerody.sms.feign.SmsFeignService;
 import com.zerody.user.api.dto.UserCopyDto;
 import com.zerody.user.api.dto.mq.StaffDimissionInfo;
-import com.zerody.user.api.vo.AdminVo;
-import com.zerody.user.api.vo.StaffInfoVo;
-import com.zerody.user.api.vo.UserCopyResultVo;
-import com.zerody.user.api.vo.UserDeptVo;
+import com.zerody.user.api.vo.*;
 import com.zerody.user.check.CheckUser;
 import com.zerody.user.constant.CommonConstants;
 import com.zerody.user.constant.FileTypeInfo;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.ImportResultInfoType;
 import com.zerody.user.domain.*;
+import com.zerody.user.domain.SysLoginInfo;
+import com.zerody.user.domain.SysUserInfo;
+import com.zerody.user.domain.UnionRoleStaff;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.*;
 import com.zerody.user.dto.statis.UserSexStatisQueryDto;
@@ -68,6 +68,9 @@ import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.*;
 import com.zerody.user.vo.*;
+import com.zerody.user.vo.BackUserRefVo;
+import com.zerody.user.vo.DepartInfoVo;
+import com.zerody.user.vo.SysUserInfoVo;
 import com.zerody.user.vo.dict.DictQuseryVo;
 import com.zerody.user.vo.statis.DegreeVo;
 import com.zerody.user.vo.statis.SignAndRescindVo;
@@ -3777,6 +3780,24 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     public List<ExpireTimeNoticeVo> getExpireTimeStaff(ExpireTimeNoticeDto dto) {
         List<ExpireTimeNoticeVo> list=sysStaffInfoMapper.getExpireTimeStaff(dto);
         return list;
+    }
+
+    @Override
+    public List<AdviserUserVo> getDeptUserList(String userId) {
+        String staffId = this.sysStaffInfoMapper.getStaffIdByUserId(userId);
+
+        // 获取团队id
+        String deptId = unionStaffDepartMapper.getDeptIdByStaffId(staffId);
+        // 根据部门id查询团队的用户列表
+        if(StringUtils.isNotEmpty(deptId)) {
+            int check = 0;
+            if (deptId.indexOf("_") > 0) {
+                deptId = deptId.substring(0,deptId.indexOf("_"));
+                check = 1;
+            }
+            return sysStaffInfoMapper.getDeptUserListByDeptId(deptId,check);
+        }
+        return new ArrayList<>();
     }
 
 
