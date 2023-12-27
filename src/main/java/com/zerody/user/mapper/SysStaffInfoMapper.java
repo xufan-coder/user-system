@@ -521,5 +521,5 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
 
     String getNewCompany(@Param("identityCardNum") String identityCardNum);
 
-    List<AdviserUserVo> getDeptUserListByDeptId(@Param("deptId") String deptId,@Param("check") int check);
+    List<AdviserUserVo> getDeptUserListByDeptId(@Param("deptId") String deptId);
 }

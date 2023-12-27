@@ -3790,12 +3790,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         String deptId = unionStaffDepartMapper.getDeptIdByStaffId(staffId);
         // 根据部门id查询团队的用户列表
         if(StringUtils.isNotEmpty(deptId)) {
-            int check = 0;
             if (deptId.indexOf("_") > 0) {
                 deptId = deptId.substring(0,deptId.indexOf("_"));
-                check = 1;
             }
-            return sysStaffInfoMapper.getDeptUserListByDeptId(deptId,check);
+            return sysStaffInfoMapper.getDeptUserListByDeptId(deptId);
         }
         return new ArrayList<>();
     }
