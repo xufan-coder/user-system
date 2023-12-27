@@ -1638,12 +1638,7 @@
         select ssi.user_id as crmUserId, sd.department_id as deptId from
 		union_staff_depart sd
         join sys_staff_info ssi on sd.staff_id = ssi.id and ssi.`status` = 0
-        <if test="check == 0" >
-            where sd.department_id = #{deptId}
-        </if>
-        <if test="check == 1" >
-            where sd.department_id like concat('%',#{deptId},'%')
-        </if>
+        where sd.department_id like concat('%',#{deptId},'%')
     </select>
 
 </mapper>
