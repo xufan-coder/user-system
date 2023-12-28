@@ -270,6 +270,10 @@ public class SysUserInfo extends BaseModel {
      */
     private Integer statusEdit;
 
+    /**
+     * 用户手机号是否修改(1.是、0.否)
+     */
+    private Integer mobileEdit;
 
     /**
      * 身份证照片国徽面(正面)
