@@ -6,6 +6,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 /**
  * @author kuang
  */
-@FeignClient(value = "${zerody-adviser.name:zerody-adviser}", contextId = "zerody-adviser")
+@FeignClient(url = "${supplier.tsz.requestAdviserUrl}",value = "${zerody-adviser.name:zerody-adviser}", contextId = "zerody-adviser")
 public interface AdviserFeignService extends AdviserRemoteService {
 }
