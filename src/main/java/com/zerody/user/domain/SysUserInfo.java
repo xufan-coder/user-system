@@ -269,6 +269,10 @@ public class SysUserInfo extends BaseModel {
      * 用户状态是否修改(1.是、0.否)
      */
     private Integer statusEdit;
+    /**
+     * 用户手机号是否修改(1.是、0.否)
+     */
+    private Integer mobileEdit;
 
 
     /**

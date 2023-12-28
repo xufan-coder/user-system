@@ -271,6 +271,7 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     StaffInfoVo getSuperiorAdmin(UserVo userVo);
 
     int doUserStatusEditInfo();
+    int doUserMobileEditInfo();
     /**
     *
     *  @description   通过客户负责人id查询角色

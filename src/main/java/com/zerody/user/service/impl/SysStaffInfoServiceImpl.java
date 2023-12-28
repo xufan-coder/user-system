@@ -894,7 +894,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
                }
            }
        }
-        sysUserInfoMapper.updateById(sysUserInfo);
         //判断身份证和手机号码是否被修改
         if(!oldUserInfo.getCertificateCard().equals(setSysUserInfoDto.getCertificateCard()) ||
                 !oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
@@ -913,8 +912,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         if(!oldUserInfo.getPhoneNumber().equals(setSysUserInfoDto.getPhoneNumber())){
             this.checkUtil.removeUserToken(sysUserInfo.getId());
             removeToken = !removeToken;
+            sysUserInfo.setMobileEdit(YesNo.YES);
         }
 
+        sysUserInfoMapper.updateById(sysUserInfo);
         //处理null修改问题
         UpdateWrapper<SysUserInfo> userUw = new UpdateWrapper<>();
         userUw.lambda().set(SysUserInfo::getTrainNo, sysUserInfo.getTrainNo());
