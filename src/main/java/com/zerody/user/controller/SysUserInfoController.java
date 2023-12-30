@@ -1803,4 +1803,25 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("通过公司id获取公司在职用户错误");
         }
     }
+
+    /**
+     * @author kuang
+     * @description 通过userId查询此团队或部门下的所有userId  用于专属顾问
+     * @date
+     * @Param
+     **/
+    @Override
+    @GetMapping("/sys-user-info/get/dept-all/inner")
+    public DataResult<List<AdviserUserVo>> getDeptUserList(@RequestParam("userId")String userId) {
+        try {
+            List<AdviserUserVo> list = sysStaffInfoService.getDeptUserList(userId);
+            return R.success(list);
+        } catch (DefaultException e) {
+            log.error("通过公司id获取公司在职用户错误:{}", e.getMessage());
+            return R.error("通过公司id获取公司在职用户错误");
+        } catch (Exception e) {
+            log.error("通过公司id获取公司在职用户错误:{} ", e, e);
+            return R.error("通过公司id获取公司在职用户错误");
+        }
+    }
 }

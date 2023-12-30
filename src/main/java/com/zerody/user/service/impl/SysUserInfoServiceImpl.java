@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zerody.adviser.api.dto.AdviserMobileDto;
 import com.zerody.adviser.api.dto.AdviserUserStatusUpdateDto;
 import com.zerody.common.bean.DataResult;
 import com.zerody.common.constant.MQ;
@@ -852,6 +853,27 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         });
         this.adviserFeignService.updateAdviserStatus(usersParams);
         return usersParams.size();
+    }
+
+    @Override
+    public int doUserMobileEditInfo () {
+        QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
+        userQw.select("id", 0 + " AS mobile_edit", "phone_number");
+        userQw.lambda().eq(SysUserInfo::getMobileEdit, YesNo.YES);
+        userQw.lambda().last("limit 0, 20");
+        List<SysUserInfo> users = this.list(userQw);
+        if (DataUtil.isEmpty(users)) {
+            return 0;
+        }
+        this.updateBatchById(users);
+        users.forEach(u -> {
+            AdviserMobileDto mobileDto = new AdviserMobileDto();
+            mobileDto.setCrmUserId(u.getId());
+            mobileDto.setMobile(u.getPhoneNumber());
+            this.adviserFeignService.updateAdviserMobile(mobileDto);
+        });
+
+        return users.size();
     }
 
     @Override
