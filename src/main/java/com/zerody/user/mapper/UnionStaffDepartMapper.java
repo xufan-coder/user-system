@@ -2,7 +2,7 @@ package com.zerody.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zerody.user.domain.UnionStaffDepart;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
