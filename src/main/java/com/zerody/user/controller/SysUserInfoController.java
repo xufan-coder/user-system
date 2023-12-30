@@ -1811,7 +1811,7 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
      * @Param
      **/
     @Override
-    @GetMapping("/sys-user-info/get/dept-all/inner")
+    @GetMapping("/get/dept-all/inner")
     public DataResult<List<AdviserUserVo>> getDeptUserList(@RequestParam("userId")String userId) {
         try {
             List<AdviserUserVo> list = sysStaffInfoService.getDeptUserList(userId);
