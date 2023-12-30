@@ -29,9 +29,4 @@
       where staff_id = #{staffId}
     </select>
 
-    <select id="getDeptIdByStaffId" resultType="string">
-      SELECT department_id from union_staff_depart
-      where staff_id = #{staffId}
-    </select>
-
 </mapper>
