@@ -834,7 +834,7 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         QueryWrapper<SysUserInfo> userQw = new QueryWrapper<>();
         userQw.select("id", 0 + " AS status_edit", "status");
         userQw.lambda().eq(SysUserInfo::getStatusEdit, YesNo.YES);
-        userQw.lambda().last("limit 0, 500");
+        userQw.lambda().last("limit 0, 20");
         List<SysUserInfo> users = this.list(userQw);
         if (DataUtil.isEmpty(users)) {
             return 0;
