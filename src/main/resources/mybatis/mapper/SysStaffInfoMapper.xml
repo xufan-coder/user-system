@@ -1641,4 +1641,9 @@
         where sd.department_id like concat('%',#{deptId},'%')
     </select>
 
+    <select id="getUserInductionList" resultType="com.zerody.user.api.vo.UserInductionVo">
+        select user_id, YEAR(date_join) as join_year  from sys_staff_info
+        where `status` = 0 and  DATE_FORMAT(date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
+    </select>
+
 </mapper>
