@@ -6,6 +6,7 @@ import java.util.List;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.vo.AdviserUserVo;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.api.vo.UserInductionVo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.dto.*;
 import com.zerody.user.dto.statis.UserStatisQueryDto;
@@ -522,4 +523,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     String getNewCompany(@Param("identityCardNum") String identityCardNum);
 
     List<AdviserUserVo> getDeptUserListByDeptId(@Param("deptId") String deptId);
+
+    List<UserInductionVo> getUserInductionList();
 }

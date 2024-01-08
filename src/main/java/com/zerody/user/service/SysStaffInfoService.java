@@ -329,4 +329,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     List<ExpireTimeNoticeVo> getExpireTimeStaff(ExpireTimeNoticeDto dto);
 
     List<AdviserUserVo> getDeptUserList(String userId);
+
+    List<UserInductionVo> getUserInductionList();
 }
