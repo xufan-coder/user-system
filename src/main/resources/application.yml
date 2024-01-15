@@ -24,7 +24,7 @@ spring:
     password: zerody!@#456
     host: 10.66.50.241:3306
     url: jdbc:mysql://${spring.datasource.host}/zero_user?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
-    maxActive: 20
+    maxActive: 200
     initialSize: 1
     maxWait: 60000
     filters: stat
@@ -185,3 +185,4 @@ supplier:
     qU8CUy5OIN1HnYMZ2QBuLdxVTm1pIDIrVe9tf3Z0uebjbSDhTru9M8DUucIauzMqifRZotshM4ZXk4cl73BqUKnlj1IrhoQVMQZrW\
     2kiEzNXM7dntA9NGR5upTwIDAQAB"
     requestPartnerUrl: http://localhost:5005/partner
+    requestAdviserUrl: http://localhost:5005/adviser

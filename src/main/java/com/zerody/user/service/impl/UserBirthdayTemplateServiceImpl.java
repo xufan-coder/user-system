@@ -235,7 +235,7 @@ public class UserBirthdayTemplateServiceImpl extends ServiceImpl<UserBirthdayTem
         List<AppUserNotPushVo> lists = sysUserInfoMapper.getAnniversaryUserList(userId);
         AppUserNotPushVo entryData;
         if(lists.size() == 0) {
-            throw new DefaultException("查找周年庆错误");
+            return null;
         }
         entryData = lists.get(0);
         //获取模板

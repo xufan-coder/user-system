@@ -878,7 +878,8 @@
         sjp.position_name,
         urs.role_id,
         urs.role_name,
-        ssi.id AS `staff_id`
+        ssi.id AS `staff_id`,
+        CEILING(DATEDIFF(now(),ssi.date_join) / 365) as 'joinYear'
         FROM
         sys_staff_info AS ssi
         LEFT JOIN sys_company_info AS sci ON sci.id = ssi.comp_id
@@ -1632,6 +1633,18 @@
                 OR DATE_FORMAT(ssi.expire_time,'%Y%m%d') = DATE_FORMAT(#{param.ninety},'%Y%m%d')
                 )
          </where>
+    </select>
+
+    <select id="getDeptUserListByDeptId" resultType="com.zerody.user.api.vo.AdviserUserVo">
+        select ssi.user_id as crmUserId, sd.department_id as deptId from
+		union_staff_depart sd
+        join sys_staff_info ssi on sd.staff_id = ssi.id and ssi.`status` = 0
+        where sd.department_id like concat('%',#{deptId},'%')
+    </select>
+
+    <select id="getUserInductionList" resultType="com.zerody.user.api.vo.UserInductionVo">
+        select user_id, YEAR(date_join) as join_year  from sys_staff_info
+        where `status` = 0 and  DATE_FORMAT(date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
     </select>
 
 </mapper>
