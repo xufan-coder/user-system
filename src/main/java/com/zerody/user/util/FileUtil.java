@@ -5,6 +5,8 @@ import com.zerody.oss.api.dto.SlOssFile;
 import com.zerody.oss.api.feign.OssFeignService;
 import com.zerody.oss.api.util.Uploader;
 import com.zerody.user.enums.TemplateTypeEnum;
+import com.zerody.user.mapper.TeamMapper;
+import com.zerody.user.vo.CustomerChargeAllo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author PengQiang
@@ -33,10 +37,16 @@ public class FileUtil {
 
     private static ResourceLoader resourceStaticLoader;
 
+    @Resource
+    private TeamMapper teamMapper;
+
+    private static TeamMapper teamMappers;
+
     @PostConstruct
     private void init() {
         ossFeignStaicService = this.ossFeignService;
         resourceStaticLoader = this.resourceLoader;
+        teamMappers = this.teamMapper;
     }
 
     public static String uploadOssTemate(TemplateTypeEnum fileName) {
@@ -72,4 +82,7 @@ public class FileUtil {
         return null;
     }
 
+    public static List<CustomerChargeAllo> getCustomers() {
+        return teamMappers.getCustomers();
+    }
 }

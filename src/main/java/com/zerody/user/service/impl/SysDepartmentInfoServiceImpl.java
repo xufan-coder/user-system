@@ -24,6 +24,7 @@ import com.zerody.user.domain.*;
 import com.zerody.user.domain.base.BaseModel;
 import com.zerody.user.dto.DirectLyDepartOrUserQueryDto;
 import com.zerody.user.dto.SetAdminAccountDto;
+import com.zerody.user.feign.AdviserFeignService;
 import com.zerody.user.mapper.*;
 import com.zerody.user.service.SysDepartmentInfoService;
 import com.zerody.user.service.SysStaffInfoService;
@@ -32,6 +33,7 @@ import com.zerody.user.service.UnionStaffPositionService;
 import com.zerody.user.service.base.BaseService;
 import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.util.SetSuperiorIdUtil;
+import com.zerody.user.util.SingletonThreadPoolUtil;
 import com.zerody.user.util.UserTypeUtil;
 import com.zerody.user.vo.*;
 import io.micrometer.core.instrument.util.StringUtils;
@@ -40,6 +42,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -93,6 +96,9 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
 
     @Autowired
     private UnionStaffPositionService unionStaffPositionService;
+
+    @Resource
+    private AdviserFeignService adviserFeignService;
 
     //  添加部门redis 自动增长key
     private final static String ADD_DEPART_REIDS_KEY = "dept:increase";
@@ -559,6 +565,12 @@ public class SysDepartmentInfoServiceImpl extends BaseService<SysDepartmentInfoM
         }
         this.sysDepartmentInfoMapper.updateDepartEditInfo(departMap);
         this.mqService.send(departMap, MQ.QUEUE_DEPT_EDIT_CUSTOMER);
+        SingletonThreadPoolUtil.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                adviserFeignService.doSyncDepart(departMap);
+            }
+        });
         log.info("同步部门信息  ——————> {}", JSON.toJSONString(departMap));
     }
 
