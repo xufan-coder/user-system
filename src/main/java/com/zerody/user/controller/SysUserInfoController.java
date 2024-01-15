@@ -1824,4 +1824,24 @@ public class SysUserInfoController implements UserRemoteService, LastModified {
             return R.error("通过用户userId查询部门顾问列表错误");
         }
     }
+
+    /**
+     * @author kuang
+     * @description 获取今日入职伙伴列表
+     * @date
+     **/
+    @Override
+    @GetMapping("/get/day-induction/inner")
+    public DataResult<List<UserInductionVo>> getUserInductionList() {
+        try {
+            List<UserInductionVo> list = sysStaffInfoService.getUserInductionList();
+            return R.success(list);
+        } catch (DefaultException e) {
+            log.error("查询今日入职的伙伴年份错误:{}", e.getMessage());
+            return R.error("查询今日入职的伙伴年份错误");
+        } catch (Exception e) {
+            log.error("查询今日入职的伙伴年份错误:{} ", e, e);
+            return R.error("查询今日入职的伙伴年份错误");
+        }
+    }
 }

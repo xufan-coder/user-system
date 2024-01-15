@@ -3799,6 +3799,11 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         return new ArrayList<>();
     }
 
+    @Override
+    public List<UserInductionVo> getUserInductionList() {
+        return sysStaffInfoMapper.getUserInductionList();
+    }
+
 
     private String getStaffIdByUserId(String userId) {
         return this.sysStaffInfoMapper.getStaffIdByUserId(userId);
