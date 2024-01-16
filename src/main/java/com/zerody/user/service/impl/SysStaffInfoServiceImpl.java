@@ -4477,9 +4477,16 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         adviserCompanyDto.setCompanyAddressCity(companyAddrName.get(companyInfo.getCompanyAddressCityCode()));
         adviserCompanyDto.setCompanyAddressArea(companyAddrName.get(companyInfo.getCompanyAddressAreaCode()));
 
-        // 获取伙伴部门信息
         com.zerody.adviser.api.dto.SysDepartmentInfoDto sysDepartmentInfoDto = new com.zerody.adviser.api.dto.SysDepartmentInfoDto();
 
+        QueryWrapper<UnionStaffDepart> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UnionStaffDepart::getStaffId,staffInfo.getId());
+        UnionStaffDepart unionStaffDepart = this.unionStaffDeparService.getOne(queryWrapper);
+        if (DataUtil.isNotEmpty(unionStaffDepart)){
+            // 获取伙伴部门信息
+            SysDepartmentInfo sysDepartmentInfo = this.sysDepartmentInfoService.getById(unionStaffDepart.getDepartmentId());
+            BeanUtils.copyProperties(sysDepartmentInfo,sysDepartmentInfoDto);
+        }
 
 
         CrmAdviserSyncDto crmAdviserSyncDto = new CrmAdviserSyncDto();
@@ -4499,7 +4506,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,YesNo.YES);
         this.sysStaffInfoService.update(updateWrapper);
 
+    }
 
+    @Override
+    public void syncAdviserState(AdviserStateDto param) {
+        UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().eq(SysStaffInfo::getUserId,param.getCrmUserId());
+        updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,param.getEnabled());
+        this.sysStaffInfoService.update(updateWrapper);
     }
 
 }

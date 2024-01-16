@@ -334,4 +334,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     List<UserInductionVo> getUserInductionList();
 
     void syncCrmUserAdviser(String staffId, IUser userData);
+
+    void syncAdviserState(AdviserStateDto param);
 }

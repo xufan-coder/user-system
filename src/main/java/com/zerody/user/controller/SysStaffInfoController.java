@@ -882,6 +882,14 @@ public class SysStaffInfoController {
     }
 
 
+    /**
+    * @Description:         同步伙伴为唐叁藏顾问
+    * @Param:               [staffId]
+    * @return:              com.zerody.common.api.bean.DataResult<java.lang.Object>
+    * @Author:              xufan
+    * @Date:                2024/1/16 16:42
+    */
+    @GetMapping("/crm/sync/adviser/{id}")
     public DataResult<Object> syncCrmUserAdviser(@PathVariable(name = "id") String staffId) {
         try {
             IUser userData = UserUtils.getUserData();
@@ -893,6 +901,27 @@ public class SysStaffInfoController {
         } catch (Exception e) {
             log.error("同步伙伴为唐叁藏顾问出错:{}", e, e);
             return R.error("同步伙伴为唐叁藏顾问出错");
+        }
+    }
+
+    /**
+    * @Description:         同步crm伙伴顾问状态 (内部调用)
+    * @Param:               [param]
+    * @return:              com.zerody.common.api.bean.DataResult<java.lang.Object>
+    * @Author:              xufan
+    * @Date:                2024/1/16 16:42
+    */
+    @PutMapping("/sync/adviser/state/inner")
+    public DataResult<Object> syncAdviserState(@RequestBody AdviserStateDto param) {
+        try {
+            this.sysStaffInfoService.syncAdviserState(param);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("同步crm伙伴顾问状态出错:{}", e.getMessage());
+            return R.error("同步crm伙伴顾问状态出错");
+        } catch (Exception e) {
+            log.error("同步crm伙伴顾问状态出错:{}", e, e);
+            return R.error("同步crm伙伴顾问状态出错");
         }
     }
 

@@ -139,6 +139,12 @@ public class  BosStaffInfoVo {
     /** 是否预备高管 0表示否 1表示是 2表示退学*/
     private Integer isPrepareExecutive;
 
+    /** 是否同步顾问 (0.否 1.是) */
+    private Integer isSyncAdvisor;
+
+    /** 是否唐叁藏顾问 (0.否 1.是) */
+    private Integer isTszAdvisor;
+
     /**
      * 企业id 集合
      */
