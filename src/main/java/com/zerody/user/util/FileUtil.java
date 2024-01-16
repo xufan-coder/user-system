@@ -37,16 +37,11 @@ public class FileUtil {
 
     private static ResourceLoader resourceStaticLoader;
 
-    @Resource
-    private TeamMapper teamMapper;
-
-    private static TeamMapper teamMappers;
 
     @PostConstruct
     private void init() {
         ossFeignStaicService = this.ossFeignService;
         resourceStaticLoader = this.resourceLoader;
-        teamMappers = this.teamMapper;
     }
 
     public static String uploadOssTemate(TemplateTypeEnum fileName) {
@@ -82,7 +77,4 @@ public class FileUtil {
         return null;
     }
 
-    public static List<CustomerChargeAllo> getCustomers() {
-        return teamMappers.getCustomers();
-    }
 }
