@@ -5,7 +5,6 @@ import com.zerody.oss.api.dto.SlOssFile;
 import com.zerody.oss.api.feign.OssFeignService;
 import com.zerody.oss.api.util.Uploader;
 import com.zerody.user.enums.TemplateTypeEnum;
-import com.zerody.user.vo.CustomerChargeAllo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
