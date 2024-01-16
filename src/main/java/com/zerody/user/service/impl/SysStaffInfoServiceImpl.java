@@ -277,6 +277,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private ZerodyAddrService zerodyAddrService;
 
+    @Autowired
+    private AdviserFeignService adviserFeignService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -4448,8 +4451,10 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         SysStaffInfo staffInfo = this.sysStaffInfoService.getById(staffId);
         SysUserInfo userInfo = this.sysUserInfoService.getById(staffInfo.getUserId());
         // 判断是否为管理层
-        UserAdminVo userAdminVo = this.sysUserInfoService.getUserIsAdmin(staffInfo.getUserId());
-        if (userAdminVo.getIsCompanyAdmin() || userAdminVo.getIsDepartAdmin() || userAdminVo.getIsTeamAdmin()){
+        UserVo userVo = new UserVo();
+        userVo.setUserId(staffInfo.getUserId());
+        AdminVo adminVo = this.sysStaffInfoService.getIsAdmin(userVo);
+        if (adminVo.getIsCompanyAdmin() || adminVo.getIsDepartAdmin()){
             throw new DefaultException("根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
         }
 
@@ -4498,6 +4503,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         crmAdviserSyncDto.setMobile(userInfo.getPhoneNumber());
         crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
         crmAdviserSyncDto.setSysDepartmentInfoDto(sysDepartmentInfoDto);
+
+        this.adviserFeignService.syncCrmUserAdviser(crmAdviserSyncDto);
 
         // 变更员工表状态
         UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
