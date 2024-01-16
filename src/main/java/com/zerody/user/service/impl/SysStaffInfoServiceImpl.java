@@ -11,9 +11,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.itcoon.transform.starter.Transformer;
+import com.zerody.adviser.api.dto.AdviserCompanyDto;
+import com.zerody.adviser.api.dto.CrmAdviserSyncDto;
 import com.zerody.card.api.dto.UserCardDto;
 import com.zerody.card.api.dto.UserCardReplaceDto;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.constant.CustomerQueryType;
 import com.zerody.common.constant.MQ;
@@ -267,6 +270,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
     @Autowired
     private  ResignationApplicationService resignationApplicationService;
+
+    @Autowired
+    private SysCompanyInfoService sysCompanyInfoService;
+
+    @Autowired
+    private ZerodyAddrService zerodyAddrService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -4431,4 +4440,66 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
     }
+
+
+    @Override
+    public void syncCrmUserAdviser(String staffId, IUser userData) {
+
+        SysStaffInfo staffInfo = this.sysStaffInfoService.getById(staffId);
+        SysUserInfo userInfo = this.sysUserInfoService.getById(staffInfo.getUserId());
+        // 判断是否为管理层
+        UserAdminVo userAdminVo = this.sysUserInfoService.getUserIsAdmin(staffInfo.getUserId());
+        if (userAdminVo.getIsCompanyAdmin() || userAdminVo.getIsDepartAdmin() || userAdminVo.getIsTeamAdmin()){
+            throw new DefaultException("根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
+        }
+
+        // 获取服务年限
+        Integer thisYear = DateUtil.getPresentTimeYears();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        Integer dateJoin = Integer.valueOf(format.format(staffInfo.getDateJoin()));
+        Integer experience = (thisYear - dateJoin) + 1;
+
+        // 获取伙伴公司信息
+        SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staffInfo.getCompId());
+        AdviserCompanyDto adviserCompanyDto = new AdviserCompanyDto();
+        BeanUtils.copyProperties(companyInfo,adviserCompanyDto);
+        adviserCompanyDto.setName(companyInfo.getCompanyName());
+        adviserCompanyDto.setCompanyType("CRM");
+        adviserCompanyDto.setCreateBy(companyInfo.getCreateId());
+        adviserCompanyDto.setCrmCompanyId(companyInfo.getId());
+        adviserCompanyDto.setId(UUIDutils.getUUID32());
+        adviserCompanyDto.setDeleted(YesNo.NO);
+        adviserCompanyDto.setEnabled(YesNo.YES);
+        Map<String, String> companyAddrName = this.zerodyAddrService.getAddrName(companyInfo.getCompanyAddrProvinceCode(),
+                companyInfo.getCompanyAddressCityCode(),
+                companyInfo.getCompanyAddressAreaCode());
+        adviserCompanyDto.setCompanyAddrProvince(companyAddrName.get(companyInfo.getCompanyAddrProvinceCode()));
+        adviserCompanyDto.setCompanyAddressCity(companyAddrName.get(companyInfo.getCompanyAddressCityCode()));
+        adviserCompanyDto.setCompanyAddressArea(companyAddrName.get(companyInfo.getCompanyAddressAreaCode()));
+
+        // 获取伙伴部门信息
+        com.zerody.adviser.api.dto.SysDepartmentInfoDto sysDepartmentInfoDto = new com.zerody.adviser.api.dto.SysDepartmentInfoDto();
+
+
+
+        CrmAdviserSyncDto crmAdviserSyncDto = new CrmAdviserSyncDto();
+        crmAdviserSyncDto.setCreateBy(userData.getUserId());
+        crmAdviserSyncDto.setCreateBy(userData.getUserName());
+        crmAdviserSyncDto.setExperience(experience);
+        crmAdviserSyncDto.setCrmUserId(staffInfo.getUserId());
+        crmAdviserSyncDto.setUserName(staffInfo.getUserName());
+        crmAdviserSyncDto.setMobile(userInfo.getPhoneNumber());
+        crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
+        crmAdviserSyncDto.setSysDepartmentInfoDto(sysDepartmentInfoDto);
+
+        // 变更员工表状态
+        UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().eq(SysStaffInfo::getId,staffId);
+        updateWrapper.lambda().set(SysStaffInfo::getIsSyncAdvisor,YesNo.YES);
+        updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,YesNo.YES);
+        this.sysStaffInfoService.update(updateWrapper);
+
+
+    }
+
 }

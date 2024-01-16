@@ -3,6 +3,7 @@ package com.zerody.user.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.enums.UserTypeEnum;
 import com.zerody.common.exception.DefaultException;
@@ -877,6 +878,21 @@ public class SysStaffInfoController {
         } catch (Exception e) {
             log.error("获取新增荣誉墙和惩罚墙出错:{}", e, e);
             return R.error("获取新增荣誉墙和惩罚墙出错");
+        }
+    }
+
+
+    public DataResult<Object> syncCrmUserAdviser(@PathVariable(name = "id") String staffId) {
+        try {
+            IUser userData = UserUtils.getUserData();
+            this.sysStaffInfoService.syncCrmUserAdviser(staffId,userData);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("同步伙伴为唐叁藏顾问出错:{}", e.getMessage());
+            return R.error("同步伙伴为唐叁藏顾问出错");
+        } catch (Exception e) {
+            log.error("同步伙伴为唐叁藏顾问出错:{}", e, e);
+            return R.error("同步伙伴为唐叁藏顾问出错");
         }
     }
 

@@ -2,6 +2,7 @@ package com.zerody.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zerody.common.api.bean.IUser;
 import com.zerody.common.api.bean.PageQueryDto;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.api.dto.UserCopyDto;
@@ -331,4 +332,6 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     List<AdviserUserVo> getDeptUserList(String userId);
 
     List<UserInductionVo> getUserInductionList();
+
+    void syncCrmUserAdviser(String staffId, IUser userData);
 }

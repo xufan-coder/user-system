@@ -731,4 +731,19 @@
         JOIN company_admin AS ca ON ca.company_id = sci.id and ca.staff_id = ssi.id
         WHERE sui.status IN (0, 3) AND sci.status = 0 and ssi.comp_id = #{companyId}
     </select>
+
+
+    <select id="getUserIsAdmin" resultType="com.zerody.user.vo.UserAdminVo">
+        SELECT
+        isNotNull(sdi.id) and notEmpty(sdi.id)AS is_depart_admin,
+        isNotNull(ca.id) and notEmpty(ca.id)AS is_company_admin,
+        isNotNull(sdi.parent_id) and notEmpty(sdi.parent_id)AS is_team_admin
+        FROM zero_user.sys_user_info AS sui
+        JOIN zero_user.sys_staff_info AS ssi ON ssi.user_id = sui.id
+        LEFT JOIN zero_user.sys_department_info AS sdi ON sdi.admin_account = ssi.id
+        LEFT JOIN zero_user.company_admin AS ca ON ca.staff_id = ssi.id
+        <where>
+            sui.id = #{userId}
+        </where>
+    </select>
 </mapper>

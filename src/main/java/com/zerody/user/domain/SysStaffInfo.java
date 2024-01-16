@@ -131,4 +131,10 @@ public class SysStaffInfo extends BaseModel {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date expireTime;
 
+    /** 是否同步顾问 (0.否 1.是) */
+    private Integer isSyncAdvisor;
+
+    /** 是否唐叁藏顾问 (0.否 1.是) */
+    private Integer isTszAdvisor;
+
 }

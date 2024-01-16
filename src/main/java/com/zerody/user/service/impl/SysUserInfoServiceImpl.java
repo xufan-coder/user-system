@@ -1054,5 +1054,8 @@ public class SysUserInfoServiceImpl extends BaseService<SysUserInfoMapper, SysUs
         return this.getDepartAdminInfo(depart.getParentId());
     }
 
-
+    @Override
+    public UserAdminVo getUserIsAdmin(String userId) {
+        return this.sysUserInfoMapper.getUserIsAdmin(userId);
+    }
 }
