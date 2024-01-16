@@ -893,7 +893,7 @@ public class SysStaffInfoController {
     public DataResult<Object> syncCrmUserAdviser(@PathVariable(name = "id") String staffId) {
         try {
             IUser userData = UserUtils.getUserData();
-            this.sysStaffInfoService.syncCrmUserAdviser(staffId,userData);
+            this.sysStaffInfoService.doSyncCrmUserAdviser(staffId,userData);
             return R.success();
         } catch (DefaultException e) {
             log.error("同步伙伴为唐叁藏顾问出错:{}", e.getMessage());

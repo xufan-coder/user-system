@@ -4446,7 +4446,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
 
     @Override
-    public void syncCrmUserAdviser(String staffId, IUser userData) {
+    public void doSyncCrmUserAdviser(String staffId, IUser userData) {
 
         SysStaffInfo staffInfo = this.sysStaffInfoService.getById(staffId);
         SysUserInfo userInfo = this.sysUserInfoService.getById(staffInfo.getUserId());
