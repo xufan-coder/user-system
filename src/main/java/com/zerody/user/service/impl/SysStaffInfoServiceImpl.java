@@ -27,10 +27,7 @@ import com.zerody.common.enums.customer.MaritalStatusEnum;
 import com.zerody.common.enums.user.StaffBlacklistApproveState;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.mq.RabbitMqService;
-import com.zerody.common.util.MD5Utils;
-import com.zerody.common.util.PhoneHomeLocationUtils;
-import com.zerody.common.util.UUIDutils;
-import com.zerody.common.util.UserUtils;
+import com.zerody.common.util.*;
 import com.zerody.common.utils.CollectionUtils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.common.utils.DateUtil;
@@ -4462,7 +4459,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userVo.setUserId(staffInfo.getUserId());
         AdminVo adminVo = this.sysStaffInfoService.getIsAdmin(userVo);
         if (adminVo.getIsCompanyAdmin() || adminVo.getIsDepartAdmin()){
-            throw new DefaultException("根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
+            throw new DefaultException("顾问同步失败，根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
         }
 
         // 获取服务年限
@@ -4508,14 +4505,18 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
         crmAdviserSyncDto.setSysDepartmentInfoDto(sysDepartmentInfoDto);
 
-        this.adviserFeignService.syncCrmUserAdviser(crmAdviserSyncDto);
-
-        // 变更员工表状态
-        UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.lambda().eq(SysStaffInfo::getId,staffId);
-        updateWrapper.lambda().set(SysStaffInfo::getIsSyncAdvisor,YesNo.YES);
-        updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,YesNo.YES);
-        this.sysStaffInfoService.update(updateWrapper);
+        // 同步成为顾问
+        DataResult<Object> result = this.adviserFeignService.syncCrmUserAdviser(crmAdviserSyncDto);
+        if (result.isSuccess()){
+            // 变更员工表状态
+            UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.lambda().eq(SysStaffInfo::getId,staffId);
+            updateWrapper.lambda().set(SysStaffInfo::getIsSyncAdvisor,YesNo.YES);
+            updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,YesNo.YES);
+            this.sysStaffInfoService.update(updateWrapper);
+        }else {
+            log.error("同步伙伴为唐叁藏顾问服务异常: {}", JSON.toJSONString(result.getMessage()));
+        }
 
     }
 
