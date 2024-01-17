@@ -4485,17 +4485,17 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         adviserCompanyDto.setCompanyAddressCity(companyAddrName.get(companyInfo.getCompanyAddressCityCode()));
         adviserCompanyDto.setCompanyAddressArea(companyAddrName.get(companyInfo.getCompanyAddressAreaCode()));
 
-        com.zerody.adviser.api.dto.SysDepartmentInfoDto sysDepartmentInfoDto = new com.zerody.adviser.api.dto.SysDepartmentInfoDto();
 
         QueryWrapper<UnionStaffDepart> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(UnionStaffDepart::getStaffId,staffInfo.getId());
         UnionStaffDepart unionStaffDepart = this.unionStaffDeparService.getOne(queryWrapper);
-        if (DataUtil.isNotEmpty(unionStaffDepart)){
-            // 获取伙伴部门信息
-            SysDepartmentInfo sysDepartmentInfo = this.sysDepartmentInfoService.getById(unionStaffDepart.getDepartmentId());
-            BeanUtils.copyProperties(sysDepartmentInfo,sysDepartmentInfoDto);
-        }
+        String departmentId = unionStaffDepart.getDepartmentId();
 
+
+        // 变更部门状态同步
+        if (DataUtil.isNotEmpty(companyInfo.getId())){
+            this.sysStaffInfoMapper.setDeptState(companyInfo.getId());
+        }
 
         CrmAdviserSyncDto crmAdviserSyncDto = new CrmAdviserSyncDto();
         crmAdviserSyncDto.setCreateBy(userData.getUserId());
@@ -4505,7 +4505,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         crmAdviserSyncDto.setUserName(staffInfo.getUserName());
         crmAdviserSyncDto.setMobile(userInfo.getPhoneNumber());
         crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
-        crmAdviserSyncDto.setSysDepartmentInfoDto(sysDepartmentInfoDto);
+        crmAdviserSyncDto.setDepartId(departmentId);
+
 
         // 同步成为顾问
         DataResult<Object> result = this.adviserFeignService.syncCrmUserAdviser(crmAdviserSyncDto);

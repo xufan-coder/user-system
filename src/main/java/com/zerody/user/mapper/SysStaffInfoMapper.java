@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zerody.user.api.vo.UserDeptVo;
 import com.zerody.user.domain.SysStaffInfo;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * @author DELL
@@ -527,4 +528,7 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<UserInductionVo> getUserInductionList();
 
     Integer getExperience(@Param("staffId") String staffId);
+
+    @Update("<script>update sys_department_info set is_edit= 1 where comp_id = #{companyId}</script>")
+    void setDeptState(@Param("companyId") String companyId);
 }
