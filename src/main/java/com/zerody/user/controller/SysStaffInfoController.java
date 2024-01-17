@@ -897,7 +897,7 @@ public class SysStaffInfoController {
             return R.success();
         } catch (DefaultException e) {
             log.error("同步伙伴为唐叁藏顾问出错:{}", e.getMessage());
-            return R.error("同步伙伴为唐叁藏顾问出错");
+            return R.error("同步伙伴为唐叁藏顾问出错".concat(e.getMessage()));
         } catch (Exception e) {
             log.error("同步伙伴为唐叁藏顾问出错:{}", e, e);
             return R.error("同步伙伴为唐叁藏顾问出错".concat(e.getMessage()));
@@ -918,7 +918,7 @@ public class SysStaffInfoController {
             return R.success();
         } catch (DefaultException e) {
             log.error("同步crm伙伴顾问状态出错:{}", e.getMessage());
-            return R.error("同步crm伙伴顾问状态出错");
+            return R.error("同步crm伙伴顾问状态出错".concat(e.getMessage()));
         } catch (Exception e) {
             log.error("同步crm伙伴顾问状态出错:{}", e, e);
             return R.error("同步crm伙伴顾问状态出错".concat(e.getMessage()));
