@@ -405,4 +405,10 @@ public class SysUserInfoVo {
 
     /**最新入职公司 */
     private String newCompany;
+
+    /** 是否同步顾问 (0.否 1.是) */
+    private Integer isSyncAdvisor;
+
+    /** 是否唐叁藏顾问 (0.否 1.是) */
+    private Integer isTszAdvisor;
 }
