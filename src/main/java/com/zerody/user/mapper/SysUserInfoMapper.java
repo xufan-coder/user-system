@@ -236,6 +236,4 @@ public interface SysUserInfoMapper extends BaseMapper<SysUserInfo> {
     List<StaffInfoVo> getCompanyIdInner(@Param("companyId")String companyId);
 
     List<String> getCompanyAdmin(@Param("companyId")String companyId);
-
-    UserAdminVo getUserIsAdmin(@Param("userId") String userId);
 }

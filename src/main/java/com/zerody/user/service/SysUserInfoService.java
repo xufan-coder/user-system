@@ -296,14 +296,4 @@ public interface SysUserInfoService extends IService<SysUserInfo> {
     *  @return        java.lang.Object
     */
     List<String> getUserIdsByCompanyIdUserType(Integer userType, String companyId);
-
-
-    /**
-    * @Description:         判断伙伴是否为管理层
-    * @Param:               [userId]
-    * @return:              com.zerody.user.vo.UserAdminVo
-    * @Author:              xufan
-    * @Date:                2024/1/16 9:41
-    */
-    UserAdminVo getUserIsAdmin(String userId);
 }
