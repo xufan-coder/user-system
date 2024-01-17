@@ -4458,6 +4458,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserVo userVo = new UserVo();
         userVo.setUserId(staffInfo.getUserId());
         AdminVo adminVo = this.sysStaffInfoService.getIsAdmin(userVo);
+
+        log.info("伙伴管理层信息: {}", JSON.toJSONString(adminVo));
+
         if (adminVo.getIsCompanyAdmin() || adminVo.getIsDepartAdmin()){
             throw new DefaultException("顾问同步失败，根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
         }
