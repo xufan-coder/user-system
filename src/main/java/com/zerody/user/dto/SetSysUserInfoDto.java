@@ -197,6 +197,9 @@ public class SetSysUserInfoDto extends SysUserInfo {
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date expireTime;
 
+    /** 是否唐叁藏顾问 (0.否 1.是) */
+    private Integer isTszAdvisor;
+
     private Boolean filter = true;
 
 }
