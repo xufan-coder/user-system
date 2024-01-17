@@ -4500,7 +4500,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         CrmAdviserSyncDto crmAdviserSyncDto = new CrmAdviserSyncDto();
         crmAdviserSyncDto.setCreateBy(userData.getUserId());
-        crmAdviserSyncDto.setCreateBy(userData.getUserName());
+        crmAdviserSyncDto.setCreateUserName(userData.getUserName());
         crmAdviserSyncDto.setExperience(experience);
         crmAdviserSyncDto.setCrmUserId(staffInfo.getUserId());
         crmAdviserSyncDto.setUserName(staffInfo.getUserName());
