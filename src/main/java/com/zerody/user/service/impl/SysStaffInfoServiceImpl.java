@@ -4515,13 +4515,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,YesNo.YES);
             this.sysStaffInfoService.update(updateWrapper);
         }else {
-            log.error("同步伙伴为唐叁藏顾问服务异常: {}", JSON.toJSONString(result.getMessage()));
+            throw new DefaultException(result.getMessage());
+            //log.error("同步伙伴为唐叁藏顾问服务异常: {}", JSON.toJSONString(result.getMessage()));
         }
 
     }
 
     @Override
-    public void syncAdviserState(AdviserStateDto param) {
+    public void doSyncAdviserState(AdviserStateDto param) {
         UpdateWrapper<SysStaffInfo> updateWrapper = new UpdateWrapper<>();
         updateWrapper.lambda().eq(SysStaffInfo::getUserId,param.getCrmUserId());
         updateWrapper.lambda().set(SysStaffInfo::getIsTszAdvisor,param.getEnabled());

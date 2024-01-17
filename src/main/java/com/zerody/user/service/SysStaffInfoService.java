@@ -335,5 +335,5 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
 
     void doSyncCrmUserAdviser(String staffId, IUser userData);
 
-    void syncAdviserState(AdviserStateDto param);
+    void doSyncAdviserState(AdviserStateDto param);
 }
