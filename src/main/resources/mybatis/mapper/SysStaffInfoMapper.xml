@@ -225,7 +225,9 @@
         sui.train_no,
         sui.is_prepare_executive,
         ssi.expire_time,
-        ssi.leave_type
+        ssi.leave_type,
+        ssi.is_sync_advisor as isSyncAdvisor,
+        ssi.is_tsz_advisor as isTszAdvisor
         FROM
         sys_user_info sui
         JOIN sys_staff_info ssi ON sui.id = ssi.user_id
@@ -1647,6 +1649,14 @@
     <select id="getUserInductionList" resultType="com.zerody.user.api.vo.UserInductionVo">
         select user_id, YEAR(date_join) as join_year  from sys_staff_info
         where `status` = 0 and  DATE_FORMAT(date_join,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')
+    </select>
+    <select id="getExperience" resultType="java.lang.Integer">
+        SELECT
+	        CEILING( DATEDIFF( now(), date_join ) / 365 ) as experience
+        FROM
+	        sys_staff_info
+        WHERE
+	        id = #{staffId}
     </select>
 
 </mapper>

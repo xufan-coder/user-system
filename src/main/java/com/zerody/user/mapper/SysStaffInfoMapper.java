@@ -525,4 +525,6 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     List<AdviserUserVo> getDeptUserListByDeptId(@Param("deptId") String deptId);
 
     List<UserInductionVo> getUserInductionList();
+
+    Integer getExperience(@Param("staffId") String staffId);
 }

@@ -4466,10 +4466,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         }
 
         // 获取服务年限
-        Integer thisYear = DateUtil.getPresentTimeYears();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy");
-        Integer dateJoin = Integer.valueOf(format.format(staffInfo.getDateJoin()));
-        Integer experience = (thisYear - dateJoin) + 1;
+        Integer experience = this.sysStaffInfoMapper.getExperience(staffId);
 
         // 获取伙伴公司信息
         SysCompanyInfo companyInfo = this.sysCompanyInfoService.getById(staffInfo.getCompId());
