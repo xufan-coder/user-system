@@ -336,4 +336,8 @@ public interface SysStaffInfoService extends IService<SysStaffInfo> {
     void doSyncCrmUserAdviser(String staffId, IUser userData);
 
     void doSyncAdviserState(AdviserStateDto param);
+
+    void doSyncAdviserStateBatch(List<String> ids);
+
+    void syncCrmDept(String companyId);
 }

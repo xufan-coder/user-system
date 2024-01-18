@@ -4532,4 +4532,14 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         this.sysStaffInfoService.update(updateWrapper);
     }
 
+    @Override
+    public void doSyncAdviserStateBatch(List<String> ids) {
+        this.sysStaffInfoMapper.updateAdvisorState(ids);
+    }
+
+    @Override
+    public void syncCrmDept(String companyId) {
+        this.sysStaffInfoMapper.setDeptState(companyId);
+    }
+
 }
