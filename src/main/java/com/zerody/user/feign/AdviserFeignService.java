@@ -18,6 +18,4 @@ public interface AdviserFeignService extends AdviserRemoteService {
 
     @PostMapping("/depart/sync/inner")
     void doSyncDepart(@RequestBody List<Map<String, String>> data);
-
-    DataResult<Object> doAdviserDepartChangePush(AdviserDepartChangePush push);
 }
