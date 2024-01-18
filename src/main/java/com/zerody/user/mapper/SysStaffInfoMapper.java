@@ -532,5 +532,5 @@ public interface SysStaffInfoMapper extends BaseMapper<SysStaffInfo> {
     @Update("<script>update sys_department_info set is_edit= 1 where comp_id = #{companyId}</script>")
     void setDeptState(@Param("companyId") String companyId);
 
-    void updateAdvisorState(@Param("param") List<String> ids);
+    void updateAdvisorState(@Param("ids") List<String> ids);
 }
