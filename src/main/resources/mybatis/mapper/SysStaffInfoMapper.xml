@@ -1663,7 +1663,7 @@
         UPDATE sys_staff_info
         SET is_sync_advisor = 1, is_tsz_advisor = 1
         WHERE
-        crm_user_id IN
+        user_id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
