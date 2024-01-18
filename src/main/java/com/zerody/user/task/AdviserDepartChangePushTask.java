@@ -3,6 +3,7 @@ package com.zerody.user.task;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import com.zerody.adviser.api.dto.AdviserDepartChangePushDto;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
@@ -43,7 +44,11 @@ public class AdviserDepartChangePushTask {
             // 获取所有用户ID
             List<AdviserDepartChangePush> list = adviserDepartChangePushService.selectAll();
             for (AdviserDepartChangePush push : list) {
-                DataResult<Object> result=adviserFeignService.doAdviserDepartChangePush(push);
+                AdviserDepartChangePushDto dto =new AdviserDepartChangePushDto();
+                dto.setCreateTime(push.getCreateTime());
+                dto.setDeptId(push.getDeptId());
+                dto.setUserId(push.getUserId());
+                DataResult<Object> result=adviserFeignService.doAdviserDepartChangePush(dto);
                 if (result.isSuccess()){
                     // 变更状态
                     UpdateWrapper<AdviserDepartChangePush> updateWrapper = new UpdateWrapper<>();
