@@ -955,7 +955,7 @@ public class SysStaffInfoController {
     @GetMapping("/sync/crm/dept/inner")
     public DataResult<Object> syncCrmDept(@RequestParam("companyId") String companyId) {
         try {
-            this.sysStaffInfoService.syncCrmDept(companyId);
+            this.sysStaffInfoService.doSyncCrmDept(companyId);
             return R.success();
         } catch (DefaultException e) {
             log.error("同步crm部门出错:{}", e.getMessage());

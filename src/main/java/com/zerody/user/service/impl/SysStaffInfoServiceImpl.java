@@ -4454,7 +4454,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         SysStaffInfo staffInfo = this.sysStaffInfoService.getById(staffId);
         SysUserInfo userInfo = this.sysUserInfoService.getById(staffInfo.getUserId());
-        // 判断是否为管理层
+
+        //需求修改，暂不判断是否为管理层
+        /*// 判断是否为管理层
         UserVo userVo = new UserVo();
         userVo.setUserId(staffInfo.getUserId());
         userVo.setCompanyId(staffInfo.getCompId());
@@ -4462,7 +4464,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         if (adminVo.getIsCompanyAdmin() || adminVo.getIsDepartAdmin()){
             throw new DefaultException("顾问同步失败，根据集团要求小微集团的管理层暂时不能成为唐叁藏顾问，请确认伙伴角色后再确认同步数据！");
-        }
+        }*/
 
         // 获取服务年限
         Integer experience = this.sysStaffInfoMapper.getExperience(staffId);
@@ -4538,7 +4540,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     }
 
     @Override
-    public void syncCrmDept(String companyId) {
+    public void doSyncCrmDept(String companyId) {
         this.sysStaffInfoMapper.setDeptState(companyId);
     }
 
