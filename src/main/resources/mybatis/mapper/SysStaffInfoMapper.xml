@@ -89,6 +89,9 @@
             <if test="staff.companyId != null and staff.companyId != ''">
                 and sci.id = #{staff.companyId}
             </if>
+            <if test="staff.isTransfer neq null and staff.isTransfer eq 1">
+                and sui.status =0
+            </if>
             <if test="staff.companyIds neq null and staff.companyIds.size() gt 0">
                 AND sci.id
                 <foreach collection="staff.companyIds" item="id" open="IN (" separator="," close=")">

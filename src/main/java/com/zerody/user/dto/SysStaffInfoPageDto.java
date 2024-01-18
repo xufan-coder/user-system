@@ -96,4 +96,9 @@ public class SysStaffInfoPageDto extends UserPositionPageParam {
      */
     private String searchName;
 
+    /**
+     * 是否过滤调离(1是 0否)
+     */
+    private Integer isTransfer;
+
 }
