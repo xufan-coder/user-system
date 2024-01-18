@@ -1659,4 +1659,13 @@
 	        id = #{staffId}
     </select>
 
+    <update id="updateAdvisorState">
+        UPDATE sys_staff_info
+        SET is_sync_advisor = 1, is_tsz_advisor = 1
+        WHERE
+        id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

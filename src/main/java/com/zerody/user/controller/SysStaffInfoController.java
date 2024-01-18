@@ -925,4 +925,44 @@ public class SysStaffInfoController {
             return R.error("同步crm伙伴顾问状态出错".concat(e.getMessage()));
         }
     }
+
+    /**
+    * @Description:         批量同步crm伙伴顾问状态(内部接口)
+    * @Author:              xufan
+    * @Date:                2024/1/18 10:41
+    */
+    @PutMapping("/sync/adviser/state/batch/inner")
+    public DataResult<Object> syncAdviserStateBatch(@RequestBody List<String> ids) {
+        try {
+            log.info("批量同步crm伙伴顾问状态入参{}",JSON.toJSONString(ids));
+            this.sysStaffInfoService.doSyncAdviserStateBatch(ids);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("批量同步crm伙伴顾问状态出错:{}", e.getMessage());
+            return R.error("批量同步crm伙伴顾问状态出错:".concat(e.getMessage()));
+        } catch (Exception e) {
+            log.error("批量同步crm伙伴顾问状态出错:{}", e, e);
+            return R.error("批量同步crm伙伴顾问状态出错".concat(e.getMessage()));
+        }
+    }
+
+
+    /**
+    * @Description:         通过companyId同步crm部门 (内部接口)
+    * @Author:              xufan
+    * @Date:                2024/1/18 10:42
+    */
+    @GetMapping("/sync/crm/dept/inner")
+    public DataResult<Object> syncCrmDept(@RequestParam("companyId") String companyId) {
+        try {
+            this.sysStaffInfoService.syncCrmDept(companyId);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("同步crm部门出错:{}", e.getMessage());
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("同步crm部门出错:{}", e, e);
+            return R.error("同步crm部门出错".concat(e.getMessage()));
+        }
+    }
 }
