@@ -55,6 +55,7 @@ public class AdviserDepartChangePushTask {
                     updateWrapper.lambda().eq(AdviserDepartChangePush::getId,push.getId());
                     updateWrapper.lambda().set(AdviserDepartChangePush::getState, YesNo.YES);
                     updateWrapper.lambda().set(AdviserDepartChangePush::getUpdateTime,new Date());
+                    updateWrapper.lambda().set(AdviserDepartChangePush::getSendTime,new Date());
                     this.adviserDepartChangePushService.update(updateWrapper);
                 }else {
                     //重试
