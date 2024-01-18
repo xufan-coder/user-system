@@ -398,7 +398,6 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
 
         //保存员工信息
         SysStaffInfo staff = new SysStaffInfo();
-        staff.setId(UUIDutils.getUUID32());
         staff.setAvatar(avatar);
         staff.setPassword(initPwd);
         staff.setRecommendId(setSysUserInfoDto.getRecommendId());
@@ -419,12 +418,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         staff.setIsDiamondMember(setSysUserInfoDto.getIsDiamondMember());
         staff.setExpireTime(setSysUserInfoDto.getExpireTime());
-        staff.setIsTszAdvisor(setSysUserInfoDto.getIsTszAdvisor());
-        // 同步唐叁藏顾问
-        if (setSysUserInfoDto.getIsTszAdvisor() == YesNo.YES){
-            this.doSyncCrmUserAdviser(staff.getId(),UserUtils.getUserData());
-            staff.setIsSyncAdvisor(YesNo.YES);
-        }
+        staff.setIsTszAdvisor(YesNo.NO);
         this.saveOrUpdate(staff);
 
         //成员关系处理 添加关系 ,荣耀记录,惩罚记录
