@@ -277,6 +277,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
     @Autowired
     private AdviserFeignService adviserFeignService;
 
+    @Autowired
+    private AdviserDepartChangePushService adviserDepartChangePushService;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -1292,6 +1295,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             log.info("{}-userType:{}", sysUserInfo.getUserName(), userTypeMap.get(staffInfo.getId()));
             staffInfo.setUserType(userTypeMap.get(staffInfo.getId()));
             this.updateById(staffInfo);
+
+            //修改了部门同步到唐叁藏顾问
+            adviserDepartChangePushService.saveAdviserSync(setSysUserInfoDto.getDepartId(),setSysUserInfoDto.getId());
         }
         if (removeToken && DataUtil.isEmpty(dep)) {
             if (!DataUtil.isEmpty(setSysUserInfoDto.getDepartId())) {

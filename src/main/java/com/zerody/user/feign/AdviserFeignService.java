@@ -1,6 +1,8 @@
 package com.zerody.user.feign;
 
 import com.zerody.adviser.api.service.AdviserRemoteService;
+import com.zerody.common.api.bean.DataResult;
+import com.zerody.user.domain.AdviserDepartChangePush;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,4 +18,6 @@ public interface AdviserFeignService extends AdviserRemoteService {
 
     @PostMapping("/depart/sync/inner")
     void doSyncDepart(@RequestBody List<Map<String, String>> data);
+
+    DataResult<Object> doAdviserDepartChangePush(AdviserDepartChangePush push);
 }
