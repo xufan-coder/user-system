@@ -28,6 +28,8 @@ public class SetSysUserInfoDto extends SysUserInfo {
     @NotBlank(message = "请选择企业！")
     private String companyId;
 
+    private String companyName;
+
     /**
      * 员工id
      */

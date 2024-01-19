@@ -693,6 +693,27 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         UserCopyResultVo copyResult = new UserCopyResultVo();
         copyResult.setUserId(sysUserInfo.getId());
         this.checkUtil.removeUserToken(param.getOldUserId());
+
+        // 根据is_sync_advisor状态判断是否需要同步
+        if (setSysUserInfoDto.getIsTszAdvisor() == YesNo.YES){
+            AdviserCompanyDto adviserCompanyDto = new AdviserCompanyDto();
+            adviserCompanyDto.setCrmCompanyId(setSysUserInfoDto.getCompanyId());
+            adviserCompanyDto.setName(setSysUserInfoDto.getCompanyName());
+
+            // 根据crmUserId 判断是否存在顾问   如果该伙伴是唐叁藏顾问，调离时先删除后新增唐叁藏顾问
+            CrmAdviserSyncDto crmAdviserSyncDto = new CrmAdviserSyncDto();
+            crmAdviserSyncDto.setCrmUserId(staff.getUserId());
+            crmAdviserSyncDto.setUserName(staff.getUserName());
+            crmAdviserSyncDto.setMobile(setSysUserInfoDto.getMobile());
+            crmAdviserSyncDto.setDepartId(setSysUserInfoDto.getDepartId());
+            crmAdviserSyncDto.setCreateUserName(UserUtils.getUserName());
+            crmAdviserSyncDto.setCreateBy(UserUtils.getUserId());
+            crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
+            crmAdviserSyncDto.setOldCrmUserId(param.getOldUserId());
+
+            this.adviserFeignService.doTransferStaffSyncAdviser(crmAdviserSyncDto);
+        }
+
         return copyResult;
     }
 
@@ -4291,6 +4312,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfoDto.setPositionId(param.getJobId());
         userInfoDto.setRoleId(param.getRoleId());
         userInfoDto.setCompanyId(param.getCompanyId());
+
+        if (DataUtil.isNotEmpty(sysCompany)){
+            userInfoDto.setCompanyName(sysCompany.getCompanyName());
+        }
+        userInfoDto.setIsTszAdvisor(userInfoDto.getIsTszAdvisor());
+
         //把员工设为离职
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
         staffQw.lambda().eq(SysStaffInfo::getUserId, param.getOldUserId());
