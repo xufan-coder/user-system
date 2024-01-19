@@ -604,6 +604,9 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         staff.setWorkingYears(setSysUserInfoDto.getWorkingYears());
         //更新入职时间
         staff.setDateJoin(new Date());
+        // 设置顾问同步状态
+        staff.setIsSyncAdvisor(setSysUserInfoDto.getIsSyncAdvisor());
+        staff.setIsTszAdvisor(setSysUserInfoDto.getIsTszAdvisor());
         this.saveOrUpdate(staff);
 
         //保存旧账号的身份证以及合规承诺书
@@ -4319,6 +4322,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             userInfoDto.setCompanyName(sysCompany.getCompanyName());
         }
         userInfoDto.setIsTszAdvisor(userInfoDto.getIsTszAdvisor());
+        userInfoDto.setIsSyncAdvisor(userInfoDto.getIsSyncAdvisor());
 
         //把员工设为离职
         QueryWrapper<SysStaffInfo> staffQw = new QueryWrapper<>();
