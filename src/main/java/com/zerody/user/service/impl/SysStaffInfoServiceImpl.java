@@ -706,8 +706,8 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             crmAdviserSyncDto.setUserName(staff.getUserName());
             crmAdviserSyncDto.setMobile(setSysUserInfoDto.getMobile());
             crmAdviserSyncDto.setDepartId(setSysUserInfoDto.getDepartId());
-            crmAdviserSyncDto.setCreateUserName(UserUtils.getUserData().getUserName());
-            crmAdviserSyncDto.setCreateBy(UserUtils.getUserData().getUserId());
+            crmAdviserSyncDto.setCreateUserName(param.getCreateUserName());
+            crmAdviserSyncDto.setCreateBy(param.getCreateBy());
             crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
             crmAdviserSyncDto.setOldCrmUserId(param.getOldUserId());
 
