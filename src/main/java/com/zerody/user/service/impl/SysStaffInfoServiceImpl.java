@@ -706,11 +706,12 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
             crmAdviserSyncDto.setUserName(staff.getUserName());
             crmAdviserSyncDto.setMobile(setSysUserInfoDto.getMobile());
             crmAdviserSyncDto.setDepartId(setSysUserInfoDto.getDepartId());
-            crmAdviserSyncDto.setCreateUserName(UserUtils.getUserName());
-            crmAdviserSyncDto.setCreateBy(UserUtils.getUserId());
+            crmAdviserSyncDto.setCreateUserName(UserUtils.getUserData().getUserName());
+            crmAdviserSyncDto.setCreateBy(UserUtils.getUserData().getUserId());
             crmAdviserSyncDto.setAdviserCompanyDto(adviserCompanyDto);
             crmAdviserSyncDto.setOldCrmUserId(param.getOldUserId());
 
+            log.info("crm伙伴调离时传递参数入参2222=====》{}", JSON.toJSONString(crmAdviserSyncDto));
             this.adviserFeignService.doTransferStaffSyncAdviser(crmAdviserSyncDto);
         }
 
@@ -4312,6 +4313,7 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         userInfoDto.setPositionId(param.getJobId());
         userInfoDto.setRoleId(param.getRoleId());
         userInfoDto.setCompanyId(param.getCompanyId());
+        userInfoDto.setMobile(byId.getPhoneNumber());
 
         if (DataUtil.isNotEmpty(sysCompany)){
             userInfoDto.setCompanyName(sysCompany.getCompanyName());
