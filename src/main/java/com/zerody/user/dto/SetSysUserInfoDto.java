@@ -202,6 +202,9 @@ public class SetSysUserInfoDto extends SysUserInfo {
     /** 是否唐叁藏顾问 (0.否 1.是) */
     private Integer isTszAdvisor;
 
+    /** 是否同步顾问 (0.否 1.是) */
+    private Integer isSyncAdvisor;
+
     private Boolean filter = true;
 
 }

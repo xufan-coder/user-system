@@ -1165,7 +1165,8 @@
             sui.id_card_front,
             sui.id_card_reverse,
             sui.train_no,
-            ssi.is_sync_advisor as as isSyncAdvisor
+            ssi.is_sync_advisor as isSyncAdvisor,
+            ssi.is_tsz_advisor as isTszAdvisor
         FROM sys_user_info AS sui
         JOIN sys_staff_info AS ssi ON ssi.user_id = sui.id
         WHERE
