@@ -4517,10 +4517,13 @@ public class SysStaffInfoServiceImpl extends BaseService<SysStaffInfoMapper, Sys
         adviserCompanyDto.setCompanyAddressArea(companyAddrName.get(companyInfo.getCompanyAddressAreaCode()));
 
 
+        String departmentId = null;
         QueryWrapper<UnionStaffDepart> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(UnionStaffDepart::getStaffId,staffInfo.getId());
         UnionStaffDepart unionStaffDepart = this.unionStaffDeparService.getOne(queryWrapper);
-        String departmentId = unionStaffDepart.getDepartmentId();
+        if (DataUtil.isNotEmpty(unionStaffDepart)){
+            departmentId = unionStaffDepart.getDepartmentId();
+        }
 
 
         // 变更部门状态同步
