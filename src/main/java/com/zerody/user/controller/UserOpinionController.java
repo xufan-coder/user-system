@@ -165,4 +165,18 @@ public class UserOpinionController {
         }
     }
 
+    @DeleteMapping("/del/{id}")
+    public DataResult<Object> modifyOpinionStateById(@PathVariable String id){
+        try {
+            //this.userOpinionService.modifyOpinionStateById(id);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("修改意见反馈状态错误：{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("修改意见反馈状态错误：{}", e, e);
+            return R.error("修改意见反馈状态错误" + e.getMessage());
+        }
+    }
+
 }

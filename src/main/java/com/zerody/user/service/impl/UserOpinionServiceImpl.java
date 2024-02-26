@@ -93,7 +93,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         opinion.setId(UUIDutils.getUUID32());
         this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
-        userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds());
+        userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.NO);
         new Thread(() -> {
             for(String userId : param.getSeeUserIds()){
                 jdPush(this.replyWarnTemplate,userId,opinion);

@@ -26,7 +26,7 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
 
 
     @Override
-    public void addOpinionRef(String opinionId, List<String> seeUserIds) {
+    public void addOpinionRef(String opinionId, List<String> seeUserIds,Integer replyType) {
         List<UserOpinionRef> refList = new ArrayList<>();
         for(String userId : seeUserIds){
             UserOpinionRef ref = new UserOpinionRef();
@@ -34,6 +34,7 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
             ref.setUserId(userId);
             ref.setOpinionId(opinionId);
             ref.setCreateTime(new Date());
+            ref.setReplyType(replyType);
             refList.add(ref);
         }
         this.saveBatch(refList);

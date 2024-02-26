@@ -45,4 +45,7 @@ public class UserOpinion {
      */
     private Integer deleted;
 
+    /** 处理进度(0 待处理 1 处理中 2 已完成) */
+    private Integer state;
+
 }
