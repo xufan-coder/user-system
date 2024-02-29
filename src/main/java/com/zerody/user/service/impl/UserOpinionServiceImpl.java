@@ -4,10 +4,12 @@ package com.zerody.user.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.expression.Expression;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
@@ -16,8 +18,10 @@ import com.zerody.common.util.UUIDutils;
 import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.jpush.api.dto.AddJdPushDto;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.config.OpinionMsgConfig;
 import com.zerody.user.constant.ImageTypeInfo;
+import com.zerody.user.constant.OpinionStateType;
 import com.zerody.user.domain.Image;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
@@ -29,8 +33,10 @@ import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.UserOpinionMapper;
 import com.zerody.user.mapper.UserReplyMapper;
 import com.zerody.user.service.ImageService;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserOpinionRefService;
 import com.zerody.user.service.UserOpinionService;
+import com.zerody.user.util.NoticeImUtil;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
@@ -71,12 +77,18 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     private SendMsgFeignService sendMsgFeignService;
 
     @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
     private OpinionMsgConfig opinionMsgConfig;
 
     @Value("${jpush.template.user-system.reply-warn:}")
     private String replyWarnTemplate;
     @Value("${jpush.template.user-system.reply-warn2:}")
     private String replyWarnTemplate2;
+
+    @Value("${receive.boss}")
+    private List<String> receiveBoss;
 
 
     /**
@@ -91,16 +103,33 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         opinion.setCreateTime(new Date());
         opinion.setDeleted(YesNo.YES);
         opinion.setId(UUIDutils.getUUID32());
+        opinion.setState(OpinionStateType.PENDING);
         this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
-        userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.NO);
-        new Thread(() -> {
-            for(String userId : param.getSeeUserIds()){
-                jdPush(this.replyWarnTemplate,userId,opinion);
-                pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
-            }
-        }).start();
 
+        if (DataUtil.isNotEmpty(param.getSeeUserIds()) && param.getSeeUserIds().size() > 0){
+            userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
+            new Thread(() -> {
+                for(String userId : param.getSeeUserIds()){
+                    jdPush(this.replyWarnTemplate,userId,opinion);
+                    pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
+                }
+            }).start();
+        }else {
+            // 设置推送的boss账号
+            param.setSeeUserIds(this.receiveBoss);
+            userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
+            // 意见发起人信息
+            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(param.getUserId());
+            if (DataUtil.isEmpty(staffInfo)){
+                throw new DefaultException("找不到该发起人信息");
+            }
+            String senderInfo = staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
+            // 立即推送意见反馈给可查看的boss
+            for (String ceoUserId : param.getSeeUserIds()) {
+                NoticeImUtil.pushOpinionToBoss(ceoUserId,senderInfo,param.getContent());
+            }
+        }
     }
 
     @Override
@@ -123,7 +152,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();
 
-
+        // 有回复变更处理进度为处理中
+        UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
+        up.lambda().eq(UserOpinion::getId,opinion.getId());
+        up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
+        this.update(up);
     }
 
     private void jdPush(String code,String userId, Object obj){
@@ -253,6 +286,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         orderStatusMap.put("opinionSum",opinionSum);
 
         return orderStatusMap;
+    }
+
+    @Override
+    public void modifyOpinionStateById(String id) {
+        UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
+        up.lambda().eq(UserOpinion::getId,id);
+        up.lambda().set(UserOpinion::getState, OpinionStateType.ACCOMPLISH);
+        this.update(up);
     }
 
 }

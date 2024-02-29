@@ -11,15 +11,16 @@ import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
 import com.zerody.user.service.UserOpinionService;
+import com.zerody.user.service.base.CheckUtil;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
 import com.zerody.user.vo.UserOpinionVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,6 +34,9 @@ public class UserOpinionController {
 
     @Resource
     private UserOpinionService userOpinionService;
+
+    @Autowired
+    private CheckUtil checkUtil;
 
     /**
      * @description 添加意见(董事长信箱)
@@ -112,6 +116,7 @@ public class UserOpinionController {
     public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(UserOpinionQueryDto queryDto) {
         try {
             queryDto.setUserId(UserUtils.getUserId());
+            this.checkUtil.setFiltrateTime(queryDto);
             IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(queryDto);
             return R.success(iPage);
         } catch (DefaultException e) {
@@ -165,10 +170,15 @@ public class UserOpinionController {
         }
     }
 
-    @DeleteMapping("/del/{id}")
+    /**
+    * @Description:         修改意见反馈状态为已完成
+    * @Author:              xufan
+    * @Date:                2024/2/29 10:37
+    */
+    @PutMapping("/modify/state/{id}")
     public DataResult<Object> modifyOpinionStateById(@PathVariable String id){
         try {
-            //this.userOpinionService.modifyOpinionStateById(id);
+            this.userOpinionService.modifyOpinionStateById(id);
             return R.success();
         } catch (DefaultException e) {
             log.error("修改意见反馈状态错误：{}", e, e);

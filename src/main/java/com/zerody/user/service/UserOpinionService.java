@@ -28,4 +28,6 @@ public interface UserOpinionService extends IService<UserOpinion> {
     UserOpinionDetailVo getOpinionDetail(String id);
 
     Object getOpinionAndReplySum(UserOpinionQueryDto dto);
+
+    void modifyOpinionStateById(String id);
 }

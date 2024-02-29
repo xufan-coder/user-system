@@ -34,8 +34,6 @@ public class UserOpinionRef {
      */
     private Date createTime;
 
-    /** 回复人类型 (0 直接回复人 1 协助回复人) */
+    /** 回复人类型 (1 直接回复人 0 协助回复人) */
     private Integer replyType;
-
-
 }
