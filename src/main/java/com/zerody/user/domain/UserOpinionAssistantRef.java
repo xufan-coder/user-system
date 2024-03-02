@@ -15,11 +15,11 @@ public class UserOpinionAssistantRef {
     /** id */
     private String id;
 
-    /** boss账号id */
-    private String ceoUserId;
+    /** 用户id */
+    private String userId;
 
-    /** boss名称 */
-    private String ceoUserName;
+    /** 用户名称 */
+    private String userName;
 
     /** 协助人id */
     private String assistantUserId;
@@ -29,4 +29,7 @@ public class UserOpinionAssistantRef {
 
     /** 创建时间 */
     private Date createTime;
+
+    /** 协助类型 ( 1 自动分配 0 非自动分配) */
+    private Integer type;
 }

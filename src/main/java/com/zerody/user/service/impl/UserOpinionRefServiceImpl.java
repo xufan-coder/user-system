@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author kuang
@@ -38,5 +39,14 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
             refList.add(ref);
         }
         this.saveBatch(refList);
+    }
+
+    @Override
+    public List<String> getSeeUserIds(String opinionId){
+        QueryWrapper<UserOpinionRef> qw = new QueryWrapper<>();
+        qw.lambda().eq(UserOpinionRef::getOpinionId,opinionId);
+        List<UserOpinionRef> refList = this.list(qw);
+        List<String> collect = refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
+        return collect;
     }
 }

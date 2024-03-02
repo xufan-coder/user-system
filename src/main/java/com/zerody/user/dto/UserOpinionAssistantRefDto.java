@@ -11,12 +11,18 @@ import java.util.List;
 @Data
 public class UserOpinionAssistantRefDto {
 
-    /** boss账号id */
-    public String ceoUserId;
+    /** 用户id */
+    private String userId;
 
-    /** boss名称 */
-    public String ceoUserName;
+    /** 用户名称 */
+    private String userName;
 
     /** 协助人id */
-    public List<String> assistantUserIds;
+    private List<String> assistantUserIds;
+
+    /** 反馈意见id */
+    private List<String> opinionIds;
+
+    /** 协助类型 ( 1 自动分配 0 手动分配) */
+    private Integer type;
 }

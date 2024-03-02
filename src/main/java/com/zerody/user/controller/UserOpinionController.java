@@ -139,6 +139,7 @@ public class UserOpinionController {
             if(!UserUtils.getUser().isCEO()){
                 dto.setUserId(UserUtils.getUserId());
             }
+            checkUtil.setFiltrateTime(dto);
             IPage<UserOpinionPageVo> iPage = this.userOpinionService.queryUserOpinionPage(dto);
             return R.success(iPage);
         } catch (DefaultException e) {

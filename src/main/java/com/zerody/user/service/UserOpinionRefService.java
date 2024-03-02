@@ -12,4 +12,6 @@ import java.util.List;
 public interface UserOpinionRefService extends IService<UserOpinionRef> {
 
     void addOpinionRef(String id, List<String> seeUserIds, Integer replyType);
+
+    List<String> getSeeUserIds(String opinionId);
 }

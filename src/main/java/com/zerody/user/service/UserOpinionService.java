@@ -30,4 +30,6 @@ public interface UserOpinionService extends IService<UserOpinion> {
     Object getOpinionAndReplySum(UserOpinionQueryDto dto);
 
     void modifyOpinionStateById(String id);
+
+    String getSenderInfo(String userId);
 }

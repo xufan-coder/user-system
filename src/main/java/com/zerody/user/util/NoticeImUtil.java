@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.im.api.dto.SendHighMessageButton;
 import com.zerody.im.api.dto.SendRobotMessageDto;
+import com.zerody.im.constant.MsgType;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.im.util.IM;
 import com.zerody.user.config.BossReceiveOpinionConfig;
+import com.zerody.user.domain.UserOpinion;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +43,7 @@ public class NoticeImUtil {
         bossReceiveOpinionConfigStatic = bossReceiveOpinionConfig;
     }
 
-    public static void pushOpinionToBoss(String userId, String sender, String content){
+    public static void pushOpinionToDirect(String userId, String sender, String content){
         try {
             // 消息内容
             String msg =  String.format(bossReceiveOpinionConfigStatic.getContent(), sender, content);
@@ -88,5 +91,75 @@ public class NoticeImUtil {
     }
 
 
+
+    public static void pushOpinionToAssistant(String userId, String sender, String content){
+        try {
+            // 消息内容
+            String msg =  String.format(bossReceiveOpinionConfigStatic.getContent(), sender, content);
+            String query = String.format(bossReceiveOpinionConfigStatic.getQuery(), userId);
+            Object parse = JSONObject.parse(query);
+
+            String arguments = String.format(bossReceiveOpinionConfigStatic.getArguments(),userId);
+            Object parse1 = JSONObject.parse(arguments);
+
+            List<SendHighMessageButton> buttons = new ArrayList<>();
+            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+            sendHighMessageButton.setName("查看详情");
+            sendHighMessageButton.setUrl(bossReceiveOpinionConfigStatic.getUrl());
+            sendHighMessageButton.setQuery(parse);
+            sendHighMessageButton.setArguments(parse1);
+            sendHighMessageButton.setMessageSource("extend");
+
+            SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
+            sendHighMessageButton2.setName("继续反馈");
+            sendHighMessageButton2.setUrl(bossReceiveOpinionConfigStatic.getUrl2());
+            sendHighMessageButton2.setQuery(parse);
+            sendHighMessageButton2.setArguments(parse1);
+            sendHighMessageButton2.setMessageSource("extend");
+            buttons.add(sendHighMessageButton);
+            buttons.add(sendHighMessageButton2);
+
+            Map<String,Object> dataMap = new HashMap<>();
+            dataMap.put("title", bossReceiveOpinionConfigStatic.getTitle());
+            dataMap.put("content",msg);
+            dataMap.put("buttons",buttons);
+
+            SendRobotMessageDto data = new SendRobotMessageDto();
+            data.setContent(msg);
+            data.setSender(IM.ROBOT_XIAOZANG);
+            data.setTarget(userId);
+            data.setConversationType(0);
+            data.setPersistFlag(3);
+            data.setContentExtra(JSONObject.toJSONString(dataMap));
+            data.setType(1014);
+            DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+            log.info("boss新信件接收查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+        } catch (Exception e) {
+            log.error("推送给boss新信件接收查看提醒IM出错:{}", e, e);
+        }
+    }
+
+
+    /**添加预约通知状态变更*/
+    public static void sendOpinionStateChange(UserOpinion userOpinion, String seeUserId) {
+
+        if(StringUtils.isEmpty(userOpinion.getId())){
+            return;
+        }
+        Map<String,Object> map=new HashMap<>();
+        map.put("type", MsgType.APPOINTMENT);
+        map.put("id",userOpinion.getId());
+        map.put("msgIds",userOpinion.getId());
+        map.put("status",userOpinion.getState());
+        SendRobotMessageDto data = new SendRobotMessageDto();
+        data.setContentExtra(JSONObject.toJSONString(map));
+        data.setPersistFlag(0);
+        data.setType(MsgType.CHANGE_STATE);
+        data.setSender(userOpinion.getUserId());
+        data.setTarget(seeUserId);
+
+        DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+        log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+    }
 
 }

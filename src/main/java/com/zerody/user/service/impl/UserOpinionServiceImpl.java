@@ -32,10 +32,7 @@ import com.zerody.user.dto.UserReplyDto;
 import com.zerody.user.feign.JPushFeignService;
 import com.zerody.user.mapper.UserOpinionMapper;
 import com.zerody.user.mapper.UserReplyMapper;
-import com.zerody.user.service.ImageService;
-import com.zerody.user.service.SysStaffInfoService;
-import com.zerody.user.service.UserOpinionRefService;
-import com.zerody.user.service.UserOpinionService;
+import com.zerody.user.service.*;
 import com.zerody.user.util.NoticeImUtil;
 import com.zerody.user.vo.UserOpinionDetailVo;
 import com.zerody.user.vo.UserOpinionPageVo;
@@ -82,6 +79,12 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Autowired
     private OpinionMsgConfig opinionMsgConfig;
 
+    @Autowired
+    private UserOpinionAutoAssignService autoAssignService;
+
+    @Autowired
+    private UserOpinionAssistantRefService assistantRefService;
+
     @Value("${jpush.template.user-system.reply-warn:}")
     private String replyWarnTemplate;
     @Value("${jpush.template.user-system.reply-warn2:}")
@@ -96,6 +99,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
      */
     private static final int MESSAGE_TYPE_FLOW = 1010;
 
+    /** 1 自动分配 0 手动分配 */
+    private static final int MANUAL_ASSIGN = 0;
+    private static final int AUTOMATIC_ASSIGN = 1;
+
     @Override
     public void addUserOpinion(UserOpinionDto param) {
         UserOpinion opinion = new UserOpinion();
@@ -108,28 +115,67 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
 
         if (DataUtil.isNotEmpty(param.getSeeUserIds()) && param.getSeeUserIds().size() > 0){
+            // 添加接收人可查看关联
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
             new Thread(() -> {
+                List<String> assistantUserIdsTotal = new ArrayList<>();
+
                 for(String userId : param.getSeeUserIds()){
                     jdPush(this.replyWarnTemplate,userId,opinion);
                     pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
+
+                    //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
+                    if (autoAssignService.isAutoAssign(userId)){
+                        List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId,AUTOMATIC_ASSIGN);
+                        assistantUserIdsTotal.addAll(assistantUserIds);
+                    }
+                    List<String> assistantUserIdsResult = assistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
+                    // 添加协助人可查看关联
+                    userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
+
+                    // 推送给每个协助人
+                    for (String assistantUserId : assistantUserIdsResult){
+                        NoticeImUtil.pushOpinionToAssistant(assistantUserId,opinion.getUserName(),param.getContent());
+                    }
                 }
             }).start();
-        }else {
-            // 设置推送的boss账号
+        }else if (DataUtil.isEmpty(param.getSeeUserIds())){
+            // 没有查看人说明是投递给boss，设置推送的boss账号
             param.setSeeUserIds(this.receiveBoss);
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
             // 意见发起人信息
-            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(param.getUserId());
-            if (DataUtil.isEmpty(staffInfo)){
-                throw new DefaultException("找不到该发起人信息");
-            }
-            String senderInfo = staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
-            // 立即推送意见反馈给可查看的boss
+            String senderInfo = this.getSenderInfo(param.getUserId());
+            List<String> assistantUserIdsTotal = new ArrayList<>();
+
+            // 读取每个boss开启了自动配置的协助人
             for (String ceoUserId : param.getSeeUserIds()) {
-                NoticeImUtil.pushOpinionToBoss(ceoUserId,senderInfo,param.getContent());
+                // 立即推送意见反馈给可查看的boss
+                NoticeImUtil.pushOpinionToDirect(ceoUserId,senderInfo,param.getContent());
+
+                //如果boss开启了自动分配则同时推送给boss配置的协助人 , 如果boss都配置了相同的协助人, 则消息只推送一次
+                if (autoAssignService.isAutoAssign(ceoUserId)){
+                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(ceoUserId,AUTOMATIC_ASSIGN);
+                    assistantUserIdsTotal.addAll(assistantUserIds);
+                }
+            }
+            List<String> assistantUserIdsResult = assistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
+            // 添加可查看关联
+            userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
+
+            // 推送给每个协助人
+            for (String assistantUserId : assistantUserIdsResult){
+                NoticeImUtil.pushOpinionToAssistant(assistantUserId,senderInfo,param.getContent());
             }
         }
+    }
+
+    @Override
+    public String getSenderInfo(String userId){
+        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
+        if (DataUtil.isEmpty(staffInfo)){
+            throw new DefaultException("找不到该发起人信息");
+        }
+        return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
     }
 
     @Override
@@ -157,6 +203,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         up.lambda().eq(UserOpinion::getId,opinion.getId());
         up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
         this.update(up);
+
+        // 推送消息变更意见状态
+        NoticeImUtil.sendOpinionStateChange(opinion,param.getUserId());
+
     }
 
     private void jdPush(String code,String userId, Object obj){
