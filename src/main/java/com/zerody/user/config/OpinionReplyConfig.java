@@ -7,14 +7,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Author : xufan
- * @create 2024/2/27 17:53
+ * @create 2024/3/4 11:39
  */
-@ConfigurationProperties(prefix="msg.boss-receive-opinion")
+@ConfigurationProperties(prefix="msg.opinion-reply")
 @Component
 @RefreshScope
 @Data
-public class BossReceiveOpinionConfig {
-
+public class OpinionReplyConfig {
     private String url;
 
     private String url2;
@@ -25,5 +24,9 @@ public class BossReceiveOpinionConfig {
 
     private String title;
 
+    private String title1;
+
     private String content;
+
+    private String content1;
 }

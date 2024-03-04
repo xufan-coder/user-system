@@ -151,28 +151,34 @@ msg:
     arguments:
     title: '客户跟进提醒'
     content: '【%s】伙伴已解约，他最近的签单客户由他的团队长跟进，请做好监督，预防客户流失!'
-  # boss账号接收
-  boss-receive-opinion:
-    url:
+  # 意见接收人收到
+  opinion-receive:
+    url: /home/suggestion/detail
     url2:
-    query: '{"userId":"${userId}",}'
+    query: '{"userId":"${userId}","opinionId":"${opinionId}"}'
     arguments:
     title: '新信件接收查看提醒'
     content: '发件人: %s </br> 内容描述: %s'
-  # 意见发起人接收
+    title1: '意见查看提醒'
+    content1: '%s 向你提出了一个意见或建议，请及时查看!'
+  # 意见发起人收到
   opinion-reply:
-    url:
-    query: '{}'
+    url: /home/suggestion/detail
+    query: '{"opinionId":"${opinionId}"}'
     arguments:
     title: '董事长信箱意见反馈回复'
     content: '回复内容: %s'
-  # 协助人接收
-  assistants:
-    url:
-    query: '{}'
+    title1: '意见提交回复提醒'
+    content1: '%s已经回复了你提交的意见或建议，请及时查看!'
+  # 意见协助人接收
+  opinion-assistant:
+    url: /home/suggestion/detail
+    query: '{"opinionId":"${opinionId}"}'
     arguments:
     title: '董事长信件协助回复提醒'
     content: '发件人: %s </br> 内容描述: %s'
+    title1: '意见协助回复提醒'
+    content1: '%s提出了一个意见或建议，%s指派您进行协助处理，请及时查看!'
 leave:
   type:
     transfer: b52154f9-e5ad-11ed-ac65-0800274877ca

@@ -2,12 +2,15 @@ package com.zerody.user.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.expression.Expression;
@@ -23,6 +26,7 @@ import com.zerody.user.config.OpinionMsgConfig;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.OpinionStateType;
 import com.zerody.user.domain.Image;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
 import com.zerody.user.dto.FlowMessageDto;
@@ -117,28 +121,29 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         if (DataUtil.isNotEmpty(param.getSeeUserIds()) && param.getSeeUserIds().size() > 0){
             // 添加接收人可查看关联
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
-            new Thread(() -> {
-                List<String> assistantUserIdsTotal = new ArrayList<>();
+            /*new Thread(() -> {for(String userId : param.getSeeUserIds()){
+                jdPush(this.replyWarnTemplate,userId,opinion);
+                pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
+                }).start();*/
 
-                for(String userId : param.getSeeUserIds()){
-                    jdPush(this.replyWarnTemplate,userId,opinion);
-                    pushIm(opinionMsgConfig.getTitle(),opinion.getId(),userId,opinion.getUserName(),opinionMsgConfig.getContent());
-
-                    //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
-                    if (autoAssignService.isAutoAssign(userId)){
-                        List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId,AUTOMATIC_ASSIGN);
-                        assistantUserIdsTotal.addAll(assistantUserIds);
-                    }
-                    List<String> assistantUserIdsResult = assistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
-                    // 添加协助人可查看关联
-                    userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
-
-                    // 推送给每个协助人
-                    for (String assistantUserId : assistantUserIdsResult){
-                        NoticeImUtil.pushOpinionToAssistant(assistantUserId,opinion.getUserName(),param.getContent());
-                    }
+            List<String> assistantUserIdsTotal = new ArrayList<>();
+            for(String userId : param.getSeeUserIds()){
+                //获取意见接收人信息
+                SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
+                NoticeImUtil.pushOpinionToDirect(userId,param.getUserName(),null,Boolean.FALSE);
+                //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
+                if (autoAssignService.isAutoAssign(userId)){
+                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId,AUTOMATIC_ASSIGN);
+                    assistantUserIdsTotal.addAll(assistantUserIds);
                 }
-            }).start();
+                List<String> assistantUserIdsResult = assistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
+                // 添加协助人可查看关联
+                userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
+                // 推送给每个协助人
+                for (String assistantUserId : assistantUserIdsResult){
+                    NoticeImUtil.pushOpinionToAssistant(assistantUserId,opinion.getUserName(),param.getContent(), userInfo.getUserName() ,Boolean.FALSE);
+                }
+            }
         }else if (DataUtil.isEmpty(param.getSeeUserIds())){
             // 没有查看人说明是投递给boss，设置推送的boss账号
             param.setSeeUserIds(this.receiveBoss);
@@ -147,10 +152,16 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             String senderInfo = this.getSenderInfo(param.getUserId());
             List<String> assistantUserIdsTotal = new ArrayList<>();
 
+            JSONArray jsonArray = new JSONArray();
+
             // 读取每个boss开启了自动配置的协助人
             for (String ceoUserId : param.getSeeUserIds()) {
                 // 立即推送意见反馈给可查看的boss
-                NoticeImUtil.pushOpinionToDirect(ceoUserId,senderInfo,param.getContent());
+                Long messageId = NoticeImUtil.pushOpinionToDirect(ceoUserId, senderInfo, param.getContent(),Boolean.TRUE);
+                JSONObject json = new JSONObject();
+                json.put("messageId",messageId);
+                json.put("userId",ceoUserId);
+                jsonArray.add(json);
 
                 //如果boss开启了自动分配则同时推送给boss配置的协助人 , 如果boss都配置了相同的协助人, 则消息只推送一次
                 if (autoAssignService.isAutoAssign(ceoUserId)){
@@ -164,8 +175,17 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
-                NoticeImUtil.pushOpinionToAssistant(assistantUserId,senderInfo,param.getContent());
+                Long messageId = NoticeImUtil.pushOpinionToAssistant(assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE);
+                JSONObject json = new JSONObject();
+                json.put("messageId",messageId);
+                json.put("userId",assistantUserId);
+                jsonArray.add(json);
             }
+
+            // 保存
+            String jsonStr = JSONObject.toJSONString(jsonArray);
+            opinion.setMessageJson(jsonStr);
+            this.save(opinion);
         }
     }
 
@@ -192,11 +212,13 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setId(UUIDutils.getUUID32());
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
-        new Thread(() -> {
+        /*new Thread(() -> {
             opinion.setUserName(param.getUserName());
             jdPush(this.replyWarnTemplate2,opinion.getUserId(),opinion);
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
-        }).start();
+        }).start();*/
+
+
 
         // 有回复变更处理进度为处理中
         UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
@@ -204,12 +226,17 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
         this.update(up);
 
+
+        // 转换消息msageId对象
+        JSONObject.parseArray("");
+
+
         // 推送消息变更意见状态
         NoticeImUtil.sendOpinionStateChange(opinion,param.getUserId());
 
     }
 
-    private void jdPush(String code,String userId, Object obj){
+/*    private void jdPush(String code,String userId, Object obj){
         //极光推送
         AddJdPushDto push = new AddJdPushDto();
         push.setData(obj);
@@ -252,7 +279,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         DataResult<Long> result = this.sendMsgFeignService.send(data);
         log.info("推送IM结果:{}", com.zerody.flow.client.util.JsonUtils.toString(result));
 
-    }
+    }*/
 
     private void insertImage(List<String> replyImageList, String contentId, String imageType, String userId, String userName){
         if(Objects.nonNull(replyImageList)) {
@@ -344,6 +371,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         up.lambda().eq(UserOpinion::getId,id);
         up.lambda().set(UserOpinion::getState, OpinionStateType.ACCOMPLISH);
         this.update(up);
+
+        // 变更通知消息状态
+        //NoticeImUtil.sendOpinionStateChange();
     }
 
 }
