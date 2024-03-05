@@ -131,7 +131,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             for(String userId : param.getSeeUserIds()){
                 //获取意见接收人信息
                 SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
-                Long messageId = NoticeImUtil.pushOpinionToDirect(userId, param.getUserName(), null, Boolean.FALSE);
+                Long messageId = NoticeImUtil.pushOpinionToDirect(opinion.getId(),userId, param.getUserName(), param.getContent(), Boolean.FALSE);
                 jsonArray.add(setMessageJson(messageId,userId));
 
                 //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
@@ -144,7 +144,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(assistantUserId,opinion.getUserName(),param.getContent(), userInfo.getUserName() ,Boolean.FALSE);
+                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), userInfo.getUserName() ,Boolean.FALSE);
                     jsonArray.add(setMessageJson(messageId,assistantUserId));
                 }
             }
@@ -159,7 +159,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             // 读取每个boss开启了自动配置的协助人
             for (String ceoUserId : param.getSeeUserIds()) {
                 // 立即推送意见反馈给可查看的boss
-                Long messageId = NoticeImUtil.pushOpinionToDirect(ceoUserId, senderInfo, param.getContent(),Boolean.TRUE);
+                Long messageId = NoticeImUtil.pushOpinionToDirect(opinion.getId(),ceoUserId, senderInfo, param.getContent(),Boolean.TRUE);
                 jsonArray.add(setMessageJson(messageId,ceoUserId));
 
                 //如果boss开启了自动分配则同时推送给boss配置的协助人 , 如果boss都配置了相同的协助人, 则消息只推送一次
@@ -174,7 +174,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
-                Long messageId = NoticeImUtil.pushOpinionToAssistant(assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE);
+                Long messageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE);
                 jsonArray.add(setMessageJson(messageId,assistantUserId));
             }
         }
@@ -199,6 +199,15 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             throw new DefaultException("找不到该发起人信息");
         }
         return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
+    }
+
+    private String getReplyName(String userId){
+        //获取意见接收人信息
+        SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
+        if (DataUtil.isEmpty(userInfo)){
+            throw new DefaultException("找不到该回复人信息");
+        }
+        return userInfo.getUserName();
     }
 
     @Override
@@ -226,6 +235,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         up.lambda().eq(UserOpinion::getId,opinion.getId());
         up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
         this.update(up);
+
+
+        // 通知意见发起人有回复信息
+        NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),getReplyName(opinion.getUserId()),param.getContent(),param.getIsCeo());
 
 
         // 转换消息messageJson对象

@@ -75,6 +75,7 @@ public class UserOpinionController {
                 param.setUserId(userVo.getUserId());
                 param.setUserName(userVo.getUserName());
             }
+            param.setIsCeo(userVo.isCEO());
             this.userOpinionService.addUserReply(param);
             return R.success();
         } catch (DefaultException e) {

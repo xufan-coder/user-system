@@ -2,6 +2,7 @@ package com.zerody.user.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendHighMessageButton;
 import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.constant.MsgType;
@@ -54,20 +55,17 @@ public class NoticeImUtil {
         opinionAssistantConfigStatic = opinionAssistantConfig;
     }
 
-    public static Long pushOpinionToDirect(String targetUserId, String opinionSenderInfo, String content, Boolean isCeo){
+   public static Long pushOpinionToDirect(String opinionId, String targetUserId, String opinionSenderInfo, String content, Boolean isCeo){
         try {
             String msg = "";
-            String query = "";
             String arguments = "";
             if (isCeo){
                 // 消息内容
                 msg =  String.format(opinionReceiveConfigStatic.getContent(), opinionSenderInfo, content);
-                query = String.format(opinionReceiveConfigStatic.getQuery(), targetUserId);
-                arguments = String.format(opinionReceiveConfigStatic.getArguments(),targetUserId);
             }else {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
-
+            String query = String.format(opinionReceiveConfigStatic.getQuery(), opinionId);
             Object parse = JSONObject.parse(query);
             Object parse1 = JSONObject.parse(arguments);
 
@@ -118,20 +116,17 @@ public class NoticeImUtil {
     * @Description:         意见协助人收到消息
     * @Param:               [receiveUserId 信息接收人id , opinionSenderInfo 意见发起人信息 , content 消息内容, appointerInfo 指派人信息 , isCeo 是否是投递给boss信箱]
     */
-    public static Long pushOpinionToAssistant(String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo){
+    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo){
         try {
             String msg = "";
-            String query = "";
             String arguments = "";
             if (isCeo){
                 // 消息内容
                 msg =  String.format(opinionAssistantConfigStatic.getContent(), opinionSenderInfo, content);
-                query = String.format(opinionAssistantConfigStatic.getQuery(), receiveUserId);
-                arguments = String.format(opinionAssistantConfigStatic.getArguments(),receiveUserId);
             }else {
                 msg = String.format(opinionAssistantConfigStatic.getContent1(), opinionSenderInfo, appointerInfo);
             }
-
+            String query = String.format(opinionAssistantConfigStatic.getQuery(), opinionId);
             Object parse = JSONObject.parse(query);
             Object parse1 = JSONObject.parse(arguments);
 
@@ -175,20 +170,18 @@ public class NoticeImUtil {
     * @Description:         一旦有回复，意见发起人收到该通知
     * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 , isCeo 是否是投递给boss信箱]
     */
-    public static Long pushReplyToInitiator(String receiveUserId, String receiveUserName, String content, Boolean isCeo){
+    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
         try {
             String msg = "";
-            String query = "";
             String arguments = "";
             if (isCeo){
                 // 消息内容
                 msg =  String.format(opinionReplyConfigStatic.getContent(),content);
-                query = String.format(opinionReplyConfigStatic.getQuery(), receiveUserId);
-                arguments = String.format(opinionReplyConfigStatic.getArguments(),receiveUserId);
             }else {
                 msg = String.format(opinionReplyConfigStatic.getContent1(), receiveUserName);
             }
 
+            String query = String.format(opinionReplyConfigStatic.getQuery(), opinionId);
             Object parse = JSONObject.parse(query);
             Object parse1 = JSONObject.parse(arguments);
 

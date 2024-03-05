@@ -17,4 +17,7 @@ public class UserReplyDto extends UserOpinionDto{
 
     /**用于消息推送*/
     private String userName;
+
+    /** 是否是boss账号 */
+    private Boolean isCeo;
 }
