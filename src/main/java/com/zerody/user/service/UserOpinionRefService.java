@@ -14,4 +14,6 @@ public interface UserOpinionRefService extends IService<UserOpinionRef> {
     void addOpinionRef(String id, List<String> seeUserIds, Integer replyType);
 
     List<String> getSeeUserIds(String opinionId);
+
+    String getAppionterName(String opinionId,Integer replyType);
 }

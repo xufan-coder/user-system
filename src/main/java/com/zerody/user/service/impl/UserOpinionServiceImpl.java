@@ -115,9 +115,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         opinion.setDeleted(YesNo.YES);
         opinion.setId(UUIDutils.getUUID32());
         opinion.setState(OpinionStateType.PENDING);
-        this.save(opinion);
+        //this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
 
+        JSONArray jsonArray = new JSONArray();
         if (DataUtil.isNotEmpty(param.getSeeUserIds()) && param.getSeeUserIds().size() > 0){
             // 添加接收人可查看关联
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
@@ -130,7 +131,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             for(String userId : param.getSeeUserIds()){
                 //获取意见接收人信息
                 SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
-                NoticeImUtil.pushOpinionToDirect(userId,param.getUserName(),null,Boolean.FALSE);
+                Long messageId = NoticeImUtil.pushOpinionToDirect(userId, param.getUserName(), null, Boolean.FALSE);
+                jsonArray.add(setMessageJson(messageId,userId));
+
                 //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
                 if (autoAssignService.isAutoAssign(userId)){
                     List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId,AUTOMATIC_ASSIGN);
@@ -142,6 +145,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
                     NoticeImUtil.pushOpinionToAssistant(assistantUserId,opinion.getUserName(),param.getContent(), userInfo.getUserName() ,Boolean.FALSE);
+                    jsonArray.add(setMessageJson(messageId,assistantUserId));
                 }
             }
         }else if (DataUtil.isEmpty(param.getSeeUserIds())){
@@ -152,16 +156,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             String senderInfo = this.getSenderInfo(param.getUserId());
             List<String> assistantUserIdsTotal = new ArrayList<>();
 
-            JSONArray jsonArray = new JSONArray();
-
             // 读取每个boss开启了自动配置的协助人
             for (String ceoUserId : param.getSeeUserIds()) {
                 // 立即推送意见反馈给可查看的boss
                 Long messageId = NoticeImUtil.pushOpinionToDirect(ceoUserId, senderInfo, param.getContent(),Boolean.TRUE);
-                JSONObject json = new JSONObject();
-                json.put("messageId",messageId);
-                json.put("userId",ceoUserId);
-                jsonArray.add(json);
+                jsonArray.add(setMessageJson(messageId,ceoUserId));
 
                 //如果boss开启了自动分配则同时推送给boss配置的协助人 , 如果boss都配置了相同的协助人, 则消息只推送一次
                 if (autoAssignService.isAutoAssign(ceoUserId)){
@@ -176,17 +175,21 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
                 Long messageId = NoticeImUtil.pushOpinionToAssistant(assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE);
-                JSONObject json = new JSONObject();
-                json.put("messageId",messageId);
-                json.put("userId",assistantUserId);
-                jsonArray.add(json);
+                jsonArray.add(setMessageJson(messageId,assistantUserId));
             }
-
-            // 保存
-            String jsonStr = JSONObject.toJSONString(jsonArray);
-            opinion.setMessageJson(jsonStr);
-            this.save(opinion);
         }
+
+        // 保存
+        String messageJsonStr = JSONObject.toJSONString(jsonArray);
+        opinion.setMessageJson(messageJsonStr);
+        this.save(opinion);
+    }
+
+    private JSONObject setMessageJson(Long messageId, String userId){
+        JSONObject json = new JSONObject();
+        json.put("messageId",messageId);
+        json.put("userId",userId);
+        return json;
     }
 
     @Override
@@ -218,8 +221,6 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();*/
 
-
-
         // 有回复变更处理进度为处理中
         UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
         up.lambda().eq(UserOpinion::getId,opinion.getId());
@@ -227,12 +228,16 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         this.update(up);
 
 
-        // 转换消息msageId对象
-        JSONObject.parseArray("");
+        // 转换消息messageJson对象
+        JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
+        for (int i = 0; i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String messageId = String.valueOf(jsonObject.get("messageId"));
+            String userId = String.valueOf(jsonObject.get("userId"));
 
-
-        // 推送消息变更意见状态
-        NoticeImUtil.sendOpinionStateChange(opinion,param.getUserId());
+            // 推送消息变更意见状态
+            NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId);
+        }
 
     }
 
@@ -373,7 +378,16 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         this.update(up);
 
         // 变更通知消息状态
-        //NoticeImUtil.sendOpinionStateChange();
+        UserOpinion byId = this.getById(id);
+        JSONArray jsonArray = JSONObject.parseArray(byId.getMessageJson());
+        for (int i = 0; i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String messageId = String.valueOf(jsonObject.get("messageId"));
+            String userId = String.valueOf(jsonObject.get("userId"));
+
+            // 推送消息变更意见状态
+            NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId);
+        }
     }
 
 }

@@ -239,7 +239,7 @@ public class NoticeImUtil {
 
 
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, String seeUserId) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String seeUserId, String messageId) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
@@ -247,8 +247,8 @@ public class NoticeImUtil {
         Map<String,Object> map=new HashMap<>();
         map.put("type", 1014);
         map.put("id",userOpinion.getId());
-        map.put("msgIds",userOpinion.getId());
-        map.put("status",userOpinion.getState());
+        map.put("msgIds",messageId);
+        map.put("status",opinionState);
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);

@@ -81,9 +81,12 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
                 if (DataUtil.isNotEmpty(byId)){
                     senderInfo = userOpinionService.getSenderInfo(byId.getUserId());
                 }
+                // 获取意见指派人名称
+                String appionterName = this.userOpinionRefService.getAppionterName(opinionId, YesNo.NO);
+
                 // 推送到每个新协助人
                 for (String assistantUserId: result) {
-                    NoticeImUtil.pushOpinionToAssistant(assistantUserId,senderInfo,byId.getContent());
+                    NoticeImUtil.pushOpinionToAssistant(assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo());
                 }
             }
 

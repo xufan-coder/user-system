@@ -37,6 +37,7 @@ public class UserOpinionAssistantRefController {
         try {
             param.setUserId(UserUtils.getUserId());
             param.setUserName(UserUtils.getUserName());
+            param.setIsCeo(UserUtils.getUser().isCEO());
             this.service.addUserAssistantRef(param);
             return R.success();
         } catch (DefaultException e) {

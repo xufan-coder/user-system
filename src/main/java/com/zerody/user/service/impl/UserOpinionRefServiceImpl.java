@@ -5,13 +5,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.UserOpinionRef;
 import com.zerody.user.domain.UserOpinionType;
 import com.zerody.user.mapper.UserOpinionRefMapper;
 import com.zerody.user.mapper.UserOpinionTypeMapper;
+import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserOpinionRefService;
 import com.zerody.user.service.UserOpinionTypeService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +28,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper, UserOpinionRef>  implements UserOpinionRefService {
 
+
+    @Autowired
+    private SysStaffInfoService sysStaffInfoService;
 
     @Override
     public void addOpinionRef(String opinionId, List<String> seeUserIds,Integer replyType) {
@@ -48,5 +54,20 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
         List<UserOpinionRef> refList = this.list(qw);
         List<String> collect = refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public String getAppionterName(String opinionId, Integer replyType) {
+        QueryWrapper<UserOpinionRef> qw = new QueryWrapper<>();
+        qw.lambda().eq(UserOpinionRef::getOpinionId,opinionId);
+        qw.lambda().eq(UserOpinionRef::getReplyType,replyType);
+        List<UserOpinionRef> refList = this.list(qw);
+        List<String> collect = refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
+        StringBuilder appionterName = new StringBuilder();
+        for (String userId: collect) {
+            StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
+            appionterName.append(", ").append(staffInfo.getUserName());
+        }
+        return appionterName.toString();
     }
 }
