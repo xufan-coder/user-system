@@ -155,7 +155,7 @@ msg:
   opinion-receive:
     url: /home/suggestion/detail
     url2:
-    query: '{"opinionId":"%s"}'
+    query: '{"id":"%s"}'
     arguments:
     title: '新信件接收查看提醒'
     content: '发件人: %s </br> 内容描述: %s'
@@ -164,7 +164,7 @@ msg:
   # 意见发起人收到
   opinion-reply:
     url: /home/suggestion/detail
-    query: '{"opinionId":"%s"}'
+    query: '{"id":"%s"}'
     arguments:
     title: '董事长信箱意见反馈回复'
     content: '回复内容: %s'
@@ -173,7 +173,7 @@ msg:
   # 意见协助人接收
   opinion-assistant:
     url: /home/suggestion/detail
-    query: '{"opinionId":"%s"}'
+    query: '{"id":"%s"}'
     arguments:
     title: '董事长信件协助回复提醒'
     content: '发件人: %s </br> 内容描述: %s'

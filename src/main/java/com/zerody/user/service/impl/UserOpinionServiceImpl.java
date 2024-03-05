@@ -203,11 +203,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     private String getReplyName(String userId){
         //获取意见接收人信息
-        SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
-        if (DataUtil.isEmpty(userInfo)){
+        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
+        if (DataUtil.isEmpty(staffInfo)){
             throw new DefaultException("找不到该回复人信息");
         }
-        return userInfo.getUserName();
+        return staffInfo.getUserName();
     }
 
     @Override
