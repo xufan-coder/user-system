@@ -124,7 +124,7 @@
       <if test="query.source neq null and query.source neq ''">
         and uo.source = #{query.source}
       </if>
-      <if test="query.reply_type neq null and query.source neq ''">
+      <if test="query.replyType neq null and query.replyType neq ''">
         and uor.reply_type = #{query.replyType}
       </if>
       <if test="query.state neq null and query.state neq ''">
