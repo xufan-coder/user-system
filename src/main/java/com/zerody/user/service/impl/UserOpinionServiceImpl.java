@@ -122,7 +122,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             List<String> assistantUserIdsTotal = new ArrayList<>();
             for(String userId : param.getSeeUserIds()){
                 //获取意见接收人信息
-                SysStaffInfo userInfo = sysStaffInfoService.getById(userId);
+                StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
                 Long messageId = NoticeImUtil.pushOpinionToDirect(opinion.getId(),userId, param.getUserName(), param.getContent(), Boolean.FALSE);
                 jsonArray.add(setMessageJson(messageId,userId));
 
@@ -136,7 +136,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), userInfo.getUserName() ,Boolean.FALSE);
+                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), staffInfo.getUserName() ,Boolean.FALSE);
                     jsonArray.add(setMessageJson(messageId,assistantUserId));
                 }
             }
