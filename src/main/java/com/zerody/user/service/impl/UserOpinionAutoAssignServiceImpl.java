@@ -53,6 +53,7 @@ public class UserOpinionAutoAssignServiceImpl extends ServiceImpl<UserOpinionAut
         autoAssign.setId(UUIDutils.getUUID32());
         autoAssign.setAutoAssign(param.getAutoAssign());
         autoAssign.setCreateTime(new Date());
+        this.save(autoAssign);
     }
 
 
