@@ -142,7 +142,7 @@
   </select>
 
   <select id="getAssistantNameByOpinionId" resultType="string">
-     select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
+     select GROUP_CONCAT(IFNULL(ui.user_name)) from user_opinion_ref  uor
      left join sys_user_info ui on uor.user_id = ui.id
      where uor.opinion_id = #{opinionId} and uor.reply_type = 0
   </select>
