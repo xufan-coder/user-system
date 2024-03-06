@@ -112,6 +112,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
         JSONArray jsonArray = new JSONArray();
         if (DataUtil.isNotEmpty(param.getSeeUserIds()) && param.getSeeUserIds().size() > 0){
+            // 设置意见来源 0 董事长信箱，1 意见箱
+            opinion.setSource(YesNo.YES);
             // 添加接收人可查看关联
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
             /*new Thread(() -> {for(String userId : param.getSeeUserIds()){
@@ -142,6 +144,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             }
         }else if (DataUtil.isEmpty(param.getSeeUserIds())){
             // 没有查看人说明是投递给boss，设置推送的boss账号
+            // 设置意见来源 0 董事长信箱，1 意见箱
+            opinion.setSource(YesNo.NO);
             param.setSeeUserIds(this.receiveBoss);
             userOpinionRefService.addOpinionRef(opinion.getId(),param.getSeeUserIds(),YesNo.YES);
             // 意见发起人信息
@@ -194,7 +198,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     }
 
     private String getReplyName(String userId){
-        //获取意见接收人信息
+        //获取意见直接接收人信息
         StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
         if (DataUtil.isEmpty(staffInfo)){
             throw new DefaultException("找不到该回复人信息");
