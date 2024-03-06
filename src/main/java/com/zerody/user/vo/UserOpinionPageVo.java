@@ -3,6 +3,8 @@ package com.zerody.user.vo;
 import com.zerody.user.domain.UserOpinion;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author kuang
  */
@@ -22,4 +24,7 @@ public class UserOpinionPageVo extends UserOpinionVo {
 
 
     private String seeUserName;
+
+    /** 协助人名称 */
+    private String assistantUserName;
 }

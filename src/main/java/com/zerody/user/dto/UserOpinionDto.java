@@ -38,4 +38,7 @@ public class UserOpinionDto {
     /**查看人员列表*/
     private List<String> seeUserIds;
 
+    /**  0 董事长信箱，1 意见箱 */
+    private Integer source;
+
 }

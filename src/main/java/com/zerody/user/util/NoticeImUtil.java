@@ -55,6 +55,10 @@ public class NoticeImUtil {
         opinionAssistantConfigStatic = opinionAssistantConfig;
     }
 
+    /**
+    * @Description:         意见接收人收到该消息
+    * @Param:               [opinionId 意见id, targetUserId 接收人UserId, opinionSenderInfo 意见发送人信息, content 内容, isCeo 是否是投递给boss信箱]
+    */
    public static Long pushOpinionToDirect(String opinionId, String targetUserId, String opinionSenderInfo, String content, Boolean isCeo){
         try {
             String msg = "";

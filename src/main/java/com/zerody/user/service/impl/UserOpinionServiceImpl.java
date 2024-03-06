@@ -1,7 +1,6 @@
 package com.zerody.user.service.impl;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -9,18 +8,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.utils.DataUtil;
-import com.zerody.expression.Expression;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
-import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UUIDutils;
-import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.feign.SendMsgFeignService;
-import com.zerody.jpush.api.dto.AddJdPushDto;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.config.OpinionMsgConfig;
 import com.zerody.user.constant.ImageTypeInfo;
@@ -29,7 +21,6 @@ import com.zerody.user.domain.Image;
 import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserReply;
-import com.zerody.user.dto.FlowMessageDto;
 import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
@@ -115,6 +106,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         opinion.setDeleted(YesNo.YES);
         opinion.setId(UUIDutils.getUUID32());
         opinion.setState(OpinionStateType.PENDING);
+        opinion.setSource(param.getSource());
         //this.save(opinion);
         insertImage(param.getReplyImageList(),opinion.getId(),ImageTypeInfo.USER_OPINION,opinion.getUserId(),opinion.getUserName());
 
@@ -238,18 +230,20 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
 
         // 通知意见发起人有回复信息
-        NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),getReplyName(opinion.getUserId()),param.getContent(),param.getIsCeo());
+        NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),reply.getUserName(),param.getContent(),param.getIsCeo());
 
 
-        // 转换消息messageJson对象
-        JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
-        for (int i = 0; i<jsonArray.size();i++){
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String messageId = String.valueOf(jsonObject.get("messageId"));
-            String userId = String.valueOf(jsonObject.get("userId"));
+        if (DataUtil.isNotEmpty(opinion.getMessageJson())){
+            // 转换消息messageJson对象
+            JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
+            for (int i = 0; i<jsonArray.size();i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String messageId = String.valueOf(jsonObject.get("messageId"));
+                String userId = String.valueOf(jsonObject.get("userId"));
 
-            // 推送消息变更意见状态
-            NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId);
+                // 推送消息变更意见状态
+                NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId);
+            }
         }
 
     }
@@ -375,10 +369,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         if(dto.isCEO()){
             dto.setUserId(null);
         }
+        dto.setReplyType(YesNo.YES);
         Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
+        dto.setReplyType(YesNo.NO);
+        Integer assistantSum = this.baseMapper.getOpinionReplyTotal(dto);
         Map<String,Object> orderStatusMap = new HashedMap<>();
         orderStatusMap.put("replySum",replySum);
         orderStatusMap.put("opinionSum",opinionSum);
+        orderStatusMap.put("assistantSum",assistantSum);
 
         return orderStatusMap;
     }

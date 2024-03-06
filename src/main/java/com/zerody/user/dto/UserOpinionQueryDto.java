@@ -27,4 +27,7 @@ public class UserOpinionQueryDto extends SetTimePeriodPage {
 
     /** 回复人类型 (1 直接回复人 0 协助回复人) */
     private Integer replyType;
+
+    /** 意见来源 0 董事长信箱，1 意见箱 */
+    private Integer source;
 }

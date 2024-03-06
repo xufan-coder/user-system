@@ -10,12 +10,14 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="deleted" property="deleted" jdbcType="INTEGER" />
     <result column="state" property="state" javaType="INTEGER"/>
+    <result column="source" property="source" javaType="INTEGER"/>
   </resultMap>
 
   <resultMap id="BaseResultMapVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMap">
     <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
     <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
     <association property="seeUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
+    <association property="assistantUserName" column="{opinionId = id}" select="getAssistantNameByOpinionId"/>
   </resultMap>
 
   <resultMap id="BaseResultMapPageVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMapVo">
@@ -44,6 +46,12 @@
     </if>
     <if test="query.end neq null ">
       and o.create_time &lt; #{query.end}
+    </if>
+    <if test="query.source neq null and query.source neq ''">
+      and o.source = #{query.source}
+    </if>
+    <if test="query.state neq null and query.state neq ''">
+      and uo.state = #{query.state}
     </if>
     order by o.create_time desc
   </select>
@@ -83,6 +91,18 @@
       <if test="query.typeId neq null and query.typeId neq ''">
         and uo.type_id = #{query.typeId}
       </if>
+      <if test="query.source neq null and query.source neq ''">
+        and uo.source = #{query.source}
+      </if>
+      <if test="query.state neq null and query.state neq ''">
+        and uo.state = #{query.state}
+      </if>
+      <if test="query.begin neq null ">
+        and uo.create_time &gt;=  #{query.begin}
+      </if>
+      <if test="query.end neq null ">
+        and uo.create_time &lt; #{query.end}
+      </if>
     </where>
     order by uo.create_time desc
   </select>
@@ -101,6 +121,15 @@
       <if test="query.typeId neq null and query.typeId neq ''">
         and uo.type_id = #{query.typeId}
       </if>
+      <if test="query.source neq null and query.source neq ''">
+        and uo.source = #{query.source}
+      </if>
+      <if test="query.reply_type neq null and query.source neq ''">
+        and uor.reply_type = #{query.replyType}
+      </if>
+      <if test="query.state neq null and query.state neq ''">
+        and uo.state = #{query.state}
+      </if>
     </where>
 
   </select>
@@ -109,6 +138,12 @@
      select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
      left join sys_user_info ui on uor.user_id = ui.id
 	 left join ceo_user_info ceo on ceo.id = uor.user_id
-     where uor.opinion_id = #{opinionId}
+     where uor.opinion_id = #{opinionId} and uor.reply_type = 1
+  </select>
+
+  <select id="getAssistantNameByOpinionId" resultType="string">
+     select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
+     left join sys_user_info ui on uor.user_id = ui.id
+     where uor.opinion_id = #{opinionId} and uor.reply_type = 0
   </select>
 </mapper>

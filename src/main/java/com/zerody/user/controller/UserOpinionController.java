@@ -2,10 +2,12 @@ package com.zerody.user.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.common.vo.UserVo;
 import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
@@ -39,7 +41,7 @@ public class UserOpinionController {
     private CheckUtil checkUtil;
 
     /**
-     * @description 添加意见(董事长信箱)
+     * @description 添加意见
      * @author kuang
      * @date 2022/4/14
      */
@@ -63,7 +65,7 @@ public class UserOpinionController {
     }
 
     /**
-     * @description 意见回复(意见箱)
+     * @description 意见回复
      * @author kuang
      * @date 2022/4/14
      */
@@ -109,13 +111,16 @@ public class UserOpinionController {
 
 
     /***
-     * @description 根据用户查询(董事长信箱)
+     * @description 根据用户查询分页查询董事长和意见箱意见 --我提交的
      * @author kuang
      * @date 2022/4/14
      */
     @GetMapping("/query-user")
     public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(UserOpinionQueryDto queryDto) {
         try {
+            if (DataUtil.isEmpty(queryDto.getSource())){
+                throw new DefaultException("意见来源类型不能为空");
+            }
             queryDto.setUserId(UserUtils.getUserId());
             this.checkUtil.setFiltrateTime(queryDto);
             IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(queryDto);
@@ -130,13 +135,17 @@ public class UserOpinionController {
     }
 
     /***
-     * @description 分页查询(意见箱)
+     * @description 分页查询董事长和意见箱意见 ----我收到的和协助回复的
      * @author kuang
      * @date 2022/4/14
      */
     @GetMapping("/page")
     public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(UserOpinionQueryDto dto) {
         try {
+
+            if (DataUtil.isEmpty(dto.getSource())){
+                throw new DefaultException("意见来源类型不能为空");
+            }
             if(!UserUtils.getUser().isCEO()){
                 dto.setUserId(UserUtils.getUserId());
             }
