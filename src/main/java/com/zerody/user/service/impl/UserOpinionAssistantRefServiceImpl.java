@@ -41,6 +41,51 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
     private static final int AUTOMATIC_ASSIGN = 1;
 
     @Override
+    public void addManualAssistantRef(UserOpinionAssistantRefDto param) {
+        param.setType(MANUAL_ASSIGN);
+        this.addUserAssistantRef(param);
+
+        // 根据意见id获取该意见已经分配出去的人 ， 相同人已经推送过一次，只推送新协助人
+            List<String> result = new ArrayList<>();
+            for (String opinionId: param.getOpinionIds()) {
+                List<String> seeUserIds = userOpinionRefService.getSeeUserIds(opinionId);
+                result = param.getAssistantUserIds().stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
+                //添加可查看人关联, 只做增量
+                userOpinionRefService.addOpinionRef(opinionId,result,YesNo.NO);
+
+                // 获取每条意见的发起人信息
+                UserOpinion byId = userOpinionService.getById(opinionId);
+                String senderInfo = "";
+                if (DataUtil.isNotEmpty(byId)){
+                    senderInfo = userOpinionService.getSenderInfo(byId.getUserId());
+                }
+                // 获取意见指派人名称
+                String appionterName = this.userOpinionRefService.getAppionterName(opinionId, YesNo.NO);
+
+                // 推送到每个新协助人
+                for (String assistantUserId: result) {
+                    NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo());
+                }
+            }
+
+    }
+
+
+
+    public List<UserOpinionAssistantRef> getAssistantUserIds(String userId,Integer type){
+        QueryWrapper<UserOpinionAssistantRef> qw = new QueryWrapper<>();
+        qw.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
+        qw.lambda().eq(UserOpinionAssistantRef::getType,type);
+        return this.list(qw);
+    }
+
+    @Override
+    public void addAutoAssistantRef(UserOpinionAssistantRefDto param) {
+        param.setType(AUTOMATIC_ASSIGN);
+        this.addUserAssistantRef(param);
+    }
+
+    @Override
     public void addUserAssistantRef(UserOpinionAssistantRefDto param) {
         QueryWrapper<UserOpinionAssistantRef> removeQw = new QueryWrapper<>();
         removeQw.lambda().eq(UserOpinionAssistantRef::getUserId, param.getUserId());
@@ -65,41 +110,6 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
             AssistantRefList.add(assistantRef);
         }
         this.saveBatch(AssistantRefList);
-
-        // 根据意见id获取该意见已经分配出去的人 ， 相同人已经推送过一次，只推送新协助人
-        if (param.getType() == MANUAL_ASSIGN){
-            List<String> result = new ArrayList<>();
-            for (String opinionId: param.getOpinionIds()) {
-                List<String> seeUserIds = userOpinionRefService.getSeeUserIds(opinionId);
-                result = param.getAssistantUserIds().stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
-                //添加可查看人关联, 只做增量
-                userOpinionRefService.addOpinionRef(opinionId,result,YesNo.NO);
-
-                // 获取每条意见的发起人信息
-                UserOpinion byId = userOpinionService.getById(opinionId);
-                String senderInfo = "";
-                if (DataUtil.isNotEmpty(byId)){
-                    senderInfo = userOpinionService.getSenderInfo(byId.getUserId());
-                }
-                // 获取意见指派人名称
-                String appionterName = this.userOpinionRefService.getAppionterName(opinionId, YesNo.NO);
-
-                // 推送到每个新协助人
-                for (String assistantUserId: result) {
-                    NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo());
-                }
-            }
-
-        }
-
-    }
-
-    public List<String> getAssistantUserIds(String userId,Integer type){
-        QueryWrapper<UserOpinionAssistantRef> qw = new QueryWrapper<>();
-        qw.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
-        qw.lambda().eq(UserOpinionAssistantRef::getType,type);
-        List<UserOpinionAssistantRef> list = this.list(qw);
-        return list.stream().map(UserOpinionAssistantRef::getAssistantUserId).collect(Collectors.toList());
     }
 
 

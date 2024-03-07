@@ -4,6 +4,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.domain.UserOpinionAssistantRef;
 import com.zerody.user.dto.UserOpinionAssistantRefDto;
 import com.zerody.user.service.UserOpinionAssistantRefService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,24 +29,47 @@ public class UserOpinionAssistantRefController {
     private UserOpinionAssistantRefService service;
 
     /**
-    * @Description:         添加或修改回复协助人
+    * @Description:         添加或修改手动回复协助人
     * @Author:              xufan
     * @Date:                2024/2/29 11:44
     */
-    @PostMapping(value = "/add")
-    public DataResult<Object> addUserAssistantRef(@RequestBody @Validated UserOpinionAssistantRefDto param) {
+    @PostMapping(value = "/add/manual")
+    public DataResult<Object> addManualAssistantRef(@RequestBody @Validated UserOpinionAssistantRefDto param) {
         try {
             param.setUserId(UserUtils.getUserId());
             param.setUserName(UserUtils.getUserName());
             param.setIsCeo(UserUtils.getUser().isCEO());
-            this.service.addUserAssistantRef(param);
+            this.service.addManualAssistantRef(param);
             return R.success();
         } catch (DefaultException e) {
-            log.error("添加回复协助人异常:{}", e, e);
+            log.error("添加手动回复协助人异常:{}", e, e);
             return R.error(e.getMessage());
         } catch (Exception e) {
-            log.error("添加回复协助人出错:{}", e, e);
-            return R.error("添加回复协助人出错" + e);
+            log.error("添加手动回复协助人出错:{}", e, e);
+            return R.error("添加手动回复协助人出错" + e);
+        }
+    }
+
+
+    /**
+    * @Description:         添加或修改自动回复协助人
+    * @Author:              xufan
+    * @Date:                2024/3/7 10:05
+    */
+    @PostMapping(value = "/add/automatic")
+    public DataResult<Object> addAutoAssistantRef(@RequestBody @Validated UserOpinionAssistantRefDto param) {
+        try {
+            param.setUserId(UserUtils.getUserId());
+            param.setUserName(UserUtils.getUserName());
+            param.setIsCeo(UserUtils.getUser().isCEO());
+            this.service.addAutoAssistantRef(param);
+            return R.success();
+        } catch (DefaultException e) {
+            log.error("添加自动回复协助人异常:{}", e, e);
+            return R.error(e.getMessage());
+        } catch (Exception e) {
+            log.error("添加自动回复协助人出错:{}", e, e);
+            return R.error("添加自动回复协助人出错" + e);
         }
     }
 
@@ -55,9 +79,9 @@ public class UserOpinionAssistantRefController {
     * @Date:                2024/2/29 11:52
     */
     @GetMapping("/get")
-    public DataResult<List<String>> getAssistantUserIds(Integer type){
+    public DataResult<List<UserOpinionAssistantRef>> getAssistantUserIds(Integer type){
         try {
-            List<String> result = this.service.getAssistantUserIds(UserUtils.getUserId(),type);
+            List<UserOpinionAssistantRef> result = this.service.getAssistantUserIds(UserUtils.getUserId(),type);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("获取意见回复协助人出错：{}", e, e);
@@ -68,5 +92,21 @@ public class UserOpinionAssistantRefController {
         }
     }
 
+
+    /**
+    * @Description:         删除信件回复协助人
+    * @Author:              xufan
+    * @Date:                2024/3/7 9:36
+    */
+    @DeleteMapping("/del/{id}")
+    public DataResult<Void> removeAssistantById(String id){
+        try {
+            this.service.removeById(id);
+            return R.success();
+        } catch (Exception e) {
+            log.error("删除信件回复协助人出错:{}", id, e);
+            return R.error("删除信件回复协助人出错:"+e.getMessage());
+        }
+    }
 
 }

@@ -13,7 +13,11 @@ import java.util.List;
 
 public interface UserOpinionAssistantRefService extends IService<UserOpinionAssistantRef> {
 
-    void addUserAssistantRef(UserOpinionAssistantRefDto param);
+    void addManualAssistantRef(UserOpinionAssistantRefDto param);
 
-    List<String> getAssistantUserIds(String userId,Integer type);
+    List<UserOpinionAssistantRef> getAssistantUserIds(String userId,Integer type);
+
+    void addAutoAssistantRef(UserOpinionAssistantRefDto param);
+
+    void addUserAssistantRef(UserOpinionAssistantRefDto param);
 }
