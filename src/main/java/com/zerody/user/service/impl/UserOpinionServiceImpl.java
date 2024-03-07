@@ -1,6 +1,7 @@
 package com.zerody.user.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -374,8 +375,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             dto.setUserId(null);
         }
         dto.setReplyType(YesNo.YES);
+        log.info("回复类型---直接回复人入参{}", JSON.toJSONString(dto));
         Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
         dto.setReplyType(YesNo.NO);
+        log.info("回复类型---协助回复人入参{}",JSON.toJSONString(dto));
         Integer assistantSum = this.baseMapper.getOpinionReplyTotal(dto);
         Map<String,Object> orderStatusMap = new HashedMap<>();
         orderStatusMap.put("replySum",replySum);
