@@ -81,7 +81,7 @@ public class UserOpinionAssistantRefController {
     @GetMapping("/get")
     public DataResult<List<UserOpinionAssistantRef>> getAssistantUserIds(Integer type){
         try {
-            List<UserOpinionAssistantRef> result = this.service.getAssistantUserIds(UserUtils.getUserId(),type);
+            List<UserOpinionAssistantRef> result = this.service.getAssistantRef(UserUtils.getUserId(),type);
             return R.success(result);
         } catch (DefaultException e) {
             log.error("获取意见回复协助人出错：{}", e, e);

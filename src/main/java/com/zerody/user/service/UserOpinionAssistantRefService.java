@@ -15,7 +15,9 @@ public interface UserOpinionAssistantRefService extends IService<UserOpinionAssi
 
     void addManualAssistantRef(UserOpinionAssistantRefDto param);
 
-    List<UserOpinionAssistantRef> getAssistantUserIds(String userId,Integer type);
+    List<UserOpinionAssistantRef> getAssistantRef(String userId,Integer type);
+
+    List<String> getAssistantUserIds(String userId,Integer type);
 
     void addAutoAssistantRef(UserOpinionAssistantRefDto param);
 

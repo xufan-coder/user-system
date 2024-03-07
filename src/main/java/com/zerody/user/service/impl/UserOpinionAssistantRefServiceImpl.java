@@ -72,11 +72,16 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
 
 
-    public List<UserOpinionAssistantRef> getAssistantUserIds(String userId,Integer type){
+    public List<UserOpinionAssistantRef> getAssistantRef(String userId,Integer type){
         QueryWrapper<UserOpinionAssistantRef> qw = new QueryWrapper<>();
         qw.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
         qw.lambda().eq(UserOpinionAssistantRef::getType,type);
         return this.list(qw);
+    }
+
+    @Override
+    public List<String> getAssistantUserIds(String userId, Integer type) {
+        return this.getAssistantRef(userId,type).stream().map(UserOpinionAssistantRef::getAssistantUserId).collect(Collectors.toList());
     }
 
     @Override
