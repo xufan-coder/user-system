@@ -374,8 +374,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         if(dto.isCEO()){
             dto.setUserId(null);
         }
+        dto.setReplyType(YesNo.YES);
         Integer replySum = this.baseMapper.getOpinionReplyTotal(dto);
-        Integer assistantSum = this.baseMapper.getAssistantReplyTotal(dto);
+        dto.setReplyType(YesNo.NO);
+        Integer assistantSum = this.baseMapper.getOpinionReplyTotal(dto);
         Map<String,Object> orderStatusMap = new HashedMap<>();
         orderStatusMap.put("replySum",replySum);
         orderStatusMap.put("opinionSum",opinionSum);
