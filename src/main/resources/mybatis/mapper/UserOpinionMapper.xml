@@ -106,12 +106,33 @@
 
   <select id="getOpinionReplyTotal" resultType="integer">
     select count(1) from user_opinion uo
-    JOIN user_opinion_ref uor on uor.opinion_id = uo.id
-    <if test="query.replyType neq null and query.replyType neq ''">
-      and uor.reply_type = #{query.replyType}
-    </if>
+    LEFT JOIN user_opinion_ref uor on uor.opinion_id = uo.id
     <where>
-      uo.deleted = 1
+      uo.deleted = 1 and  and uor.reply_type = 1
+      <if test="query.userId neq null and query.userId neq ''">
+        and uor.user_id = #{query.userId}
+      </if>
+      <if test="query.searchName neq null and query.searchName neq ''">
+        and uo.user_name like concat('%',#{query.searchName},'%')
+      </if>
+      <if test="query.typeId neq null and query.typeId neq ''">
+        and uo.type_id = #{query.typeId}
+      </if>
+      <if test="query.source neq null and query.source neq ''">
+        and uo.source = #{query.source}
+      </if>
+      <if test="query.state neq null and query.state neq ''">
+        and uo.state = #{query.state}
+      </if>
+    </where>
+
+  </select>
+
+  <select id="getAssistantReplyTotal" resultType="integer">
+    select count(1) from user_opinion uo
+    LEFT JOIN user_opinion_ref uor on uor.opinion_id = uo.id
+    <where>
+      uo.deleted = 1 and uor.reply_type = 0
       <if test="query.userId neq null and query.userId neq ''">
         and uor.user_id = #{query.userId}
       </if>
