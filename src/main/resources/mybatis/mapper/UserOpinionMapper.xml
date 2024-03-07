@@ -106,7 +106,10 @@
 
   <select id="getOpinionReplyTotal" resultType="integer">
     select count(1) from user_opinion uo
-    LEFT JOIN user_opinion_ref uor on uor.opinion_id = uo.id
+    JOIN user_opinion_ref uor on uor.opinion_id = uo.id
+    <if test="query.replyType neq null and query.replyType neq ''">
+      and uor.reply_type = #{query.replyType}
+    </if>
     <where>
       uo.deleted = 1
       <if test="query.userId neq null and query.userId neq ''">
@@ -120,9 +123,6 @@
       </if>
       <if test="query.source neq null and query.source neq ''">
         and uo.source = #{query.source}
-      </if>
-      <if test="query.replyType neq null and query.replyType neq ''">
-        and uor.reply_type = #{query.replyType}
       </if>
       <if test="query.state neq null and query.state neq ''">
         and uo.state = #{query.state}
