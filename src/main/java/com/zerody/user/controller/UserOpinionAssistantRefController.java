@@ -29,7 +29,7 @@ public class UserOpinionAssistantRefController {
     private UserOpinionAssistantRefService service;
 
     /**
-    * @Description:         添加或修改手动回复协助人
+    * @Description:         添加手动回复协助人
     * @Author:              xufan
     * @Date:                2024/2/29 11:44
     */
@@ -52,7 +52,7 @@ public class UserOpinionAssistantRefController {
 
 
     /**
-    * @Description:         添加或修改自动回复协助人
+    * @Description:         添加自动回复协助人
     * @Author:              xufan
     * @Date:                2024/3/7 10:05
     */

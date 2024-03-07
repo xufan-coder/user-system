@@ -92,15 +92,22 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
     @Override
     public void addUserAssistantRef(UserOpinionAssistantRefDto param) {
-        QueryWrapper<UserOpinionAssistantRef> removeQw = new QueryWrapper<>();
+
+        // 获取当前数据库已有的协助人
+        List<String> assistantUserIds = getAssistantUserIds(param.getUserId(), param.getType());
+
+        // 去重 ，只做增量添加
+        List<String> result = param.getAssistantUserIds().stream().filter(r -> !assistantUserIds.contains(r)).collect(Collectors.toList());
+
+        /*QueryWrapper<UserOpinionAssistantRef> removeQw = new QueryWrapper<>();
         removeQw.lambda().eq(UserOpinionAssistantRef::getUserId, param.getUserId());
         removeQw.lambda().eq(UserOpinionAssistantRef::getType, param.getType());
         this.remove(removeQw);
         if (DataUtil.isEmpty(param.getAssistantUserIds())) {
             return;
-        }
+        }*/
         List<UserOpinionAssistantRef> AssistantRefList = new ArrayList<>();
-        for(String assistantUserId : param.getAssistantUserIds()){
+        for(String assistantUserId : result){
             UserOpinionAssistantRef assistantRef = new UserOpinionAssistantRef();
             assistantRef.setId(UUIDutils.getUUID32());
             assistantRef.setUserId(param.getUserId());
