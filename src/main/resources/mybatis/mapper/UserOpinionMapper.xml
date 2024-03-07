@@ -38,7 +38,7 @@
     <if test="query.typeId neq null and query.typeId neq ''">
       and o.type_id = #{query.typeId}
     </if>
-    <if test="query.state neq null and query.state neq ''">
+    <if test="query.state neq null">
       and o.state = #{query.state}
     </if>
     <if test="query.begin neq null ">
@@ -47,7 +47,7 @@
     <if test="query.end neq null ">
       and o.create_time &lt; #{query.end}
     </if>
-    <if test="query.source neq null and query.source neq ''">
+    <if test="query.source neq null">
       and o.source = #{query.source}
     </if>
     order by o.create_time desc
@@ -88,10 +88,10 @@
       <if test="query.typeId neq null and query.typeId neq ''">
         and uo.type_id = #{query.typeId}
       </if>
-      <if test="query.source neq null and query.source neq ''">
+      <if test="query.source neq null">
         and uo.source = #{query.source}
       </if>
-      <if test="query.state neq null and query.state neq ''">
+      <if test="query.state neq null">
         and uo.state = #{query.state}
       </if>
       <if test="query.begin neq null ">
