@@ -21,6 +21,8 @@ public class OpinionReceiveConfig {
 
     private String query;
 
+    private String query2;
+
     private String arguments;
 
     private String title;

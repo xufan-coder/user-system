@@ -2,6 +2,7 @@ package com.zerody.user.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zerody.common.api.bean.DataResult;
+import com.zerody.common.constant.YesNo;
 import com.zerody.expression.Expression;
 import com.zerody.im.api.dto.SendHighMessageButton;
 import com.zerody.im.api.dto.SendRobotMessageDto;
@@ -70,22 +71,25 @@ public class NoticeImUtil {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
             String query = String.format(opinionReceiveConfigStatic.getQuery(), opinionId);
+            String query2 = String.format(opinionReceiveConfigStatic.getQuery2(), targetUserId);
             Object parse = JSONObject.parse(query);
-            Object parse1 = JSONObject.parse(arguments);
+            Object parse2 = JSONObject.parse(query2);
+
+            Object argumentParse = JSONObject.parse(arguments);
 
             List<SendHighMessageButton> buttons = new ArrayList<>();
             SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
             sendHighMessageButton.setName("查看详情");
             sendHighMessageButton.setUrl(opinionReceiveConfigStatic.getUrl());
             sendHighMessageButton.setQuery(parse);
-            sendHighMessageButton.setArguments(parse1);
+            sendHighMessageButton.setArguments(argumentParse);
             sendHighMessageButton.setMessageSource("extend");
 
             SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
             sendHighMessageButton2.setName("分配他人回复");
             sendHighMessageButton2.setUrl(opinionReceiveConfigStatic.getUrl2());
-            sendHighMessageButton2.setQuery(parse);
-            sendHighMessageButton2.setArguments(parse1);
+            sendHighMessageButton2.setQuery(parse2);
+            sendHighMessageButton2.setArguments(argumentParse);
             sendHighMessageButton2.setMessageSource("extend");
             buttons.add(sendHighMessageButton);
             buttons.add(sendHighMessageButton2);
@@ -180,30 +184,38 @@ public class NoticeImUtil {
         try {
             String msg = "";
             String arguments = "";
+            String query3 = "";
             if (isCeo){
                 // 消息内容
                 msg =  String.format(opinionReplyConfigStatic.getContent(),content);
+                // 意见来源 需传递给前端 0 董事长信箱，1 意见箱
+                query3 = String.format(opinionReplyConfigStatic.getQuery3(), YesNo.NO);
             }else {
                 msg = String.format(opinionReplyConfigStatic.getContent1(), receiveUserName);
+                query3 = String.format(opinionReplyConfigStatic.getQuery3(), YesNo.YES);
             }
 
             String query = String.format(opinionReplyConfigStatic.getQuery(), opinionId);
+            String query2 = String.format(opinionReplyConfigStatic.getQuery2(), opinionId);
+
             Object parse = JSONObject.parse(query);
-            Object parse1 = JSONObject.parse(arguments);
+            Object parse2 = JSONObject.parse(query2);
+            Object parse3 = JSONObject.parse(query3);
+            Object argumentsParse = JSONObject.parse(arguments);
 
             List<SendHighMessageButton> buttons = new ArrayList<>();
             SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
             sendHighMessageButton.setName("查看详情");
             sendHighMessageButton.setUrl(opinionReplyConfigStatic.getUrl());
             sendHighMessageButton.setQuery(parse);
-            sendHighMessageButton.setArguments(parse1);
+            sendHighMessageButton.setArguments(argumentsParse);
             sendHighMessageButton.setMessageSource("extend");
 
             SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
-            sendHighMessageButton2.setName("继续反馈");
+            sendHighMessageButton2.setName("补充提问");
             sendHighMessageButton2.setUrl(opinionReplyConfigStatic.getUrl2());
-            sendHighMessageButton2.setQuery(parse);
-            sendHighMessageButton2.setArguments(parse1);
+            sendHighMessageButton2.setQuery(parse2);
+            sendHighMessageButton2.setArguments(argumentsParse);
             sendHighMessageButton2.setMessageSource("extend");
             buttons.add(sendHighMessageButton);
             buttons.add(sendHighMessageButton2);

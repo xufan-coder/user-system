@@ -153,9 +153,12 @@ msg:
     content: '【%s】伙伴已解约，他最近的签单客户由他的团队长跟进，请做好监督，预防客户流失!'
   # 意见接收人收到
   opinion-receive:
-    url: /home/suggestion/detail
-    url2:
-    query: '{"id":"%s"}'
+    # 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+    url:  /home/suggestion/detail
+    # 分配他人回复路径
+    url2: /home/suggestion/assistant/single
+    query: '{"fromPage":"1","id":"%s"}'
+    query2: '{"id":"%s"}'
     arguments:
     title: '新信件接收查看提醒'
     content: '发件人: %s </br> 内容描述: %s'
@@ -164,7 +167,13 @@ msg:
   # 意见发起人收到
   opinion-reply:
     url: /home/suggestion/detail
-    query: '{"id":"%s"}'
+    # 补充回复路径
+    url2: /home/suggestion/reply
+    # 已完成后发起新的意见路径
+    url3: //home/suggestion/add
+    query: '{"fromPage":"0","id":"%s"}'
+    query2: '{"id":"%s"}'
+    query3: '{"source":"%s"}'
     arguments:
     title: '董事长信箱意见反馈回复'
     content: '回复内容: %s'
@@ -173,7 +182,7 @@ msg:
   # 意见协助人接收
   opinion-assistant:
     url: /home/suggestion/detail
-    query: '{"id":"%s"}'
+    query: '{"fromPage":"2","id":"%s"}'
     arguments:
     title: '董事长信件协助回复提醒'
     content: '发件人: %s </br> 内容描述: %s'
@@ -186,7 +195,7 @@ leave:
 
 #董事长信箱能收到意见反馈的boss账号
 receive:
-  boss: 111b0d1af37f7d60bfe9c7f2b658ef1e,036cb99d46e317d22f2ea16743285eaa,293c53e4fdcfe9ac0b9eb5e2f9c6db2e
+  boss: 111b0d1af37f7d60bfe9c7f2b658ef1e,036cb99d46e317d22f2ea16743285eaa,293c53e4fdcfe9ac0b9eb5e2f9c6db2e,2470fffc258cfe56d99ba5f2a65425e5
 
 supplier:
   tsz:

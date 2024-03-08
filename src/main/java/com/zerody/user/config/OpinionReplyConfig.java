@@ -18,7 +18,13 @@ public class OpinionReplyConfig {
 
     private String url2;
 
+    private String url3;
+
     private String query;
+
+    private String query2;
+
+    private String query3;
 
     private String arguments;
 
