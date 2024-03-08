@@ -18,10 +18,7 @@ import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.config.OpinionMsgConfig;
 import com.zerody.user.constant.ImageTypeInfo;
 import com.zerody.user.constant.OpinionStateType;
-import com.zerody.user.domain.Image;
-import com.zerody.user.domain.SysStaffInfo;
-import com.zerody.user.domain.UserOpinion;
-import com.zerody.user.domain.UserReply;
+import com.zerody.user.domain.*;
 import com.zerody.user.dto.UserOpinionDto;
 import com.zerody.user.dto.UserOpinionQueryDto;
 import com.zerody.user.dto.UserReplyDto;
@@ -62,6 +59,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Resource
     private UserOpinionRefService userOpinionRefService;
+
+    @Resource
+    private CeoUserInfoService ceoUserInfoService;
 
     @Resource
     private JPushFeignService jPushFeignService;
@@ -192,10 +192,15 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Override
     public String getSenderInfo(String userId){
         StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
-        if (DataUtil.isEmpty(staffInfo)){
+        CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
+        if (DataUtil.isEmpty(staffInfo) && DataUtil.isEmpty(ceoUserInfo)){
             throw new DefaultException("找不到该发起人信息");
+        }else if (DataUtil.isNotEmpty(staffInfo)){
+            return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
+        }else if (DataUtil.isNotEmpty(ceoUserInfo)){
+            return ceoUserInfo.getUserName();
         }
-        return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
+        return null;
     }
 
     private String getReplyName(String userId){
