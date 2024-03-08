@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
+import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.CeoUserInfo;
 import com.zerody.user.domain.UserOpinionRef;
 import com.zerody.user.domain.UserOpinionType;
 import com.zerody.user.mapper.UserOpinionRefMapper;
 import com.zerody.user.mapper.UserOpinionTypeMapper;
+import com.zerody.user.service.CeoUserInfoService;
 import com.zerody.user.service.SysStaffInfoService;
 import com.zerody.user.service.UserOpinionRefService;
 import com.zerody.user.service.UserOpinionTypeService;
@@ -31,6 +34,9 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
 
     @Autowired
     private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
+    private CeoUserInfoService ceoUserInfoService;
 
     @Override
     public void addOpinionRef(String opinionId, List<String> seeUserIds,Integer replyType) {
@@ -65,8 +71,14 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
         List<String> collect = refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
         StringBuilder appionterName = new StringBuilder();
         for (String userId: collect) {
+            CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
+            if (DataUtil.isNotEmpty(ceoUserInfo)){
+                appionterName.append(", ").append(ceoUserInfo.getUserName());
+            }
             StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
-            appionterName.append(", ").append(staffInfo.getUserName());
+            if (DataUtil.isNotEmpty(staffInfo)){
+                appionterName.append(", ").append(staffInfo.getUserName());
+            }
         }
         return appionterName.toString();
     }
