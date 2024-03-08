@@ -399,14 +399,16 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
         // 变更通知消息状态
         UserOpinion byId = this.getById(id);
-        JSONArray jsonArray = JSONObject.parseArray(byId.getMessageJson());
-        for (int i = 0; i<jsonArray.size();i++){
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String messageId = String.valueOf(jsonObject.get("messageId"));
-            String userId = String.valueOf(jsonObject.get("userId"));
+        if (DataUtil.isNotEmpty(byId.getMessageJson())){
+            JSONArray jsonArray = JSONObject.parseArray(byId.getMessageJson());
+            for (int i = 0; i<jsonArray.size();i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String messageId = String.valueOf(jsonObject.get("messageId"));
+                String userId = String.valueOf(jsonObject.get("userId"));
 
-            // 推送消息变更意见状态
-            NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId);
+                // 推送消息变更意见状态
+                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId);
+            }
         }
     }
 
