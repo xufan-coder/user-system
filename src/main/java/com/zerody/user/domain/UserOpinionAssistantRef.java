@@ -3,7 +3,6 @@ package com.zerody.user.domain;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author : xufan
@@ -29,7 +28,4 @@ public class UserOpinionAssistantRef {
 
     /** 创建时间 */
     private Date createTime;
-
-    /** 协助类型 ( 1 自动分配 0 非自动分配) */
-    private Integer type;
 }

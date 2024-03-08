@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
+import com.zerody.user.api.vo.StaffInfoVo;
+import com.zerody.user.domain.SysStaffInfo;
 import com.zerody.user.domain.SysUserInfo;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserOpinionAssistantRef;
@@ -31,6 +33,9 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
     private SysUserInfoService sysUserInfoService;
 
     @Autowired
+    private SysStaffInfoService sysStaffInfoService;
+
+    @Autowired
     private UserOpinionService userOpinionService;
 
     @Autowired
@@ -42,8 +47,6 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
     @Override
     public void addManualAssistantRef(UserOpinionAssistantRefDto param) {
-        param.setType(MANUAL_ASSIGN);
-        this.addUserAssistantRef(param);
 
         // 根据意见id获取该意见已经分配出去的人 ， 相同人已经推送过一次，只推送新协助人
             List<String> result = new ArrayList<>();
@@ -72,21 +75,20 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
 
 
-    public List<UserOpinionAssistantRef> getAssistantRef(String userId,Integer type){
-        QueryWrapper<UserOpinionAssistantRef> qw = new QueryWrapper<>();
-        qw.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
-        qw.lambda().eq(UserOpinionAssistantRef::getType,type);
-        return this.list(qw);
+    public List<StaffInfoVo>  getAssistantUserInfo(String userId){
+        List<String> assistantUserIds = getAssistantUserIds(userId);
+        return sysStaffInfoService.getStaffInfoByIds(assistantUserIds);
     }
 
     @Override
-    public List<String> getAssistantUserIds(String userId, Integer type) {
-        return this.getAssistantRef(userId,type).stream().map(UserOpinionAssistantRef::getAssistantUserId).collect(Collectors.toList());
+    public List<String> getAssistantUserIds(String userId) {
+        QueryWrapper<UserOpinionAssistantRef> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
+        return  this.list(queryWrapper).stream().map(UserOpinionAssistantRef::getAssistantUserId).collect(Collectors.toList());
     }
 
     @Override
     public void addAutoAssistantRef(UserOpinionAssistantRefDto param) {
-        param.setType(AUTOMATIC_ASSIGN);
         this.addUserAssistantRef(param);
     }
 
@@ -94,18 +96,10 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
     public void addUserAssistantRef(UserOpinionAssistantRefDto param) {
 
         // 获取当前数据库已有的协助人
-        List<String> assistantUserIds = getAssistantUserIds(param.getUserId(), param.getType());
+        List<String> assistantUserIds = getAssistantUserIds(param.getUserId());
 
         // 去重 ，只做增量添加
         List<String> result = param.getAssistantUserIds().stream().filter(r -> !assistantUserIds.contains(r)).collect(Collectors.toList());
-
-        /*QueryWrapper<UserOpinionAssistantRef> removeQw = new QueryWrapper<>();
-        removeQw.lambda().eq(UserOpinionAssistantRef::getUserId, param.getUserId());
-        removeQw.lambda().eq(UserOpinionAssistantRef::getType, param.getType());
-        this.remove(removeQw);
-        if (DataUtil.isEmpty(param.getAssistantUserIds())) {
-            return;
-        }*/
         List<UserOpinionAssistantRef> AssistantRefList = new ArrayList<>();
         for(String assistantUserId : result){
             UserOpinionAssistantRef assistantRef = new UserOpinionAssistantRef();
@@ -118,11 +112,18 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
                 assistantRef.setAssistantUserName(userById.getUserName());
             }
             assistantRef.setCreateTime(new Date());
-            assistantRef.setType(param.getType());
             AssistantRefList.add(assistantRef);
         }
         this.saveBatch(AssistantRefList);
     }
 
+
+    @Override
+    public void removeByUserId(String userId,String assistantUserId) {
+        QueryWrapper<UserOpinionAssistantRef> removeWrapper = new QueryWrapper<>();
+        removeWrapper.lambda().eq(UserOpinionAssistantRef::getUserId,userId);
+        removeWrapper.lambda().eq(UserOpinionAssistantRef::getAssistantUserId,assistantUserId);
+        this.remove(removeWrapper);
+    }
 
 }

@@ -23,9 +23,6 @@ public class UserOpinionAssistantRefDto {
     /** 反馈意见id */
     private List<String> opinionIds;
 
-    /** 协助类型 ( 1 自动分配 0 手动分配) */
-    private Integer type;
-
     /** 是否是boss账号 */
     private Boolean isCeo;
 }

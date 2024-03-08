@@ -4,6 +4,7 @@ import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UserUtils;
+import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.UserOpinionAssistantRef;
 import com.zerody.user.dto.UserOpinionAssistantRefDto;
 import com.zerody.user.service.UserOpinionAssistantRefService;
@@ -74,14 +75,14 @@ public class UserOpinionAssistantRefController {
     }
 
     /**
-    * @Description:         获取意见回复协助人
+    * @Description:         获取意见回复协助人信息
     * @Author:              xufan
     * @Date:                2024/2/29 11:52
     */
     @GetMapping("/get")
-    public DataResult<List<UserOpinionAssistantRef>> getAssistantUserIds(Integer type){
+    public DataResult<List<StaffInfoVo>> getAssistantUserInfo(){
         try {
-            List<UserOpinionAssistantRef> result = this.service.getAssistantRef(UserUtils.getUserId(),type);
+            List<StaffInfoVo> result = this.service.getAssistantUserInfo(UserUtils.getUserId());
             return R.success(result);
         } catch (DefaultException e) {
             log.error("获取意见回复协助人出错：{}", e, e);
@@ -94,17 +95,18 @@ public class UserOpinionAssistantRefController {
 
 
     /**
-    * @Description:         删除信件回复协助人
+    * @Description:         根据协助人userId删除信件回复协助人
     * @Author:              xufan
     * @Date:                2024/3/7 9:36
     */
     @DeleteMapping("/del/{id}")
-    public DataResult<Void> removeAssistantById(String id){
+    public DataResult<Void> removeAssistantById(@PathVariable("id") String assistantUserId){
         try {
-            this.service.removeById(id);
+            String userId = UserUtils.getUserId();
+            this.service.removeByUserId(userId,assistantUserId);
             return R.success();
         } catch (Exception e) {
-            log.error("删除信件回复协助人出错:{}", id, e);
+            log.error("删除信件回复协助人出错:{}", assistantUserId, e);
             return R.error("删除信件回复协助人出错:"+e.getMessage());
         }
     }

@@ -131,7 +131,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
                 //如果开启了自动分配 , 且都配置了相同的协助人, 则消息只推送一次
                 if (autoAssignService.isAutoAssign(userId)){
-                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId,AUTOMATIC_ASSIGN);
+                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(userId);
                     assistantUserIdsTotal.addAll(assistantUserIds);
                 }
                 List<String> assistantUserIdsResult = assistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
@@ -161,7 +161,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
                 //如果boss开启了自动分配则同时推送给boss配置的协助人 , 如果boss都配置了相同的协助人, 则消息只推送一次
                 if (autoAssignService.isAutoAssign(ceoUserId)){
-                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(ceoUserId,AUTOMATIC_ASSIGN);
+                    List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(ceoUserId);
                     assistantUserIdsTotal.addAll(assistantUserIds);
                 }
             }
