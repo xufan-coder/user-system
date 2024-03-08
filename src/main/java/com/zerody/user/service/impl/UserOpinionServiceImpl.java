@@ -191,14 +191,13 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     @Override
     public String getSenderInfo(String userId){
-        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
         CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
-        if (DataUtil.isEmpty(staffInfo) && DataUtil.isEmpty(ceoUserInfo)){
-            throw new DefaultException("找不到该发起人信息");
-        }else if (DataUtil.isNotEmpty(staffInfo)){
-            return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
-        }else if (DataUtil.isNotEmpty(ceoUserInfo)){
+        if (DataUtil.isNotEmpty(ceoUserInfo)){
             return ceoUserInfo.getUserName();
+        }
+        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
+        if (DataUtil.isNotEmpty(staffInfo)){
+            return staffInfo.getCompanyName() + staffInfo.getDepartmentName() + staffInfo.getUserName();
         }
         return null;
     }
