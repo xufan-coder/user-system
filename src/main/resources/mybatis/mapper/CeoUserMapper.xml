@@ -57,7 +57,7 @@
 
     <select id="getStaffInfoByIds" resultType="com.zerody.user.api.vo.StaffInfoVo">
         SELECT
-        cui.id,
+        cui.id as userId,
         cui.user_name,
         cui.role_id,
         cui.role_name,

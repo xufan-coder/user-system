@@ -38,7 +38,7 @@ public class UserOpinionAssistantRefController {
     public DataResult<Object> addManualAssistantRef(@RequestBody @Validated UserOpinionAssistantRefDto param) {
         try {
             param.setUserId(UserUtils.getUserId());
-            param.setUserName(UserUtils.getUserName());
+            param.setUserName(UserUtils.getUser().getUserName());
             param.setIsCeo(UserUtils.getUser().isCEO());
             this.service.addManualAssistantRef(param);
             return R.success();
@@ -61,7 +61,7 @@ public class UserOpinionAssistantRefController {
     public DataResult<Object> addAutoAssistantRef(@RequestBody @Validated UserOpinionAssistantRefDto param) {
         try {
             param.setUserId(UserUtils.getUserId());
-            param.setUserName(UserUtils.getUserName());
+            param.setUserName(UserUtils.getUser().getUserName());
             param.setIsCeo(UserUtils.getUser().isCEO());
             this.service.addAutoAssistantRef(param);
             return R.success();
