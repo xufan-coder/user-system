@@ -28,4 +28,7 @@ public class UserOpinionDetailVo extends UserOpinion {
 
     /**图片列表*/
     private List<String> replyImageList;
+
+    /** 协助人名称 */
+    private String assistantUserName;
 }

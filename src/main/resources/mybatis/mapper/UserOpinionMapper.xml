@@ -17,7 +17,7 @@
     <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
     <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
     <association property="seeUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
-    <association property="assistantUserName" column="{opinionId = id}" select="getAssistantNameByOpinionId"/>
+    <association property="assistantUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
   </resultMap>
 
   <resultMap id="BaseResultMapPageVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMapVo">
@@ -135,11 +135,5 @@
      left join sys_user_info ui on uor.user_id = ui.id
 	 left join ceo_user_info ceo on ceo.id = uor.user_id
      where uor.opinion_id = #{opinionId} and uor.reply_type = 1
-  </select>
-
-  <select id="getAssistantNameByOpinionId" resultType="string">
-     select GROUP_CONCAT(ui.user_name) from user_opinion_ref  uor
-     left join sys_user_info ui on uor.user_id = ui.id
-     where uor.opinion_id = #{opinionId} and uor.reply_type = 0
   </select>
 </mapper>
