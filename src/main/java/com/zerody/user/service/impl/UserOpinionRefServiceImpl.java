@@ -74,6 +74,7 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
             CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
             if (DataUtil.isNotEmpty(ceoUserInfo)){
                 appionterName.append(", ").append(ceoUserInfo.getUserName());
+                break;
             }
             StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
             if (DataUtil.isNotEmpty(staffInfo)){
