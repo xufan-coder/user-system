@@ -97,8 +97,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     private static final int MESSAGE_TYPE_FLOW = 1010;
 
     /** 1 自动分配 0 手动分配 */
-    private static final int MANUAL_ASSIGN = 0;
-    private static final int AUTOMATIC_ASSIGN = 1;
+    private static final int SUGGESTION_BOX = 1;
+    private static final int BOSS_MAIL = 0;
 
     @Override
     public void addUserOpinion(UserOpinionDto param) {
@@ -260,14 +260,26 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         }else if (opinion.getUserId().equals(param.getUserId())){
             // 获取意见收件人和协助人
             List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());
-            // 获取所有最新的协助人
-            List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(param.getUserId());
 
-            List<String> resultList = Stream.concat(seeUserIds.stream(), assistantUserIds.stream())
+            // 总的最新的协助人汇总
+            List<String> newAssistantUserIdsTotal = new ArrayList<>();
+
+            // 获取意见接收人 (直接查看人)
+            List<String> directUserIds = userOpinionRefService.getDirectUserIds(opinion.getId());
+            for (String directUserId : directUserIds) {
+                // 获取意见接收人最新的协助人
+                List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(directUserId);
+                newAssistantUserIdsTotal.addAll(assistantUserIds);
+            }
+
+            List<String> newAssistantUserIdsResult = newAssistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
+
+
+            List<String> resultList = Stream.concat(seeUserIds.stream(), newAssistantUserIdsResult.stream())
                     .distinct()
                     .collect(Collectors.toList());
 
-            List<String> newAssistantUserIds = assistantUserIds.stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
+            List<String> newAssistantUserIds = newAssistantUserIdsResult.stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
 
             // 添加新配置的协助人关联
             this.userOpinionRefService.addOpinionRef(opinion.getId(),newAssistantUserIds,YesNo.NO);

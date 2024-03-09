@@ -63,6 +63,15 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
     }
 
     @Override
+    public List<String> getDirectUserIds(String opinionId) {
+        QueryWrapper<UserOpinionRef> qw = new QueryWrapper<>();
+        qw.lambda().eq(UserOpinionRef::getOpinionId,opinionId);
+        qw.lambda().eq(UserOpinionRef::getReplyType,YesNo.YES);
+        List<UserOpinionRef> refList = this.list(qw);
+        return refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
+    }
+
+    @Override
     public String getAppionterName(String opinionId, Integer replyType) {
         // 注意，此处还可以调用mapper的getAssistantByOpinionId方法得到协助人
         QueryWrapper<UserOpinionRef> qw = new QueryWrapper<>();
