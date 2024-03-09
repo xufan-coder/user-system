@@ -85,7 +85,7 @@
       <if test="query.userId neq null and query.userId neq ''">
         and uor.user_id = #{query.userId}
       </if>
-      <if test="query.replyType neq null and query.replyType neq ''">
+      <if test="query.replyType neq null">
         and uor.reply_type = #{query.replyType}
       </if>
       <if test="query.searchName neq null and query.searchName neq ''">

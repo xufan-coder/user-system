@@ -16,11 +16,7 @@ import org.springframework.stereotype.Component;
 public class OpinionAdditionalConfig {
     private String url;
 
-    private String ur2;
-
     private String query;
-
-    private String query2;
 
     private String arguments;
 

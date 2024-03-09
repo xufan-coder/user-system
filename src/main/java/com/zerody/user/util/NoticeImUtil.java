@@ -267,9 +267,7 @@ public class NoticeImUtil {
                 msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
             }
             String query = String.format(opinionAdditionalConfigStatic.getQuery(), opinionId);
-            String query2 = String.format(opinionAdditionalConfigStatic.getQuery2(), opinionId);
             Object parse = JSONObject.parse(query);
-            Object parse2 = JSONObject.parse(query2);
             Object argumentsParse = JSONObject.parse(arguments);
 
             List<SendHighMessageButton> buttons = new ArrayList<>();
@@ -279,16 +277,7 @@ public class NoticeImUtil {
             sendHighMessageButton.setQuery(parse);
             sendHighMessageButton.setArguments(argumentsParse);
             sendHighMessageButton.setMessageSource("extend");
-
-            SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
-            sendHighMessageButton2.setName("补充提问");
-            sendHighMessageButton2.setUrl(opinionReplyConfigStatic.getUrl2());
-            sendHighMessageButton2.setQuery(parse2);
-            sendHighMessageButton2.setArguments(argumentsParse);
-            sendHighMessageButton2.setMessageSource("extend");
-
             buttons.add(sendHighMessageButton);
-            buttons.add(sendHighMessageButton2);
 
             Map<String,Object> dataMap = new HashMap<>();
             if (source == 0){
@@ -308,9 +297,9 @@ public class NoticeImUtil {
             data.setContentExtra(JSONObject.toJSONString(dataMap));
             data.setType(1014);
             DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
-            log.info("接收意见协助回复查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+            log.info("补充提问查看提醒查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
         } catch (Exception e) {
-            log.error("接收意见协助回复查看提醒IM出错:{}", e, e);
+            log.error("补充提问查看提醒查看提醒IM出错:{}", e, e);
         }
     }
 

@@ -192,10 +192,7 @@ msg:
   opinion-additional:
     # 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
     url:  /home/suggestion/detail
-    # 补充提问路径
-    url2: /home/suggestion/reply
     query: '{"fromPage":"1","id":"%s"}'
-    query2: '{"id":"%s"}'
     arguments:
     title: '信件补充提问查看提醒'
     content: '提问内容: %s'
