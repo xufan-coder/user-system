@@ -16,6 +16,8 @@
   <resultMap id="BaseResultMapVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMap">
     <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
     <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+    <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+    <result column="depart_name" property="departName" jdbcType="VARCHAR"/>
     <association property="seeUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
     <association property="assistantUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
   </resultMap>
@@ -29,7 +31,7 @@
 
   </resultMap>
 
-  <select id="queryUserOpinionUser" resultMap="BaseResultInfoMapVo">
+  <select id="queryUserOpinionUser" resultMap="BaseResultMapVo">
     select o.*,uop.name as 'type_name',sci.company_name, sdi.depart_name,
     (SELECT content from user_reply r where r.opinion_id = o.id ORDER BY r.create_time desc limit 1 ) as reply_content
     from user_opinion o
