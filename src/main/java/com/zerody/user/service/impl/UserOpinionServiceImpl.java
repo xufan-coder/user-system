@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author kuang
@@ -259,7 +260,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         }else if (opinion.getUserId().equals(param.getUserId())){
             // 获取意见收件人和协助人
             List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());
-            for (String userId : seeUserIds) {
+            // 获取所有最新的协助人
+            List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(param.getUserId());
+
+            List<String> resultList = Stream.concat(seeUserIds.stream(), assistantUserIds.stream())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            for (String userId : resultList) {
                 NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),opinion.getSource());
             }
         }
