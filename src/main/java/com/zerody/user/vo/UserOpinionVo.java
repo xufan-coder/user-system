@@ -12,6 +12,12 @@ import java.util.List;
 @Data
 public class UserOpinionVo extends UserOpinion {
 
+    /**公司名称*/
+    private String companyName;
+
+    /**部门名称*/
+    private String departName;
+
     /**回复内容*/
     private String replyContent;
 

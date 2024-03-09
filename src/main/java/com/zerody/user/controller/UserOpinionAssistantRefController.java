@@ -4,6 +4,7 @@ import com.alibaba.druid.support.json.JSONUtils;
 import com.zerody.common.api.bean.DataResult;
 import com.zerody.common.api.bean.R;
 import com.zerody.common.exception.DefaultException;
+import com.zerody.common.util.JsonUtils;
 import com.zerody.common.util.UserUtils;
 import com.zerody.user.api.vo.StaffInfoVo;
 import com.zerody.user.domain.UserOpinionAssistantRef;
@@ -42,7 +43,7 @@ public class UserOpinionAssistantRefController {
             param.setUserName(UserUtils.getUser().getUserName());
             param.setIsCeo(UserUtils.getUser().isCEO());
             this.service.addManualAssistantRef(param);
-            log.info("添加手动回复协助人入参{}", JSONUtils.toJSONString(param));
+            log.info("添加手动回复协助人入参{}", JsonUtils.toString(param));
             return R.success();
         } catch (DefaultException e) {
             log.error("添加手动回复协助人异常:{}", e, e);

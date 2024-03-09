@@ -29,11 +29,15 @@
 
   </resultMap>
 
-  <select id="queryUserOpinionUser" resultMap="BaseResultMapVo">
-    select o.*,uop.name as 'type_name',
+  <select id="queryUserOpinionUser" resultMap="BaseResultInfoMapVo">
+    select o.*,uop.name as 'type_name',sci.company_name, sdi.depart_name,
     (SELECT content from user_reply r where r.opinion_id = o.id ORDER BY r.create_time desc limit 1 ) as reply_content
     from user_opinion o
     LEFT JOIN user_opinion_type uop on o.type_id = uop.id
+    LEFT JOIN sys_staff_info ssi ON o.user_id=ssi.user_id
+    LEFT JOIN sys_company_info sci ON ssi.comp_id=sci.id
+    LEFT JOIN union_staff_depart usd ON usd.staff_id = ssi.id
+    LEFT JOIN sys_department_info sdi ON usd.department_id = sdi.id
     where o.user_id = #{query.userId} and o.deleted = 1
     <if test="query.typeId neq null and query.typeId neq ''">
       and o.type_id = #{query.typeId}
