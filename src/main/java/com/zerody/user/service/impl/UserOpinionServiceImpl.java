@@ -267,6 +267,12 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                     .distinct()
                     .collect(Collectors.toList());
 
+            List<String> newAssistantUserIds = assistantUserIds.stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
+
+            // 添加新配置的协助人关联
+            this.userOpinionRefService.addOpinionRef(opinion.getId(),newAssistantUserIds,YesNo.NO);
+
+            log.info("推送包括新协助人入参:{}", JSON.toJSONString(resultList));
             for (String userId : resultList) {
                 NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),opinion.getSource());
             }
