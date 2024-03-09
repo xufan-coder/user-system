@@ -14,6 +14,7 @@ import com.zerody.user.dto.UserOpinionAssistantRefDto;
 import com.zerody.user.mapper.UserOpinionAssistantRefMapper;
 import com.zerody.user.service.*;
 import com.zerody.user.util.NoticeImUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * @create 2024/2/29 9:45
  */
 @Service
+@Slf4j
 public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionAssistantRefMapper, UserOpinionAssistantRef> implements UserOpinionAssistantRefService {
 
     @Autowired
@@ -67,6 +69,7 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
                 // 推送到每个新协助人
                 for (String assistantUserId: result) {
+                    log.info("推送回复协助人入参----opinionId{},senderInfo{},userOpinionInfo{},appionterName{},param{}",opinionId,senderInfo,byId,appionterName,param);
                     NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo());
                 }
             }

@@ -9,6 +9,7 @@ import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.constant.MsgType;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.im.util.IM;
+import com.zerody.user.config.OpinionAdditionalConfig;
 import com.zerody.user.config.OpinionAssistantConfig;
 import com.zerody.user.config.OpinionReceiveConfig;
 import com.zerody.user.config.OpinionReplyConfig;
@@ -38,6 +39,8 @@ public class NoticeImUtil {
     private OpinionReplyConfig opinionReplyConfig;
     @Autowired
     private OpinionAssistantConfig opinionAssistantConfig;
+    @Autowired
+    private OpinionAdditionalConfig opinionAdditionalConfig;
 
     @Autowired
     private SendMsgFeignService sendMsgFeignService;
@@ -45,6 +48,7 @@ public class NoticeImUtil {
     private static OpinionReceiveConfig opinionReceiveConfigStatic;
     private static OpinionReplyConfig opinionReplyConfigStatic;
     private static OpinionAssistantConfig opinionAssistantConfigStatic;
+    private static OpinionAdditionalConfig opinionAdditionalConfigStatic;
 
     private static SendMsgFeignService sendMsgFeignServiceStatic;
 
@@ -54,6 +58,7 @@ public class NoticeImUtil {
         opinionReceiveConfigStatic = opinionReceiveConfig;
         opinionReplyConfigStatic = opinionReplyConfig;
         opinionAssistantConfigStatic = opinionAssistantConfig;
+        opinionAdditionalConfigStatic = opinionAdditionalConfig;
     }
 
     /**
@@ -71,7 +76,7 @@ public class NoticeImUtil {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
             String query = String.format(opinionReceiveConfigStatic.getQuery(), opinionId);
-            String query2 = String.format(opinionReceiveConfigStatic.getQuery2(), targetUserId);
+            String query2 = String.format(opinionReceiveConfigStatic.getQuery2(), targetUserId,opinionId);
             Object parse = JSONObject.parse(query);
             Object parse2 = JSONObject.parse(query2);
 
@@ -245,6 +250,68 @@ public class NoticeImUtil {
             log.error("意见回复查看提醒IM出错:{}", e, e);
         }
         return null;
+    }
+
+    /**
+    * @Description:         提交人补充提问，意见接收人和协助人收到此消息
+    * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isCeo]
+    */
+    public static void pushAdditionalOpinionToHandler(String opinionId,String receiveUserId, String opinionSenderInfo, String content, Integer source){
+        try {
+            String msg = "";
+            String arguments = "";
+            if (source == 0){
+                // 消息内容
+                msg =  String.format(opinionAdditionalConfigStatic.getContent(), content);
+            }else {
+                msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
+            }
+            String query = String.format(opinionAdditionalConfigStatic.getQuery(), opinionId);
+            String query2 = String.format(opinionAdditionalConfigStatic.getQuery2(), opinionId);
+            Object parse = JSONObject.parse(query);
+            Object parse2 = JSONObject.parse(query2);
+            Object argumentsParse = JSONObject.parse(arguments);
+
+            List<SendHighMessageButton> buttons = new ArrayList<>();
+            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+            sendHighMessageButton.setName("查看详情");
+            sendHighMessageButton.setUrl(opinionAdditionalConfigStatic.getUrl());
+            sendHighMessageButton.setQuery(parse);
+            sendHighMessageButton.setArguments(argumentsParse);
+            sendHighMessageButton.setMessageSource("extend");
+
+            SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
+            sendHighMessageButton2.setName("补充提问");
+            sendHighMessageButton2.setUrl(opinionReplyConfigStatic.getUrl2());
+            sendHighMessageButton2.setQuery(parse2);
+            sendHighMessageButton2.setArguments(argumentsParse);
+            sendHighMessageButton2.setMessageSource("extend");
+
+            buttons.add(sendHighMessageButton);
+            buttons.add(sendHighMessageButton2);
+
+            Map<String,Object> dataMap = new HashMap<>();
+            if (source == 0){
+                dataMap.put("title", opinionAdditionalConfigStatic.getTitle());
+            }else {
+                dataMap.put("title", opinionAdditionalConfigStatic.getTitle1());
+            }
+            dataMap.put("content",msg);
+            dataMap.put("buttons",buttons);
+
+            SendRobotMessageDto data = new SendRobotMessageDto();
+            data.setContent(msg);
+            data.setSender(IM.ROBOT_XIAOZANG);
+            data.setTarget(receiveUserId);
+            data.setConversationType(0);
+            data.setPersistFlag(3);
+            data.setContentExtra(JSONObject.toJSONString(dataMap));
+            data.setType(1014);
+            DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+            log.info("接收意见协助回复查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+        } catch (Exception e) {
+            log.error("接收意见协助回复查看提醒IM出错:{}", e, e);
+        }
     }
 
 

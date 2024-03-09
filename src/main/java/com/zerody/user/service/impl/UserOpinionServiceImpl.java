@@ -124,8 +124,6 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             List<String> assistantUserIdsTotal = new ArrayList<>();
             for(String userId : param.getSeeUserIds()){
-                //获取意见接收人信息
-                StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
                 Long messageId = NoticeImUtil.pushOpinionToDirect(opinion.getId(),userId, param.getUserName(), param.getContent(), Boolean.FALSE);
                 jsonArray.add(setMessageJson(messageId,userId));
 
@@ -139,7 +137,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), staffInfo.getUserName() ,Boolean.FALSE);
+                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE);
                     jsonArray.add(setMessageJson(messageId,assistantUserId));
                 }
             }
@@ -204,11 +202,15 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
     private String getReplyName(String userId){
         //获取意见直接接收人信息
-        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
-        if (DataUtil.isEmpty(staffInfo)){
-            throw new DefaultException("找不到该回复人信息");
+        CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
+        if (DataUtil.isNotEmpty(ceoUserInfo)){
+            return ceoUserInfo.getUserName();
         }
-        return staffInfo.getUserName();
+        StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
+        if (DataUtil.isNotEmpty(staffInfo)){
+            return staffInfo.getUserName();
+        }
+        return null;
     }
 
     @Override
@@ -231,27 +233,34 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             pushIm(opinionMsgConfig.getTitle2(),opinion.getId(),opinion.getUserId(),reply.getUserName(),opinionMsgConfig.getContent2());
         }).start();*/
 
-        // 有回复变更处理进度为处理中
-        UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
-        up.lambda().eq(UserOpinion::getId,opinion.getId());
-        up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
-        this.update(up);
+        // 判断是否是自己添加的回复=(补充提问) , 否变更处理进度，发起消息回复通知
+        if (!opinion.getUserId().equals(param.getUserId())){
+            // 有回复变更处理进度为处理中
+            UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
+            up.lambda().eq(UserOpinion::getId,opinion.getId());
+            up.lambda().set(UserOpinion::getState,OpinionStateType.UNDERWAY);
+            this.update(up);
 
+            // 通知意见发起人有回复信息
+            NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),reply.getUserName(),param.getContent(),param.getIsCeo());
 
-        // 通知意见发起人有回复信息
-        NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),reply.getUserName(),param.getContent(),param.getIsCeo());
+            if (DataUtil.isNotEmpty(opinion.getMessageJson())){
+                // 转换消息messageJson对象
+                JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
+                for (int i = 0; i<jsonArray.size();i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String messageId = String.valueOf(jsonObject.get("messageId"));
+                    String userId = String.valueOf(jsonObject.get("userId"));
 
-
-        if (DataUtil.isNotEmpty(opinion.getMessageJson())){
-            // 转换消息messageJson对象
-            JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
-            for (int i = 0; i<jsonArray.size();i++){
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String messageId = String.valueOf(jsonObject.get("messageId"));
-                String userId = String.valueOf(jsonObject.get("userId"));
-
-                // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId,param.getSource());
+                    // 推送消息变更意见状态
+                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId,param.getSource());
+                }
+            }
+        }else if (opinion.getUserId().equals(param.getUserId())){
+            // 获取意见收件人和协助人
+            List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());
+            for (String userId : seeUserIds) {
+                NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),param.getSource());
             }
         }
 

@@ -158,7 +158,7 @@ msg:
     # 分配他人回复路径
     url2: /home/suggestion/assistant/single
     query: '{"fromPage":"1","id":"%s"}'
-    query2: '{"id":"%s"}'
+    query2: '{"userId":"%s",id":"%s"}'
     arguments:
     title: '新信件接收查看提醒'
     content: '发件人: %s </br> 内容描述: %s'
@@ -188,6 +188,20 @@ msg:
     content: '发件人: %s </br> 内容描述: %s'
     title1: '意见协助回复提醒'
     content1: '%s提出了一个意见或建议，%s指派您进行协助处理，请及时查看!'
+  # 收件人和协助人收到该消息
+  opinion-additional:
+    # 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+    url:  /home/suggestion/detail
+    # 补充提问路径
+    url2: /home/suggestion/reply
+    query: '{"fromPage":"1","id":"%s"}'
+    query2: '{"id":"%s"}'
+    arguments:
+    title: '信件补充提问查看提醒'
+    content: '提问内容: %s'
+    title1: '意见查看提醒 (补充提问)'
+    content1: '你好, %s 进行了补充提问，请及时查看!'
+
 leave:
   type:
     transfer: b52154f9-e5ad-11ed-ac65-0800274877ca
