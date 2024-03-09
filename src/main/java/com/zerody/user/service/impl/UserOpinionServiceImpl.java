@@ -260,7 +260,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             // 获取意见收件人和协助人
             List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());
             for (String userId : seeUserIds) {
-                NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),param.getSource());
+                NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),opinion.getSource());
             }
         }
 
