@@ -19,7 +19,7 @@
     <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
     <result column="depart_name" property="departName" jdbcType="VARCHAR"/>
     <association property="seeUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
-    <association property="assistantUserName" column="{opinionId = id}" select="getSeeUserNameByOpinionId"/>
+    <association property="assistantUserName" column="{opinionId = id}" select="getAssistantByOpinionId"/>
   </resultMap>
 
   <resultMap id="BaseResultMapPageVo" type="com.zerody.user.vo.UserOpinionPageVo" extends="BaseResultMapVo">
@@ -136,10 +136,18 @@
     </where>
   </select>
 
-  <select id="getSeeUserNameByOpinionId" resultType="string">
+ <select id="getSeeUserNameByOpinionId" resultType="string">
      select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
      left join sys_user_info ui on uor.user_id = ui.id
 	 left join ceo_user_info ceo on ceo.id = uor.user_id
      where uor.opinion_id = #{opinionId} and uor.reply_type = 1
+  </select>
+
+
+  <select id="getAssistantByOpinionId" resultType="string">
+     select GROUP_CONCAT(IFNULL(ui.user_name,ceo.user_name)) from user_opinion_ref  uor
+     left join sys_user_info ui on uor.user_id = ui.id
+	 left join ceo_user_info ceo on ceo.id = uor.user_id
+     where uor.opinion_id = #{opinionId} and uor.reply_type = 0
   </select>
 </mapper>
