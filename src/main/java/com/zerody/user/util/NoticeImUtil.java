@@ -250,7 +250,7 @@ public class NoticeImUtil {
 
 
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String seeUserId, String messageId) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String seeUserId, String messageId , Integer source) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
@@ -260,6 +260,19 @@ public class NoticeImUtil {
         map.put("id",userOpinion.getId());
         map.put("msgIds",messageId);
         map.put("status",opinionState);
+        if (opinionState == 2){
+            List<SendHighMessageButton> buttons = new ArrayList<>();
+            String query3 = String.format(opinionReplyConfigStatic.getQuery3(), source);
+            Object parse3 = JSONObject.parse(query3);
+            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+            sendHighMessageButton.setName("继续反馈");
+            sendHighMessageButton.setUrl(opinionReplyConfigStatic.getUrl3());
+            sendHighMessageButton.setQuery(parse3);
+            sendHighMessageButton.setArguments(null);
+            sendHighMessageButton.setMessageSource("extend");
+            buttons.add(sendHighMessageButton);
+            map.put("buttons",buttons);
+        }
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);

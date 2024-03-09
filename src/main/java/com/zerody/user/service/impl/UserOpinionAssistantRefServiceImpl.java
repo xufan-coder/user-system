@@ -63,7 +63,7 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
                     senderInfo = userOpinionService.getSenderInfo(byId.getUserId());
                 }
                 // 获取意见指派人名称
-                String appionterName = this.userOpinionRefService.getAppionterName(opinionId, YesNo.NO);
+                String appionterName = this.userOpinionRefService.getAppionterName(opinionId, YesNo.YES);
 
                 // 推送到每个新协助人
                 for (String assistantUserId: result) {

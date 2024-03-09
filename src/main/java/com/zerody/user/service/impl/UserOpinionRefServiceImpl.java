@@ -70,15 +70,24 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
         List<UserOpinionRef> refList = this.list(qw);
         List<String> collect = refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
         StringBuilder appionterName = new StringBuilder();
+        boolean isFirst = Boolean.TRUE;
         for (String userId: collect) {
             CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
             if (DataUtil.isNotEmpty(ceoUserInfo)){
-                appionterName.append(", ").append(ceoUserInfo.getUserName());
+                if (!isFirst){
+                    appionterName.append(", ");
+                }
+                appionterName.append(ceoUserInfo.getUserName());
+                isFirst = false;
                 break;
             }
             StaffInfoVo staffInfo = sysStaffInfoService.getStaffInfo(userId);
             if (DataUtil.isNotEmpty(staffInfo)){
-                appionterName.append(", ").append(staffInfo.getUserName());
+                if (!isFirst){
+                    appionterName.append(", ");
+                }
+                appionterName.append(staffInfo.getUserName());
+                isFirst = false;
             }
         }
         return appionterName.toString();

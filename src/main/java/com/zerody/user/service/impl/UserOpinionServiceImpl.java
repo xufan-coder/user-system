@@ -251,7 +251,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 String userId = String.valueOf(jsonObject.get("userId"));
 
                 // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId);
+                NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId,param.getSource());
             }
         }
 
@@ -407,7 +407,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 String userId = String.valueOf(jsonObject.get("userId"));
 
                 // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId);
+                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId,null);
             }
         }
     }
