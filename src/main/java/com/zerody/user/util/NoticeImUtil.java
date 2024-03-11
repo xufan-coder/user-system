@@ -15,6 +15,7 @@ import com.zerody.user.config.OpinionReceiveConfig;
 import com.zerody.user.config.OpinionReplyConfig;
 import com.zerody.user.constant.OpinionStateType;
 import com.zerody.user.domain.UserOpinion;
+import com.zerody.user.domain.UserOpinionType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,7 +231,7 @@ public class NoticeImUtil {
             sendHighMessageButton.setMessageSource("extend");
 
             SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
-            sendHighMessageButton2.setName("补充提问");
+            sendHighMessageButton2.setName("补充回复");
             sendHighMessageButton2.setUrl(opinionReplyConfigStatic.getUrl2());
             sendHighMessageButton2.setQuery(parse2);
             sendHighMessageButton2.setArguments(argumentsParse);
@@ -265,20 +266,20 @@ public class NoticeImUtil {
     }
 
     /**
-    * @Description:         提交人补充提问，意见接收人和协助人收到此消息
+    * @Description:         提交人补充回复，意见接收人和协助人收到此消息
     * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isCeo]
     */
-    public static Long pushAdditionalOpinionToHandler(String opinionId,String receiveUserId, String opinionSenderInfo, String content, Integer source){
+    public static Long pushAdditionalOpinionToHandler(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content){
         try {
             String msg = "";
             String arguments = "";
-            if (source == 0){
+            if (userOpinion.getSource() == 0){
                 // 消息内容
                 msg =  String.format(opinionAdditionalConfigStatic.getContent(), limitContentLength(content));
             }else {
                 msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
             }
-            String query = String.format(opinionAdditionalConfigStatic.getQuery(), opinionId);
+            String query = String.format(opinionAdditionalConfigStatic.getQuery(), userOpinion.getId());
             Object parse = JSONObject.parse(query);
             Object argumentsParse = JSONObject.parse(arguments);
 
@@ -292,13 +293,18 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton);
 
             Map<String,Object> dataMap = new HashMap<>();
-            if (source == 0){
+            if (userOpinion.getSource() == 0){
                 dataMap.put("title", opinionAdditionalConfigStatic.getTitle());
             }else {
                 dataMap.put("title", opinionAdditionalConfigStatic.getTitle1());
             }
             dataMap.put("content",msg);
             dataMap.put("buttons",buttons);
+            if (userOpinion.getState() == OpinionStateType.PENDING.intValue()){
+                dataMap.put("statusIcon",PENDING);
+            }else if (userOpinion.getState() == OpinionStateType.UNDERWAY.intValue()){
+                dataMap.put("statusIcon",UNDERWAY);
+            }
 
             SendRobotMessageDto data = new SendRobotMessageDto();
             data.setContent(msg);
@@ -309,10 +315,10 @@ public class NoticeImUtil {
             data.setContentExtra(JSONObject.toJSONString(dataMap));
             data.setType(1014);
             DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
-            log.info("补充提问查看提醒查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+            log.info("补充回复查看提醒查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
             return imResult.getData();
         } catch (Exception e) {
-            log.error("补充提问查看提醒查看提醒IM出错:{}", e, e);
+            log.error("补充回复查看提醒查看提醒IM出错:{}", e, e);
         }
             return null;
     }
@@ -400,6 +406,6 @@ public class NoticeImUtil {
 
 
     private static String limitContentLength(String content){
-        return content.length() > 55 ? content.substring(0,55) : content;
+        return content.length() > 42 ? content.substring(0,42) + "...." : content;
     }
 }

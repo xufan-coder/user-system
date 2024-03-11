@@ -311,7 +311,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             log.info("推送包括新协助人入参:{}", JSON.toJSONString(resultList));
             for (String userId : resultList) {
-                NoticeImUtil.pushAdditionalOpinionToHandler(opinion.getId(),userId,param.getUserName(),param.getContent(),opinion.getSource());
+                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,userId,param.getUserName(),param.getContent());
             }
         }
 

@@ -196,10 +196,10 @@ msg:
     url:  /home/suggestion/detail
     query: '{"fromPage":"1","id":"%s"}'
     arguments:
-    title: '信件补充提问查看提醒'
-    content: '提问内容: %s'
-    title1: '意见查看提醒 (补充提问)'
-    content1: '你好, %s 进行了补充提问，请及时查看!'
+    title: '信件补充回复查看提醒'
+    content: '回复内容: %s'
+    title1: '意见查看提醒 (补充回复)'
+    content1: '你好, %s 进行了补充回复，请及时查看!'
 
 leave:
   type:
