@@ -269,7 +269,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                     String userId = String.valueOf(jsonObject.get("userId"));
 
                     // 推送消息变更意见状态
-                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,opinion.getUserId(),messageId,param.getSource());
+                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,opinion.getUserId(),param.getUserId(),messageId,param.getSource());
                 }
             }
 
@@ -443,7 +443,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     }
 
     @Override
-    public void modifyOpinionStateById(String id) {
+    public void modifyOpinionStateById(String id , String userId) {
         UpdateWrapper<UserOpinion> up = new UpdateWrapper<>();
         up.lambda().eq(UserOpinion::getId,id);
         up.lambda().set(UserOpinion::getState, OpinionStateType.ACCOMPLISH);
@@ -456,10 +456,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             for (int i = 0; i<jsonArray.size();i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String messageId = String.valueOf(jsonObject.get("messageId"));
-                String userId = String.valueOf(jsonObject.get("userId"));
+                String messageUserId = String.valueOf(jsonObject.get("userId"));
 
                 // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,userId,messageId,null);
+                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,messageId,userId,null);
             }
         }
     }

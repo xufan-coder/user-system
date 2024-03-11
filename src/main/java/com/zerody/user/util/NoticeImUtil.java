@@ -205,7 +205,7 @@ public class NoticeImUtil {
             String query3 = "";
             if (isCeo){
                 // 消息内容
-                msg =  String.format(opinionReplyConfigStatic.getContent(),content);
+                msg =  String.format(opinionReplyConfigStatic.getContent(),limitContentLength(content));
                 // 意见来源 需传递给前端 0 董事长信箱，1 意见箱
                 query3 = String.format(opinionReplyConfigStatic.getQuery3(), YesNo.NO);
             }else {
@@ -321,10 +321,10 @@ public class NoticeImUtil {
 
     /**
     * @Description:         反馈意见通知状态变更
-    * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , messageId 意见id  source 来源
+    * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , senderUserId 引起意见变更的userId, messageId 意见id  source 来源
     */
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String messageId , Integer source) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String senderUserId, String messageId , Integer source) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
@@ -391,11 +391,15 @@ public class NoticeImUtil {
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);
         data.setType(1104);
-        data.setSender(userOpinion.getUserId());
+        data.setSender(senderUserId);
         data.setTarget(targetUserId);
 
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
         log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
     }
 
+
+    private static String limitContentLength(String content){
+        return content.length() > 55 ? content.substring(0,55) : content;
+    }
 }
