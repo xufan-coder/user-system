@@ -337,11 +337,29 @@ public class NoticeImUtil {
             sendHighMessageButton.setArguments(null);
             sendHighMessageButton.setMessageSource("extend");
             buttons.add(sendHighMessageButton);
-            map.put("buttons",buttons);
 
-            map.put("statusIcon",ACCOMPLISH);
+            JSONObject json = new JSONObject();
+            json.put("buttons",buttons);
+            json.put("statusIcon",ACCOMPLISH);
+
+            map.put("extra",json);
         }else if (opinionState.intValue() == OpinionStateType.UNDERWAY){
-            map.put("statusIcon",UNDERWAY);
+
+            String query = String.format(opinionReceiveConfigStatic.getQuery(), userOpinion.getId());
+            Object parse = JSONObject.parse(query);
+            List<SendHighMessageButton> buttons = new ArrayList<>();
+            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+            sendHighMessageButton.setName("查看详情");
+            sendHighMessageButton.setUrl(opinionReceiveConfigStatic.getUrl());
+            sendHighMessageButton.setQuery(parse);
+            sendHighMessageButton.setArguments(null);
+            sendHighMessageButton.setMessageSource("extend");
+            buttons.add(sendHighMessageButton);
+
+            JSONObject extraJson = new JSONObject();
+            extraJson.put("buttons",buttons);
+            extraJson.put("statusIcon",UNDERWAY);
+            map.put("extra",extraJson);
         }
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));
