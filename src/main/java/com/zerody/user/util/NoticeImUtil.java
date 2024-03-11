@@ -340,11 +340,13 @@ public class NoticeImUtil {
             map.put("buttons",buttons);
 
             map.put("statusIcon",ACCOMPLISH);
+        }else if (opinionState.intValue() == OpinionStateType.UNDERWAY){
+            map.put("statusIcon",UNDERWAY);
         }
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);
-        data.setType(MsgType.CHANGE_STATE);
+        data.setType(1104);
         data.setSender(userOpinion.getUserId());
         data.setTarget(seeUserId);
 
