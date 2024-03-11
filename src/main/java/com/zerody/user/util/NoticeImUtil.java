@@ -106,6 +106,7 @@ public class NoticeImUtil {
                 dataMap.put("title", opinionReceiveConfigStatic.getTitle1());
             }
             dataMap.put("content",msg);
+            dataMap.put("statusIcon","https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/68a7400b480e11bec45a118ed21bb33b.png");
             dataMap.put("buttons",buttons);
 
             SendRobotMessageDto data = new SendRobotMessageDto();
