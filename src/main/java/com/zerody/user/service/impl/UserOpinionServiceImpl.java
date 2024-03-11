@@ -138,7 +138,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE);
+                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE,opinion.getState());
                     jsonArray.add(setMessageJson(messageId,assistantUserId));
                 }
             }
@@ -170,7 +170,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
-                Long messageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE);
+                Long messageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE,opinion.getState());
                 jsonArray.add(setMessageJson(messageId,assistantUserId));
             }
         }

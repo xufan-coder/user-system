@@ -136,9 +136,9 @@ public class NoticeImUtil {
     * @Description:         意见协助人收到消息
     * @Param:               [receiveUserId 信息接收人id , opinionSenderInfo 意见发起人信息 , content 消息内容,
      * appointerInfo 指派人信息 注意：该字段只有意见箱的协助信息才显示，由于意见箱查看人目前只支持单选，可展示此字段，多选时会出现同时指派情况
-     * , isCeo 是否是投递给boss信箱]
+     * , isCeo 是否是投递给boss信箱 opinionState 意见处理状态]
     */
-    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo){
+    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo , Integer opinionState){
         try {
             String msg = "";
             String arguments = "";
@@ -169,6 +169,12 @@ public class NoticeImUtil {
             }
             dataMap.put("content",msg);
             dataMap.put("buttons",buttons);
+
+            if (opinionState == OpinionStateType.UNDERWAY.intValue()){
+                dataMap.put("statusIcon",UNDERWAY);
+            }else if (opinionState == OpinionStateType.PENDING.intValue()){
+                dataMap.put("statusIcon",PENDING);
+            }
 
             SendRobotMessageDto data = new SendRobotMessageDto();
             data.setContent(msg);

@@ -69,8 +69,7 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
                 // 推送到每个新协助人
                 for (String assistantUserId: result) {
-                    log.info("推送回复协助人入参----opinionId{},senderInfo{},userOpinionInfo{},appionterName{},param{}",opinionId,senderInfo,byId,appionterName,param);
-                    NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo());
+                    NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo(),byId.getState());
                 }
             }
 
