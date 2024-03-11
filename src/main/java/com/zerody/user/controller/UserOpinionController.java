@@ -150,9 +150,7 @@ public class UserOpinionController {
             if (DataUtil.isEmpty(dto.getSource())){
                 throw new DefaultException("意见来源类型不能为空");
             }
-            if(!UserUtils.getUser().isCEO()){
-                dto.setUserId(UserUtils.getUserId());
-            }
+            dto.setUserId(UserUtils.getUserId());
             checkUtil.setFiltrateTime(dto);
 
             log.info("我收到的和协助回复的入参{}", JSON.toJSONString(dto));
