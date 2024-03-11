@@ -13,6 +13,7 @@ import com.zerody.user.config.OpinionAdditionalConfig;
 import com.zerody.user.config.OpinionAssistantConfig;
 import com.zerody.user.config.OpinionReceiveConfig;
 import com.zerody.user.config.OpinionReplyConfig;
+import com.zerody.user.constant.OpinionStateType;
 import com.zerody.user.domain.UserOpinion;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,11 @@ public class NoticeImUtil {
         opinionAdditionalConfigStatic = opinionAdditionalConfig;
     }
 
+    public final  static  String PENDING = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/68a7400b480e11bec45a118ed21bb33b.png";
+    public final  static  String UNDERWAY = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/2ce23e91102e6134ec889336cce014e4.png";
+    public final  static  String ACCOMPLISH = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/e86818f423c2db4593e954f178269d89.png";
+
+
     /**
     * @Description:         意见接收人收到该消息
     * @Param:               [opinionId 意见id, targetUserId 接收人UserId, opinionSenderInfo 意见发送人信息, content 内容, isCeo 是否是投递给boss信箱]
@@ -106,7 +112,7 @@ public class NoticeImUtil {
                 dataMap.put("title", opinionReceiveConfigStatic.getTitle1());
             }
             dataMap.put("content",msg);
-            dataMap.put("statusIcon","https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/68a7400b480e11bec45a118ed21bb33b.png");
+            dataMap.put("statusIcon",opinionReceiveConfigStatic.getStatusIcon());
             dataMap.put("buttons",buttons);
 
             SendRobotMessageDto data = new SendRobotMessageDto();
@@ -186,7 +192,7 @@ public class NoticeImUtil {
     * @Description:         一旦有回复，意见发起人收到该通知
     * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 , isCeo 是否是投递给boss信箱]
     */
-    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
+    public static void pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
         try {
             String msg = "";
             String arguments = "";
@@ -234,7 +240,7 @@ public class NoticeImUtil {
             }
             dataMap.put("content",msg);
             dataMap.put("buttons",buttons);
-
+            dataMap.put("statusIcon", opinionReplyConfigStatic.getStatusIcon());
             SendRobotMessageDto data = new SendRobotMessageDto();
             data.setContent(msg);
             data.setSender(IM.ROBOT_XIAOZANG);
@@ -245,12 +251,9 @@ public class NoticeImUtil {
             data.setType(1014);
             DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
             log.info("意见回复查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
-
-            return imResult.getData();
         } catch (Exception e) {
             log.error("意见回复查看提醒IM出错:{}", e, e);
         }
-        return null;
     }
 
     /**
@@ -317,7 +320,7 @@ public class NoticeImUtil {
         map.put("id",userOpinion.getId());
         map.put("msgIds",messageId);
         map.put("status",opinionState);
-        if (opinionState == 2){
+        if (opinionState.intValue() == OpinionStateType.ACCOMPLISH){
             List<SendHighMessageButton> buttons = new ArrayList<>();
             String query3 = String.format(opinionReplyConfigStatic.getQuery3(), source);
             Object parse3 = JSONObject.parse(query3);
@@ -329,6 +332,8 @@ public class NoticeImUtil {
             sendHighMessageButton.setMessageSource("extend");
             buttons.add(sendHighMessageButton);
             map.put("buttons",buttons);
+
+            map.put("statusIcon",ACCOMPLISH);
         }
         SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));

@@ -32,4 +32,6 @@ public class OpinionReceiveConfig {
     private String content;
 
     private String content1;
+
+    private String statusIcon;
 }

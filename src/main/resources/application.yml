@@ -164,6 +164,7 @@ msg:
     content: '发件人: %s </br> 内容描述: %s'
     title1: '意见查看提醒'
     content1: '%s 向你提出了一个意见或建议，请及时查看!'
+    statusIcon: 'https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/68a7400b480e11bec45a118ed21bb33b.png'
   # 意见发起人收到
   opinion-reply:
     url: /home/suggestion/detail
@@ -179,6 +180,7 @@ msg:
     content: '回复内容: %s'
     title1: '意见提交回复提醒'
     content1: '%s已经回复了你提交的意见或建议，请及时查看!'
+    statusIcon: 'https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/2ce23e91102e6134ec889336cce014e4.png'
   # 意见协助人接收
   opinion-assistant:
     url: /home/suggestion/detail
@@ -204,9 +206,10 @@ leave:
     transfer: b52154f9-e5ad-11ed-ac65-0800274877ca
     block: b51a67c2-e5ad-11ed-ac65-0800274877ca
 
-#董事长信箱能收到意见反馈的boss账号
+#董事长信箱能收到意见反馈的boss账号: 叶又财 黄松  彭强强  金怡真 . 陈总、和其正、和气生财加吉祥如意
 receive:
-  boss: 111b0d1af37f7d60bfe9c7f2b658ef1e,036cb99d46e317d22f2ea16743285eaa,293c53e4fdcfe9ac0b9eb5e2f9c6db2e,2470fffc258cfe56d99ba5f2a65425e5
+  boss: 111b0d1af37f7d60bfe9c7f2b658ef1e,036cb99d46e317d22f2ea16743285eaa,293c53e4fdcfe9ac0b9eb5e2f9c6db2e,2470fffc258cfe56d99ba5f2a65425e5,
+  35f77e52bd0211ab733f94737752ca6a,9a4f4e814b79859c2889f0d9a8e96a06,d1727cb3f96a4d75967c646438da6927
 
 supplier:
   tsz:

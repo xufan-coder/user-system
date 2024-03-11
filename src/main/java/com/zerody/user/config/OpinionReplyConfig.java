@@ -35,4 +35,6 @@ public class OpinionReplyConfig {
     private String content;
 
     private String content1;
+
+    private String statusIcon;
 }
