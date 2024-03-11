@@ -198,7 +198,7 @@ public class NoticeImUtil {
     * @Description:         一旦有回复，意见发起人收到该通知
     * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 , isCeo 是否是投递给boss信箱]
     */
-    public static void pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
+    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
         try {
             String msg = "";
             String arguments = "";
@@ -257,16 +257,18 @@ public class NoticeImUtil {
             data.setType(1014);
             DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
             log.info("意见回复查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+            return imResult.getData();
         } catch (Exception e) {
             log.error("意见回复查看提醒IM出错:{}", e, e);
         }
+        return null;
     }
 
     /**
     * @Description:         提交人补充提问，意见接收人和协助人收到此消息
     * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isCeo]
     */
-    public static void pushAdditionalOpinionToHandler(String opinionId,String receiveUserId, String opinionSenderInfo, String content, Integer source){
+    public static Long pushAdditionalOpinionToHandler(String opinionId,String receiveUserId, String opinionSenderInfo, String content, Integer source){
         try {
             String msg = "";
             String arguments = "";
@@ -308,65 +310,89 @@ public class NoticeImUtil {
             data.setType(1014);
             DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
             log.info("补充提问查看提醒查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+            return imResult.getData();
         } catch (Exception e) {
             log.error("补充提问查看提醒查看提醒IM出错:{}", e, e);
         }
+            return null;
     }
 
 
 
+    /**
+    * @Description:         反馈意见通知状态变更
+    * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , messageId 意见id  source 来源
+    */
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String seeUserId, String messageId , Integer source) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String messageId , Integer source) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
         }
+
+        SendRobotMessageDto data = new SendRobotMessageDto();
+
         Map<String,Object> map=new HashMap<>();
         map.put("type", 1014);
         map.put("id",userOpinion.getId());
         map.put("msgIds",messageId);
         map.put("status",opinionState);
         if (opinionState.intValue() == OpinionStateType.ACCOMPLISH){
+
             List<SendHighMessageButton> buttons = new ArrayList<>();
-            String query3 = String.format(opinionReplyConfigStatic.getQuery3(), source);
-            Object parse3 = JSONObject.parse(query3);
-            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
-            sendHighMessageButton.setName("继续反馈");
-            sendHighMessageButton.setUrl(opinionReplyConfigStatic.getUrl3());
-            sendHighMessageButton.setQuery(parse3);
-            sendHighMessageButton.setArguments(null);
-            sendHighMessageButton.setMessageSource("extend");
-            buttons.add(sendHighMessageButton);
 
-            JSONObject json = new JSONObject();
-            json.put("buttons",buttons);
-            json.put("statusIcon",ACCOMPLISH);
+            // 如果 目标user 和 意见发起人 相同, 可以继续反馈
+            if (userOpinion.getUserId().equals(targetUserId)){
 
-            map.put("extra",json);
-        }else if (opinionState.intValue() == OpinionStateType.UNDERWAY){
+                String query = String.format(opinionReplyConfigStatic.getQuery(), userOpinion.getId());
+                Object parse = JSONObject.parse(query);
+                SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+                sendHighMessageButton.setName("查看详情");
+                sendHighMessageButton.setUrl(opinionReplyConfigStatic.getUrl());
+                sendHighMessageButton.setQuery(parse);
+                sendHighMessageButton.setArguments(null);
+                sendHighMessageButton.setMessageSource("extend");
 
-            String query = String.format(opinionReceiveConfigStatic.getQuery(), userOpinion.getId());
-            Object parse = JSONObject.parse(query);
-            List<SendHighMessageButton> buttons = new ArrayList<>();
-            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
-            sendHighMessageButton.setName("查看详情");
-            sendHighMessageButton.setUrl(opinionReceiveConfigStatic.getUrl());
-            sendHighMessageButton.setQuery(parse);
-            sendHighMessageButton.setArguments(null);
-            sendHighMessageButton.setMessageSource("extend");
-            buttons.add(sendHighMessageButton);
+                String query3 = String.format(opinionReplyConfigStatic.getQuery3(), source);
+                Object parse3 = JSONObject.parse(query3);
+                SendHighMessageButton sendHighMessageButton2 = new SendHighMessageButton();
+                sendHighMessageButton2.setName("继续反馈");
+                sendHighMessageButton2.setUrl(opinionReplyConfigStatic.getUrl3());
+                sendHighMessageButton2.setQuery(parse3);
+                sendHighMessageButton2.setArguments(null);
+                sendHighMessageButton2.setMessageSource("extend");
+                buttons.add(sendHighMessageButton);
+                buttons.add(sendHighMessageButton2);
+
+            }else {
+                String query = String.format(opinionReceiveConfigStatic.getQuery(), userOpinion.getId());
+                Object parse = JSONObject.parse(query);
+                SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+                sendHighMessageButton.setName("查看详情");
+                sendHighMessageButton.setUrl(opinionReceiveConfigStatic.getUrl());
+                sendHighMessageButton.setQuery(parse);
+                sendHighMessageButton.setArguments(null);
+                sendHighMessageButton.setMessageSource("extend");
+                buttons.add(sendHighMessageButton);
+            }
+
 
             JSONObject extraJson = new JSONObject();
             extraJson.put("buttons",buttons);
+            extraJson.put("statusIcon",ACCOMPLISH);
+
+            map.put("extra",extraJson);
+        }else if (opinionState.intValue() == OpinionStateType.UNDERWAY){
+
+            JSONObject extraJson = new JSONObject();
             extraJson.put("statusIcon",UNDERWAY);
             map.put("extra",extraJson);
         }
-        SendRobotMessageDto data = new SendRobotMessageDto();
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);
         data.setType(1104);
         data.setSender(userOpinion.getUserId());
-        data.setTarget(seeUserId);
+        data.setTarget(targetUserId);
 
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
         log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));

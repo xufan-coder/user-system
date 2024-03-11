@@ -201,6 +201,19 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         return null;
     }
 
+    @Override
+    public void updateOpinionMessageJson(String opinionId, JSONObject messageJson) {
+        UserOpinion userOpinion = this.getById(opinionId);
+        JSONArray jsonArray = JSONObject.parseArray(userOpinion.getMessageJson());
+        jsonArray.add(messageJson);
+
+        String messageJsonStr = JSONObject.toJSONString(jsonArray);
+        UpdateWrapper<UserOpinion> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda().set(UserOpinion::getMessageJson,messageJsonStr);
+        updateWrapper.lambda().eq(UserOpinion::getId,userOpinion.getId());
+        this.update(updateWrapper);
+    }
+
     private String getReplyName(String userId){
         //获取意见直接接收人信息
         CeoUserInfo ceoUserInfo = ceoUserInfoService.getById(userId);
@@ -243,7 +256,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             this.update(up);
 
             // 通知意见发起人有回复信息
-            NoticeImUtil.pushReplyToInitiator(opinion.getId(),opinion.getUserId(),reply.getUserName(),param.getContent(),param.getIsCeo());
+            Long replyMessageId = NoticeImUtil.pushReplyToInitiator(opinion.getId(), opinion.getUserId(), reply.getUserName(), param.getContent(), param.getIsCeo());
+            // 变更意见json信息
+            this.updateOpinionMessageJson(opinion.getId(),setMessageJson(replyMessageId,opinion.getUserId()));
 
             if (DataUtil.isNotEmpty(opinion.getMessageJson())){
                 // 转换消息messageJson对象
@@ -254,9 +269,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                     String userId = String.valueOf(jsonObject.get("userId"));
 
                     // 推送消息变更意见状态
-                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,messageId,param.getSource());
+                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,opinion.getUserId(),messageId,param.getSource());
                 }
             }
+
+
         }else if (opinion.getUserId().equals(param.getUserId())){
             // 获取意见收件人和协助人
             List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());

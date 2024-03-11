@@ -1,5 +1,6 @@
 package com.zerody.user.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zerody.user.domain.UserOpinion;
@@ -32,4 +33,6 @@ public interface UserOpinionService extends IService<UserOpinion> {
     void modifyOpinionStateById(String id);
 
     String getSenderInfo(String userId);
+
+    void updateOpinionMessageJson(String opinionId , JSONObject messageJson);
 }
