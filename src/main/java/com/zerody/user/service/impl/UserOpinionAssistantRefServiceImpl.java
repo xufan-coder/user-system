@@ -3,6 +3,7 @@ package com.zerody.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
+import com.zerody.common.exception.DefaultException;
 import com.zerody.common.util.UUIDutils;
 import com.zerody.common.utils.DataUtil;
 import com.zerody.user.api.vo.StaffInfoVo;
@@ -49,6 +50,10 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
     @Override
     public void addManualAssistantRef(UserOpinionAssistantRefDto param) {
+
+        if (DataUtil.isEmpty(param.getOpinionIds())){
+            throw new DefaultException("请至少选择一条意见用以分配!");
+        }
 
         // 根据意见id获取该意见已经分配出去的人 ， 相同人已经推送过一次，只推送新协助人
             List<String> result = new ArrayList<>();

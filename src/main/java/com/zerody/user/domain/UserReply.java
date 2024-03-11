@@ -43,4 +43,7 @@ public class UserReply {
      */
     private Integer deleted;
 
+     /** 0 其他人回复信息 1 提交人补充回复信息 */
+    private Integer source;
+
 }

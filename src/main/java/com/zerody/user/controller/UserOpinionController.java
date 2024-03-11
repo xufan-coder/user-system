@@ -1,6 +1,7 @@
 package com.zerody.user.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zerody.common.api.bean.DataResult;
@@ -123,6 +124,9 @@ public class UserOpinionController {
             }
             queryDto.setUserId(UserUtils.getUserId());
             this.checkUtil.setFiltrateTime(queryDto);
+
+            log.info("分页查询董事长和意见箱意见 --我提交的入参{}", JSON.toJSONString(queryDto));
+
             IPage<UserOpinionVo> iPage = this.userOpinionService.queryUserOpinionUser(queryDto);
             return R.success(iPage);
         } catch (DefaultException e) {
@@ -150,6 +154,9 @@ public class UserOpinionController {
                 dto.setUserId(UserUtils.getUserId());
             }
             checkUtil.setFiltrateTime(dto);
+
+            log.info("我收到的和协助回复的入参{}", JSON.toJSONString(dto));
+
             IPage<UserOpinionPageVo> iPage = this.userOpinionService.queryUserOpinionPage(dto);
             return R.success(iPage);
         } catch (DefaultException e) {

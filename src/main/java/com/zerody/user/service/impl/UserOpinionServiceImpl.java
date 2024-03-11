@@ -239,6 +239,14 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
         reply.setCreateTime(new Date());
         reply.setDeleted(YesNo.YES);
         reply.setId(UUIDutils.getUUID32());
+
+        // 判断是 其他人回复信息 0  还是 提交人补充回复信息 1
+        if (param.getUserId().equals(opinion.getUserId())){
+            reply.setSource(YesNo.YES);
+        }else {
+            reply.setSource(YesNo.NO);
+        }
+
         this.userReplyMapper.insert(reply);
         insertImage(param.getReplyImageList(),reply.getId(),ImageTypeInfo.USER_REPLY,reply.getUserId(),reply.getUserName());
         /*new Thread(() -> {

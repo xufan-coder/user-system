@@ -77,7 +77,7 @@ public class NoticeImUtil {
             String arguments = "";
             if (isCeo){
                 // 消息内容
-                msg =  String.format(opinionReceiveConfigStatic.getContent(), opinionSenderInfo, content);
+                msg =  String.format(opinionReceiveConfigStatic.getContent(), opinionSenderInfo, limitContentLength(content));
             }else {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
@@ -144,7 +144,7 @@ public class NoticeImUtil {
             String arguments = "";
             if (isCeo){
                 // 消息内容
-                msg =  String.format(opinionAssistantConfigStatic.getContent(), opinionSenderInfo, content);
+                msg =  String.format(opinionAssistantConfigStatic.getContent(), opinionSenderInfo, limitContentLength(content));
             }else {
                 msg = String.format(opinionAssistantConfigStatic.getContent1(), opinionSenderInfo, appointerInfo);
             }
@@ -274,7 +274,7 @@ public class NoticeImUtil {
             String arguments = "";
             if (source == 0){
                 // 消息内容
-                msg =  String.format(opinionAdditionalConfigStatic.getContent(), content);
+                msg =  String.format(opinionAdditionalConfigStatic.getContent(), limitContentLength(content));
             }else {
                 msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
             }
