@@ -105,6 +105,11 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
         // 获取当前数据库已有的协助人
         List<String> assistantUserIds = getAssistantUserIds(param.getUserId());
 
+        // 提示不能选择选择自己作为协助人
+        if (param.getAssistantUserIds().contains(param.getUserId())){
+            throw new DefaultException("不能选择自己作为协助人,请重新选择！");
+        }
+
         // 去重 ，只做增量添加
         List<String> result = param.getAssistantUserIds().stream().filter(r -> !assistantUserIds.contains(r)).collect(Collectors.toList());
         List<UserOpinionAssistantRef> AssistantRefList = new ArrayList<>();
