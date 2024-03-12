@@ -55,6 +55,11 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
             throw new DefaultException("请至少选择一条意见用以分配!");
         }
 
+        // 提示不能选择选择自己作为协助人
+        if (param.getAssistantUserIds().contains(param.getUserId())){
+            throw new DefaultException("不能选择自己作为协助人,请重新选择！");
+        }
+
         // 根据意见id获取该意见已经分配出去的人 ， 相同人已经推送过一次，只推送新协助人
             List<String> result = new ArrayList<>();
             for (String opinionId: param.getOpinionIds()) {

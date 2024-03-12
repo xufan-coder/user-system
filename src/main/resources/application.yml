@@ -194,7 +194,7 @@ msg:
   opinion-additional:
     # 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
     url:  /home/suggestion/detail
-    query: '{"fromPage":"1","id":"%s"}'
+    query: '{"fromPage":"%s","id":"%s"}'
     arguments:
     title: '信件补充回复查看提醒'
     content: '回复内容: %s'

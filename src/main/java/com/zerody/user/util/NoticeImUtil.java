@@ -267,17 +267,29 @@ public class NoticeImUtil {
 
     /**
     * @Description:         提交人补充回复，意见接收人和协助人收到此消息
-    * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isCeo]
+    * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isDirect 是否是直接接收人]
     */
-    public static Long pushAdditionalOpinionToHandler(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content){
+    public static Long pushAdditionalOpinionToHandler(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content , Boolean isDirect){
         try {
             String msg = "";
             String arguments = "";
             if (userOpinion.getSource() == 0){
-                // 消息内容
-                msg =  String.format(opinionAdditionalConfigStatic.getContent(), limitContentLength(content));
+                // 判断这个通知是直接接收人 还是 协助人收到 ， 接收人依然可以对此通知分配， 协助人不行 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+                if (isDirect){
+                    // 消息内容
+                    msg =  String.format(opinionAdditionalConfigStatic.getContent(), 1, limitContentLength(content));
+                }else {
+                    // 消息内容
+                    msg =  String.format(opinionAdditionalConfigStatic.getContent(), 2 , limitContentLength(content));
+                }
             }else {
-                msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
+                if (isDirect){
+                    // 消息内容
+                    msg = String.format(opinionAdditionalConfigStatic.getContent1(), 1, opinionSenderInfo);
+                }else {
+                    // 消息内容
+                    msg = String.format(opinionAdditionalConfigStatic.getContent1(), 2, opinionSenderInfo);
+                }
             }
             String query = String.format(opinionAdditionalConfigStatic.getQuery(), userOpinion.getId());
             Object parse = JSONObject.parse(query);
