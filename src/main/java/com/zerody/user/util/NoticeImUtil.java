@@ -273,25 +273,21 @@ public class NoticeImUtil {
         try {
             String msg = "";
             String arguments = "";
+            String query = "";
             if (userOpinion.getSource() == 0){
-                // 判断这个通知是直接接收人 还是 协助人收到 ， 接收人依然可以对此通知分配， 协助人不行 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
-                if (isDirect){
-                    // 消息内容
-                    msg =  String.format(opinionAdditionalConfigStatic.getContent(), 1, limitContentLength(content));
-                }else {
-                    // 消息内容
-                    msg =  String.format(opinionAdditionalConfigStatic.getContent(), 2 , limitContentLength(content));
-                }
+                msg =  String.format(opinionAdditionalConfigStatic.getContent(), limitContentLength(content));
             }else {
-                if (isDirect){
-                    // 消息内容
-                    msg = String.format(opinionAdditionalConfigStatic.getContent1(), 1, opinionSenderInfo);
-                }else {
-                    // 消息内容
-                    msg = String.format(opinionAdditionalConfigStatic.getContent1(), 2, opinionSenderInfo);
-                }
+                // 消息内容
+                msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
             }
-            String query = String.format(opinionAdditionalConfigStatic.getQuery(), userOpinion.getId());
+
+            // 判断这个通知是直接接收人 还是 协助人收到 ， 接收人依然可以对此通知分配， 协助人不行 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+            if (isDirect){
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), 1 ,userOpinion.getId());
+            }else {
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), 2 ,userOpinion.getId());
+            }
+
             Object parse = JSONObject.parse(query);
             Object argumentsParse = JSONObject.parse(arguments);
 
