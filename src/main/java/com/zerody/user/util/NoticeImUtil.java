@@ -197,14 +197,14 @@ public class NoticeImUtil {
 
     /**
     * @Description:         一旦有回复，意见发起人收到该通知
-    * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 , isCeo 是否是投递给boss信箱]
+    * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 ,   source 0 董事长信箱，1 意见箱 ]
     */
-    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
+    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Integer source){
         try {
             String msg = "";
             String arguments = "";
             String query3 = "";
-            if (isCeo){
+            if (source == 0){
                 // 消息内容
                 msg =  String.format(opinionReplyConfigStatic.getContent(),limitContentLength(content));
                 // 意见来源 需传递给前端 0 董事长信箱，1 意见箱
@@ -240,7 +240,7 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton2);
 
             Map<String,Object> dataMap = new HashMap<>();
-            if (isCeo){
+            if (source == 0){
                 dataMap.put("title", opinionReplyConfigStatic.getTitle());
             }else {
                 dataMap.put("title", opinionReplyConfigStatic.getTitle1());

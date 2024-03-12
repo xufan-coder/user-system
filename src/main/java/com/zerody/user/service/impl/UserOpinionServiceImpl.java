@@ -264,7 +264,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             this.update(up);
 
             // 通知意见发起人有回复信息
-            Long replyMessageId = NoticeImUtil.pushReplyToInitiator(opinion.getId(), opinion.getUserId(), reply.getUserName(), param.getContent(), param.getIsCeo());
+            Long replyMessageId = NoticeImUtil.pushReplyToInitiator(opinion.getId(), opinion.getUserId(), reply.getUserName(), param.getContent(), opinion.getSource());
             // 变更意见json信息
             this.updateOpinionMessageJson(opinion.getId(),setMessageJson(replyMessageId,opinion.getUserId()));
 
