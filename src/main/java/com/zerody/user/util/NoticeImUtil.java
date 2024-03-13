@@ -410,6 +410,23 @@ public class NoticeImUtil {
 
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
         log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+
+
+        //推送状态拉取
+        sendUserNotice(targetUserId);
+    }
+
+    /**推送用户通知拉取消息*/
+    public static void sendUserNotice(String target) {
+        SendRobotMessageDto data = new SendRobotMessageDto();
+        // 推送用户消息拉取通知
+        data.setSender("ServiceRobot");
+        data.setTarget(target);
+        data.setContentExtra(null);
+        data.setConversationType(0);
+        data.setPersistFlag(0);
+        data.setType(MsgType.USER_NOTIC_PUSH);
+        sendMsgFeignServiceStatic.send(data);
     }
 
 
