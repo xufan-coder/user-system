@@ -412,8 +412,10 @@ public class NoticeImUtil {
         log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
 
 
-        //推送状态拉取
-        sendUserNotice(targetUserId);
+        if (imResult.isSuccess()){
+            //推送状态拉取
+            sendUserNotice(targetUserId);
+        }
     }
 
     /**推送用户通知拉取消息*/
@@ -426,7 +428,8 @@ public class NoticeImUtil {
         data.setConversationType(0);
         data.setPersistFlag(0);
         data.setType(MsgType.USER_NOTIC_PUSH);
-        sendMsgFeignServiceStatic.send(data);
+        DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+        log.info("推送用户消息拉取通知IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
     }
 
 
