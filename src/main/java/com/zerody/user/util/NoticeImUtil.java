@@ -403,7 +403,7 @@ public class NoticeImUtil {
             map.put("extra",extraJson);
         }
         data.setContentExtra(JSONObject.toJSONString(map));
-        data.setPersistFlag(3);
+        data.setPersistFlag(0);
         data.setType(1104);
         data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(targetUserId);
@@ -426,7 +426,7 @@ public class NoticeImUtil {
         data.setTarget(target);
         data.setContentExtra(null);
         data.setConversationType(0);
-        data.setPersistFlag(3);
+        data.setPersistFlag(0);
         data.setType(MsgType.USER_NOTIC_PUSH);
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
         log.info("推送用户消息拉取通知IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
