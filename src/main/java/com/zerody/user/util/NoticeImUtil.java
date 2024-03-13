@@ -422,7 +422,7 @@ public class NoticeImUtil {
     public static void sendUserNotice(String target) {
         SendRobotMessageDto data = new SendRobotMessageDto();
         // 推送用户消息拉取通知
-        data.setSender("ServiceRobot");
+        data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(target);
         data.setContentExtra(null);
         data.setConversationType(0);
