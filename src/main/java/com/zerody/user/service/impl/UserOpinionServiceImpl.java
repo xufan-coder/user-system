@@ -138,8 +138,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE,opinion.getState());
-                    jsonArray.add(setMessageJson(messageId,assistantUserId));
+                    Long assistantMessageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE,opinion.getState());
+                    jsonArray.add(setMessageJson(assistantMessageId,assistantUserId));
                 }
             }
         }else if (DataUtil.isEmpty(param.getSeeUserIds())){
@@ -170,8 +170,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
-                Long messageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE,opinion.getState());
-                jsonArray.add(setMessageJson(messageId,assistantUserId));
+                Long assistantMessageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE,opinion.getState());
+                jsonArray.add(setMessageJson(assistantMessageId,assistantUserId));
             }
         }
 
@@ -270,14 +270,18 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             if (DataUtil.isNotEmpty(opinion.getMessageJson())){
                 // 转换消息messageJson对象
+                String messageId = "";
                 JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
+
                 for (int i = 0; i<jsonArray.size();i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String messageId = String.valueOf(jsonObject.get("messageId"));
+                    messageId = String.valueOf(jsonObject.get("messageId"));
                     String userId = String.valueOf(jsonObject.get("userId"));
 
-                    // 推送消息变更意见状态
-                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,opinion.getUserId(),param.getUserId(),messageId,param.getSource());
+                    if (!userId.equals(opinion.getUserId())){
+                        // 推送消息变更意见状态
+                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource());
+                    }
                 }
             }
 
