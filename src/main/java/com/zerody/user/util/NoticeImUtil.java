@@ -334,7 +334,7 @@ public class NoticeImUtil {
 
 
     /**
-    * @Description:         反馈意见通知状态变更
+    * @Description:         反馈意见通知状态变更  此消息通知可传递 list 形式的 messageId 集合
     * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , senderUserId 引起意见变更的userId, messageId 意见id  source 来源
     */
     /**反馈意见通知状态变更*/
