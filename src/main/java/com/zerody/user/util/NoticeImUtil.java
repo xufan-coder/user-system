@@ -405,7 +405,7 @@ public class NoticeImUtil {
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);
         data.setType(1104);
-        data.setSender(senderUserId);
+        data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(targetUserId);
 
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
