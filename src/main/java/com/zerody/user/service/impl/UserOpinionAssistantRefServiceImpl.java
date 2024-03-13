@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
@@ -79,10 +80,19 @@ public class UserOpinionAssistantRefServiceImpl extends ServiceImpl<UserOpinionA
 
                 // 推送到每个新协助人
                 for (String assistantUserId: result) {
-                    NoticeImUtil.pushOpinionToAssistant(opinionId,assistantUserId,senderInfo,byId.getContent(),appionterName,param.getIsCeo(),byId.getState());
+                    Long messageId = NoticeImUtil.pushOpinionToAssistant(opinionId, assistantUserId, senderInfo, byId.getContent(), appionterName, byId.getSource(), byId.getState());
+                    //TODO 变更意见json信息 ,此处变更操作较为频繁，后续可优化
+                    userOpinionService.updateOpinionMessageJson(opinionId,setMessageJson(messageId,assistantUserId));
                 }
             }
 
+    }
+
+    private JSONObject setMessageJson(Long messageId, String userId){
+        JSONObject json = new JSONObject();
+        json.put("messageId",messageId);
+        json.put("userId",userId);
+        return json;
     }
 
 

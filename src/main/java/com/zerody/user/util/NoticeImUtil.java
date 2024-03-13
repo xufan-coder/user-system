@@ -139,11 +139,11 @@ public class NoticeImUtil {
      * appointerInfo 指派人信息 注意：该字段只有意见箱的协助信息才显示，由于意见箱查看人目前只支持单选，可展示此字段，多选时会出现同时指派情况
      * , isCeo 是否是投递给boss信箱 opinionState 意见处理状态]
     */
-    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo , Integer opinionState){
+    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Integer source , Integer opinionState){
         try {
             String msg = "";
             String arguments = "";
-            if (isCeo){
+            if (source == 0){
                 // 消息内容
                 msg =  String.format(opinionAssistantConfigStatic.getContent(), opinionSenderInfo, limitContentLength(content));
             }else {
@@ -163,7 +163,7 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton);
 
             Map<String,Object> dataMap = new HashMap<>();
-            if (isCeo){
+            if (source == 0){
                 dataMap.put("title", opinionAssistantConfigStatic.getTitle());
             }else {
                 dataMap.put("title", opinionAssistantConfigStatic.getTitle1());
