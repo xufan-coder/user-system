@@ -171,7 +171,7 @@ msg:
     # 补充回复路径
     url2: /home/suggestion/reply
     # 已完成后发起新的意见路径
-    url3: //home/suggestion/add
+    url3: /home/suggestion/add
     query: '{"fromPage":"0","id":"%s"}'
     query2: '{"id":"%s"}'
     query3: '{"source":"%s"}'

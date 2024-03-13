@@ -301,7 +301,11 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             for (String directUserId : directUserIds) {
                 // 推送补充意见
-                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,directUserId,param.getUserName(),param.getContent(),Boolean.TRUE);
+                Long additionalMessageId = NoticeImUtil.pushAdditionalOpinionToHandler(opinion, directUserId, param.getUserName(), param.getContent(), Boolean.TRUE);
+
+                //TODO 变更意见json信息 ,此处变更操作较为频繁，后续可优化
+                this.updateOpinionMessageJson(opinion.getId(),setMessageJson(additionalMessageId,directUserId));
+
 
                 // 获取意见接收人最新的协助人
                 List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(directUserId);
@@ -322,7 +326,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             log.info("推送包括新协助人入参:{}", JSON.toJSONString(resultList));
             for (String userId : resultList) {
-                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,userId,param.getUserName(),param.getContent(),Boolean.FALSE);
+                Long additionalMessageId = NoticeImUtil.pushAdditionalOpinionToHandler(opinion, userId, param.getUserName(), param.getContent(), Boolean.FALSE);
+
+                //TODO 变更意见json信息 ,此处变更操作较为频繁，后续可优化
+                this.updateOpinionMessageJson(opinion.getId(),setMessageJson(additionalMessageId,userId));
             }
         }
 
