@@ -63,10 +63,10 @@ public class UserOpinionRefServiceImpl extends ServiceImpl<UserOpinionRefMapper,
     }
 
     @Override
-    public List<String> getDirectUserIds(String opinionId) {
+    public List<String> getReplyUserIds(String opinionId,Integer replyType) {
         QueryWrapper<UserOpinionRef> qw = new QueryWrapper<>();
         qw.lambda().eq(UserOpinionRef::getOpinionId,opinionId);
-        qw.lambda().eq(UserOpinionRef::getReplyType,YesNo.YES);
+        qw.lambda().eq(UserOpinionRef::getReplyType,replyType);
         List<UserOpinionRef> refList = this.list(qw);
         return refList.stream().map(UserOpinionRef::getUserId).collect(Collectors.toList());
     }

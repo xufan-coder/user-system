@@ -138,8 +138,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 userOpinionRefService.addOpinionRef(opinion.getId(),assistantUserIdsResult,YesNo.NO);
                 // 推送给每个协助人
                 for (String assistantUserId : assistantUserIdsResult){
-                    NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE,opinion.getState());
-                    jsonArray.add(setMessageJson(messageId,assistantUserId));
+                    Long assistantMessageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId,opinion.getUserName(),param.getContent(), getReplyName(userId) ,Boolean.FALSE,opinion.getState());
+                    jsonArray.add(setMessageJson(assistantMessageId,assistantUserId));
                 }
             }
         }else if (DataUtil.isEmpty(param.getSeeUserIds())){
@@ -170,8 +170,8 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
             // 推送给每个协助人
             for (String assistantUserId : assistantUserIdsResult){
-                Long messageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE,opinion.getState());
-                jsonArray.add(setMessageJson(messageId,assistantUserId));
+                Long assistantMessageId = NoticeImUtil.pushOpinionToAssistant(opinion.getId(),assistantUserId, senderInfo, param.getContent(),null,Boolean.TRUE,opinion.getState());
+                jsonArray.add(setMessageJson(assistantMessageId,assistantUserId));
             }
         }
 
@@ -264,34 +264,45 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             this.update(up);
 
             // 通知意见发起人有回复信息
-            Long replyMessageId = NoticeImUtil.pushReplyToInitiator(opinion.getId(), opinion.getUserId(), reply.getUserName(), param.getContent(), param.getIsCeo());
+            Long replyMessageId = NoticeImUtil.pushReplyToInitiator(opinion.getId(), opinion.getUserId(), reply.getUserName(), param.getContent(), opinion.getSource());
             // 变更意见json信息
             this.updateOpinionMessageJson(opinion.getId(),setMessageJson(replyMessageId,opinion.getUserId()));
 
             if (DataUtil.isNotEmpty(opinion.getMessageJson())){
                 // 转换消息messageJson对象
+                String messageId = "";
                 JSONArray jsonArray = JSONObject.parseArray(opinion.getMessageJson());
+
                 for (int i = 0; i<jsonArray.size();i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String messageId = String.valueOf(jsonObject.get("messageId"));
+                    messageId = String.valueOf(jsonObject.get("messageId"));
                     String userId = String.valueOf(jsonObject.get("userId"));
 
-                    // 推送消息变更意见状态
-                    NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,opinion.getUserId(),param.getUserId(),messageId,param.getSource());
+                    if (!userId.equals(opinion.getUserId())){
+                        // 推送消息变更意见状态
+                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource());
+                    }
                 }
             }
 
 
         }else if (opinion.getUserId().equals(param.getUserId())){
-            // 获取意见收件人和协助人
-            List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());
+            /*// 获取意见收件人和协助人
+            List<String> seeUserIds = this.userOpinionRefService.getSeeUserIds(opinion.getId());*/
 
             // 总的最新的协助人汇总
             List<String> newAssistantUserIdsTotal = new ArrayList<>();
 
             // 获取意见接收人 (直接查看人)
-            List<String> directUserIds = userOpinionRefService.getDirectUserIds(opinion.getId());
+            List<String> directUserIds = userOpinionRefService.getReplyUserIds(opinion.getId(),YesNo.YES);
+
+            // 获取意见协助人
+            List<String> assistantIds = userOpinionRefService.getReplyUserIds(opinion.getId(),YesNo.NO);
+
             for (String directUserId : directUserIds) {
+                // 推送补充意见
+                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,directUserId,param.getUserName(),param.getContent(),Boolean.TRUE);
+
                 // 获取意见接收人最新的协助人
                 List<String> assistantUserIds = this.assistantRefService.getAssistantUserIds(directUserId);
                 newAssistantUserIdsTotal.addAll(assistantUserIds);
@@ -300,18 +311,18 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
             List<String> newAssistantUserIdsResult = newAssistantUserIdsTotal.stream().distinct().collect(Collectors.toList());
 
 
-            List<String> resultList = Stream.concat(seeUserIds.stream(), newAssistantUserIdsResult.stream())
+            List<String> resultList = Stream.concat(assistantIds.stream(), newAssistantUserIdsResult.stream())
                     .distinct()
                     .collect(Collectors.toList());
 
-            List<String> newAssistantUserIds = newAssistantUserIdsResult.stream().filter(r -> !seeUserIds.contains(r)).collect(Collectors.toList());
+            List<String> newAssistantUserIds = newAssistantUserIdsResult.stream().filter(r -> !assistantIds.contains(r)).collect(Collectors.toList());
 
             // 添加新配置的协助人关联
             this.userOpinionRefService.addOpinionRef(opinion.getId(),newAssistantUserIds,YesNo.NO);
 
             log.info("推送包括新协助人入参:{}", JSON.toJSONString(resultList));
             for (String userId : resultList) {
-                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,userId,param.getUserName(),param.getContent());
+                NoticeImUtil.pushAdditionalOpinionToHandler(opinion,userId,param.getUserName(),param.getContent(),Boolean.FALSE);
             }
         }
 

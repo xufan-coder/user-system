@@ -197,14 +197,14 @@ public class NoticeImUtil {
 
     /**
     * @Description:         一旦有回复，意见发起人收到该通知
-    * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 , isCeo 是否是投递给boss信箱]
+    * @Param:               [receiveUserId 信息接收人id , receiveUserName 意见直接接收人的信息 , content 消息内容 ,   source 0 董事长信箱，1 意见箱 ]
     */
-    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Boolean isCeo){
+    public static Long pushReplyToInitiator(String opinionId, String receiveUserId, String receiveUserName, String content, Integer source){
         try {
             String msg = "";
             String arguments = "";
             String query3 = "";
-            if (isCeo){
+            if (source == 0){
                 // 消息内容
                 msg =  String.format(opinionReplyConfigStatic.getContent(),limitContentLength(content));
                 // 意见来源 需传递给前端 0 董事长信箱，1 意见箱
@@ -240,7 +240,7 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton2);
 
             Map<String,Object> dataMap = new HashMap<>();
-            if (isCeo){
+            if (source == 0){
                 dataMap.put("title", opinionReplyConfigStatic.getTitle());
             }else {
                 dataMap.put("title", opinionReplyConfigStatic.getTitle1());
@@ -267,19 +267,27 @@ public class NoticeImUtil {
 
     /**
     * @Description:         提交人补充回复，意见接收人和协助人收到此消息
-    * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isCeo]
+    * @Param:               [opinionId, receiveUserId, opinionSenderInfo, content,  isDirect 是否是直接接收人]
     */
-    public static Long pushAdditionalOpinionToHandler(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content){
+    public static Long pushAdditionalOpinionToHandler(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content , Boolean isDirect){
         try {
             String msg = "";
             String arguments = "";
+            String query = "";
             if (userOpinion.getSource() == 0){
-                // 消息内容
                 msg =  String.format(opinionAdditionalConfigStatic.getContent(), limitContentLength(content));
             }else {
+                // 消息内容
                 msg = String.format(opinionAdditionalConfigStatic.getContent1(), opinionSenderInfo);
             }
-            String query = String.format(opinionAdditionalConfigStatic.getQuery(), userOpinion.getId());
+
+            // 判断这个通知是直接接收人 还是 协助人收到 ， 接收人依然可以对此通知分配， 协助人不行 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+            if (isDirect){
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), 1 ,userOpinion.getId());
+            }else {
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), 2 ,userOpinion.getId());
+            }
+
             Object parse = JSONObject.parse(query);
             Object argumentsParse = JSONObject.parse(arguments);
 
@@ -397,11 +405,31 @@ public class NoticeImUtil {
         data.setContentExtra(JSONObject.toJSONString(map));
         data.setPersistFlag(0);
         data.setType(1104);
-        data.setSender(senderUserId);
+        data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(targetUserId);
 
         DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
         log.info("推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+
+
+        if (imResult.isSuccess()){
+            //推送状态拉取
+            sendUserNotice(targetUserId);
+        }
+    }
+
+    /**推送用户通知拉取消息*/
+    public static void sendUserNotice(String target) {
+        SendRobotMessageDto data = new SendRobotMessageDto();
+        // 推送用户消息拉取通知
+        data.setSender("ServiceRobot");
+        data.setTarget(target);
+        data.setContentExtra(null);
+        data.setConversationType(0);
+        data.setPersistFlag(0);
+        data.setType(MsgType.USER_NOTIC_PUSH);
+        DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+        log.info("推送用户消息拉取通知IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
     }
 
 
