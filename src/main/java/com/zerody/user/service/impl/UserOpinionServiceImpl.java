@@ -478,7 +478,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 String messageUserId = String.valueOf(jsonObject.get("userId"));
 
                 // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,messageId,userId,null);
+                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,userId,messageId,null);
             }
         }
     }
