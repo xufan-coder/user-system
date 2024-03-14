@@ -331,22 +331,22 @@ public class SysAddressBookController {
     @GetMapping(value = "/get/by-company")
     public DataResult<List<StaffInfoByAddressBookVo>> getStaffByCompany(StaffByCompanyDto staffByCompanyDto) {
         try {
-            if (UserUtils.getUser().isBack()){
-                staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
-            }else if (UserUtils.getUser().isCEO()){
-                staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
-            }else {
-                if(DataUtil.isEmpty(staffByCompanyDto.getCompanyId())){
-                    String companyId = UserUtils.getUser().getCompanyId();
-                    if(DataUtil.isEmpty(companyId)){
-                        return R.error("获取公司失败,请求企业错误！");
-                    }
-                    SysCompanyInfo byId = sysCompanyInfoService.getById(companyId);
-                    if(DataUtil.isEmpty(byId)){
-                        return R.error("获取公司失败,请求企业错误！");
-                    }
-                    staffByCompanyDto.setCompanyId(companyId);
-                    staffByCompanyDto.setIsProData(byId.getIsProData());
+            if(DataUtil.isEmpty(staffByCompanyDto.getCompanyId())){
+                if (UserUtils.getUser().isBack()){
+                    staffByCompanyDto.setCompanyIds(this.checkUtil.setBackCompany(UserUtils.getUserId()));
+                }else if (UserUtils.getUser().isCEO()){
+                    staffByCompanyDto.setCompanyIds(this.checkUtil.setCeoCompany(UserUtils.getUserId()));
+                }else {
+                        String companyId = UserUtils.getUser().getCompanyId();
+                        if(DataUtil.isEmpty(companyId)){
+                            return R.error("获取公司失败,请求企业错误！");
+                        }
+                        SysCompanyInfo byId = sysCompanyInfoService.getById(companyId);
+                        if(DataUtil.isEmpty(byId)){
+                            return R.error("获取公司失败,请求企业错误！");
+                        }
+                        staffByCompanyDto.setCompanyId(companyId);
+                        staffByCompanyDto.setIsProData(byId.getIsProData());
                 }
             }
             if (DataUtil.isEmpty(staffByCompanyDto.getIsSecondContract())) {
