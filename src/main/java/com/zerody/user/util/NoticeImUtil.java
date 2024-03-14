@@ -82,7 +82,7 @@ public class NoticeImUtil {
             }else {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
-            String query = String.format(opinionReceiveConfigStatic.getQuery(), opinionId);
+            String query = String.format(opinionReceiveConfigStatic.getQuery(), 1, opinionId);
             String query2 = String.format(opinionReceiveConfigStatic.getQuery2(), targetUserId,opinionId);
             Object parse = JSONObject.parse(query);
             Object parse2 = JSONObject.parse(query2);
@@ -384,9 +384,9 @@ public class NoticeImUtil {
                 String query = "";
                 // 判断这个详情是谁查看， 只有查看人可看到 协助人  fromPage： 0 提交人 1 收件人 2 协助人
                 if (isDirect){
-                    query = String.format(opinionAdditionalConfigStatic.getQuery(), 1 ,userOpinion.getId());
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), 1 ,userOpinion.getId());
                 }else {
-                    query = String.format(opinionAdditionalConfigStatic.getQuery(), 2 ,userOpinion.getId());
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), 2 ,userOpinion.getId());
                 }
 
                 Object parse = JSONObject.parse(query);
