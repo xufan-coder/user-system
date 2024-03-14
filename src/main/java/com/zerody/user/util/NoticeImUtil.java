@@ -82,7 +82,7 @@ public class NoticeImUtil {
             }else {
                 msg = String.format(opinionReceiveConfigStatic.getContent1(),opinionSenderInfo);
             }
-            String query = String.format(opinionReceiveConfigStatic.getQuery(), opinionId);
+            String query = String.format(opinionReceiveConfigStatic.getQuery(), 1, opinionId);
             String query2 = String.format(opinionReceiveConfigStatic.getQuery2(), targetUserId,opinionId);
             Object parse = JSONObject.parse(query);
             Object parse2 = JSONObject.parse(query2);
@@ -139,11 +139,11 @@ public class NoticeImUtil {
      * appointerInfo 指派人信息 注意：该字段只有意见箱的协助信息才显示，由于意见箱查看人目前只支持单选，可展示此字段，多选时会出现同时指派情况
      * , isCeo 是否是投递给boss信箱 opinionState 意见处理状态]
     */
-    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Boolean isCeo , Integer opinionState){
+    public static Long pushOpinionToAssistant(String opinionId,String receiveUserId, String opinionSenderInfo, String content,String appointerInfo, Integer source , Integer opinionState){
         try {
             String msg = "";
             String arguments = "";
-            if (isCeo){
+            if (source == 0){
                 // 消息内容
                 msg =  String.format(opinionAssistantConfigStatic.getContent(), opinionSenderInfo, limitContentLength(content));
             }else {
@@ -163,7 +163,7 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton);
 
             Map<String,Object> dataMap = new HashMap<>();
-            if (isCeo){
+            if (source == 0){
                 dataMap.put("title", opinionAssistantConfigStatic.getTitle());
             }else {
                 dataMap.put("title", opinionAssistantConfigStatic.getTitle1());
@@ -334,11 +334,13 @@ public class NoticeImUtil {
 
 
     /**
-    * @Description:         反馈意见通知状态变更
+    * @Description:         反馈意见通知状态变更  (此消息通知可传递 list 形式的 messageId 集合，后续可优化)
     * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , senderUserId 引起意见变更的userId, messageId 意见id  source 来源
+     *  isDirect 是否是意见直接查看人 ，只有意见查看人能看到协助人字段
+     *
     */
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String senderUserId, String messageId , Integer source) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String senderUserId, String messageId , Integer source , Boolean isDirect) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
@@ -379,7 +381,14 @@ public class NoticeImUtil {
                 buttons.add(sendHighMessageButton2);
 
             }else {
-                String query = String.format(opinionReceiveConfigStatic.getQuery(), userOpinion.getId());
+                String query = "";
+                // 判断这个详情是谁查看， 只有查看人可看到 协助人  fromPage： 0 提交人 1 收件人 2 协助人
+                if (isDirect){
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), 1 ,userOpinion.getId());
+                }else {
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), 2 ,userOpinion.getId());
+                }
+
                 Object parse = JSONObject.parse(query);
                 SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
                 sendHighMessageButton.setName("查看详情");
@@ -422,7 +431,7 @@ public class NoticeImUtil {
     public static void sendUserNotice(String target) {
         SendRobotMessageDto data = new SendRobotMessageDto();
         // 推送用户消息拉取通知
-        data.setSender("ServiceRobot");
+        data.setSender(IM.ROBOT_XIAOZANG);
         data.setTarget(target);
         data.setContentExtra(null);
         data.setConversationType(0);

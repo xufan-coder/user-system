@@ -53,7 +53,7 @@ public class AppUserPushServiceImpl extends ServiceImpl<AppUserPushMapper, AppUs
 		//查询Crm用户信息
 		SysLoginUserInfoVo sysLoginUserInfoVo = sysUserInfoService.selectTransUserInfo(user.getUserId());
 		if(DataUtil.isEmpty(sysLoginUserInfoVo)){
-			log.error("查不到用户ID");
+			//log.error("查不到用户ID");
 			return;
 		}
 		//推送用户信息到APP
