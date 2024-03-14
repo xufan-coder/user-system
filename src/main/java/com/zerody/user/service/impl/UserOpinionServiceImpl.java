@@ -280,7 +280,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
                     if (!userId.equals(opinion.getUserId())){
                         // 推送消息变更意见状态
-                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource(),null);
+                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource(),Boolean.FALSE);
                     }
                 }
             }

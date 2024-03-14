@@ -67,6 +67,10 @@ public class NoticeImUtil {
     public final  static  String UNDERWAY = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/2ce23e91102e6134ec889336cce014e4.png";
     public final  static  String ACCOMPLISH = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/e86818f423c2db4593e954f178269d89.png";
 
+    // fromPage： 0 提交人 1 收件人 2 协助人
+    private final static Integer SUBMITTER = 0;
+    private final static Integer DIRECT_RECEIVER = 1;
+    private final static Integer ASSISTANT = 2;
 
     /**
     * @Description:         意见接收人收到该消息
@@ -283,9 +287,9 @@ public class NoticeImUtil {
 
             // 判断这个通知是直接接收人 还是 协助人收到 ， 接收人依然可以对此通知分配， 协助人不行 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
             if (isDirect){
-                query = String.format(opinionAdditionalConfigStatic.getQuery(), 1 ,userOpinion.getId());
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), DIRECT_RECEIVER ,userOpinion.getId());
             }else {
-                query = String.format(opinionAdditionalConfigStatic.getQuery(), 2 ,userOpinion.getId());
+                query = String.format(opinionAdditionalConfigStatic.getQuery(), ASSISTANT ,userOpinion.getId());
             }
 
             Object parse = JSONObject.parse(query);
@@ -384,9 +388,9 @@ public class NoticeImUtil {
                 String query = "";
                 // 判断这个详情是谁查看， 只有查看人可看到 协助人  fromPage： 0 提交人 1 收件人 2 协助人
                 if (isDirect){
-                    query = String.format(opinionReceiveConfigStatic.getQuery(), 1 ,userOpinion.getId());
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), DIRECT_RECEIVER ,userOpinion.getId());
                 }else {
-                    query = String.format(opinionReceiveConfigStatic.getQuery(), 2 ,userOpinion.getId());
+                    query = String.format(opinionReceiveConfigStatic.getQuery(), ASSISTANT ,userOpinion.getId());
                 }
 
                 Object parse = JSONObject.parse(query);
