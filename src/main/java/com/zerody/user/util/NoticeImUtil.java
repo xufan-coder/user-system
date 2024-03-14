@@ -336,9 +336,11 @@ public class NoticeImUtil {
     /**
     * @Description:         反馈意见通知状态变更  (此消息通知可传递 list 形式的 messageId 集合，后续可优化)
     * @Param:               userOpinion 用户意见 , opinionState 意见状态 , targetUserId  接收人userId , senderUserId 引起意见变更的userId, messageId 意见id  source 来源
+     *  isDirect 是否是意见直接查看人 ，只有意见查看人能看到协助人字段
+     *
     */
     /**反馈意见通知状态变更*/
-    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String senderUserId, String messageId , Integer source) {
+    public static void sendOpinionStateChange(UserOpinion userOpinion, Integer opinionState, String targetUserId, String senderUserId, String messageId , Integer source , Boolean isDirect) {
 
         if(StringUtils.isEmpty(userOpinion.getId())){
             return;
@@ -379,7 +381,14 @@ public class NoticeImUtil {
                 buttons.add(sendHighMessageButton2);
 
             }else {
-                String query = String.format(opinionReceiveConfigStatic.getQuery(), userOpinion.getId());
+                String query = "";
+                // 判断这个详情是谁查看， 只有查看人可看到 协助人  fromPage： 0 提交人 1 收件人 2 协助人
+                if (isDirect){
+                    query = String.format(opinionAdditionalConfigStatic.getQuery(), 1 ,userOpinion.getId());
+                }else {
+                    query = String.format(opinionAdditionalConfigStatic.getQuery(), 2 ,userOpinion.getId());
+                }
+
                 Object parse = JSONObject.parse(query);
                 SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
                 sendHighMessageButton.setName("查看详情");

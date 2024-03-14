@@ -157,7 +157,7 @@ msg:
     url:  /home/suggestion/detail
     # 分配他人回复路径
     url2: /home/suggestion/assistant/single
-    query: '{"fromPage":"1","id":"%s"}'
+    query: '{"fromPage":"%s","id":"%s"}'
     query2: '{"userId":"%s","id":"%s"}'
     arguments:
     title: '新信件接收查看提醒'

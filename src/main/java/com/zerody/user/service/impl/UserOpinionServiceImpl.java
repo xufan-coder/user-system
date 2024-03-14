@@ -280,7 +280,7 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
                     if (!userId.equals(opinion.getUserId())){
                         // 推送消息变更意见状态
-                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource());
+                        NoticeImUtil.sendOpinionStateChange(opinion,OpinionStateType.UNDERWAY,userId,param.getUserId(),messageId,param.getSource(),null);
                     }
                 }
             }
@@ -477,6 +477,10 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
 
         // 变更通知消息状态
         UserOpinion byId = this.getById(id);
+
+        // 获取意见直接查看人
+        List<String> replyUserIds = this.userOpinionRefService.getReplyUserIds(id, YesNo.YES);
+
         if (DataUtil.isNotEmpty(byId.getMessageJson())){
             JSONArray jsonArray = JSONObject.parseArray(byId.getMessageJson());
             for (int i = 0; i<jsonArray.size();i++){
@@ -484,8 +488,13 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                 String messageId = String.valueOf(jsonObject.get("messageId"));
                 String messageUserId = String.valueOf(jsonObject.get("userId"));
 
-                // 推送消息变更意见状态
-                NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,userId,messageId,null);
+                if (replyUserIds.contains(messageUserId)){
+                    // 推送消息变更意见状态
+                    NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,userId,messageId,byId.getSource(),Boolean.TRUE);
+                }else {
+                    // 推送消息变更意见状态
+                    NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,userId,messageId,byId.getSource(),Boolean.FALSE);
+                }
             }
         }
     }
