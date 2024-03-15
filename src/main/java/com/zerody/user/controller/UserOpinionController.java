@@ -119,9 +119,6 @@ public class UserOpinionController {
     @GetMapping("/query-user")
     public DataResult<IPage<UserOpinionVo>> queryUserOpinionUser(UserOpinionQueryDto queryDto) {
         try {
-            if (DataUtil.isEmpty(queryDto.getSource())){
-                throw new DefaultException("意见来源类型不能为空");
-            }
             queryDto.setUserId(UserUtils.getUserId());
             this.checkUtil.setFiltrateTime(queryDto);
 
@@ -146,10 +143,6 @@ public class UserOpinionController {
     @GetMapping("/page")
     public DataResult<IPage<UserOpinionPageVo>> queryUserReplyUser(UserOpinionQueryDto dto) {
         try {
-
-            if (DataUtil.isEmpty(dto.getSource())){
-                throw new DefaultException("意见来源类型不能为空");
-            }
             dto.setUserId(UserUtils.getUserId());
             checkUtil.setFiltrateTime(dto);
 

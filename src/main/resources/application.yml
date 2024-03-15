@@ -200,6 +200,16 @@ msg:
     content: '回复内容: %s'
     title1: '意见查看提醒 (补充回复)'
     content1: '你好, %s 进行了补充回复，请及时查看!'
+  # 意见已被处理完毕，除点击处理完毕操作人之外其他关联该意见的人都收到该信息
+  opinion-complete:
+    # 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+    url:  /home/suggestion/detail
+    query: '{"fromPage":"%s","id":"%s"}'
+    arguments:
+    title: '信件处理完成查看提醒'
+    content: '回复内容: %s'
+    title1: '信件处理完成查看提醒'
+    content1: '回复内容: %s'
 
 leave:
   type:

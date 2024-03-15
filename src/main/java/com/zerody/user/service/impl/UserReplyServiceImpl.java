@@ -1,5 +1,6 @@
 package com.zerody.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zerody.common.constant.YesNo;
 import com.zerody.common.util.UUIDutils;
@@ -30,4 +31,13 @@ public class UserReplyServiceImpl extends ServiceImpl<UserReplyMapper, UserReply
     private ImageService imageService;
 
 
+    @Override
+    public String getLatestReplyContent(String opinionId) {
+        QueryWrapper<UserReply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserReply::getOpinionId,opinionId);
+        queryWrapper.lambda().eq(UserReply::getDeleted,YesNo.YES);
+        queryWrapper.lambda().orderByDesc(UserReply::getCreateTime);
+        queryWrapper.lambda().last("limit 1");
+        return this.getOne(queryWrapper).getContent();
+    }
 }

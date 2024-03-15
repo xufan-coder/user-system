@@ -9,10 +9,7 @@ import com.zerody.im.api.dto.SendRobotMessageDto;
 import com.zerody.im.constant.MsgType;
 import com.zerody.im.feign.SendMsgFeignService;
 import com.zerody.im.util.IM;
-import com.zerody.user.config.OpinionAdditionalConfig;
-import com.zerody.user.config.OpinionAssistantConfig;
-import com.zerody.user.config.OpinionReceiveConfig;
-import com.zerody.user.config.OpinionReplyConfig;
+import com.zerody.user.config.*;
 import com.zerody.user.constant.OpinionStateType;
 import com.zerody.user.domain.UserOpinion;
 import com.zerody.user.domain.UserOpinionType;
@@ -43,6 +40,8 @@ public class NoticeImUtil {
     private OpinionAssistantConfig opinionAssistantConfig;
     @Autowired
     private OpinionAdditionalConfig opinionAdditionalConfig;
+    @Autowired
+    private OpinionCompleteConfig opinionCompleteConfig;
 
     @Autowired
     private SendMsgFeignService sendMsgFeignService;
@@ -51,6 +50,7 @@ public class NoticeImUtil {
     private static OpinionReplyConfig opinionReplyConfigStatic;
     private static OpinionAssistantConfig opinionAssistantConfigStatic;
     private static OpinionAdditionalConfig opinionAdditionalConfigStatic;
+    private static OpinionCompleteConfig opinionCompleteConfigStatic;
 
     private static SendMsgFeignService sendMsgFeignServiceStatic;
 
@@ -61,6 +61,7 @@ public class NoticeImUtil {
         opinionReplyConfigStatic = opinionReplyConfig;
         opinionAssistantConfigStatic = opinionAssistantConfig;
         opinionAdditionalConfigStatic = opinionAdditionalConfig;
+        opinionCompleteConfigStatic = opinionCompleteConfig;
     }
 
     public final  static  String PENDING = "https://lingdongkeji.oss-cn-guangzhou.aliyuncs.com/scrm/955c0a6f442f9b5ca47522650fc51123/68a7400b480e11bec45a118ed21bb33b.png";
@@ -110,17 +111,21 @@ public class NoticeImUtil {
             buttons.add(sendHighMessageButton);
             buttons.add(sendHighMessageButton2);
 
+            SendRobotMessageDto data = new SendRobotMessageDto();
+
             Map<String,Object> dataMap = new HashMap<>();
             if (isCeo){
                 dataMap.put("title", opinionReceiveConfigStatic.getTitle());
+                data.setContentPush("您好，您的董事长信箱收到一条新的反馈消息，请前往查看");
             }else {
                 dataMap.put("title", opinionReceiveConfigStatic.getTitle1());
+                data.setContentPush("您好，您的意见箱收到一条新的反馈消息，请前往查看");
             }
             dataMap.put("content",msg);
             dataMap.put("statusIcon",opinionReceiveConfigStatic.getStatusIcon());
             dataMap.put("buttons",buttons);
 
-            SendRobotMessageDto data = new SendRobotMessageDto();
+
             data.setContent(msg);
             data.setSender(IM.ROBOT_XIAOZANG);
             data.setTarget(targetUserId);
@@ -333,6 +338,70 @@ public class NoticeImUtil {
             log.error("补充回复查看提醒查看提醒IM出错:{}", e, e);
         }
             return null;
+    }
+
+
+    /**
+    * @Description:         意见已被处理完毕，除点击处理完毕操作人之外其他关联该意见的人都收到该信息
+    * @Param:               [userOpinion, receiveUserId, opinionSenderInfo, content, isDirect]
+    * @Author:              xufan
+    * @Date:                2024/3/15 18:35
+    */
+    public static void pushOpinionCompleteToOther(UserOpinion userOpinion,String receiveUserId, String opinionSenderInfo, String content , Boolean isDirect){
+        try {
+            String msg = "";
+            String arguments = "";
+            String query = "";
+            if (userOpinion.getSource() == 0){
+                msg =  String.format(opinionCompleteConfigStatic.getContent(), limitContentLength(content));
+            }else {
+                // 消息内容
+                msg = String.format(opinionCompleteConfigStatic.getContent1(), opinionSenderInfo);
+            }
+
+            // 判断这个通知是直接接收人 还是 协助人收到 ，只有查看人可看到 协助人字段， 意见详情路径 fromPage： 0 提交人 1 收件人 2 协助人
+            if (isDirect){
+                query = String.format(opinionCompleteConfigStatic.getQuery(), DIRECT_RECEIVER ,userOpinion.getId());
+            }else {
+                query = String.format(opinionCompleteConfigStatic.getQuery(), ASSISTANT ,userOpinion.getId());
+            }
+
+            Object parse = JSONObject.parse(query);
+            Object argumentsParse = JSONObject.parse(arguments);
+
+            List<SendHighMessageButton> buttons = new ArrayList<>();
+            SendHighMessageButton sendHighMessageButton = new SendHighMessageButton();
+            sendHighMessageButton.setName("查看详情");
+            sendHighMessageButton.setUrl(opinionCompleteConfigStatic.getUrl());
+            sendHighMessageButton.setQuery(parse);
+            sendHighMessageButton.setArguments(argumentsParse);
+            sendHighMessageButton.setMessageSource("extend");
+            buttons.add(sendHighMessageButton);
+
+            Map<String,Object> dataMap = new HashMap<>();
+            if (userOpinion.getSource() == 0){
+                dataMap.put("title", opinionCompleteConfigStatic.getTitle());
+            }else {
+                dataMap.put("title", opinionCompleteConfigStatic.getTitle1());
+            }
+            dataMap.put("content",msg);
+            dataMap.put("buttons",buttons);
+            dataMap.put("statusIcon",ACCOMPLISH);
+
+
+            SendRobotMessageDto data = new SendRobotMessageDto();
+            data.setContent(msg);
+            data.setSender(IM.ROBOT_XIAOZANG);
+            data.setTarget(receiveUserId);
+            data.setConversationType(0);
+            data.setPersistFlag(3);
+            data.setContentExtra(JSONObject.toJSONString(dataMap));
+            data.setType(1014);
+            DataResult<Long> imResult = sendMsgFeignServiceStatic.send(data);
+            log.info("补充回复查看提醒查看提醒推送IM结果:{}-----------{}", JSONObject.toJSONString(data),JSONObject.toJSONString(imResult));
+        } catch (Exception e) {
+            log.error("补充回复查看提醒查看提醒IM出错:{}", e, e);
+        }
     }
 
 

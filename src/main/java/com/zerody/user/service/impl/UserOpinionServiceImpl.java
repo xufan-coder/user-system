@@ -82,6 +82,9 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
     @Autowired
     private UserOpinionAssistantRefService assistantRefService;
 
+    @Autowired
+    private UserReplyService userReplyService;
+
     @Value("${jpush.template.user-system.reply-warn:}")
     private String replyWarnTemplate;
     @Value("${jpush.template.user-system.reply-warn2:}")
@@ -496,6 +499,21 @@ public class UserOpinionServiceImpl extends ServiceImpl<UserOpinionMapper, UserO
                     NoticeImUtil.sendOpinionStateChange(byId,OpinionStateType.ACCOMPLISH,messageUserId,userId,messageId,byId.getSource(),Boolean.FALSE);
                 }
             }
+        }
+
+        // 意见已被处理完毕，除点击处理完毕操作人之外其他关联该意见的人都收到该信息
+        List<String> allOpinionRefUserIds = this.userOpinionRefService.getReplyUserIds(id, null);
+        List<String> receiveUserIds = allOpinionRefUserIds.stream().filter(r -> !r.equals(userId)).collect(Collectors.toList());
+        // 获取最新的回复消息内容
+        String latestReplyContent = userReplyService.getLatestReplyContent(id);
+
+        for (String receiveCompleteUserId : receiveUserIds) {
+            if (replyUserIds.contains(receiveCompleteUserId)){
+                NoticeImUtil.pushOpinionCompleteToOther(byId,receiveCompleteUserId,null,latestReplyContent,Boolean.TRUE);
+            }else {
+                NoticeImUtil.pushOpinionCompleteToOther(byId,receiveCompleteUserId,null,latestReplyContent,Boolean.FALSE);
+            }
+
         }
     }
 

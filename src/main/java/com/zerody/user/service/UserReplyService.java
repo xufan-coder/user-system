@@ -10,5 +10,5 @@ import com.zerody.user.dto.UserReplyDto;
 public interface UserReplyService extends IService<UserReply> {
 
 
-
+    String getLatestReplyContent(String opinionId);
 }
